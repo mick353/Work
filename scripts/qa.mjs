@@ -273,6 +273,57 @@ check(
 );
 
 const totalMinutes = bank.modules.reduce((sum, module) => sum + module.minutes, 0);
+/*
+ * Teaching volume.
+ *
+ * The review measured 5,852 words of lesson prose against 15,971 words of
+ * questions and feedback — the course tested 2.7x more than it taught, and
+ * sections of 24-72 words state conclusions without deriving them. Each stage
+ * now carries a worked-reasoning passage showing a decision made badly and
+ * then well.
+ */
+{
+  const words = (text) => String(text ?? "").trim().split(/\s+/).filter(Boolean).length;
+  const withReasoning = bank.modules.filter((module) =>
+    module.sections.some((section) => /^Worked reasoning:/.test(section.heading)),
+  );
+  check(
+    "Every stage carries a worked-reasoning passage",
+    withReasoning.length === 9,
+    `${withReasoning.length} of 9`,
+  );
+  const shortPassages = bank.modules.flatMap((module) =>
+    module.sections.filter((s) => /^Worked reasoning:/.test(s.heading) && words(s.body) < 150),
+  );
+  check(
+    "Worked reasoning actually derives the reasoning",
+    shortPassages.length === 0,
+    `${shortPassages.length} passage(s) under 150 words — a summary, not a derivation`,
+  );
+  const lessonWords = bank.modules.reduce((total, module) => {
+    let n = words(module.outcome) + words(module.coreIdea);
+    for (const section of module.sections) {
+      n += words(section.heading) + words(section.body) + words(section.example);
+      for (const bullet of section.bullets ?? []) n += words(bullet);
+      if (section.table) {
+        for (const head of section.table.head) n += words(head);
+        for (const row of section.table.rows) for (const cell of row) n += words(cell);
+      }
+    }
+    return total + n;
+  }, 0);
+  check("Lesson prose is substantial", lessonWords >= 8000, `${lessonWords} words`);
+  const thinnest = Math.min(...bank.modules.map((m) => m.sections.reduce((n, s) => n + words(s.body), 0)));
+  check("No stage is a stub", thinnest >= 300, `thinnest stage has ${thinnest} body words`);
+
+  // The minutes are derived now, so they cannot drift from the content.
+  check(
+    "Stage length is derived, not declared",
+    bank.modules.every((m) => m.minutes % 5 === 0 && m.minutes >= 5),
+    bank.modules.map((m) => m.minutes).join(", "),
+  );
+}
+
 check("Stated stage count is nine", bank.modules.length === 9);
 // Four is the minimum that makes the 75% mastery threshold meaningful; the
 // delivery and government stages carry five because they cover more ground.

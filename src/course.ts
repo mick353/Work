@@ -162,6 +162,22 @@ export const sources: Source[] = [
     checked: CONTENT_REVIEWED,
   },
   {
+    id: "cddo",
+    title: "Introduction to Product Management (UK Government)",
+    publisher: "Central Digital and Data Office with GDS, on FutureLearn",
+    url: "https://digitalpeople.blog.gov.uk/2024/10/15/introduction-to-product-management-now-available-on-futurelearn/",
+    note: "Free. The closest public comparator to this course: product management written for government delivery, built by CDDO with GDS and departmental colleagues. Useful for seeing which parts of the practice are common across jurisdictions and which are specific to DES.",
+    checked: CONTENT_REVIEWED,
+  },
+  {
+    id: "servicemanual",
+    title: "GOV.UK Service Manual",
+    publisher: "Government Digital Service",
+    url: "https://www.gov.uk/service-manual",
+    note: "Free. The reference standard for digital service delivery in government, and the model the Australian Digital Service Standard sits alongside. Read it for the phase guidance and the communities of practice.",
+    checked: CONTENT_REVIEWED,
+  },
+  {
     id: "pichler",
     title: "Product Roadmaps and Product Strategy",
     publisher: "Roman Pichler",
@@ -275,6 +291,16 @@ export const modules: Module[] = [
           ],
         },
         sourceIds: ["deck", "perri"],
+      },
+          {
+        heading: "Worked reasoning: the request that arrives as a solution",
+        body: "A branch head emails: 'We need a dashboard so providers can see their application status.' The weak move is to accept it, because it is specific, sponsored and easy to plan. The work then proceeds without anyone establishing what problem the dashboard solves, so success becomes 'the dashboard shipped' — which it will, on time, and the phones will keep ringing. \n\nProduct thinking does not mean refusing the request. It means holding the request and the problem apart long enough to see whether they match. Ask what the branch head has observed that makes a dashboard feel necessary. The answer here was 'providers keep calling and my staff spend half their day on it.' That is a different statement: it names a cost, a group and a behaviour. It admits several solutions — a dashboard, but also proactive notifications, clearer timeframes at submission, or removing the wait that generates the anxiety. It also implies a measure the dashboard alone never would: avoidable status calls. \n\nNotice what has not happened. Nobody has been told they are wrong, no governance has been bypassed, and the dashboard may still be the answer. What changed is that success is now defined as fewer avoidable calls rather than a delivered artefact, so the team can tell afterwards whether it worked — and can stop if it does not.",
+        bullets: [
+          "A solution arriving as a request is not a problem to fight; it is evidence that somebody feels a cost worth naming.",
+          "The question that reframes almost anything: 'What have you seen that makes this feel necessary?'",
+          "If the answer names a behaviour, a group and a cost, you have a problem statement. If it names a feature, keep going.",
+        ],
+        example: "The dashboard was built — and so were submission-time expectations and a status notification. Avoidable calls fell 41%. The dashboard accounted for less of that than anyone predicted, which is only knowable because the measure was the calls and not the dashboard.",
       },
     ],
     questions: [
@@ -513,6 +539,16 @@ export const modules: Module[] = [
         },
         sourceIds: ["lean", "deck"],
       },
+          {
+        heading: "Worked reasoning: when the analytics and the interviews disagree",
+        body: "Analytics show 38% of providers abandon at the identity step. Interviews say the identity step is 'fine — a bit annoying but fine.' The weak move is to pick the evidence you prefer: quantitative teams discount the interviews as a small sample, qualitative teams discount the analytics as lacking context. Both are reading a disagreement as a contest, when it is usually a signal that the two are measuring different things. \n\nWork the disagreement rather than resolving it. The analytics measure everyone who arrived at that step. The interviews measured eight providers recruited through an existing contact list — people who had already succeeded at identity, repeatedly, because that is how they became reachable contacts. The sample was not too small; it was selected on the outcome being studied. That reframes the finding: the step is fine for people who can complete it, and the 38% are largely absent from the research. \n\nThe next move is not a redesign. It is to find people the drop-out represents — providers using shared devices, providers whose documents do not match the register, providers without a mobile number attached to their record. Observation of those users found three distinct failure modes, only one of which any interface change could address; the other two were data problems in a different system.",
+        bullets: [
+          "When two sources disagree, ask what each one is a sample of before asking which is right.",
+          "Recruiting through existing contacts selects for people who already succeed — the most common quiet bias in government research.",
+          "'The sample is too small' is usually the wrong critique. 'The sample cannot contain the people we are asking about' is the right one.",
+        ],
+        example: "The redesign the team almost shipped would have addressed roughly a third of the drop-out. Naming the other two causes moved the conversation to the register data owner, who had the actual fix and no idea the problem existed.",
+      },
     ],
     questions: [
       {
@@ -710,6 +746,16 @@ export const modules: Module[] = [
           "Define the denominator before you publish the percentage.",
         ],
         sourceIds: ["deck", "dss"],
+      },
+          {
+        heading: "Worked reasoning: the measure that improved for the wrong reason",
+        body: "A team sets a key result: reduce median application completion time from 18 minutes to 12 by June. In April it reads 11 minutes. The weak move is to close it as achieved, because that is what the number says and the quarter is ending. \n\nBefore accepting a measure that moved, establish why it moved — because a measure has no way of telling you whether it improved for the reason you intended. Three explanations fit the same number. The form got easier, which is the intended one. Or the hardest applications stopped being submitted online and moved to the phone channel, so the online median improved by losing its slowest cases. Or a validation change now rejects incomplete submissions earlier, so half-finished attempts never enter the denominator. Only the first is a success; the second is displacement and the third is a measurement artefact. \n\nDistinguishing them costs one afternoon: check whether phone volume rose in the same period, and whether total submissions held steady. Here phone contacts rose 22% in the same window. The measure was real, the improvement was not — the effort had moved rather than reduced, and the providers most affected were the ones least able to absorb it. That is why the guardrail exists: not to be cautious, but because a headline measure with no counterweight can only ever tell you good news.",
+        bullets: [
+          "Ask of every improvement: what else would be true if this were real, and is it?",
+          "Displacement and denominator changes look identical to success in the headline figure.",
+          "A guardrail is chosen at the same time as the measure, because after the fact you will pick one that is already satisfied.",
+        ],
+        example: "The finding was not 'the change failed'. It was 'the change works for people who can complete it online, and we have made the service worse for those who cannot' — which is a different and far more useful thing to take to a governance forum.",
       },
     ],
     questions: [
@@ -931,6 +977,16 @@ export const modules: Module[] = [
           "If it cannot produce evidence that would change your next decision, it is not an MVP — it is just a small release.",
         ],
         sourceIds: ["deck", "dss"],
+      },
+          {
+        heading: "Worked reasoning: choosing which assumption to test first",
+        body: "A team has a validated problem and four solution ideas. There is money for one test before the funding decision. The weak move is to test the idea people like most, which produces a confirmation of enthusiasm and no new information. The slightly-less-weak move is to test whatever is cheapest to test, which optimises for effort rather than for what you would learn. Neither asks the only question that matters: which uncertainty, if resolved badly, would stop this being worth doing at all? \n\nList the assumptions the favoured option rests on, then place each one on two axes: how uncertain it is, and how much it would cost to be wrong. Assumptions that are certain do not need testing regardless of consequence. Assumptions that are uncertain but cheap to be wrong about can be resolved by building and observing. The ones worth an experiment sit in the corner where you genuinely do not know and the answer changes the decision. \n\nFor a proactive SMS notification the assumptions were: providers want it, contact data is good enough to reach them, messages will be understood without context, and the volume will not overwhelm the call centre when people ring to ask what the message meant. Desirability was near-certain from discovery. Contact-data quality was unknown and fatal — an SMS service that reaches 60% of providers is not a service. That was the test.",
+        bullets: [
+          "Uncertain and consequential is the only quadrant worth an experiment.",
+          "Cheapness is a tie-breaker between candidate tests, never the reason to choose one.",
+          "If you cannot name the result that would stop the work, you are not running a test.",
+        ],
+        example: "Contact data reached 71% of active providers, and the failures clustered in the smallest organisations. The service still went ahead — but with an assisted-channel fallback designed in from the start rather than discovered at Beta.",
       },
     ],
     questions: [
@@ -1187,6 +1243,16 @@ export const modules: Module[] = [
         ],
         sourceIds: ["deck", "svpg", "pichler"],
       },
+          {
+        heading: "Worked reasoning: the roadmap that promised dates it could not keep",
+        body: "The published roadmap shows four features with quarterly dates. Discovery has just invalidated the hypothesis behind the second one. The weak move is to keep the date and quietly change what ships under that name, which preserves confidence for one quarter and destroys it permanently the first time somebody notices. The other weak move is to stop publishing a roadmap, which reads as evasion and removes the only artefact stakeholders have for planning their own work. Both mistakes come from treating a roadmap as a commitment register rather than a statement of intent at a stated confidence. \n\nRebuild it around what you actually know. Work in the current increment has been refined, sized and started: you can commit to that, and dates are meaningful. Work in the next increment has a validated problem but unproven solutions: you can commit to the outcome and not the shape. Work beyond that is a direction. Publishing all three with the same visual weight and the same date format is the lie — not the dates themselves. \n\nThe invalidated feature moves out of the committed band and its outcome stays, with an honest note that the approach did not survive testing and the team is exploring others. The conversation with the sponsor then becomes about the outcome and the evidence rather than about a slipped date, which is a conversation you can actually have.",
+        bullets: [
+          "A roadmap is a confidence statement. Presenting three confidence levels in one format is what makes it a false promise.",
+          "'What would have to be true before a date is meaningful?' converts a date demand into a useful conversation.",
+          "Removing an approach while keeping its outcome shows the work is being steered, not abandoned.",
+        ],
+        example: "The sponsor's actual concern turned out to be a Ministerial commitment tied to the outcome, not the feature. Once that was on the table the team could propose a different route to the same outcome — which the date-defence conversation had been hiding for two months.",
+      },
     ],
     questions: [
       {
@@ -1355,6 +1421,16 @@ export const modules: Module[] = [
         heading: "Continuous does not mean chaotic",
         body: "Teams can explore upcoming opportunities while delivering validated work, provided both streams share outcomes, people and feedback. Reviews, operational data and research continuously update the opportunity and product backlogs. The loop is: discover problems or opportunities, define solutions, deliver value, measure outcomes, iterate and improve.",
         sourceIds: ["deck", "cdh", "svpg"],
+      },
+          {
+        heading: "Worked reasoning: the service that went Live and quietly decayed",
+        body: "A service launches, meets its targets, and the project closes. Eighteen months later completion is down 8% with no release in that period and nobody can say why. The weak reading is that the original design was wrong, which is both unfalsifiable and useless. The code did not change, so something around it did — and that is the whole argument for treating Live as a phase with an owner rather than as an ending. \n\nWork outward from what could have moved. Users change: a new cohort with different circumstances enters the service. Policy changes: an eligibility rule shifts and the guidance no longer matches the form. Upstream systems change: a register the service reads starts returning a field differently. Volume changes: a seasonal peak pushes a queue past a threshold nobody set an alarm on. Each is invisible to a team that no longer exists, and each is obvious within a week to an owner watching a small number of measures. \n\nHere it was policy. A rule change had added a condition the form asked about in language taken from the legislation, and completion fell among exactly the people the change was meant to help. No release had broken anything. The service had simply stopped matching the world, which is the normal condition of any service nobody is holding.",
+        bullets: [
+          "A measure that drifts without a release means the world changed, not the code.",
+          "Users, policy, upstream systems and volume — the four things that move underneath a stable service.",
+          "The Beta-to-Live handover is where ownership is either named or lost; everything above follows from which one happened.",
+        ],
+        example: "The fix was a wording change and took a day. Finding it took four months, because there was no owner, no measure being watched, and no cadence at which anyone would have looked.",
       },
     ],
     questions: [
@@ -1560,6 +1636,16 @@ export const modules: Module[] = [
           ],
         },
         sourceIds: ["deck"],
+      },
+          {
+        heading: "Worked reasoning: the Product Owner who became a courier",
+        body: "The delivery team asks a question in refinement. The Product Owner says they will find out, goes to the business area, returns two days later with an answer. This repeats. Velocity drops, the Product Owner is working late, and the obvious diagnosis is that they need better time management or the team should ask fewer questions. Both are wrong, and both blame a person for a structural fault. \n\nNobody has agreed who is allowed to decide what. In the absence of that agreement, every question becomes an escalation by default, and the Product Owner becomes a relay rather than a decision-maker. \n\nSort the questions from a fortnight of refinement into three piles and the shape appears. Some are reversible and local — the wording of a validation message, the order of two fields. Those should be decided in the room, by the people in it, and changed later if they are wrong. Some are business rules with a genuine owner: eligibility thresholds, retention periods. Those need a named person and an agreed response time, not an ad-hoc hunt. A few are genuinely strategic — whether to support a channel at all — and belong at a forum. The fix is one conversation naming which pile is which, and who holds the second. The Product Owner's week changes immediately, and so does the team's, because the default stops being 'ask and wait'.",
+        bullets: [
+          "Reversible and local decisions belong with the people closest to the work; the cost of being wrong is a later change.",
+          "Business rules need a named owner and an agreed response time, not goodwill.",
+          "If decision rights are unstated they default to whoever is most persistent or most available — neither of which is a design.",
+        ],
+        example: "Of 31 questions raised in one fortnight, 24 were reversible and local. The team had been treating all 31 the same way because nobody had ever said they could decide anything.",
       },
     ],
     questions: [
@@ -1814,6 +1900,16 @@ export const modules: Module[] = [
         ],
         sourceIds: ["deck", "dss"],
       },
+          {
+        heading: "Worked reasoning: the policy requirement that made things worse for users",
+        body: "Policy requires a declaration screen with specific wording before submission. Research shows providers do not understand it, skim it, and a proportion abandon at that point. The weak responses sit at two extremes. Refusing to implement it treats a legitimate policy instrument as an obstacle and is not a decision a product manager gets to make. Implementing it without comment discards evidence that the department paid to gather and would want. Neither is the job. \n\nSeparate the intent from the implementation, because a policy requirement almost always specifies both and only one of them is actually binding. The intent here is that providers make an informed declaration and that the department can demonstrate they did. The implementation is a particular screen with particular words. The evidence does not challenge the intent — it shows the implementation is failing to achieve it, since a declaration nobody understands is not informed consent, and the department's assurance position is weaker than it looks. \n\nThat reframes the conversation with the policy owner from 'we would like an exemption' to 'the current wording is not producing the thing you need, and here is what people did.' The move is to meet the intent with an evidence-informed design, keep the mandated wording where it must appear, and take the comprehension data back to the owner as a finding rather than a complaint.",
+        bullets: [
+          "Policy usually specifies both an intent and an implementation. Establish which is binding before proposing anything.",
+          "Evidence that an implementation fails its own intent is useful to the policy owner, not hostile to them.",
+          "Take friction data to the owner as a finding. An exemption request invites a no; a finding invites a conversation.",
+        ],
+        example: "The mandated sentence stayed, in a plain-language frame explaining what it meant and why. Comprehension went from 31% to 78% in testing, and the policy owner used the result to revise the standard wording department-wide.",
+      },
     ],
     questions: [
       {
@@ -1994,6 +2090,16 @@ export const modules: Module[] = [
         ],
         sourceIds: ["deck", "retrieval", "spacing", "techniques"],
       },
+          {
+        heading: "Worked reasoning: reporting a result you did not want",
+        body: "The headline measure improved 14%. Broken down, one cohort — providers using assistive technology — got materially worse. The board meets on Thursday and asked for the headline. The weak move is to report 14% and mention the cohort in an appendix, which is technically complete and functionally a lie, because the number that gets remembered is the one in the first sentence. The move that feels brave and is actually careless is to lead with the failure, which invites cancellation of work that is mostly succeeding. Neither serves the decision the board is there to make. \n\nLead with what changes what they do. The board's job is to decide whether to scale this to all providers next quarter. The 14% says scaling is worth considering; the cohort result says scaling now would extend a harm to a larger group, and that is decision-relevant in a way the headline is not. \n\nSo the sentence is: the intervention works, it is not yet safe to scale, here is what we need to establish first, and here is when we will know. That is not softening the finding — it is putting it where it acts. It also protects the work, because a board that learns about the cohort later, from somebody else, will not remember that it was in an appendix.",
+        bullets: [
+          "Lead with the thing that changes the decision in front of the audience, not the thing that is most flattering or most dramatic.",
+          "An average that hides a harmed group is not a summary; it is a different claim.",
+          "Say what you need to establish and by when. A finding without a next step reads as either panic or excuse.",
+        ],
+        example: "The board approved a four-week extension rather than the scale-up. The cause was a single component that had never been tested with a screen reader, and it was fixed inside that window — which a cancelled programme would not have been.",
+      },
     ],
     questions: [
       {
@@ -2130,6 +2236,54 @@ export const practiceQuestions: PracticeQuestion[] = modules.flatMap((module) =>
   // quizzes, so the 75% mastery threshold keeps its meaning.
   supplementaryQuestions,
 );
+
+/**
+ * Stage length, derived rather than declared.
+ *
+ * The `minutes` written against each stage were guesses, and they were wildly
+ * out: the course advertised "about 8 hours" against 5,852 words of lesson
+ * prose — roughly 27 minutes of reading. Stage 6 claimed 40 minutes for 190
+ * words. A hand-typed number cannot survive the content changing underneath it,
+ * and this one had not.
+ *
+ * So compute it. Reading at 220 words per minute for considered non-fiction,
+ * plus a minute for each knowledge-check question and two for each decision
+ * scenario — answering is deliberate work, and the per-option feedback is where
+ * most of the teaching happens. Rounded to five minutes, because the inputs do
+ * not justify more precision than that.
+ */
+const WORDS_PER_MINUTE = 220;
+const MINUTES_PER_QUESTION = 1;
+const MINUTES_PER_SCENARIO = 2;
+
+function countWords(text: string | undefined): number {
+  if (!text) return 0;
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+export function stageMinutes(module: Module): number {
+  let words = countWords(module.outcome) + countWords(module.coreIdea);
+  for (const section of module.sections) {
+    words += countWords(section.heading) + countWords(section.body) + countWords(section.example);
+    for (const bullet of section.bullets ?? []) words += countWords(bullet);
+    if (section.table) {
+      for (const head of section.table.head) words += countWords(head);
+      for (const row of section.table.rows) for (const cell of row) words += countWords(cell);
+    }
+  }
+  const raw =
+    words / WORDS_PER_MINUTE +
+    module.questions.length * MINUTES_PER_QUESTION +
+    module.scenarios.length * MINUTES_PER_SCENARIO;
+  return Math.max(5, Math.round(raw / 5) * 5);
+}
+
+// Overwrite the authored figures at load. Keeping the field means every view
+// that already reads `module.minutes` keeps working, and there is now exactly
+// one place the number can come from.
+for (const module of modules) {
+  module.minutes = stageMinutes(module);
+}
 
 export const totalMinutes = modules.reduce((sum, module) => sum + module.minutes, 0);
 

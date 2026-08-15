@@ -19,7 +19,7 @@ import {
   type ModuleProgress,
   type ProgressMap,
 } from "./state";
-import { Feedback, LessonTableView, PageIntro, ProgressBar, QuestionCard, SourceChips } from "./components";
+import { LessonBody, Feedback, LessonTableView, PageIntro, ProgressBar, QuestionCard, SourceChips } from "./components";
 import { stageIllustrations } from "./illustrations";
 
 /** Questions per stage attempt, sampled from that stage's pool of 8-9. */
@@ -451,7 +451,7 @@ export function ModuleView({
             </div>
             <div>
               <h2>{section.heading}</h2>
-              <p>{section.body}</p>
+              <LessonBody text={section.body} />
               {section.bullets && (
                 <ul>
                   {section.bullets.map((bullet) => (

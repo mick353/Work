@@ -2,7 +2,7 @@ import { Printer } from "lucide-react";
 import { CONTENT_REVIEWED, modules, sources, totalMinutes } from "./course";
 import { caseStudies, contrasts, fieldGuide, glossary, toolkitTemplates } from "./reference";
 import { estimateHours, scrollToSection, type View } from "./lib";
-import { LessonTableView, PageIntro } from "./components";
+import { LessonBody, LessonTableView, PageIntro } from "./components";
 import { SlideRangeLink } from "./slide-viewer";
 
 /**
@@ -122,7 +122,7 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
             {module.sections.map((section) => (
               <div key={section.heading} className="guide-lesson">
                 <h3>{section.heading}</h3>
-                <p>{section.body}</p>
+                <LessonBody text={section.body} />
                 {section.bullets && (
                   <ul>
                     {section.bullets.map((bullet) => (

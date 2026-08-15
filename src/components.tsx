@@ -61,6 +61,25 @@ export function Feedback({
   );
 }
 
+/**
+ * Lesson body text, split on blank lines.
+ *
+ * Sections used to be a sentence or two, so one <p> was enough. The
+ * worked-reasoning passages are 200-300 words, and a paragraph that long is a
+ * wall — the reader loses their place and skims. Authors can now use a blank
+ * line and get a real paragraph break.
+ */
+export function LessonBody({ text }: { text: string }) {
+  const paragraphs = text.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
+  return (
+    <>
+      {paragraphs.map((paragraph, index) => (
+        <p key={index}>{paragraph}</p>
+      ))}
+    </>
+  );
+}
+
 export function LessonTableView({ table }: { table: LessonTable }) {
   return (
     <div className="lesson-table-wrap">
