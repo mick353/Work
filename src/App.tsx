@@ -29,6 +29,7 @@ import { flashcards } from "./reference";
 import {
   clearStored,
   localDayKey,
+  matchView,
   parseView,
   scheduleNext,
   viewToHash,
@@ -239,7 +240,12 @@ export default function App() {
   }, [theme]);
 
   useEffect(() => {
-    const onHash = () => setView(parseView(window.location.hash));
+    // Only react to hashes that name a view. An in-page fragment — the skip
+    // link, a contents entry — must scroll the page, not re-route it.
+    const onHash = () => {
+      const next = matchView(window.location.hash);
+      if (next) setView(next);
+    };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);

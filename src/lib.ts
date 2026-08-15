@@ -47,13 +47,45 @@ export function viewToHash(view: View): string {
   return isModuleView(view) ? `${MODULE_HASH_PREFIX}${moduleIdFromView(view)}` : view;
 }
 
-export function parseView(rawHash: string): View {
+/**
+ * A hash that names a view, or null when it names something else.
+ *
+ * The app routes on the location hash, so an in-page fragment link — the skip
+ * link's `#main-content`, a contents entry's `#stage-5` — arrives here looking
+ * like a route. Collapsing those to "dashboard" is what made the guide's
+ * contents list throw you back to the home page, and did the same to anyone
+ * using the skip link. Returning null lets the caller leave them alone.
+ */
+export function matchView(rawHash: string): View | null {
   const hash = rawHash.replace(/^#\/?/, "");
   if (!hash) return "dashboard";
   if (hash.startsWith(MODULE_HASH_PREFIX)) {
     return `${MODULE_VIEW_PREFIX}${hash.slice(MODULE_HASH_PREFIX.length)}` as View;
   }
-  return (TOP_LEVEL_VIEWS as readonly string[]).includes(hash) ? (hash as View) : "dashboard";
+  return (TOP_LEVEL_VIEWS as readonly string[]).includes(hash) ? (hash as View) : null;
+}
+
+/** As above, but for first paint, where something has to be shown. */
+export function parseView(rawHash: string): View {
+  return matchView(rawHash) ?? "dashboard";
+}
+
+/**
+ * Scroll to a section of the current page and put focus there.
+ *
+ * Focus as well as scroll: scrolling alone moves the viewport but leaves the
+ * keyboard where it was, so the next Tab press jumps back to the list you came
+ * from. `tabIndex = -1` makes a heading focusable without adding it to the tab
+ * order, and it is cleared on blur so it does not linger.
+ */
+export function scrollToSection(id: string) {
+  const target = document.getElementById(id);
+  if (!target) return;
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
+  const heading = target.querySelector<HTMLElement>("h2, h3") ?? target;
+  heading.tabIndex = -1;
+  heading.focus({ preventScroll: true });
+  heading.addEventListener("blur", () => heading.removeAttribute("tabindex"), { once: true });
 }
 
 /* ------------------------------------------------------------------ *

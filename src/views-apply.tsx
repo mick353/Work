@@ -11,7 +11,7 @@ import {
   toolkitTemplates,
   type GlossaryEntry,
 } from "./reference";
-import { downloadFile, type View } from "./lib";
+import { downloadFile, scrollToSection, type View } from "./lib";
 import type { RubricMap, TextMap } from "./state";
 import { EmptyState, PageIntro, ProgressBar, SourceChips } from "./components";
 import { SlideRangeLink } from "./slide-viewer";
@@ -274,11 +274,12 @@ export function FieldGuide() {
         title="The reference half of the course"
         body="Phase names, principles, cadence, backlog fields and roles, in one place for lookup at work. Nothing here is assessed — it exists so you do not have to reopen the deck mid-meeting."
       />
+      {/* Buttons, not fragment links — the location hash is the router. */}
       <nav className="field-guide-nav" aria-label="Field guide sections">
         {fieldGuide.map((entry) => (
-          <a key={entry.id} href={`#${entry.id}`}>
+          <button key={entry.id} onClick={() => scrollToSection(entry.id)}>
             {entry.title}
-          </a>
+          </button>
         ))}
       </nav>
       <div className="field-guide">

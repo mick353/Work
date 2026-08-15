@@ -1,7 +1,7 @@
 import { Printer } from "lucide-react";
 import { CONTENT_REVIEWED, modules, sources, totalMinutes } from "./course";
 import { caseStudies, contrasts, fieldGuide, glossary, toolkitTemplates } from "./reference";
-import { estimateHours, type View } from "./lib";
+import { estimateHours, scrollToSection, type View } from "./lib";
 import { LessonTableView, PageIntro } from "./components";
 import { SlideRangeLink } from "./slide-viewer";
 
@@ -66,12 +66,21 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
         </p>
       </section>
 
+      {/*
+        Buttons, not <a href="#stage-1">.
+
+        The app routes on the location hash, so a fragment link is not an
+        anchor here — it is a route change. Clicking one set the hash to
+        "#stage-1", which matches no view, so the contents list threw you out
+        of the guide instead of moving you down it. Scroll the element into
+        view directly and leave the hash alone.
+      */}
       <nav className="guide-contents" aria-label="Guide contents">
         <h2>Contents</h2>
         <ol>
           {sections.map((section) => (
             <li key={section.id}>
-              <a href={`#${section.id}`}>{section.label}</a>
+              <button onClick={() => scrollToSection(section.id)}>{section.label}</button>
             </li>
           ))}
         </ol>

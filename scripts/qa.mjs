@@ -830,6 +830,54 @@ check(
   "Guide cover is hidden on screen",
   await page.locator(".guide-cover").evaluate((el) => getComputedStyle(el).display === "none"),
 );
+/*
+ * In-page jumps must not re-route the app.
+ *
+ * The app routes on the location hash, so <a href="#stage-5"> was not an
+ * anchor - it was a route matching nothing, and parseView collapsed anything
+ * unknown to "dashboard". The guide's contents list therefore threw you back
+ * to the home page, the field guide's jump list did the same, and so did the
+ * skip link, which is the first control a keyboard user reaches.
+ */
+const contentsEntry = page.locator(".guide-contents button").filter({ hasText: "Roles, teams" });
+check("Guide contents entries are controls, not fragment links", (await contentsEntry.count()) === 1);
+await contentsEntry.click();
+await page.waitForTimeout(1600);
+check(
+  "Jumping within the guide keeps you on the guide",
+  (await page.locator(".guide-page").count()) === 1 &&
+    (await page.evaluate(() => window.location.hash)).includes("guide"),
+  await page.evaluate(() => window.location.hash),
+);
+const stageTop = await page.evaluate(() =>
+  Math.round(document.getElementById("stage-7").getBoundingClientRect().top));
+check("The jump lands on the section, clear of the fixed header", stageTop > 60 && stageTop < 160, `top ${stageTop}px`);
+check(
+  "Focus follows the jump",
+  await page.evaluate(() => Boolean(document.activeElement?.closest("#stage-7"))),
+);
+
+await page.evaluate(() => { window.location.hash = "fieldguide"; });
+await page.waitForTimeout(500);
+await page.locator(".field-guide-nav button").nth(3).click();
+await page.waitForTimeout(1200);
+check("Field guide jump list keeps you on the field guide", (await page.locator(".field-guide").count()) === 1);
+
+// The skip link is plain HTML in the template, so it stays an anchor; the
+// router has to tolerate it rather than the link having to avoid the router.
+await page.evaluate(() => { window.location.hash = "glossary"; });
+await page.waitForTimeout(400);
+await page.evaluate(() => document.querySelector(".skip-link").click());
+await page.waitForTimeout(500);
+check(
+  "The skip link does not reset the view",
+  (await page.locator(".hero h1").count()) === 0,
+  "landing on the dashboard means the router swallowed the fragment",
+);
+
+await page.evaluate(() => { window.location.hash = "guide"; });
+await page.waitForTimeout(600);
+
 // A reading copy must not contain assessment.
 const guideBodyText = await page.locator(".guide-page").innerText();
 check(
