@@ -773,6 +773,48 @@ check(
   /Stage \d/.test(await page.locator(".diagnostic-result h2").innerText()),
 );
 
+/* -- errors drive the review queue -------------------------------- */
+
+/*
+ * The app had 122 questions and 92 flashcards on an SM-2 scheduler that never
+ * spoke to each other: a wrong answer changed a score and nothing else. Cards
+ * covering a missed question are now brought forward to due-now.
+ */
+await page.evaluate(() => { window.location.hash = "module/outcomes"; });
+await page.waitForSelector(".knowledge-check fieldset");
+const scheduledBefore = await page.evaluate(() => {
+  const raw = localStorage.getItem("product-practice-v2:reviews");
+  return raw ? Object.keys(JSON.parse(raw)).length : 0;
+});
+const recallGroups = page.locator(".knowledge-check fieldset");
+const recallCount = await recallGroups.count();
+for (let index = 0; index < recallCount; index += 1) {
+  await recallGroups.nth(index).locator(".answer-option").first().click();
+}
+await page.getByRole("button", { name: "Check my recall" }).click();
+await page.waitForTimeout(700);
+const scheduledAfter = await page.evaluate(() => {
+  const raw = localStorage.getItem("product-practice-v2:reviews");
+  return raw ? Object.keys(JSON.parse(raw)).length : 0;
+});
+check(
+  "A missed question schedules the cards that cover it",
+  scheduledAfter > scheduledBefore,
+  `${scheduledBefore} scheduled before, ${scheduledAfter} after`,
+);
+check(
+  "The learner is told the queue grew",
+  (await page.locator(".resurfaced-note").count()) === 1,
+  "a queue that grows silently is indistinguishable from one that does not work",
+);
+const resurfacedDueNow = await page.evaluate(() => {
+  const raw = localStorage.getItem("product-practice-v2:reviews");
+  const map = raw ? JSON.parse(raw) : {};
+  const now = Date.now();
+  return Object.values(map).filter((entry) => entry.due <= now).length;
+});
+check("Resurfaced cards are due immediately", resurfacedDueNow > 0, `${resurfacedDueNow} due now`);
+
 /* -- backup export and import ------------------------------------- */
 
 await page.getByRole("button", { name: "Learning settings" }).click();

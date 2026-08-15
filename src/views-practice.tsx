@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Brain, ChevronRight, RefreshCw, Trophy } from "lucide-react";
-import { findModule, practiceQuestions, type PracticeQuestion } from "./course";
+import { findModule, practiceQuestions, type PracticeQuestion, type Question } from "./course";
 import { FLASHCARD_KIND_LABEL, flashcards, type Flashcard } from "./reference";
 import { describeInterval, formatDue, shuffle, type Rating, type ReviewSchedule } from "./lib";
 import type { HistoryEntry, ReviewMap } from "./state";
@@ -195,13 +195,14 @@ export function Practice({
   best: number;
   setBest: (score: number) => void;
   salt: string;
-  onComplete: (entry: Omit<HistoryEntry, "at">) => void;
+  onComplete: (entry: Omit<HistoryEntry, "at">, missed?: Question[]) => number;
 }) {
   const [questions, setQuestions] = useState<PracticeQuestion[]>([]);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [results, setResults] = useState<{ question: PracticeQuestion; correct: boolean }[]>([]);
   const [finished, setFinished] = useState(false);
+  const [resurfaced, setResurfaced] = useState(0);
 
   const start = () => {
     setQuestions(shuffle(practiceQuestions).slice(0, PRACTICE_SIZE));
@@ -246,6 +247,12 @@ export function Practice({
               ? "Strong transfer. Revisit any rationale you could not have explained yourself before reading it."
               : "The mixed context exposed useful gaps. Review the relevant stages, then try another set."}
           </p>
+          {resurfaced > 0 && (
+            <p className="resurfaced-note">
+              {resurfaced} card{resurfaced === 1 ? "" : "s"} covering what you missed{" "}
+              {resurfaced === 1 ? "has" : "have"} been added to your review queue.
+            </p>
+          )}
           <div className="button-row">
             <button className="primary" onClick={start}>
               <RefreshCw size={17} aria-hidden="true" /> New set
@@ -287,7 +294,8 @@ export function Practice({
       const correctCount = nextResults.filter((item) => item.correct).length;
       const score = Math.round((correctCount / questions.length) * 100);
       if (score > best) setBest(score);
-      onComplete({ kind: "practice", score, correct: correctCount, total: questions.length });
+      const missed = nextResults.filter((item) => !item.correct).map((item) => item.question);
+      setResurfaced(onComplete({ kind: "practice", score, correct: correctCount, total: questions.length }, missed));
       setFinished(true);
     } else {
       setIndex((current) => current + 1);

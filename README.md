@@ -47,6 +47,10 @@ Also: a printable guide that reads as one continuous document, full-text search 
 
 ## Design decisions worth knowing
 
+**Errors drive the review queue.** Getting a question wrong brings forward the flashcards that cover it, so the queue is shaped by what you actually missed rather than by a fixed order. Matching is significant-word overlap within the same stage — deterministic, and explainable to a learner who asks why a card appeared. It moves the due date only, never the card's ease or lapse count, because rating a card the learner has not seen would corrupt it with data from a different exercise.
+
+**Answer options are equal in length as well as shuffled.** Position was fixed first, with a per-install seeded permutation. That did nothing about length: the correct answer was the longest option in 99 of 122 questions, so clicking the longest answer every time scored 81.1% against a 75% mastery threshold. All nine stages were rewritten — 320 option edits — and the QA suite now fails the build if the longest-option strategy scores above 40% or keys average more than 1.25x their distractors.
+
 **Answer options are shuffled per learner.** The permutation is seeded from the question id plus a per-install salt, so it is stable for you across reloads but differs between people. Position carries no information; the QA suite asserts this statistically across 40 simulated learners.
 
 **The diagnostic pool is separate** from the module quizzes and the mixed-practice pool, so a good diagnostic score means the ideas transfer rather than that you recognise the wording.

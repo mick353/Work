@@ -24,7 +24,8 @@ import {
   Wrench,
   X,
 } from "lucide-react";
-import { findModule, modules } from "./course";
+import { findModule, modules, type Question } from "./course";
+import { bringForward, cardsToResurface } from "./recall";
 import { flashcards } from "./reference";
 import {
   clearStored,
@@ -243,12 +244,34 @@ export default function App() {
     setCollapsedNav((current) => (current[owner] ? { ...current, [owner]: false } : current));
   }, [view, setCollapsedNav]);
 
+  /**
+   * Record an attempt, and let the errors drive the review queue.
+   *
+   * Previously this only appended to history: getting a question wrong changed
+   * a score and nothing else, so the one idea you had just failed to apply was
+   * no more likely to come back than any other. The cards covering a missed
+   * question are now brought forward to due-now.
+   *
+   * Returns how many cards were resurfaced so the view can say so — a queue
+   * that grows silently is indistinguishable from one that does not work.
+   */
   const recordAttempt = useCallback(
-    (entry: Omit<HistoryEntry, "at">) => {
+    (entry: Omit<HistoryEntry, "at">, missed: Question[] = []) => {
       // Capped so a heavy user cannot grow local storage without bound.
       setHistory((current) => [...current, { ...entry, at: Date.now() }].slice(-400));
+
+      const cards = cardsToResurface(missed);
+      if (cards.length) {
+        setReviews((current) => {
+          const now = Date.now();
+          const next = { ...current };
+          for (const card of cards) next[card.id] = bringForward(current[card.id], now);
+          return next;
+        });
+      }
+      return cards.length;
     },
-    [setHistory],
+    [setHistory, setReviews],
   );
 
   useEffect(() => {

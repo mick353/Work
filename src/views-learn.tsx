@@ -7,7 +7,7 @@ import {
   Printer,
   RefreshCw,
 } from "lucide-react";
-import { modules, quizPoolFor, totalMinutes, type Module } from "./course";
+import { modules, quizPoolFor, totalMinutes, type Module, type Question } from "./course";
 import { caseStudies, contrasts, diagnosticQuestions, supplementaryQuestions } from "./reference";
 import { SlideRangeLink } from "./slide-viewer";
 import { daysAgoKey, estimateHours, shuffle, type View } from "./lib";
@@ -312,7 +312,7 @@ export function ModuleView({
   update: (changes: Partial<ModuleProgress>) => void;
   navigate: Navigate;
   salt: string;
-  onQuizScored: (entry: Omit<HistoryEntry, "at">) => void;
+  onQuizScored: (entry: Omit<HistoryEntry, "at">, missed?: Question[]) => number;
 }) {
   // Each attempt draws a fresh sample from the stage's pool, so retaking is a
   // new test rather than a memory check of the same five items.
@@ -332,6 +332,7 @@ export function ModuleView({
 
   const quizAnswered = quizQuestions.filter((question) => answers[question.id] !== undefined).length;
   const [quizChased, setQuizChased] = useState(false);
+  const [resurfaced, setResurfaced] = useState(0);
 
   const submitQuiz = () => {
     // Point at the first gap rather than refusing to act. Same rule as the
@@ -347,7 +348,8 @@ export function ModuleView({
     const correct = quizQuestions.filter((question) => answers[question.id] === question.answer).length;
     const score = Math.round((correct / quizQuestions.length) * 100);
     update({ quizScore: Math.max(progress.quizScore, score), attempts: progress.attempts + 1 });
-    onQuizScored({ kind: "quiz", moduleId: module.id, score, correct, total: quizQuestions.length });
+    const missed = quizQuestions.filter((question) => answers[question.id] !== question.answer);
+    setResurfaced(onQuizScored({ kind: "quiz", moduleId: module.id, score, correct, total: quizQuestions.length }, missed));
     setQuizSubmitted(true);
   };
 
@@ -584,6 +586,12 @@ export function ModuleView({
             <strong>
               You scored {lastQuizScore}% this attempt. Best {progress.quizScore}%.
             </strong>
+            {resurfaced > 0 && (
+              <p className="resurfaced-note">
+                {resurfaced} card{resurfaced === 1 ? "" : "s"} covering what you missed{" "}
+                {resurfaced === 1 ? "has" : "have"} been added to your review queue.
+              </p>
+            )}
             <button className="secondary" onClick={retryQuiz}>
               <RefreshCw size={16} aria-hidden="true" /> Try these again
             </button>
@@ -776,7 +784,7 @@ export function Diagnostic({
 }: {
   navigate: Navigate;
   salt: string;
-  onComplete: (entry: Omit<HistoryEntry, "at">) => void;
+  onComplete: (entry: Omit<HistoryEntry, "at">, missed?: Question[]) => number;
 }) {
   const [seed, setSeed] = useState(0);
   const questions = useMemo(
@@ -802,6 +810,7 @@ export function Diagnostic({
 
   /** Set once you have tried to submit with gaps, so the gaps get marked. */
   const [chased, setChased] = useState(false);
+  const [resurfacedCards, setResurfacedCards] = useState(0);
 
   const submit = () => {
     const firstGap = questions.findIndex((question) => answers[question.id] === undefined);
@@ -815,12 +824,13 @@ export function Diagnostic({
       return;
     }
     setComplete(true);
-    onComplete({
+    const missed = questions.filter((question) => answers[question.id] !== question.answer);
+    setResurfacedCards(onComplete({
       kind: "diagnostic",
       score: Math.round((correct / questions.length) * 100),
       correct,
       total: questions.length,
-    });
+    }, missed));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -899,6 +909,12 @@ export function Diagnostic({
                   ? "You answered every question correctly. Start at the integration stage and use the capstone to pressure-test the whole chain."
                   : recommendation.outcome}
               </p>
+              {resurfacedCards > 0 && (
+                <p className="resurfaced-note">
+                  {resurfacedCards} card{resurfacedCards === 1 ? "" : "s"} covering what you missed{" "}
+                  {resurfacedCards === 1 ? "has" : "have"} been added to your review queue.
+                </p>
+              )}
               <div className="button-row">
                 <button className="primary" onClick={() => navigate(`module:${recommendation.id}`)}>
                   Begin here

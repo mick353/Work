@@ -1217,3 +1217,11 @@ p { color: var(--muted); line-height: 1.65; }
 .diagnostic-submit { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; }
 .diagnostic-progress { margin: 0; color: var(--muted); font-size: 14px; }
 @media (prefers-reduced-motion: reduce) { .diagnostic-slot { transition: none; } }
+
+/* A queue that grows silently is indistinguishable from one that does not work. */
+.resurfaced-note {
+  display: inline-block; margin: 14px 0 0; padding: 10px 16px;
+  border-radius: 10px; border: 1px solid color-mix(in srgb, var(--accent-3) 35%, transparent);
+  background: color-mix(in srgb, var(--accent-3) 10%, transparent);
+  color: var(--ink); font-size: 14px; line-height: 1.5;
+}
