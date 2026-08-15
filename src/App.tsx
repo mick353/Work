@@ -76,9 +76,16 @@ const MOBILE_QUERY = "(max-width: 820px)";
  * sits with practice because you look at it after drilling, not with the
  * reference material it superficially resembles.
  *
- * Apply and Reference start collapsed: they are the occasional-use halves, and
- * the labels stay visible so nothing is actually hidden. Learn and Practise —
- * the daily loop — start open. Navigating into a collapsed group opens it.
+ * Everything starts EXPANDED. An earlier version started Apply and Reference
+ * collapsed to win back vertical space, on the reasoning that their labels
+ * stayed visible so nothing was really hidden. That reasoning failed its first
+ * contact with a user: the person who commissioned the guide could not find it
+ * in the menu, because "Read the guide" was inside a collapsed group.
+ *
+ * A sidebar that scrolls is a small cost. A destination nobody can find is not
+ * a small cost. The grouping already fixed the real problem — everything
+ * looking equally important — and collapsing stays available for anyone who
+ * wants to tidy it away, with the choice remembered.
  */
 type NavGroup = {
   id: string;
@@ -117,7 +124,7 @@ const NAV_GROUPS: NavGroup[] = [
     id: "reference",
     label: "Reference",
     items: [
-      { id: "guide", label: "Read the guide", icon: <FileText size={18} aria-hidden="true" /> },
+      { id: "guide", label: "Complete guide", icon: <FileText size={18} aria-hidden="true" /> },
       { id: "deck", label: "Source deck", icon: <Presentation size={18} aria-hidden="true" /> },
       { id: "fieldguide", label: "DES field guide", icon: <BookMarked size={18} aria-hidden="true" /> },
       { id: "glossary", label: "Glossary", icon: <BookA size={18} aria-hidden="true" /> },
@@ -127,7 +134,16 @@ const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
-const DEFAULT_COLLAPSED: Record<string, boolean> = { apply: true, reference: true };
+const DEFAULT_COLLAPSED: Record<string, boolean> = {};
+
+/*
+ * The key is versioned because the DEFAULT changed. Anyone who had already
+ * loaded the app has { apply: true, reference: true } saved, and a new default
+ * does nothing for them — they would still be missing the groups this change
+ * exists to reveal. A new key gives everyone the new default once, and leaves
+ * any deliberate collapsing they do from here on intact.
+ */
+const NAV_STATE_KEY = "nav-collapsed-v2";
 
 /** Which group owns a view, so navigating into a collapsed one opens it. */
 function groupForView(view: View): string {
@@ -207,7 +223,7 @@ export default function App() {
   const [history, setHistory, overwriteHistory] = useStoredState<HistoryEntry[]>("history", []);
   const [briefId, setBriefId] = useStoredState<string>("capstone-brief", "provider");
   const [collapsedNav, setCollapsedNav] = useStoredState<Record<string, boolean>>(
-    "nav-collapsed",
+    NAV_STATE_KEY,
     DEFAULT_COLLAPSED,
   );
 
@@ -738,7 +754,7 @@ const SHORTCUTS: { key: string; label: string }[] = [
   { key: "C", label: "Worked cases" },
   { key: "K", label: "Capstone" },
   { key: "F", label: "DES field guide" },
-  { key: "E", label: "Read the guide" },
+  { key: "E", label: "Complete guide" },
   { key: "V", label: "Source deck" },
   { key: "S", label: "Search" },
   { key: "?", label: "Show or hide this panel" },

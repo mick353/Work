@@ -359,9 +359,24 @@ check(
   ["learn", "practise", "apply", "reference"].every((label) => normalisedGroups.includes(label)),
   groupLabels.join(" | "),
 );
+/*
+ * Every group starts open. Collapsing Apply and Reference by default hid
+ * "Read the guide" well enough that the person who asked for the guide could
+ * not find it. Nothing in the sidebar may start hidden.
+ */
 check(
-  "Occasional-use groups start collapsed",
-  (await page.locator('.nav-section-header[aria-expanded="false"]').count()) === 2,
+  "No navigation group starts collapsed",
+  (await page.locator('.nav-section-header[aria-expanded="false"]').count()) === 0,
+);
+const visibleDestinations = await page.locator(".sidebar .nav-section nav button").count();
+check(
+  "Every destination is present in the sidebar on arrival",
+  visibleDestinations === 23,
+  `${visibleDestinations} of 23 (14 destinations + 9 stages)`,
+);
+check(
+  "The complete guide is reachable from the sidebar without opening anything",
+  (await page.getByRole("button", { name: "Complete guide", exact: true }).count()) === 1,
 );
 /*
  * The real requirement is not that the whole sidebar fits — the nine-stage
