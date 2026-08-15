@@ -330,7 +330,20 @@ export function ModuleView({
 
   const state = masteryState(progress, module.scenarios.length);
 
+  const quizAnswered = quizQuestions.filter((question) => answers[question.id] !== undefined).length;
+  const [quizChased, setQuizChased] = useState(false);
+
   const submitQuiz = () => {
+    // Point at the first gap rather than refusing to act. Same rule as the
+    // diagnostic: the button must always do something the learner can use.
+    const firstGap = quizQuestions.findIndex((question) => answers[question.id] === undefined);
+    if (firstGap !== -1) {
+      setQuizChased(true);
+      const slot = document.getElementById(`quiz-q${firstGap + 1}`);
+      slot?.scrollIntoView({ behavior: "smooth", block: "center" });
+      slot?.querySelector<HTMLElement>("input, button")?.focus({ preventScroll: true });
+      return;
+    }
     const correct = quizQuestions.filter((question) => answers[question.id] === question.answer).length;
     const score = Math.round((correct / quizQuestions.length) * 100);
     update({ quizScore: Math.max(progress.quizScore, score), attempts: progress.attempts + 1 });
@@ -341,6 +354,7 @@ export function ModuleView({
   const retryQuiz = () => {
     setAnswers({});
     setQuizSubmitted(false);
+    setQuizChased(false);
     setQuizAttempt((n) => n + 1);
   };
 
@@ -527,25 +541,44 @@ export function ModuleView({
           shuffled — so retaking is a fresh test, not a memory check.
         </p>
         {quizQuestions.map((question, index) => (
-          <QuestionCard
+          <div
             key={question.id}
-            question={question}
-            number={index + 1}
-            total={quizQuestions.length}
-            salt={salt}
-            selected={answers[question.id] ?? null}
-            onSelect={(choice) => setAnswers((current) => ({ ...current, [question.id]: choice }))}
-            submitted={quizSubmitted}
-          />
+            id={`quiz-q${index + 1}`}
+            className={`diagnostic-slot ${
+              quizChased && !quizSubmitted && answers[question.id] === undefined ? "unanswered" : ""
+            }`}
+          >
+            <QuestionCard
+              question={question}
+              number={index + 1}
+              total={quizQuestions.length}
+              salt={salt}
+              selected={answers[question.id] ?? null}
+              onSelect={(choice) => setAnswers((current) => ({ ...current, [question.id]: choice }))}
+              submitted={quizSubmitted}
+            />
+          </div>
         ))}
         {!quizSubmitted ? (
-          <button
-            className="primary"
-            disabled={quizQuestions.some((question) => answers[question.id] === undefined)}
-            onClick={submitQuiz}
-          >
-            Check my recall
-          </button>
+          /*
+            Always enabled. The diagnostic had the identical construction —
+            `disabled` until every question was answered, with opacity as the
+            only signal — and it read as a broken button. A click that explains
+            itself beats a click that is silently swallowed.
+          */
+          <div className="diagnostic-submit">
+            <button className="primary" onClick={submitQuiz}>
+              Check my recall
+              <ChevronRight size={18} aria-hidden="true" />
+            </button>
+            <p className="diagnostic-progress" role="status" aria-live="polite">
+              {quizAnswered === quizQuestions.length
+                ? `All ${quizQuestions.length} answered.`
+                : `${quizAnswered} of ${quizQuestions.length} answered${
+                    quizChased ? ` — ${quizQuestions.length - quizAnswered} still to go, highlighted above.` : "."
+                  }`}
+            </p>
+          </div>
         ) : (
           <div className="quiz-result" role="status" aria-live="polite">
             <strong>
@@ -648,9 +681,11 @@ export function ModuleView({
           artefact prompts. Not the lesson prose — that is for reading, not
           for pinning up. */}
       <section className="stage-print-summary" aria-hidden="true">
+        {/* h2, not h1: the visible stage heading already owns the h1 on this
+            page, and two of them breaks the document outline. */}
         <header>
           <span>Stage {module.number} · Product Practice</span>
-          <h1>{module.title}</h1>
+          <h2>{module.title}</h2>
           <p>{module.subtitle}</p>
         </header>
         <div className="print-core">

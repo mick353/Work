@@ -282,11 +282,7 @@ export const modules: Module[] = [
         id: "thinking-q1",
         moduleId: "thinking",
         prompt: "Which statement best distinguishes a product from a project?",
-        options: [
-          "A product has ongoing ownership and is improved against outcomes; a project is a temporary delivery structure",
-          "A product uses Agile while a project uses waterfall",
-          "A product is digital while a project can include policy",
-          "A product has no fixed constraints"],
+        options: [ "A product has ongoing ownership and is improved against outcomes", "A product uses Agile delivery while a project uses waterfall planning", "A product is digital while a project can also include policy work", "A product has no fixed constraints on time, cost or scope"],
         answer: 0,
         optionNotes: [
           "",
@@ -300,7 +296,7 @@ export const modules: Module[] = [
         id: "thinking-q2",
         moduleId: "thinking",
         prompt: "A list containing every stakeholder's requested feature is primarily…",
-        options: [ "A product strategy", "An unmade set of choices", "A measurable outcome","A product vision"],
+        options: [ "A product strategy", "An unmade set of choices", "A measurable outcome set", "A product vision statement"],
         answer: 1,
         optionNotes: [
           "Strategy requires focus and trade-offs. A list that accommodates everyone has made no trade-off.",
@@ -314,11 +310,7 @@ export const modules: Module[] = [
         moduleId: "thinking",
         prompt:
           "Your department funds projects, runs a project framework and reports on delivery milestones. What does the deck say this means for product management?",
-        options: [
-          "Product management applies only to the digital components of the project",
-          "Product management cannot be applied until the funding model changes",
-          "Product thinking can operate inside project delivery, and partial adoption is worthwhile",
-          "The project framework should be abandoned for a product framework"],
+        options: [ "Product management applies only to the digital components of the project itself", "Product management cannot be applied until the departmental funding model changes", "Product thinking can operate inside project delivery, and partial adoption is worthwhile", "The project framework should be abandoned entirely for a product framework"],
         answer: 2,
         optionNotes: [
           "Whole-of-service thinking is the point. Restricting product practice to the digital layer reproduces the problem it is meant to solve.",
@@ -332,7 +324,7 @@ export const modules: Module[] = [
         id: "thinking-q4",
         moduleId: "thinking",
         prompt: "In the shift-in-thinking pairs, what replaces 'requirements'?",
-        options: [ "Epics", "Acceptance criteria","Roadmaps", "Problems"],
+        options: [ "Feature epics", "Acceptance criteria", "Roadmap items", "Problems to solve"],
         answer: 3,
         optionNotes: [
           "An epic is a backlog container. It can carry a requirement mindset just as easily as an outcome mindset.",
@@ -350,11 +342,7 @@ export const modules: Module[] = [
         context:
           "Funding and the delivery date are fixed. A senior stakeholder says discovery is pointless because the team must deliver the approved scope.",
         prompt: "What is the strongest product-management response?",
-        options: [
-          "Remove all discovery and ask for detailed requirements",
-          "Reject the project because product work cannot operate under constraints",
-          "Use bounded discovery to test the riskiest assumptions and prioritise value within the approved constraints",
-          "Promise every requested feature and measure success after closure"],
+        options: [ "Remove all discovery and ask the business for detailed requirements up front", "Reject the project outright because product work cannot operate under these constraints", "Use bounded discovery to test the riskiest assumptions within the approved constraints", "Promise every requested feature and measure success after the project closes"],
         answer: 2,
         optionNotes: [
           "This guarantees the approved scope is built exactly as imagined, including whichever parts are wrong. It converts a delivery risk into a certainty.",
@@ -370,11 +358,7 @@ export const modules: Module[] = [
         context:
           "You inherit a service with a clear vision statement, a 40-item feature list and no stated priorities. Every item has an internal sponsor and the team is delivering roughly in the order requests arrived.",
         prompt: "What is the first thing to establish?",
-        options: [
-          "A steering committee vote to rank the 40 items",
-          "A commitment to deliver the top 20 items this financial year",
-          "A detailed estimate for all 40 items so the sponsors can see the total cost",
-          "The two or three problems that most block the vision, and what will therefore be deferred"],
+        options: [ "A steering committee vote to rank all forty of the items", "A commitment to deliver the top twenty items this financial year", "A detailed estimate for all forty items so the sponsors can see the total cost", "The two or three problems that most block the vision, and what will be deferred"],
         answer: 3,
         optionNotes: [
           "A vote ranks preferences, not value. It converts the loudest voice into a number and gives the result false authority.",
@@ -535,11 +519,7 @@ export const modules: Module[] = [
         id: "discovery-q1",
         moduleId: "discovery",
         prompt: "Which is the best problem statement?",
-        options: [
-          "Providers cannot reliably determine application progress and make avoidable support calls, increasing effort and uncertainty",
-          "We need an application-status dashboard",
-          "The old system is bad",
-          "Build automated notifications by October"],
+        options: [ "Providers cannot reliably determine application progress and make avoidable calls", "We need an application-status dashboard built for providers", "The old system is bad and providers dislike using it", "Build automated status notifications by the end of October this year"],
         answer: 0,
         optionNotes: [
           "",
@@ -571,7 +551,7 @@ export const modules: Module[] = [
         moduleId: "discovery",
         prompt:
           "A provider says: 'I need the weekly reconciliation spreadsheet emailed to me every Monday.' The spreadsheet exists only because two departmental systems do not talk to each other. What kind of need is this?",
-        options: [ "A stated need that is also a created need", "A current experience only", "A viability constraint","An unstated need"],
+        options: [ "A stated need that is also a created need", "A description of the current experience only", "A viability constraint on the service", "An unstated need the provider has not articulated"],
         answer: 0,
         optionNotes: [
           "",
@@ -603,11 +583,7 @@ export const modules: Module[] = [
         context:
           "Analytics show users abandon a form at the identity step. Stakeholders assume the page needs clearer instructions.",
         prompt: "What should the team do next?",
-        options: [
-          "Treat the drop-off rate as proof of the cause",
-          "Rewrite the instructions immediately",
-          "Observe representative users and inspect error and support data before choosing an intervention",
-          "Remove identity verification"],
+        options: [ "Treat the drop-off rate as proof of the underlying cause", "Rewrite the instructions immediately and measure the effect afterwards", "Observe representative users and inspect error and support data first", "Remove the identity verification step from the journey"],
         answer: 2,
         optionNotes: [
           "Analytics tell you where users stop, never why. Drop-off is the symptom the investigation starts from.",
@@ -623,11 +599,7 @@ export const modules: Module[] = [
         context:
           "A discovery report lands on your desk. It is 60 pages, beautifully produced, and concludes with a recommendation to build a mobile app. The research section contains 14 interviews, none of which mention mobile.",
         prompt: "What is the most useful critique?",
-        options: [
-          "The interviews should have asked directly about mobile preferences",
-          "The sample size is too small to support any conclusion",
-          "The report should have been shorter",
-          "The recommendation is not traceable to the evidence, and discovery should not be recommending a solution at all"],
+        options: [ "The interviews should have asked directly about mobile preferences", "The sample size is far too small to support any firm conclusion at all", "The report should have been considerably shorter", "The recommendation is not traceable to the evidence, and discovery should not recommend solutions"],
         answer: 3,
         optionNotes: [
           "Asking users to choose a channel invites them to design for you. Stated channel preferences are weak evidence compared with observed behaviour.",
@@ -745,11 +717,8 @@ export const modules: Module[] = [
         id: "outcomes-q1",
         moduleId: "outcomes",
         prompt: "Which is a key result rather than an action or output?",
-        options: [
-          "Launch a new portal",
-          "Run five user interviews",
-          "Reduce median completion time from 18 to 12 minutes by June",
-          "Create a roadmap"],
+        options: [ "Launch the redesigned provider portal to every user group by June", "Run five discovery interviews with providers before the June release",
+          "Reduce median completion time from 18 to 12 minutes by June", "Create a delivery roadmap covering the next three quarters"],
         answer: 2,
         optionNotes: [
           "A launch is an output. It can happen on time and change nothing.",
@@ -762,10 +731,7 @@ export const modules: Module[] = [
         id: "outcomes-q2",
         moduleId: "outcomes",
         prompt: "Why pair an outcome measure with a guardrail?",
-        options: [
-          "To avoid having to set a baseline",
-          "To convert an output into a strategy",
-          "To make the dashboard more comprehensive",
+        options: [ "To avoid the effort of agreeing a baseline before delivery starts", "To convert a delivery output into a strategic objective", "To make the reporting dashboard look more comprehensive",
           "To detect harmful trade-offs or displaced problems"],
         answer: 3,
         optionNotes: [
@@ -782,9 +748,7 @@ export const modules: Module[] = [
         prompt: "Under the deck's grading scale, what does a grade of 2 mean?",
         options: [
           "Made progress, but fell short of expected results",
-          "Sufficient achievement against expected results",
-          "Exceeded expected results",
-          "No progress against expected results"],
+          "Sufficient achievement against expected results", "Exceeded the expected results by a clear margin this quarter", "No measurable progress against the expected results"],
         answer: 0,
         optionNotes: [
           "",
@@ -798,11 +762,8 @@ export const modules: Module[] = [
         id: "outcomes-q4",
         moduleId: "outcomes",
         prompt: "Which pairing correctly matches an indicator to its type?",
-        options: [
-          "Form completion rate — lagging indicator",
-          "Feature usage in the first fortnight — leading indicator",
-          "Number of releases shipped — lagging indicator",
-          "Customer satisfaction score — leading indicator"],
+        options: [ "Form completion rate measured at quarter end — lagging indicator",
+          "Feature usage in the first fortnight — leading indicator", "Number of releases shipped this quarter — lagging indicator", "Customer satisfaction score after release — leading indicator"],
         answer: 1,
         optionNotes: [
           "Completion rate is leading — it moves early and predicts the later outcome.",
@@ -820,10 +781,7 @@ export const modules: Module[] = [
         context: "A team launches status notifications and wants to know whether they created value.",
         prompt: "Which measure set is strongest?",
         options: [
-          "Successful self-service, avoidable status-call rate, user comprehension and unresolved-case escalation",
-          "Number of notifications sent",
-          "Release delivered on date and on budget",
-          "Status page views"],
+          "Successful self-service, avoidable status-call rate, user comprehension and unresolved-case escalation", "Number of notifications sent, emails opened and portal sessions started each week", "Release delivered on the agreed date, within the agreed budget and to the scope signed off at planning", "Status page views, unique visitors and average time spent on the page"],
         answer: 0,
         optionNotes: [
           "",
@@ -839,11 +797,7 @@ export const modules: Module[] = [
         context:
           "Your key result is 'reduce avoidable status calls by 30%'. Two months in, calls are down 34%. Support tells you the improvement began the week the phone menu was restructured to route status enquiries to a callback queue with a four-day wait.",
         prompt: "What is the correct reading?",
-        options: [
-          "The key result has been met and the objective can be closed",
-          "The measure has been moved by displacement rather than by resolution, and the missing guardrail is the real finding",
-          "The key result should be raised to 50% since progress is ahead of schedule",
-          "The phone menu change should be reversed to isolate the product's effect"],
+        options: [ "The key result has been met and the objective can now be closed off", "Displacement, not resolution, moved the measure — the missing guardrail is the finding", "The key result should be raised to 50% since progress is already ahead of schedule", "The phone menu change should be reversed so the product's true effect can be isolated"],
         answer: 1,
         optionNotes: [
           "The number moved; the problem did not. Closing here would bank an improvement that users experienced as a four-day wait.",
@@ -984,11 +938,8 @@ export const modules: Module[] = [
         id: "exploration-q1",
         moduleId: "exploration",
         prompt: "What is the best definition of an MVP in this context?",
-        options: [
-          "Whatever scope fits before the deadline",
-          "The cheapest possible release",
-          "The smallest coherent test that produces evidence about value and risk",
-          "A complete product with fewer features"],
+        options: [ "Whatever scope happens to fit in the time before the announced deadline", "The cheapest possible release that can be shipped",
+          "The smallest coherent test that produces evidence about value and risk", "A complete product delivered with fewer features than planned"],
         answer: 2,
         optionNotes: [
           "Deadline-driven scope is a delivery constraint. It says nothing about what the release is designed to find out.",
@@ -1002,10 +953,7 @@ export const modules: Module[] = [
         id: "exploration-q2",
         moduleId: "exploration",
         prompt: "Which experiment best tests technical feasibility?",
-        options: [
-          "A stakeholder vote on the preferred option",
-          "A persona workshop",
-          "A satisfaction survey before release",
+        options: [ "A stakeholder vote to decide the preferred technical option", "A persona workshop run with the delivery team and the designers", "A satisfaction survey run with users before the release",
           "A technical spike against representative interfaces and data"],
         answer: 3,
         optionNotes: [
@@ -1038,10 +986,7 @@ export const modules: Module[] = [
         id: "exploration-q4",
         moduleId: "exploration",
         prompt: "When is an A/B test the appropriate validation method?",
-        options: [
-          "When you need to test whether a legacy integration is achievable",
-          "When you need to decide which idea stakeholders prefer",
-          "When you need to understand why users behave a certain way",
+        options: [ "When you need to test whether a legacy integration is achievable within the budget", "When you need to decide which of the ideas stakeholders prefer most", "When you need to understand why users behave in a particular way",
           "When you need to compare the effect of variants on a measure at sufficient scale"],
         answer: 3,
         optionNotes: [
@@ -1061,10 +1006,7 @@ export const modules: Module[] = [
           "The team believes SMS notifications will reduce calls, but policy limits the detail a message may contain and provider contact data may be stale.",
         prompt: "What is the best first test?",
         options: [
-          "Test message comprehension, contact-data quality and operational handling with a small controlled cohort",
-          "Ask executives whether they prefer SMS",
-          "Choose email instead because it is cheaper",
-          "Build the full integration"],
+          "Test message comprehension, contact-data quality and operational handling with a small controlled cohort", "Ask executives whether they would prefer SMS over email for this", "Choose email instead because it is cheaper to run and already integrated with the existing provider records", "Build the full integration and release it to every provider at once"],
         answer: 0,
         optionNotes: [
           "",
@@ -1080,11 +1022,7 @@ export const modules: Module[] = [
         context:
           "A workshop generated 30 ideas. The team voted with dot stickers and the top-ranked idea is a chatbot. The two engineers present did not vote and have since said the required content simply does not exist in any structured form.",
         prompt: "What should happen next?",
-        options: [
-          "Discard the chatbot and take the second-ranked idea",
-          "Treat the vote as an input, then evaluate the shortlist against the outcome and the three lenses, starting with the feasibility signal already raised",
-          "Run the workshop again with a better voting method",
-          "Proceed with the chatbot — it has the clearest mandate from the workshop"],
+        options: [ "Discard the chatbot entirely and take the second-ranked idea from the workshop", "Treat the vote as an input, then test the shortlist against the outcome and the three lenses", "Run the workshop again with a better voting method and a wider group", "Proceed with the chatbot — it has the clearest mandate from everyone who attended the workshop"],
         answer: 1,
         optionNotes: [
           "Rank order from the same flawed process has the same problem. The method is the issue, not the winner.",
@@ -1256,10 +1194,7 @@ export const modules: Module[] = [
         moduleId: "delivery",
         prompt: "How does the Scrum Guide describe the Product Backlog?",
         options: [
-          "An emergent, ordered list of what is needed to improve the product",
-          "A release contract with stakeholders",
-          "A fixed requirements baseline agreed at the start",
-          "The Product Owner's private task list"],
+          "An emergent, ordered list of what is needed to improve the product", "A release contract agreed with stakeholders at the start", "A fixed requirements baseline agreed at the start of the delivery phase", "The Product Owner's private list of outstanding tasks"],
         answer: 0,
         optionNotes: [
           "",
@@ -1273,11 +1208,8 @@ export const modules: Module[] = [
         id: "delivery-q2",
         moduleId: "delivery",
         prompt: "In WSJF, a higher score generally indicates…",
-        options: [
-          "A guaranteed return on investment",
-          "High relative cost of delay compared with job size",
-          "The largest job",
-          "The most senior sponsor"],
+        options: [ "A guaranteed return on the investment the team has made",
+          "High relative cost of delay compared with job size", "The largest job in the backlog by size", "The most senior sponsor behind the request"],
         answer: 1,
         optionNotes: [
           "WSJF sequences relative economic urgency. It forecasts nothing and guarantees less.",
@@ -1308,7 +1240,7 @@ export const modules: Module[] = [
         id: "delivery-q4",
         moduleId: "delivery",
         prompt: "Which field is required on a feature but not on a story?",
-        options: [ "Area path","Story points", "Iteration path", "In/out of scope and feature measurement"],
+        options: [ "Area path and the owning team", "Story points as estimated by the delivery team", "Iteration path for the current sprint", "In/out of scope and feature measurement"],
         answer: 3,
         optionNotes: [
           "Area path is a story-level field.",
@@ -1322,9 +1254,7 @@ export const modules: Module[] = [
         id: "delivery-q5",
         moduleId: "delivery",
         prompt: "In the continuous discovery and delivery model, what is product management working on while teams deliver PI N?",
-        options: [
-          "Nothing — discovery pauses during delivery",
-          "Acceptance testing for PI N",
+        options: [ "Nothing — discovery pauses entirely during delivery", "Acceptance testing for everything in PI N",
           "Discovery and solution exploration for PI N+1",
           "The business case for the next financial year"],
         answer: 2,
@@ -1343,11 +1273,7 @@ export const modules: Module[] = [
         moduleId: "delivery",
         context: "A six-month roadmap lists 40 dated features, but discovery has invalidated several underlying assumptions.",
         prompt: "What should the product manager do?",
-        options: [
-          "Stop publishing a roadmap until things are more certain",
-          "Keep the dates to preserve stakeholder confidence",
-          "Replace everything with an unprioritised idea list",
-          "Reframe around outcomes and confidence bands, explain the evidence change and reorder the backlog"],
+        options: [ "Stop publishing any roadmap until the evidence settles and the dates become reliable again", "Keep the published dates to preserve stakeholder confidence", "Replace the whole roadmap with an unprioritised list of ideas from stakeholders", "Reframe around outcomes and confidence bands, explain what changed and reorder"],
         answer: 3,
         optionNotes: [
           "Silence is read as drift. Stakeholders need direction and rationale more than they need dates.",
@@ -1363,11 +1289,7 @@ export const modules: Module[] = [
         context:
           "At PI planning a team commits to eight features. Six have acceptance criteria and sizing; two are one-line titles with an executive's name attached. The PI is ten weeks and the team's historical throughput is five features.",
         prompt: "What is the strongest response?",
-        options: [
-          "Take the six refined features, and put the two unrefined items into refinement for the next PI while making the capacity gap explicit",
-          "Split the two unrefined items into stories immediately so they can be committed",
-          "Commit to the two sponsored items first since they have executive attention",
-          "Commit to all eight and manage the shortfall later in the PI"],
+        options: [ "Take the six refined features, refine the other two next PI, and make the gap explicit", "Split the two unrefined items into stories immediately so that they can be committed", "Commit to the two sponsored items first, because they already have executive attention", "Commit to all eight items and manage the resulting shortfall later in the PI"],
         answer: 0,
         optionNotes: [
           "",
@@ -1440,11 +1362,8 @@ export const modules: Module[] = [
         id: "lifecycle-q1",
         moduleId: "lifecycle",
         prompt: "What is the primary job of Alpha in the government service process?",
-        options: [
-          "Operate the service indefinitely",
-          "Explore and test different ways to meet user needs",
-          "Freeze the requirements before build",
-          "Complete procurement"],
+        options: [ "Operate the service indefinitely once it has gone live",
+          "Explore and test different ways to meet user needs", "Freeze the requirements before the build starts", "Complete procurement for the delivery partner"],
         answer: 1,
         optionNotes: [
           "That is Live.",
@@ -1458,10 +1377,7 @@ export const modules: Module[] = [
         moduleId: "lifecycle",
         prompt: "When should product discovery stop?",
         options: [
-          "It should continue as new evidence and needs emerge",
-          "At the end of the Discovery phase",
-          "When the business case is approved",
-          "At first release"],
+          "It should continue as new evidence and needs emerge", "At the end of the formal Discovery phase", "When the business case has been approved and the funding released", "At first release to the public"],
         answer: 0,
         optionNotes: [
           "",
@@ -1474,7 +1390,7 @@ export const modules: Module[] = [
         id: "lifecycle-q3",
         moduleId: "lifecycle",
         prompt: "Which phase produces evidence about how the service behaves under real conditions with real users at scale?",
-        options: [ "Alpha", "Beta", "None — that only happens after the project closes","Discovery"],
+        options: [ "Alpha, using prototypes", "Beta, with a live trial", "None until after closure", "Discovery, through research"],
         answer: 1,
         optionNotes: [
           "Alpha tests approaches with prototypes. Useful, but not under real operating conditions.",
@@ -1510,11 +1426,7 @@ export const modules: Module[] = [
         context:
           "A service has moved to Live. The project team is disbanding and no owner has been assigned for performance, research or backlog decisions.",
         prompt: "What is the strongest response?",
-        options: [
-          "Wait for complaints to indicate where attention is needed",
-          "Produce a more thorough closure report",
-          "Accept this — Live means the work is finished",
-          "Assign enduring ownership, measures and an improvement cadence before transition"],
+        options: [ "Wait for user complaints to indicate where attention is needed after go-live", "Produce a more thorough closure report for the board", "Accept this — reaching Live means the work is finished", "Assign ownership, measures and an improvement cadence before transition"],
         answer: 3,
         optionNotes: [
           "Complaints are a lagging, heavily filtered signal. Most users who fail simply stop.",
@@ -1530,11 +1442,7 @@ export const modules: Module[] = [
         context:
           "An Alpha tested three approaches. Two failed with users and one succeeded. The governance board asks the team to move all three into Beta so that no work is wasted.",
         prompt: "What should the product manager argue?",
-        options: [
-          "Move the successful option and archive the other two without discussion",
-          "Agree — the development effort is already sunk and should be used",
-          "Explain that Alpha's purpose is to eliminate approaches, and that carrying failed options into Beta converts learning into rework",
-          "Move all three but resource the successful one more heavily"],
+        options: [ "Move the successful option across and archive the other two without any further discussion", "Agree — the development effort is already sunk so it should be used", "Alpha exists to eliminate approaches; carrying failures into Beta creates rework", "Move all three across but resource the successful one more heavily"],
         answer: 2,
         optionNotes: [
           "The right decision, but taken silently. The board needs to see that Alpha worked — eliminating two options is a return on the investment, not a loss.",
@@ -1659,11 +1567,7 @@ export const modules: Module[] = [
         id: "roles-q1",
         moduleId: "roles",
         prompt: "What is the product trio intended to achieve?",
-        options: [
-          "Approve every user story before development",
-          "Separate discovery from delivery",
-          "Replace stakeholder consultation",
-          "Combine product, design and technology perspectives in discovery"],
+        options: [ "Approve every user story before development can begin on it", "Separate discovery work cleanly from delivery work", "Replace stakeholder consultation with a smaller decision group", "Combine product, design and technology perspectives in discovery"],
         answer: 3,
         optionNotes: [
           "Approval gates are the opposite of the intent. The trio is for shaping options, not signing off tickets.",
@@ -1712,7 +1616,7 @@ export const modules: Module[] = [
         id: "roles-q4",
         moduleId: "roles",
         prompt: "In the deck's structure, who owns the project outcomes and champions the change?",
-        options: [ "The Senior Responsible Officer", "The Lead Delivery Manager","The Product Manager", "The Scrum Master"],
+        options: [ "The Senior Responsible Officer", "The Lead Delivery Manager for the project", "The Product Manager for the service", "The Scrum Master on the team"],
         answer: 0,
         optionNotes: [
           "",
@@ -1730,11 +1634,7 @@ export const modules: Module[] = [
         context:
           "Designers research users, analysts write requirements and developers receive work months later. Each group says the others missed critical context.",
         prompt: "What structural change is most useful?",
-        options: [
-          "Add a more thorough hand-over document",
-          "Create shared cross-functional discovery and refinement with clear decision rights",
-          "Remove the user research step to shorten the chain",
-          "Let each function maintain its own roadmap"],
+        options: [ "Add a more thorough hand-over document between the functions", "Create shared cross-functional discovery with clear decision rights", "Remove the user research step in order to shorten the chain", "Let each function maintain and publish its own roadmap"],
         answer: 1,
         optionNotes: [
           "Better documentation reduces loss at a hand-off. It does not remove the hand-off, which is where the context is lost.",
@@ -1749,11 +1649,7 @@ export const modules: Module[] = [
         context:
           "Your Product Owner is spending most of each sprint relaying questions between the delivery team and three business areas, and has no time for refinement. The backlog is filling with unrefined items and the team is starting sprints with unclear acceptance criteria.",
         prompt: "What is the underlying problem?",
-        options: [
-          "The Product Owner needs better time management",
-          "The delivery team should be asking fewer questions",
-          "The Product Owner has become a requirements courier, and decision rights have not been agreed with the business areas",
-          "The role should be merged into the product manager position"],
+        options: [ "The Product Owner needs better time management and prioritisation", "The delivery team should be asking considerably fewer questions", "The Product Owner has become a requirements courier, with no agreed decision rights", "The role should be merged into the product manager position entirely"],
         answer: 2,
         optionNotes: [
           "Treating a structural problem as a personal one guarantees it recurs with the next person in the seat.",
@@ -1924,11 +1820,7 @@ export const modules: Module[] = [
         id: "government-q1",
         moduleId: "government",
         prompt: "Which statement about the Digital Service Standard Version 2.0 is correct?",
-        options: [
-          "It replaces internal departmental governance",
-          "It contains 13 criteria",
-          "It applies only during the Alpha phase",
-          "It contains 10 criteria and should be considered across the service lifecycle"],
+        options: [ "It replaces internal departmental governance arrangements entirely", "It contains 13 criteria and applies at one gate", "It applies only during the Alpha phase of delivery", "It contains 10 criteria and applies across the service lifecycle"],
         answer: 3,
         optionNotes: [
           "It sits alongside internal governance. Both apply, and confusing them is a common source of duplicated or missed evidence.",
@@ -1977,9 +1869,7 @@ export const modules: Module[] = [
         id: "government-q4",
         moduleId: "government",
         prompt: "Principle 6 is 'design for the whole service'. Which decision best reflects it?",
-        options: [
-          "Considering the phone, paper and assisted channels alongside the digital journey, and reusing an existing capability rather than rebuilding",
-          "Delivering the digital service first and addressing other channels in a later project",
+        options: [ "Considering phone, paper and assisted channels, and reusing existing capability", "Delivering the digital service first and addressing other channels in a later project",
           "Standardising the interface across all departmental systems",
           "Optimising the online form's completion rate as the primary measure"],
         answer: 0,
@@ -1995,11 +1885,7 @@ export const modules: Module[] = [
         id: "government-q5",
         moduleId: "government",
         prompt: "Which product-management risk is concentrated in the Closure phase?",
-        options: [
-          "The backlog becomes too detailed",
-          "The project closes without enduring ownership of the product's performance and improvement",
-          "Stakeholders lose interest in the roadmap",
-          "The team over-invests in discovery"],
+        options: [ "The backlog becomes too detailed to manage", "The project closes without enduring ownership of performance", "Stakeholders lose interest in the published roadmap after handover", "The team over-invests in further discovery"],
         answer: 1,
         optionNotes: [
           "Backlog detail is a Pre-Delivery and Delivery concern.",
@@ -2017,11 +1903,7 @@ export const modules: Module[] = [
         context:
           "The project has completed its templates, but research found a major accessibility barrier and the benefits measures have no baseline.",
         prompt: "What should the team present at the gate?",
-        options: [
-          "Present the evidence, remediation plan, missing baseline and impact on readiness before seeking the next investment",
-          "Reclassify accessibility as a future enhancement",
-          "Proceed on the basis that documentation is complete",
-          "Defer the accessibility issue to Beta and proceed"],
+        options: [ "Present the evidence, remediation plan and impact on readiness", "Reclassify the accessibility issue as a future enhancement instead", "Proceed on the basis that the documentation is complete", "Defer the accessibility issue to Beta and proceed now"],
         answer: 0,
         optionNotes: [
           "",
@@ -2037,11 +1919,7 @@ export const modules: Module[] = [
         context:
           "A policy area asks you to add a mandatory declaration screen. Research shows most users cannot tell what they are declaring, and the assisted channel already handles the same declaration verbally with a plain-language script.",
         prompt: "What is the strongest product response?",
-        options: [
-          "Decline, since research shows users do not understand it",
-          "Meet the policy intent, but design the interaction using the evidence and the existing plain-language script, and measure comprehension",
-          "Escalate to the Project Board for a decision",
-          "Implement the screen as specified — the requirement is mandatory"],
+        options: [ "Decline, since research shows that users do not understand it", "Meet the policy intent, design with the evidence, and measure comprehension", "Escalate to the Project Board for a decision on it", "Implement the screen exactly as specified, since the requirement is mandatory"],
         answer: 1,
         optionNotes: [
           "The obligation is real and cannot be declined. The question is how it is met, not whether.",
@@ -2122,11 +2000,7 @@ export const modules: Module[] = [
         id: "integration-q1",
         moduleId: "integration",
         prompt: "Which chain best represents product reasoning?",
-        options: [
-          "Workshop → roadmap → backlog",
-          "Feature → deadline → launch",
-          "Need → problem → outcome → options → evidence → delivery → measurement → learning",
-          "Budget → requirements → closure"],
+        options: [ "Workshop → roadmap → backlog → sprint → release → report", "Feature → deadline → launch → status report → next feature", "Need → problem → outcome → options → evidence → delivery → measurement", "Budget → requirements → build → test → deploy → closure → benefits report"],
         answer: 2,
         optionNotes: [
           "Each of these is a real artefact, but the chain has no problem at the front and no measurement at the end.",
@@ -2139,7 +2013,7 @@ export const modules: Module[] = [
         id: "integration-q2",
         moduleId: "integration",
         prompt: "What should change when presenting the product story to different audiences?",
-        options: [ "The stated outcome","The underlying facts", "The evidence cited", "The level of detail and framing"],
+        options: [ "The stated outcome itself", "The underlying facts of the situation", "The evidence that is cited", "The level of detail and framing"],
         answer: 3,
         optionNotes: [
           "If the outcome changes by audience, there is no shared understanding of what the work is for.",
@@ -2153,11 +2027,7 @@ export const modules: Module[] = [
         id: "integration-q3",
         moduleId: "integration",
         prompt: "A stakeholder asks why a highly requested feature is not on the roadmap. What is the strongest form of answer?",
-        options: [
-          "It was not in the approved scope",
-          "It did not score highly enough in prioritisation",
-          "The outcome it would serve is already better addressed by work in flight, and here is the evidence and the measure that would change that judgement",
-          "The team does not have capacity this year"],
+        options: [ "It was not included in the approved scope", "It did not score highly enough in the prioritisation exercise this quarter", "The outcome it serves is already better addressed by work in flight", "The team does not have the capacity this year"],
         answer: 2,
         optionNotes: [
           "Scope is a procedural answer to a value question. It also implies nothing can ever change, which is untrue.",
@@ -2190,11 +2060,7 @@ export const modules: Module[] = [
         context:
           "A pilot improves self-service overall, but increases unsuccessful attempts among users relying on assistive technology.",
         prompt: "Which response demonstrates the strongest product judgement?",
-        options: [
-          "Treat the accessibility result as a critical guardrail failure, investigate the cause and adapt before scaling",
-          "Report the aggregate figure and address the detail in a later release",
-          "Declare success because the average improved",
-          "Cancel the product permanently"],
+        options: [ "Treat it as a guardrail failure, investigate and adapt before scaling", "Report the aggregate figure and address the detail in a later release cycle", "Declare success because the average has improved", "Cancel the product permanently and start again"],
         answer: 0,
         optionNotes: [
           "",
@@ -2211,10 +2077,8 @@ export const modules: Module[] = [
           "You have ten minutes with the SRO before a board meeting. Delivery is on schedule, but discovery has shown the primary outcome measure will probably not move because the root cause sits in a policy process outside your control.",
         prompt: "What do you lead with?",
         options: [
-          "Delivery status, since that is what the board reports on",
-          "The outcome risk, the evidence behind it, and the decision you need — with the schedule position as context",
-          "A request to change the outcome measure to one the project can influence",
-          "Nothing yet — wait until the measurement confirms it after release"],
+          "Delivery status, since that is what the board reports on", "The outcome risk, the evidence behind it, and the decision you need",
+          "A request to change the outcome measure to one the project can influence", "Nothing yet — wait until measurement confirms it after release"],
         answer: 1,
         optionNotes: [
           "Leading with green delivery status when you know the outcome is at risk trains the board to trust a signal that is not measuring the thing that matters.",

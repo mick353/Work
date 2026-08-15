@@ -178,6 +178,60 @@ check(
   "Every optionNotes array aligns with its options",
   allQuestions.every((q) => !q.optionNotes || (q.optionNotes.length === 4 && q.optionNotes[q.answer] === "")),
 );
+/*
+ * Option-LENGTH bias.
+ *
+ * Answer POSITION was fixed earlier with per-learner shuffling, and proved
+ * statistically. That did nothing about length: the longest option is longest
+ * wherever it sits. A review of the bank found the key was the longest option
+ * in 129 of 158 questions, so "always click the longest answer" scored 81.6%
+ * against a 75% mastery threshold — the whole course could be passed without
+ * reading a word.
+ *
+ * "Dissimilar length of options" is a named item-writing flaw (Haladyna et
+ * al.); options should be of approximately equal length so the set carries no
+ * information the learner could use instead of knowing the answer.
+ */
+{
+  // practiceQuestions already contains the supplementary set and the scenarios,
+  // so a naive concat counts 36 questions twice and skews every ratio below.
+  const bankAll = [];
+  const seenIds = new Set();
+  for (const q of [...bank.practiceQuestions, ...bank.diagnosticQuestions, ...bank.supplementaryQuestions]) {
+    if (seenIds.has(q.id)) continue;
+    seenIds.add(q.id);
+    bankAll.push(q);
+  }
+  const longestWins = bankAll.filter((q) => {
+    const lengths = q.options.map((o) => o.length);
+    return lengths.indexOf(Math.max(...lengths)) === q.answer;
+  }).length;
+  const longestScore = (longestWins / bankAll.length) * 100;
+  const mean = (xs) => xs.reduce((a, b) => a + b, 0) / xs.length;
+  const keyMean = mean(bankAll.map((q) => q.options[q.answer].length));
+  const distractorMean = mean(bankAll.flatMap((q) => q.options.filter((_, i) => i !== q.answer).map((o) => o.length)));
+
+  check(
+    "Longest-option strategy scores near chance",
+    longestScore <= 40,
+    `scores ${longestScore.toFixed(1)}% (${longestWins}/${bankAll.length}); chance is 25%, mastery threshold is 75%`,
+  );
+  check(
+    "Correct answers are not systematically longer than distractors",
+    keyMean / distractorMean <= 1.25,
+    `key ${keyMean.toFixed(1)} chars vs distractor ${distractorMean.toFixed(1)} chars = ${(keyMean / distractorMean).toFixed(2)}x`,
+  );
+  const lopsided = bankAll.filter((q) => {
+    const lengths = q.options.map((o) => o.length);
+    return Math.max(...lengths) / Math.max(1, Math.min(...lengths)) > 3;
+  });
+  check(
+    "No question has an option more than 3x the length of its shortest",
+    lopsided.length === 0,
+    `${lopsided.length} question(s), e.g. "${lopsided[0]?.prompt.slice(0, 60) ?? ""}"`,
+  );
+}
+
 check("Question ids are unique", new Set(allQuestions.map((q) => q.id)).size === allQuestions.length);
 check(
   "Diagnostic pool does not overlap the practice pool",
