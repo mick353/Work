@@ -1,15 +1,16 @@
-import { Check, Download, Printer, Search } from "lucide-react";
+import { AlertTriangle, Check, ChevronRight, Download, Printer, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
   CAPSTONE_MIN_WORDS,
   capstoneRubric,
   capstoneSteps,
+  caseStudies,
   fieldGuide,
   glossary,
   toolkitTemplates,
   type GlossaryEntry,
 } from "./reference";
-import { downloadFile } from "./lib";
+import { downloadFile, type View } from "./lib";
 import type { RubricMap, TextMap } from "./state";
 import { EmptyState, PageIntro, ProgressBar, SourceChips } from "./components";
 
@@ -365,6 +366,67 @@ export function Glossary() {
           </section>
         ))
       )}
+    </div>
+  );
+}
+
+
+export function CaseStudies({ navigate }: { navigate: (view: View) => void }) {
+  const [active, setActive] = useState(caseStudies[0].id);
+  const study = caseStudies.find((c) => c.id === active) ?? caseStudies[0];
+
+  return (
+    <div className="page">
+      <PageIntro
+        eyebrow="Worked cases"
+        title="The whole chain, twice, on real decisions"
+        body="Knowing what a good problem statement contains is not the same as having seen one derived. These two cases run the full method end to end — one that works, and one where the method catches a mistake the team had already shipped."
+      />
+
+      <div className="case-switch" role="tablist" aria-label="Choose a case study">
+        {caseStudies.map((c) => (
+          <button
+            key={c.id}
+            role="tab"
+            aria-selected={active === c.id}
+            className={active === c.id ? "active" : ""}
+            onClick={() => setActive(c.id)}
+          >
+            <strong>{c.title}</strong>
+            <span>{c.subtitle}</span>
+          </button>
+        ))}
+      </div>
+
+      <section className={`case-summary ${study.outcome}`}>
+        {study.outcome === "corrected" && <AlertTriangle size={22} aria-hidden="true" />}
+        <p>{study.summary}</p>
+      </section>
+
+      <ol className="case-steps">
+        {study.steps.map((step, index) => (
+          <li key={`${step.moduleId}-${index}`} data-stage={step.stage}>
+            <div className="case-step-mark" aria-hidden="true">{step.stage}</div>
+            <div className="case-step-body">
+              <span className="eyebrow">Stage {step.stage}</span>
+              <h2>{step.heading}</h2>
+              <p>{step.body}</p>
+              {step.artefact && (
+                <pre className="case-artefact">{step.artefact}</pre>
+              )}
+              <p className="case-insight"><strong>Notice:</strong> {step.insight}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+
+      <section className="case-closing">
+        <h2>What this case is for</h2>
+        <p>{study.closing}</p>
+        <button className="primary" onClick={() => navigate("capstone")}>
+          Try it yourself in the capstone <ChevronRight size={18} aria-hidden="true" />
+        </button>
+      </section>
     </div>
   );
 }

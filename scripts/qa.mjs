@@ -512,6 +512,7 @@ const axeViews = [
   ["capstone", "capstone"],
   ["fieldguide", "field guide"],
   ["glossary", "glossary"],
+  ["cases", "worked cases"],
   ["sources", "sources"],
   ["divergences", "divergence register"],
   ["settings", "settings"],

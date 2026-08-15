@@ -1211,3 +1211,178 @@ export const supplementaryQuestions: Question[] = [
     rationale: "A defensible decision is falsifiable: you can state what would make you change your mind. A defensive one is protected from evidence rather than grounded in it.",
   },
 ];
+
+/* ------------------------------------------------------------------ *
+ * Worked case studies
+ *
+ * The single largest gap in this course has been teaching DEPTH: it told
+ * learners what a good problem statement contains, then asked them to write
+ * one, without ever showing a complete chain end to end. Worked examples are
+ * the cheapest high-utility intervention in the instructional literature —
+ * novices learn the pattern faster from a solved problem than from practice
+ * alone, and only shift to practice once the schema is formed.
+ *
+ * Two cases, deliberately contrasted:
+ *   - PROVIDER STATUS is the deck's own case. It ends well.
+ *   - EMPLOYER VACANCY goes wrong in an instructive way: the team solves the
+ *     visible symptom, the headline metric improves, and the outcome does not.
+ *     Learners need at least one worked example where the method catches a
+ *     mistake, or they only ever see the method endorsing itself.
+ * ------------------------------------------------------------------ */
+
+export type CaseStep = {
+  moduleId: string;
+  stage: number;
+  heading: string;
+  /** What the team actually did, written as narrative. */
+  body: string;
+  /** The concrete artefact produced — shown in a monospace panel. */
+  artefact?: string;
+  /** What a learner should notice. */
+  insight: string;
+};
+
+export type CaseStudy = {
+  id: string;
+  title: string;
+  subtitle: string;
+  outcome: "worked" | "corrected";
+  summary: string;
+  steps: CaseStep[];
+  closing: string;
+};
+
+export const caseStudies: CaseStudy[] = [
+  {
+    id: "provider-status",
+    title: "Provider application status",
+    subtitle: "The deck's running case, worked end to end",
+    outcome: "worked",
+    summary:
+      "Providers phone the support centre constantly to check where participant applications have got to. The obvious response is a status page. This case follows the chain properly and arrives somewhere better than the obvious response.",
+    steps: [
+      {
+        moduleId: "thinking",
+        stage: 1,
+        heading: "Framing it as a product, not a ticket",
+        body: "The request arrived as 'build a status page', already scoped and already funded as a project deliverable. The product manager's first move was not to refuse it but to ask what would still be true in two years: who owns the status experience, who notices when it degrades, and what happens when the underlying systems change again.",
+        insight:
+          "The request was not wrong, it was premature. Reframing it as an owned capability rather than a deliverable is what created room to ask why the calls happen at all.",
+      },
+      {
+        moduleId: "discovery",
+        stage: 2,
+        heading: "Finding the actual difficulty",
+        body: "Call-reason coding said 'status enquiry' was the top driver. Twelve provider interviews and four hours of contact-centre observation said something more specific: providers were not confused about where an application was, they were unable to tell whether they needed to do anything. Most calls ended with the agent saying 'nothing needed at your end'.",
+        artefact:
+          "Our providers are currently experiencing uncertainty about whether action is required from them when supporting a participant's application. This occurs across the provider portal and the support line, and has been happening since the 2023 platform split. This is critical because it generates avoidable support demand and delays participants. Evidence: call-reason coding, 12 interviews, 4 hours of contact-centre observation.",
+        insight:
+          "The stated problem was 'I cannot see the status'. The real problem was 'I cannot tell whether it is my turn.' A status page answers the first and not the second.",
+      },
+      {
+        moduleId: "outcomes",
+        stage: 3,
+        heading: "Defining success before building",
+        body: "The team wrote the objective around resolution rather than deflection, precisely because deflection is easy to fake by making it harder to call. A guardrail was set on the assisted channel so that any improvement achieved by pushing demand elsewhere would show up immediately.",
+        artefact:
+          "Objective: providers can tell whether action is required, without contacting us.\nKR1: avoidable status contacts down 30% (baseline 4,100/month).\nKR2: providers correctly state their next action unprompted in 8 of 10 usability sessions.\nLeading: proportion of sessions reaching the next-action panel.\nGuardrail: median time to resolution for unresolved cases does not worsen.",
+        insight:
+          "The guardrail is the part that gets cut under pressure and the part that later proves you did not simply displace the problem.",
+      },
+      {
+        moduleId: "exploration",
+        stage: 4,
+        heading: "Testing the cheap thing first",
+        body: "Three options went on the table: the requested status page, an action-required notification, and a non-build option of changing the provider's default view. The riskiest assumption was shared by all three — that providers would trust departmental status enough to act on it. A prototype with manually supplied data tested comprehension and trust before any integration work was scoped.",
+        artefact:
+          "Decision: whether to fund the status integration.\nRiskiest assumption: providers will act on departmental status rather than ringing to confirm it.\nMethod: clickable prototype, manually supplied data, 8 representative providers.\nProceed if 6 of 8 state the correct next action unprompted AND say they would not call to confirm.",
+        insight:
+          "The expensive integration was never the question. Whether the information would be believed was the question, and it cost eight conversations to answer.",
+      },
+      {
+        moduleId: "delivery",
+        stage: 5,
+        heading: "Ordering the work honestly",
+        body: "The feature was sized to a single PI and written with a measurement field from the start. A dependency on the assessment platform's status API was recorded as a risk rather than assumed away, and the roadmap said Now/Next/Later rather than naming dates the evidence could not support.",
+        artefact:
+          "Feature hypothesis: providers shown a plain-language next action will resolve without contacting support.\nMeasurement: successful self-service rate for status queries, target 65% in the first PI after release.\nIn scope: application progress and required action. Out of scope: payment status.\nDependency: status API refresh frequency from the assessment platform.",
+        insight:
+          "The measurement field is what made the next stage possible. Without it the PI would have closed with the benefit assumed.",
+      },
+      {
+        moduleId: "government",
+        stage: 8,
+        heading: "Meeting the standard without theatre",
+        body: "Accessibility testing during Beta found that status was conveyed by colour alone in the first build. It was fixed before Live rather than logged as an enhancement. At the gate the team presented the finding, the fix and the residual risk on data freshness rather than a completed template.",
+        insight:
+          "Presenting a problem you have already fixed builds more governance confidence than presenting a clean template. It also makes the next honest report easier.",
+      },
+      {
+        moduleId: "integration",
+        stage: 9,
+        heading: "What the evidence said afterwards",
+        body: "Avoidable contacts fell 34%. The guardrail held: time to resolution for unresolved cases was flat. Usability sessions reached 9 of 10 on next-action comprehension. One finding was uncomfortable — providers with the largest caseloads still called, because they were checking several participants at once and the design assumed one.",
+        insight:
+          "The result was good and incomplete. Naming the caseload finding turned a successful release into the start of the next cycle rather than the end of the project.",
+      },
+    ],
+    closing:
+      "The team ended up building roughly what was originally asked for, but with a different core: an action-required signal rather than a status display. That difference came entirely from stage 2, and would have been invisible if the work had started at stage 5.",
+  },
+  {
+    id: "employer-vacancy",
+    title: "Employer vacancy drop-off",
+    subtitle: "A case where the method catches the mistake — late",
+    outcome: "corrected",
+    summary:
+      "Employers were abandoning the vacancy-advertising form at high rates. The team fixed the form, the completion rate improved sharply, and the outcome did not move at all. This case is included because a method that only ever endorses itself teaches nothing.",
+    steps: [
+      {
+        moduleId: "discovery",
+        stage: 2,
+        heading: "Where the team started — and stopped",
+        body: "Analytics showed 61% abandonment at the position-details step. The team ran a heuristic review, found the step long and the wording dense, and moved straight to redesign. No employer was interviewed. The reasoning felt sound: the data showed exactly where people left.",
+        insight:
+          "Analytics told them WHERE. Nobody established WHY. The team treated a location as a diagnosis — the single most common discovery failure.",
+      },
+      {
+        moduleId: "outcomes",
+        stage: 3,
+        heading: "The measure that let it happen",
+        body: "Success was defined as form completion rate. It was specific, baselined and time-bound — it looked like a good key result and satisfied every formal test. What it never asked was whether a completed form produced a filled vacancy.",
+        artefact:
+          "Objective: make advertising a vacancy easier.\nKR1: completion rate 39% → 65% by March.\n(no guardrail, no outcome measure beyond the form itself)",
+        insight:
+          "A well-formed key result measuring the wrong thing is more dangerous than a vague one, because it passes review and then drives the work.",
+      },
+      {
+        moduleId: "delivery",
+        stage: 5,
+        heading: "A clean delivery of the wrong thing",
+        body: "The redesign shipped in one PI. Completion rose from 39% to 71%, beating the target. The team graded the key result a 4 and closed the epic. Delivery performance was genuinely excellent.",
+        insight:
+          "Every delivery signal was green. This is what makes output-based measurement so persistent: it rewards teams accurately for the wrong achievement.",
+      },
+      {
+        moduleId: "integration",
+        stage: 9,
+        heading: "The finding nobody was looking for",
+        body: "Six months later an unrelated analysis showed vacancies filled had not moved. Digging in: the abandoned step had been acting as an unintentional filter. Employers who found it hard were largely those posting roles with pay or conditions that would not attract candidates. Making the form easier produced more listings, not more filled vacancies — and increased assessment workload downstream.",
+        insight:
+          "The friction was doing work nobody had noticed. Removing it optimised the measure and degraded the service, which is the exact failure a guardrail on a downstream outcome would have caught within weeks.",
+      },
+      {
+        moduleId: "outcomes",
+        stage: 3,
+        heading: "What the correction looked like",
+        body: "The team rewrote the measure set around the outcome the service exists for, kept the completion improvement, and added the guardrail that should have been there. Crucially they did not revert the redesign — the form genuinely was better, it just was not sufficient.",
+        artefact:
+          "Objective: employers fill roles through the service.\nKR1: vacancies filled within 30 days 22% → 30%.\nLeading: completion rate (retained — it moves early).\nGuardrail: downstream assessment workload per filled vacancy does not rise.\nGuardrail: proportion of listings receiving zero applications does not rise.",
+        insight:
+          "Completion rate was not a bad measure. It was a leading indicator being used as an outcome. That distinction is the whole of stage 3.",
+      },
+    ],
+    closing:
+      "Nothing in this case required unusual insight to avoid. A single guardrail on a downstream outcome would have surfaced the problem in the first month instead of the sixth. That is the entire argument for defining the measure set before delivery rather than after.",
+  },
+];
