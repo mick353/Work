@@ -8,7 +8,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { modules, quizPoolFor, totalMinutes, type Module } from "./course";
-import { caseStudies, diagnosticQuestions } from "./reference";
+import { caseStudies, contrasts, diagnosticQuestions } from "./reference";
 import { daysAgoKey, formatMinutes, shuffle, type View } from "./lib";
 import {
   emptyModuleProgress,
@@ -344,6 +344,7 @@ export function ModuleView({
   // Stages that appear in a worked case get a direct pointer to it, so the
   // abstraction and the worked instance are one click apart.
   const workedIn = caseStudies.filter((c) => c.steps.some((step) => step.moduleId === module.id));
+  const stageContrasts = contrasts.filter((c) => c.moduleId === module.id);
   const allSourceIds = [...new Set(module.sections.flatMap((section) => section.sourceIds ?? []))];
   const next = modules.find((item) => item.number === module.number + 1);
 
@@ -423,6 +424,32 @@ export function ModuleView({
           </section>
         ))}
       </div>
+
+      {stageContrasts.length > 0 && (
+        <section className="contrast-panel">
+          <span className="eyebrow">In practice</span>
+          <h2>What good looks like, and what usually happens</h2>
+          <p className="contrast-intro">
+            Agreeing with a principle is easy. The right-hand column is what most teams are actually doing, and the
+            tell is how you check which one you are in this week.
+          </p>
+          {stageContrasts.map((item) => (
+            <article key={item.good} className="contrast">
+              <div className="contrast-pair">
+                <div className="contrast-good">
+                  <span>Good</span>
+                  <p>{item.good}</p>
+                </div>
+                <div className="contrast-usual">
+                  <span>Usually</span>
+                  <p>{item.usual}</p>
+                </div>
+              </div>
+              <p className="contrast-tell"><strong>The tell:</strong> {item.tell}</p>
+            </article>
+          ))}
+        </section>
+      )}
 
       <section className="reflection-panel">
         <span className="eyebrow">Retrieval pause</span>

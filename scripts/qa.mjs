@@ -562,6 +562,19 @@ check("Second case is the corrected one", (await page.locator(".case-summary.cor
 await page.evaluate(() => { window.location.hash = "module/outcomes"; });
 await page.waitForTimeout(400);
 check("Stages appearing in a case link to it", (await page.locator(".worked-pointer").count()) === 1);
+const contrastCount = await page.locator(".contrast").count();
+check("Stage shows practice contrasts", contrastCount >= 2, `found ${contrastCount}`);
+check(
+  "Every contrast carries a diagnostic tell",
+  (await page.locator(".contrast-tell").count()) === contrastCount,
+  "a contrast without a tell is advice, not a check the learner can run",
+);
+// Search must reach the new material, or it is effectively invisible.
+await page.evaluate(() => { window.location.hash = "search"; });
+await page.waitForTimeout(300);
+await page.getByRole("searchbox", { name: "Search the course" }).fill("vanity metric");
+await page.waitForTimeout(250);
+check("Search reaches contrasts and cases", (await page.locator(".search-result").count()) > 0);
 
 /* -- accessibility ------------------------------------------------- */
 

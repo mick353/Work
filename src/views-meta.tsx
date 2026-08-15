@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { AlertTriangle, Brain, ChevronRight, Download, ExternalLink, RotateCcw, Search, Upload } from "lucide-react";
 import { CONTENT_REVIEWED, modules, sources } from "./course";
-import { caseStudies, divergences, fieldGuide, flashcards, glossary, toolkitTemplates } from "./reference";
+import { caseStudies, contrasts, divergences, fieldGuide, flashcards, glossary, toolkitTemplates } from "./reference";
 import { BACKUP_VERSION, downloadFile, parseBackup, type View } from "./lib";
 import type { HistoryEntry, ProgressMap, ReviewMap, RubricMap, TextMap } from "./state";
 import { EmptyState, PageIntro } from "./components";
@@ -72,6 +72,17 @@ function buildIndex(): SearchRecord[] {
       body: `${entry.summary} ${entry.items.map((item) => `${item.term} ${item.detail}`).join(" ")}`,
       kind: "Field guide",
       view: "fieldguide",
+    });
+  });
+
+  contrasts.forEach((item, index) => {
+    const stage = modules.find((m) => m.id === item.moduleId);
+    records.push({
+      id: `ct-${index}`,
+      title: `In practice: ${item.good.slice(0, 60)}`,
+      body: `${item.good} ${item.usual} ${item.tell}`,
+      kind: `Stage ${stage?.number ?? ""} contrast`,
+      view: `module:${item.moduleId}`,
     });
   });
 

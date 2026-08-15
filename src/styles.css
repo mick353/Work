@@ -898,3 +898,21 @@ p { color: var(--muted); line-height: 1.65; }
 .shortcut-panel dd { margin: 0; color: var(--muted); font-size: 14px; }
 .shortcut-panel > p { margin: 0; font-size: 13px; }
 .shortcut-panel kbd { min-width: 26px; text-align: center; font-size: 12.5px; }
+
+/* ---- Practice contrasts ---- */
+.contrast-panel { margin: 44px 0 0 90px; max-width: 900px; padding: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
+.contrast-panel h2 { margin: 8px 0 10px; }
+.contrast-intro { margin-bottom: 22px; }
+.contrast { padding: 18px 0; border-top: 1px solid var(--line); }
+.contrast:first-of-type { border-top: 0; padding-top: 4px; }
+.contrast-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.contrast-good, .contrast-usual { padding: 16px 18px; border-radius: 12px; }
+.contrast-good { background: var(--success-soft); border: 1px solid color-mix(in srgb, var(--success) 30%, transparent); }
+.contrast-usual { background: var(--warning-soft); border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent); }
+.contrast-good > span, .contrast-usual > span { display: block; margin-bottom: 7px; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.contrast-good > span { color: var(--success); }
+.contrast-usual > span { color: var(--warning); }
+.contrast-good p, .contrast-usual p { margin: 0; color: var(--ink); font-size: 14.5px; line-height: 1.55; }
+.contrast-tell { margin: 14px 0 0; padding: 13px 16px; border-radius: 10px; background: var(--surface-alt); color: var(--ink); font-size: 14px; }
+.contrast-tell strong { color: var(--brand); }
+@media (max-width: 820px) { .contrast-panel { margin-left: 0; } .contrast-pair { grid-template-columns: 1fr; } }

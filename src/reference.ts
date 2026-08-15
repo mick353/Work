@@ -1434,3 +1434,128 @@ export const capstoneBriefs: CapstoneBrief[] = [
       "The discipline that matters here is honesty about what you do not know. Mark assumptions as assumptions rather than quietly promoting them to facts.",
   },
 ];
+
+/* ------------------------------------------------------------------ *
+ * Practice contrasts
+ *
+ * The single most effective teaching device in the source deck was the
+ * trade-off pairs on slide 53: a named good state, a named failure, and the
+ * risk that connects them. Abstract advice ("focus on outcomes") is easy to
+ * agree with and impossible to act on. A contrast is actionable because it
+ * names the thing you are probably already doing.
+ *
+ * `tell` is the diagnostic — the observable sign you are in the failure
+ * column right now. That is the part learners can actually check.
+ * ------------------------------------------------------------------ */
+
+export type Contrast = {
+  moduleId: string;
+  good: string;
+  usual: string;
+  tell: string;
+};
+
+export const contrasts: Contrast[] = [
+  {
+    moduleId: "thinking",
+    good: "The team can name the outcome the work is meant to change, and who owns it after go-live.",
+    usual: "The team can name the scope and the date, and ownership after go-live is unassigned.",
+    tell: "Ask three people what changes for users if this succeeds. If you get three different answers, there is no outcome — only scope.",
+  },
+  {
+    moduleId: "thinking",
+    good: "Strategy states what is deliberately not being pursued this year.",
+    usual: "Strategy lists priorities, all of which are 'high'.",
+    tell: "Count the things labelled top priority. More than three and the prioritisation has not happened yet.",
+  },
+  {
+    moduleId: "discovery",
+    good: "The problem statement describes observed behaviour and cites where the evidence came from.",
+    usual: "The problem statement describes a missing feature.",
+    tell: "Remove every proposed solution from the statement. If nothing meaningful is left, it was a solution wearing a problem's clothes.",
+  },
+  {
+    moduleId: "discovery",
+    good: "Analytics locate the problem; qualitative work explains it; the two are checked against each other.",
+    usual: "Analytics locate the problem and the team infers the cause from the location.",
+    tell: "Ask what would have to be true for the obvious explanation to be wrong. If nobody has checked, you have a location, not a diagnosis.",
+  },
+  {
+    moduleId: "outcomes",
+    good: "Every key result has a baseline, and at least one guardrail protects a group or channel.",
+    usual: "Key results have targets but no baselines, and no guardrails at all.",
+    tell: "Ask what number it is today. If nobody knows, you cannot demonstrate improvement later — only assert it.",
+  },
+  {
+    moduleId: "outcomes",
+    good: "The measure would change the decision if it moved the wrong way.",
+    usual: "The measure is reported monthly and has never changed anything.",
+    tell: "Name the last decision this metric altered. If there isn't one, it is a vanity metric regardless of how rigorous it looks.",
+  },
+  {
+    moduleId: "exploration",
+    good: "At least one option in the set is non-build — process, policy, guidance, or removing a step.",
+    usual: "Every option is a different way to build the same thing.",
+    tell: "If all your options need engineering, you started generating after the solution had already been chosen.",
+  },
+  {
+    moduleId: "exploration",
+    good: "The stop condition was written before the test ran.",
+    usual: "The result is interpreted after the fact, and always supports continuing.",
+    tell: "Ask what result would have killed this. If the honest answer is 'none', the test was theatre.",
+  },
+  {
+    moduleId: "delivery",
+    good: "Every feature carries a measurement field, and it is filled in.",
+    usual: "Features carry acceptance criteria, so you learn whether it was built but never whether it worked.",
+    tell: "Open the last three completed features. If none records what changed, the loop is not closing.",
+  },
+  {
+    moduleId: "delivery",
+    good: "The roadmap uses confidence bands beyond the current increment.",
+    usual: "The roadmap gives dates for everything, and the far ones are quietly known to be fiction.",
+    tell: "Ask what evidence supports the date twelve months out. If it is 'that is when the funding ends', it is a constraint, not a forecast.",
+  },
+  {
+    moduleId: "lifecycle",
+    good: "A live service has a named owner, a measure and a review cadence.",
+    usual: "A live service has a support rota and an SLA for availability.",
+    tell: "Ask who decides what gets improved next. If the answer is a team that no longer exists, decay has already started.",
+  },
+  {
+    moduleId: "roles",
+    good: "Reversible decisions are made by the team; governance sees material risk and investment.",
+    usual: "Everything is escalated, so governance is busy and slow on the things that matter.",
+    tell: "Look at the last governance agenda. Count items that could have been decided by the team without meaningful risk.",
+  },
+  {
+    moduleId: "roles",
+    good: "The Product Owner spends most of the week on refinement and acceptance.",
+    usual: "The Product Owner spends most of the week relaying questions between the team and the business.",
+    tell: "If the PO is the only route to an answer, decision rights were never agreed — that is a structural problem, not a workload one.",
+  },
+  {
+    moduleId: "government",
+    good: "Gate papers show what was learned, what changed as a result, and what is still uncertain.",
+    usual: "Gate papers show that the required documents exist and are signed.",
+    tell: "Search the last gate paper for the word 'assumption'. Zero mentions usually means the risks were smoothed rather than surfaced.",
+  },
+  {
+    moduleId: "government",
+    good: "Accessibility is tested during Beta and blockers are fixed before Live.",
+    usual: "Accessibility is assessed near Live and issues become post-launch enhancements.",
+    tell: "Ask when the first assistive-technology test is scheduled. If it is after the build is complete, it is an audit, not design.",
+  },
+  {
+    moduleId: "integration",
+    good: "Priority decisions can name the evidence that would reverse them.",
+    usual: "Priority decisions cite a scoring model or a sponsor.",
+    tell: "Ask what would change your mind. An answer you cannot give is a decision that cannot be argued with — which is not the same as a good one.",
+  },
+  {
+    moduleId: "integration",
+    good: "Results are reported disaggregated, so harm to a subgroup is visible.",
+    usual: "Results are reported as averages, and the average is genuinely better.",
+    tell: "Split the headline number by channel, assistive technology and caseload size. If nobody has, you do not yet know who you helped.",
+  },
+];
