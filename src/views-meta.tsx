@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { AlertTriangle, Brain, ChevronRight, Download, ExternalLink, RotateCcw, Search, Upload } from "lucide-react";
 import { CONTENT_REVIEWED, modules, sources } from "./course";
 import { caseStudies, contrasts, divergences, fieldGuide, flashcards, glossary, toolkitTemplates } from "./reference";
+import { slides } from "./slides";
 import { BACKUP_VERSION, downloadFile, parseBackup, type View } from "./lib";
 import type { HistoryEntry, ProgressMap, ReviewMap, RubricMap, TextMap } from "./state";
 import { EmptyState, PageIntro } from "./components";
@@ -118,6 +119,18 @@ function buildIndex(): SearchRecord[] {
     });
   });
 
+  // The deck's own words, so a search for a term the course paraphrased still
+  // finds the slide it came from.
+  slides.forEach((slide) => {
+    records.push({
+      id: `sl-${slide.n}`,
+      title: `Slide ${slide.n}${slide.title ? `: ${slide.title}` : ""}`,
+      body: slide.text,
+      kind: "Source deck",
+      view: "deck",
+    });
+  });
+
   sources.forEach((source) => {
     records.push({
       id: `src-${source.id}`,
@@ -170,7 +183,7 @@ export function SearchView({ navigate }: { navigate: Navigate }) {
       <PageIntro
         eyebrow="Search"
         title="Find anything in the course"
-        body="Searches lesson content, flashcards, templates, the field guide, the divergence register and the sources."
+        body="Searches lesson content, flashcards, templates, the field guide, the divergence register, the sources, and all 98 slides of the source deck."
       />
       <div className="search-field">
         <Search size={20} aria-hidden="true" />

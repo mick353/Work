@@ -1025,3 +1025,126 @@ p { color: var(--muted); line-height: 1.65; }
   .guide-contrasts table { font-size: 8.5pt; }
   .guide-glossary > div { grid-template-columns: 150px 1fr; }
 }
+
+/* ================================================================== *
+ * Source deck
+ *
+ * Slide citations used to be plain text pointing at a file nobody had.
+ * They are controls now, so they have to look like controls without
+ * shouting: a citation sits inside a caption or a meta row, and the
+ * reading is the point, not the link.
+ * ================================================================== */
+
+.slide-cite {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 8px 2px 6px; border: 1px solid var(--line-strong); border-radius: 999px;
+  background: var(--surface-alt); color: var(--muted);
+  font: inherit; font-size: 12.5px; font-weight: 600; line-height: 1.5;
+  cursor: pointer; transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.slide-cite svg { flex: none; opacity: 0.75; }
+.slide-cite:hover { color: var(--brand); border-color: var(--brand); background: var(--brand-soft); }
+.slide-cite:hover svg { opacity: 1; }
+.slide-cite:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+/* Captions are centred and italic; the control should not fight that. */
+.lesson-table caption .slide-cite { margin-right: 6px; font-style: normal; vertical-align: middle; }
+
+/* ---- Lightbox ---- */
+.slide-backdrop {
+  position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; padding: 20px;
+  background: rgba(10, 14, 20, 0.72); backdrop-filter: blur(4px);
+}
+.slide-lightbox {
+  display: flex; flex-direction: column; gap: 16px;
+  width: min(1180px, 100%); max-height: 92vh; overflow-y: auto; padding: 22px 26px 24px;
+  border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: var(--shadow-lg);
+}
+.slide-lightbox > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.slide-lightbox h2 { margin: 4px 0 0; font-size: 22px; line-height: 1.25; }
+.slide-lightbox .eyebrow { font-size: 11px; }
+
+.slide-stage { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; }
+.slide-stage img {
+  width: 100%; height: auto; display: block;
+  border: 1px solid var(--line); border-radius: 10px; background: #fff; box-shadow: var(--shadow);
+}
+.slide-step {
+  display: grid; place-items: center; width: 44px; height: 44px;
+  border: 1px solid var(--line-strong); border-radius: 50%;
+  background: var(--paper); color: var(--ink); cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.slide-step:hover:not(:disabled) { border-color: var(--brand); color: var(--brand); background: var(--brand-soft); }
+.slide-step:disabled { opacity: 0.3; cursor: default; }
+.slide-step:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+.slide-text { padding: 16px 18px; border-radius: 12px; background: var(--surface-alt); }
+.slide-text h3 { margin: 0 0 7px; font-size: 12px; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); }
+.slide-text p { margin: 0; font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+.slide-foot { margin: 0; color: var(--muted); font-size: 12.5px; }
+.slide-foot kbd { min-width: 22px; text-align: center; font-size: 11.5px; }
+
+@media (max-width: 820px) {
+  .slide-backdrop { padding: 10px; }
+  .slide-lightbox { padding: 16px 16px 18px; max-height: 96vh; }
+  /* Arrows below the image on a phone — reaching a 44px target beside a
+     full-width slide means stretching across the screen. */
+  .slide-stage { grid-template-columns: 1fr 1fr; grid-template-areas: "img img" "prev next"; }
+  .slide-stage img { grid-area: img; }
+  .slide-step:first-of-type { grid-area: prev; }
+  .slide-step:last-of-type { grid-area: next; }
+  .slide-step { width: 100%; border-radius: 10px; }
+  /* No keyboard to press. The arrows above say the same thing. */
+  .slide-foot-keys { display: none; }
+}
+
+/* ---- Deck view ---- */
+.deck-filter { display: flex; flex-wrap: wrap; gap: 8px; max-width: 1100px; margin: 26px 0 0; }
+.deck-filter button {
+  display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px;
+  border: 1px solid var(--line-strong); border-radius: 999px;
+  background: var(--paper); color: var(--muted); font-size: 13.5px; font-weight: 600; cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.deck-filter button:hover { color: var(--ink); border-color: var(--line-strong); background: var(--surface-alt); }
+.deck-filter button.active { color: var(--brand); border-color: var(--brand); background: var(--brand-soft); }
+.deck-filter button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.deck-filter-num {
+  display: grid; place-items: center; width: 20px; height: 20px; border-radius: 6px;
+  background: var(--stage, var(--brand)); color: #fff; font-size: 11px; font-weight: 800;
+}
+.deck-count { margin: 16px 0 0; color: var(--muted); font-size: 13.5px; }
+
+.deck-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;
+  max-width: 1100px; margin: 20px 0 0; padding: 0; list-style: none;
+}
+.deck-grid button {
+  display: block; width: 100%; padding: 0; overflow: hidden; text-align: left; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--paper); box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+.deck-grid button:hover { border-color: var(--brand); box-shadow: var(--shadow); transform: translateY(-2px); }
+.deck-grid button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+/* White behind the image: the slides have white backgrounds, and a dark card
+   behind a loading thumbnail flashes as each one arrives. */
+.deck-grid img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #fff; border-bottom: 1px solid var(--line); }
+.deck-caption { display: flex; align-items: center; gap: 10px; padding: 11px 13px; }
+.deck-caption > span:last-child {
+  color: var(--ink); font-size: 13.5px; font-weight: 600; line-height: 1.35;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.deck-number {
+  flex: none; display: grid; place-items: center; min-width: 26px; height: 22px; padding: 0 6px;
+  border-radius: 6px; background: var(--stage, var(--brand)); color: #fff; font-size: 11.5px; font-weight: 800;
+}
+
+@media (max-width: 560px) { .deck-grid { grid-template-columns: 1fr; } }
+
+@media print {
+  /* A citation is meaningless on paper, so print the words and drop the
+     affordance. The lightbox is transient and must never appear at all. */
+  .slide-backdrop { display: none !important; }
+  .slide-cite { border: 0; padding: 0; background: none; color: inherit; font-weight: inherit; font-size: inherit; }
+  .slide-cite svg, .deck-page { display: none !important; }
+}

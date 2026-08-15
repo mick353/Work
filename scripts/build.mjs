@@ -20,7 +20,7 @@
 
 import { build, context } from "esbuild";
 import { createHash } from "node:crypto";
-import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -55,18 +55,64 @@ function escapeForScript(source) {
 }
 
 /**
+ * The 98 source slides, and the one real difference between the two builds.
+ *
+ * Standalone has to stay a single file — a folder of images beside it would be
+ * lost the first time anyone emailed it on — so every slide goes in as a data
+ * URI. That is a few megabytes, which is the honest price of "one file that
+ * contains everything".
+ *
+ * Pages must NOT do that. A phone should download a small page and then fetch
+ * only the slides actually opened, which is what `loading="lazy"` and the
+ * service worker's cache-first rule give us. So the placeholder is simply
+ * dropped, and the app falls back to `slides/slide-NN.webp` paths.
+ *
+ * The payload is a JSON script tag rather than a JS assignment so it costs
+ * nothing until something asks for a slide — see `slideSrc` in slide-viewer.tsx.
+ * Base64 is [A-Za-z0-9+/=] and the keys are digits, so nothing in here can
+ * close the tag early.
+ */
+async function slideDataTag() {
+  const dir = path.join(publicDir, "slides");
+  if (!existsSync(dir)) return { tag: "", bytes: 0, count: 0 };
+
+  const files = (await readdir(dir)).filter((name) => /^slide-\d+\.webp$/.test(name)).sort();
+  if (!files.length) return { tag: "", bytes: 0, count: 0 };
+
+  const entries = {};
+  for (const file of files) {
+    const n = Number(file.match(/\d+/)[0]);
+    const data = await readFile(path.join(dir, file));
+    entries[n] = `data:image/webp;base64,${data.toString("base64")}`;
+  }
+
+  const json = JSON.stringify(entries);
+  if (json.includes("</")) throw new Error("Slide payload contains a tag terminator.");
+  return {
+    tag: `<script type="application/json" id="slide-data">${json}</script>`,
+    bytes: Buffer.byteLength(json, "utf8"),
+    count: files.length,
+  };
+}
+
+/**
  * Replacements use FUNCTIONS, never strings: a minified bundle contains `$&`
  * and `$1`, which String.replace would otherwise treat as substitution
  * patterns and splice the original tag back into the output.
  */
-function inline(template, css, js) {
+function inline(template, css, js, slideTag) {
   const html = template
     .replace("<!--INLINE_STYLES-->", () => `<style>\n${css}\n</style>`)
+    .replace("<!--SLIDE_DATA-->", () => slideTag)
     .replace(
       '<script type="module" src="/src/main.tsx"></script>',
       () => `<script>\n${escapeForScript(js)}\n</script>`,
     );
-  if (html.includes("src/main.tsx") || html.includes("<!--INLINE_STYLES-->")) {
+  if (
+    html.includes("src/main.tsx") ||
+    html.includes("<!--INLINE_STYLES-->") ||
+    html.includes("<!--SLIDE_DATA-->")
+  ) {
     throw new Error("Template placeholders were not replaced — check index.html.");
   }
   return html;
@@ -101,13 +147,17 @@ async function assemble() {
       : Promise.resolve(""),
   ]);
 
-  // 1. Standalone, fully self-contained.
-  const standalone = inline(template, css, js);
+  const slideData = await slideDataTag();
+
+  // 1. Standalone, fully self-contained — slides inlined.
+  const standalone = inline(template, css, js, slideData.tag);
   await writeFile(standaloneFile, standalone, "utf8");
 
-  // 2. GitHub Pages build.
-  const version = createHash("sha256").update(standalone).digest("hex").slice(0, 12);
-  const pagesHtml = standalone
+  // 2. Pages — same bundle, slides left as separate lazy-loaded files.
+  const pagesBase = inline(template, css, js, "");
+
+  const version = createHash("sha256").update(pagesBase).digest("hex").slice(0, 12);
+  const pagesHtml = pagesBase
     .replace("</head>", () => `${PWA_HEAD}\n  </head>`)
     .replace("</body>", () => `${PWA_SCRIPT}\n  </body>`);
 
@@ -132,9 +182,13 @@ async function assemble() {
   }
   await writeFile(path.join(docsDir, "sw.js"), swOut, "utf8");
 
-  const sizeKb = (Buffer.byteLength(standalone, "utf8") / 1024).toFixed(1);
+  const standaloneMb = (Buffer.byteLength(standalone, "utf8") / 1024 / 1024).toFixed(2);
+  const pagesKb = (Buffer.byteLength(pagesHtml, "utf8") / 1024).toFixed(1);
+  const slideMb = (slideData.bytes / 1024 / 1024).toFixed(2);
   console.log(
-    `\nBuilt:\n  ${path.relative(projectDir, standaloneFile)} — ${sizeKb} KB, self-contained` +
+    `\nBuilt:\n  ${path.relative(projectDir, standaloneFile)} — ${standaloneMb} MB, self-contained` +
+      ` (${slideData.count} slides inlined, ${slideMb} MB)` +
+      `\n  docs/index.html — ${pagesKb} KB, ${slideData.count} slides fetched on demand` +
       `\n  docs/ — GitHub Pages build, cache version ${version}\n`,
   );
 }

@@ -4,12 +4,12 @@ import {
   Check,
   ChevronRight,
   Clock3,
-  FileText,
   Printer,
   RefreshCw,
 } from "lucide-react";
 import { modules, quizPoolFor, totalMinutes, type Module } from "./course";
 import { caseStudies, contrasts, diagnosticQuestions } from "./reference";
+import { SlideRangeLink } from "./slide-viewer";
 import { daysAgoKey, estimateHours, shuffle, type View } from "./lib";
 import {
   emptyModuleProgress,
@@ -235,7 +235,7 @@ export function LearningPath({ progress, navigate }: { progress: ProgressMap; na
               <div className="path-copy">
                 <div className="path-meta">
                   <span>{module.minutes} min</span>
-                  <span>Deck slides {module.slides}</span>
+                  <SlideRangeLink range={module.slides} />
                   {state.mastered && <span className="mastered-label">Mastered</span>}
                 </div>
                 <h2>
@@ -365,9 +365,7 @@ export function ModuleView({
             <span>
               <Clock3 size={14} aria-hidden="true" /> {module.minutes} minutes
             </span>
-            <span>
-              <FileText size={14} aria-hidden="true" /> Deck slides {module.slides}
-            </span>
+            <SlideRangeLink range={module.slides} />
           </div>
           <h1>
             <span className="visually-hidden">Stage {module.number}: </span>

@@ -68,6 +68,7 @@ const bankModule = await esbuild({
       export { practiceQuestions, modules } from ${JSON.stringify(path.join(projectDir, "src/course.ts"))};
       export { diagnosticQuestions, flashcards, toolkitTemplates, supplementaryQuestions } from ${JSON.stringify(path.join(projectDir, "src/reference.ts"))};
       export { presentOptions } from ${JSON.stringify(path.join(projectDir, "src/lib.ts"))};
+      export { slides, SLIDE_COUNT } from ${JSON.stringify(path.join(projectDir, "src/slides.ts"))};
     `,
     resolveDir: projectDir,
     loader: "ts",
@@ -82,6 +83,78 @@ const bank = await import(
 );
 
 const allQuestions = [...bank.practiceQuestions, ...bank.diagnosticQuestions];
+
+/* ---------------------------------------------------------------- *
+ * Slide citation integrity
+ *
+ * The course cites the source deck constantly — "Deck slides 21-35" on every
+ * stage, "Slide 33 - ..." on nineteen figures. Those citations were dead
+ * pointers until the deck was imported. This asserts they stay live: every
+ * number the course names must exist in the deck, and the stage ranges must
+ * partition all 98 slides with no gap and no overlap.
+ * ---------------------------------------------------------------- */
+
+const slideNumbers = new Set(bank.slides.map((slide) => slide.n));
+check(
+  "Every deck slide is present",
+  slideNumbers.size === bank.SLIDE_COUNT && bank.SLIDE_COUNT === 98,
+  `${slideNumbers.size} slides, SLIDE_COUNT ${bank.SLIDE_COUNT}`,
+);
+
+const citedInCaptions = [];
+for (const module of bank.modules) {
+  for (const section of module.sections) {
+    const caption = section.table?.caption;
+    if (!caption) continue;
+    const match = /^Slides?\s+(\d+)(?:\s*[\u2013\u2014-]\s*(\d+))?/.exec(caption);
+    if (match) citedInCaptions.push([Number(match[1]), match[2] ? Number(match[2]) : null, caption]);
+  }
+}
+check("Figure captions cite the deck", citedInCaptions.length >= 15, `${citedInCaptions.length} cited`);
+const brokenCaptions = citedInCaptions.filter(
+  ([first, last]) => !slideNumbers.has(first) || (last !== null && !slideNumbers.has(last)),
+);
+check(
+  "Every figure citation resolves to a real slide",
+  brokenCaptions.length === 0,
+  brokenCaptions.map(([, , caption]) => caption).join(" | "),
+);
+
+const covered = new Set();
+let rangeOverlap = false;
+for (const module of bank.modules) {
+  const [first, last] = module.slides.split(/[\u2013\u2014-]/).map((part) => Number(part.trim()));
+  check(`Stage ${module.number} cites a valid slide range`, slideNumbers.has(first) && slideNumbers.has(last), module.slides);
+  for (let n = first; n <= last; n += 1) {
+    if (covered.has(n)) rangeOverlap = true;
+    covered.add(n);
+  }
+}
+check("Stage ranges cover the whole deck with no overlap", covered.size === bank.SLIDE_COUNT && !rangeOverlap,
+  `${covered.size} of ${bank.SLIDE_COUNT} covered${rangeOverlap ? ", with overlap" : ""}`);
+check(
+  "Every slide is assigned to the stage whose range contains it",
+  bank.slides.every((slide) => {
+    const module = bank.modules.find((m) => m.id === slide.stage);
+    if (!module) return false;
+    const [first, last] = module.slides.split(/[\u2013\u2014-]/).map((part) => Number(part.trim()));
+    return slide.n >= first && slide.n <= last;
+  }),
+);
+// A title is either the slide\'s real heading or empty, never the fabricated
+// "Slide 98" — that produced the alt text "Slide 98: Slide 98". Empty is only
+// legitimate on a slide that genuinely has no words on it.
+check(
+  "No slide has a fabricated title",
+  bank.slides.every((slide) => !/^Slide \d+$/.test(slide.title)),
+  bank.slides.filter((s) => /^Slide \d+$/.test(s.title)).map((s) => s.n).join(", "),
+);
+check(
+  "Only wordless slides lack a title",
+  bank.slides.every((slide) => slide.title.length > 2 || slide.text === ""),
+  bank.slides.filter((s) => !s.title && s.text).map((s) => s.n).join(", "),
+);
+
 
 /**
  * Stage quizzes now RESAMPLE on every attempt, so the suite cannot replay
@@ -202,6 +275,33 @@ if (!existsSync(docsDir)) {
     "Standalone build stays free of external references",
     !(await readFile(artifactPath, "utf8")).includes('rel="manifest"'),
     "the offline single file must not reference assets it cannot load",
+  );
+
+  /*
+   * The two builds carry the deck differently on purpose. Standalone must be
+   * ONE file, so its slides are inlined. Pages must stay small on a phone, so
+   * its slides are separate files fetched on demand. Assert both, because
+   * getting it backwards is invisible until someone is on mobile data or has
+   * emailed the file to a colleague.
+   */
+  const standaloneHtml = await readFile(artifactPath, "utf8");
+  check(
+    "Standalone inlines every slide",
+    (standaloneHtml.match(/data:image\/webp;base64,/g) ?? []).length === 98,
+    `${(standaloneHtml.match(/data:image\/webp;base64,/g) ?? []).length} inlined`,
+  );
+  const pagesHtml = await readFile(path.join(docsDir, "index.html"), "utf8");
+  check(
+    "Pages build does NOT inline slides",
+    !pagesHtml.includes("data:image/webp;base64,"),
+    "inlining them would push a multi-megabyte page to every phone",
+  );
+  check("Pages build stays small", Buffer.byteLength(pagesHtml, "utf8") < 900 * 1024,
+    `${(Buffer.byteLength(pagesHtml, "utf8") / 1024).toFixed(0)} KB`);
+  check(
+    "All 98 slide images ship with the Pages build",
+    Array.from({ length: 98 }, (_, i) => `slide-${String(i + 1).padStart(2, "0")}.webp`)
+      .every((name) => existsSync(path.join(docsDir, "slides", name))),
   );
 }
 
@@ -592,6 +692,95 @@ check(
   !guideBodyText.includes("Check my recall") && (await page.locator(".guide-page .answer-option").count()) === 0,
 );
 
+/* -- the source deck ---------------------------------------------- */
+
+await page.evaluate(() => { window.location.hash = "deck"; });
+await page.waitForTimeout(500);
+const deckThumbs = await page.locator(".deck-grid img").count();
+check("Deck view shows every slide", deckThumbs === 98, `found ${deckThumbs}`);
+
+// An <img> that 404s still renders an element, so count decoded pixels.
+await page.locator(".deck-grid img").first().scrollIntoViewIfNeeded();
+await page.waitForTimeout(400);
+check(
+  "Slide images actually load",
+  await page.locator(".deck-grid img").first().evaluate((el) => el.complete && el.naturalWidth > 400),
+);
+check(
+  "Thumbnails are lazily loaded",
+  await page.locator(".deck-grid img").nth(40).evaluate((el) => el.loading === "lazy"),
+  "without this the Pages build fetches all 98 on arrival",
+);
+check(
+  "Slides have descriptive alt text, not just a number",
+  await page.locator(".deck-grid img").first().evaluate((el) => /^Slide \d+: .{3,}/.test(el.alt)),
+);
+
+// Filtering by stage must actually narrow the set.
+// Scoped to the filter row: the sidebar carries a button with the same name,
+// and an unscoped .first() picked that one and navigated off the deck.
+await page.locator(".deck-filter button").filter({ hasText: "Discovery and problem framing" }).click();
+await page.waitForTimeout(300);
+const filtered = await page.locator(".deck-grid img").count();
+check("Stage filter narrows the deck", filtered === 15, `Stage 2 covers slides 21-35; found ${filtered}`);
+
+// Back to the full deck before opening the lightbox: a filtered grid starts
+// at slide 21, and a couple of section-divider slides carry a title and no
+// body, which is legitimate but makes for a poor fixture.
+await page.locator(".deck-filter button").filter({ hasText: /^All / }).click();
+await page.waitForTimeout(300);
+
+// The lightbox.
+await page.locator(".deck-grid button").first().click();
+await page.waitForSelector(".slide-lightbox");
+check("Lightbox is a labelled modal dialog", await page.locator(".slide-lightbox").evaluate(
+  (el) => el.getAttribute("role") === "dialog" && el.getAttribute("aria-modal") === "true" && !!el.getAttribute("aria-label"),
+));
+const firstSlideAlt = await page.locator(".slide-lightbox img").getAttribute("alt");
+await page.keyboard.press("ArrowRight");
+await page.waitForTimeout(250);
+check(
+  "Arrow keys move through the deck",
+  (await page.locator(".slide-lightbox img").getAttribute("alt")) !== firstSlideAlt,
+);
+check("Lightbox shows the slide's own words", (await page.locator(".slide-text p").innerText()).length > 10);
+await page.keyboard.press("Escape");
+await page.waitForTimeout(250);
+check("Escape closes the lightbox", (await page.locator(".slide-lightbox").count()) === 0);
+check(
+  "Page scroll is restored after closing",
+  await page.evaluate(() => getComputedStyle(document.body).overflow !== "hidden"),
+);
+
+// The point of the whole exercise: a citation inside a lesson opens its slide.
+await page.evaluate(() => { window.location.hash = "module/discovery"; });
+await page.waitForTimeout(500);
+const citation = page.locator(".lesson-table caption .slide-cite").first();
+check("Figure captions render their citation as a control", (await citation.count()) === 1);
+const citationLabel = await citation.innerText();
+await citation.click();
+await page.waitForSelector(".slide-lightbox");
+const openedAlt = (await page.locator(".slide-lightbox img").getAttribute("alt")) ?? "";
+const citedNumber = /(\d+)/.exec(citationLabel)?.[1];
+check(
+  "A citation opens the slide it names",
+  openedAlt.startsWith(`Slide ${citedNumber}:`),
+  `caption said "${citationLabel.trim()}", lightbox opened "${openedAlt}"`,
+);
+await page.keyboard.press("Escape");
+await page.waitForTimeout(200);
+
+// Search must reach the deck's own wording, not only the course's paraphrase.
+await page.evaluate(() => { window.location.hash = "search"; });
+await page.waitForTimeout(300);
+await page.getByRole("searchbox", { name: "Search the course" }).fill("Lagging Indicators");
+await page.waitForTimeout(250);
+check(
+  "Search reaches the deck's own words",
+  // The kind label is uppercased by CSS, and innerText reports what is rendered.
+  (await page.locator(".search-result").allInnerTexts()).some((text) => /source deck/i.test(text)),
+);
+
 // Back to a stage page — the guide checks above navigated away.
 await page.evaluate(() => { window.location.hash = "module/outcomes"; });
 await page.waitForTimeout(500);
@@ -626,6 +815,7 @@ const axeViews = [
   ["glossary", "glossary"],
   ["cases", "worked cases"],
   ["guide", "guide"],
+  ["deck", "source deck"],
   ["sources", "sources"],
   ["divergences", "divergence register"],
   ["settings", "settings"],

@@ -13,6 +13,7 @@ import {
   Home,
   Library,
   Menu,
+  Presentation,
   Moon,
   Search,
   Settings2,
@@ -55,6 +56,8 @@ import { Capstone, CaseStudies, FieldGuide, Glossary, Toolkit } from "./views-ap
 import { Divergences, NotFound, SearchView, Settings, Sources, StorageWarning } from "./views-meta";
 import { Results } from "./views-results";
 import { Guide } from "./views-guide";
+import { Deck } from "./views-deck";
+import { SlideViewerProvider } from "./slide-viewer";
 
 const MOBILE_QUERY = "(max-width: 820px)";
 
@@ -216,6 +219,7 @@ export default function App() {
         k: "capstone",
         f: "fieldguide",
         e: "guide",
+        v: "deck",
         s: "search",
       };
       if (event.key === "?") {
@@ -295,6 +299,8 @@ export default function App() {
     content = <Glossary />;
   } else if (view === "guide") {
     content = <Guide navigate={navigate} />;
+  } else if (view === "deck") {
+    content = <Deck />;
   } else if (view === "cases") {
     content = <CaseStudies navigate={navigate} />;
   } else if (view === "sources") {
@@ -337,6 +343,7 @@ export default function App() {
   }
 
   return (
+    <SlideViewerProvider>
     <Shell
       shortcutsOpen={shortcutsOpen}
       setShortcutsOpen={setShortcutsOpen}
@@ -352,6 +359,7 @@ export default function App() {
     >
       {content}
     </Shell>
+    </SlideViewerProvider>
   );
 }
 
@@ -450,6 +458,7 @@ function Shell({
     { id: "toolkit", label: "Product toolkit", icon: <Wrench size={18} aria-hidden="true" /> },
     { id: "cases", label: "Worked cases", icon: <BookOpen size={18} aria-hidden="true" /> },
     { id: "guide", label: "Read the guide", icon: <FileText size={18} aria-hidden="true" /> },
+    { id: "deck", label: "Source deck", icon: <Presentation size={18} aria-hidden="true" /> },
     { id: "capstone", label: "Capstone", icon: <Target size={18} aria-hidden="true" /> },
     { id: "fieldguide", label: "DES field guide", icon: <BookMarked size={18} aria-hidden="true" /> },
     { id: "glossary", label: "Glossary", icon: <BookA size={18} aria-hidden="true" /> },
@@ -591,6 +600,7 @@ const SHORTCUTS: { key: string; label: string }[] = [
   { key: "K", label: "Capstone" },
   { key: "F", label: "DES field guide" },
   { key: "E", label: "Read the guide" },
+  { key: "V", label: "Source deck" },
   { key: "S", label: "Search" },
   { key: "?", label: "Show or hide this panel" },
 ];

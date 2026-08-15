@@ -3,6 +3,7 @@ import { CONTENT_REVIEWED, modules, sources, totalMinutes } from "./course";
 import { caseStudies, contrasts, fieldGuide, glossary, toolkitTemplates } from "./reference";
 import { estimateHours, type View } from "./lib";
 import { LessonTableView, PageIntro } from "./components";
+import { SlideRangeLink } from "./slide-viewer";
 
 /**
  * The full guide, as a document.
@@ -99,7 +100,7 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
               <h2>{module.title}</h2>
               <p className="guide-stage-sub">{module.subtitle}</p>
               <p className="guide-stage-meta">
-                Deck slides {module.slides} · {module.minutes} minutes
+                <SlideRangeLink range={module.slides} /> · {module.minutes} minutes
               </p>
             </header>
 

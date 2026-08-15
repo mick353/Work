@@ -25,6 +25,7 @@ export const TOP_LEVEL_VIEWS = [
   "glossary",
   "cases",
   "guide",
+  "deck",
   "sources",
   "divergences",
   "search",

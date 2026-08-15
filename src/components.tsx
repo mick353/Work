@@ -3,6 +3,7 @@ import { ExternalLink } from "lucide-react";
 import type { LessonTable, Question } from "./course";
 import { findSource } from "./course";
 import { presentOptions } from "./lib";
+import { SlideCaption } from "./slide-viewer";
 
 export function PageIntro({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) {
   return (
@@ -64,7 +65,11 @@ export function LessonTableView({ table }: { table: LessonTable }) {
   return (
     <div className="lesson-table-wrap">
       <table className="lesson-table">
-        {table.caption && <caption>{table.caption}</caption>}
+        {table.caption && (
+          <caption>
+            <SlideCaption text={table.caption} />
+          </caption>
+        )}
         <thead>
           <tr>
             {table.head.map((cell) => (

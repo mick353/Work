@@ -14,6 +14,7 @@ import {
 import { downloadFile, type View } from "./lib";
 import type { RubricMap, TextMap } from "./state";
 import { EmptyState, PageIntro, ProgressBar, SourceChips } from "./components";
+import { SlideRangeLink } from "./slide-viewer";
 
 function wordCount(value: string) {
   const trimmed = value.trim();
@@ -285,7 +286,7 @@ export function FieldGuide() {
           <section key={entry.id} id={entry.id}>
             <header>
               <h2>{entry.title}</h2>
-              {entry.slides && <span className="field-guide-slides">Deck slides {entry.slides}</span>}
+              {entry.slides && <SlideRangeLink range={entry.slides} className="field-guide-slides" />}
             </header>
             <p>{entry.summary}</p>
             <dl>
