@@ -10,7 +10,7 @@ import {
   ClipboardCheck,
   Compass,
   FileText,
-  GitCompare,
+  PlusCircle,
   Home,
   Library,
   Menu,
@@ -121,7 +121,7 @@ const NAV_GROUPS: NavGroup[] = [
       { id: "fieldguide", label: "DES field guide", icon: <BookMarked size={18} aria-hidden="true" /> },
       { id: "glossary", label: "Glossary", icon: <BookA size={18} aria-hidden="true" /> },
       { id: "sources", label: "Sources", icon: <Library size={18} aria-hidden="true" /> },
-      { id: "divergences", label: "Divergence register", icon: <GitCompare size={18} aria-hidden="true" /> },
+      { id: "divergences", label: "Course additions", icon: <PlusCircle size={18} aria-hidden="true" /> },
     ],
   },
 ];

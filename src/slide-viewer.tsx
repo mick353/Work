@@ -277,11 +277,13 @@ export function SlideCaption({ text }: { text: string }) {
 export function SlideRangeLink({ range, className }: { range: string; className?: string }) {
   const { open } = useSlideViewer();
   const first = Number(/^\s*(\d+)/.exec(range)?.[1]);
-  if (!first || !findSlide(first)) return <span className={className}>Deck slides {range}</span>;
+  // "Deck slides 32" when it names exactly one slide is just sloppy.
+  const label = `Deck slide${/^\s*\d+\s*$/.test(range) ? "" : "s"} ${range}`;
+  if (!first || !findSlide(first)) return <span className={className}>{label}</span>;
   return (
     <button className={`slide-cite ${className ?? ""}`} onClick={() => open(first)}>
       <Images size={13} aria-hidden="true" />
-      Deck slides {range}
+      {label}
       <span className="visually-hidden"> — open slide {first}</span>
     </button>
   );

@@ -6,8 +6,9 @@
  * should be preserved — it is what lets a learner move between this system and
  * the deck without translation.
  *
- * Where this system departs from the deck, the departure is recorded in
- * `divergences` (src/reference.ts) and surfaced in the app, so nobody quotes
+ * Where this course goes further than the deck, the addition is recorded in
+ * `divergences` (src/reference.ts) and surfaced in the app as "Course additions",
+ * framed as depth a briefing has no room for rather than as corrections, so nobody quotes
  * this material in a meeting and gets contradicted by the slides.
  */
 

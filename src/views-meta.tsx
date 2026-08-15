@@ -3,6 +3,7 @@ import { AlertTriangle, Brain, ChevronRight, Download, ExternalLink, RotateCcw, 
 import { CONTENT_REVIEWED, modules, sources } from "./course";
 import { caseStudies, contrasts, divergences, fieldGuide, flashcards, glossary, toolkitTemplates } from "./reference";
 import { slides } from "./slides";
+import { SlideRangeLink } from "./slide-viewer";
 import { BACKUP_VERSION, downloadFile, parseBackup, type View } from "./lib";
 import type { HistoryEntry, ProgressMap, ReviewMap, RubricMap, TextMap } from "./state";
 import { EmptyState, PageIntro } from "./components";
@@ -112,9 +113,9 @@ function buildIndex(): SearchRecord[] {
   divergences.forEach((item) => {
     records.push({
       id: `d-${item.id}`,
-      title: `Divergence: ${item.topic}`,
+      title: `Course addition: ${item.topic}`,
       body: `${item.deck} ${item.here} ${item.why}`,
-      kind: "Divergence",
+      kind: "Course addition",
       view: "divergences",
     });
   });
@@ -183,7 +184,7 @@ export function SearchView({ navigate }: { navigate: Navigate }) {
       <PageIntro
         eyebrow="Search"
         title="Find anything in the course"
-        body="Searches lesson content, flashcards, templates, the field guide, the divergence register, the sources, and all 98 slides of the source deck."
+        body="Searches lesson content, flashcards, templates, the field guide, the course additions, the sources, and all 98 slides of the source deck."
       />
       <div className="search-field">
         <Search size={20} aria-hidden="true" />
@@ -257,7 +258,7 @@ export function Sources({ navigate }: { navigate: Navigate }) {
           DES delivery phases are not the DTA service phases.
         </p>
         <button className="text-button" onClick={() => navigate("divergences")}>
-          See where this course departs from the deck <ChevronRight size={16} aria-hidden="true" />
+          See what this course adds to the deck <ChevronRight size={16} aria-hidden="true" />
         </button>
       </section>
 
@@ -286,35 +287,44 @@ export function Sources({ navigate }: { navigate: Navigate }) {
 }
 
 /* ------------------------------------------------------------------ *
- * Divergence register
+ * Course additions — what this course adds to the deck
  * ------------------------------------------------------------------ */
 
 export function Divergences() {
   return (
     <div className="page">
       <PageIntro
-        eyebrow="Divergence register"
-        title="Where this course departs from the deck"
-        body="This system improves on the source presentation in a handful of places. Every departure is listed here so you can quote either one deliberately, and so nobody is contradicted by the slides in a meeting."
+        eyebrow="Course additions"
+        title="What this course adds to the deck"
+        body="The deck is a briefing — it has one session to cover the whole of product management, so it earns its brevity. This course has about eight hours, and spends some of that going further in a few places. Those places are listed here rather than left for you to discover, so that when you use the deck's wording at work you know exactly where the extra depth came from."
       />
+      <p className="divergence-note">
+        Nothing here replaces the deck. Where a team already shares an artefact in the deck's format — a hypothesis
+        statement, a problem statement — keep using it. The additions below are for your own reasoning behind it.
+      </p>
       <div className="divergence-list">
         {divergences.map((item) => (
           <article key={item.id} className="divergence">
             <header>
               <h2>{item.topic}</h2>
-              <span>{item.slides === "not covered" ? "Not in the deck" : `Deck slides ${item.slides}`}</span>
+              {/* One entry covers ground the deck does not, so it has no slide to open. */}
+              {item.slides === "not covered" ? (
+                <span className="divergence-scope">Beyond the deck's scope</span>
+              ) : (
+                <SlideRangeLink range={item.slides} />
+              )}
             </header>
             <dl>
               <div>
-                <dt>The deck says</dt>
+                <dt>In the deck</dt>
                 <dd>{item.deck}</dd>
               </div>
               <div>
-                <dt>This course says</dt>
+                <dt>What the course adds</dt>
                 <dd>{item.here}</dd>
               </div>
               <div>
-                <dt>Why</dt>
+                <dt>What the addition buys you</dt>
                 <dd>{item.why}</dd>
               </div>
             </dl>

@@ -613,9 +613,24 @@ for (const term of ["Pre-Approval", "Program Increment", "Iteration path", "Seni
   check(`Field guide covers ${term}`, guideText.toLowerCase().includes(term.toLowerCase()));
 }
 
-await page.getByRole("button", { name: "Divergence register", exact: true }).click();
+await page.getByRole("button", { name: "Course additions", exact: true }).click();
 const divergenceCount = await page.locator(".divergence").count();
-check("Divergence register is populated", divergenceCount >= 5, `found ${divergenceCount}`);
+check("Course additions are populated", divergenceCount >= 5, `found ${divergenceCount}`);
+
+/*
+ * Tone check. This page describes a colleague's deck, and the previous
+ * wording ("Where this course departs from the deck", "a small correction")
+ * read as an errata list against departmental material. The relationship is
+ * briefing-to-workbook, so the page must not use the language of fault.
+ */
+const additionsText = (await page.locator(".page").innerText()).toLowerCase();
+const faultWords = ["departs from", "correction", "improves on", "the deck is wrong", "shortcoming", "deficien"];
+const found = faultWords.filter((word) => additionsText.includes(word));
+check("Course additions are framed as depth, not as fault", found.length === 0, found.join(", "));
+check(
+  "Course additions state that they do not replace the deck",
+  additionsText.includes("nothing here replaces the deck"),
+);
 
 await page.getByRole("button", { name: "Sources", exact: true }).click();
 const sourceCount = await page.locator(".source-list article").count();
@@ -898,7 +913,7 @@ const axeViews = [
   ["guide", "guide"],
   ["deck", "source deck"],
   ["sources", "sources"],
-  ["divergences", "divergence register"],
+  ["divergences", "course additions"],
   ["settings", "settings"],
   ["diagnostic", "diagnostic"],
 ];

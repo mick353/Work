@@ -541,13 +541,15 @@ p { color: var(--muted); line-height: 1.65; }
 .field-guide dd { margin: 0; color: var(--muted); line-height: 1.6; font-size: 14.5px; }
 
 .divergence-list { display: grid; gap: 18px; }
-.divergence { border: 1px solid var(--line); border-left: 4px solid var(--warning); background: var(--paper); padding: 24px 26px; border-radius: 8px; box-shadow: var(--shadow); }
+/* Brand, not --warning: amber reads as a fault flag, and these are additions
+   the course makes on top of the deck, not exceptions raised against it. */
+.divergence { border: 1px solid var(--line); border-left: 4px solid var(--brand); background: var(--paper); padding: 24px 26px; border-radius: 8px; box-shadow: var(--shadow); }
 .divergence header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .divergence h2 { margin: 0; font-size: 24px; }
 .divergence header span { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
 .divergence dl { display: grid; gap: 14px; margin: 0; }
 .divergence dl > div { display: grid; grid-template-columns: 150px 1fr; gap: 18px; }
-.divergence dt { color: var(--warning); font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.06em; padding-top: 3px; }
+.divergence dt { color: var(--brand); font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.06em; padding-top: 3px; }
 .divergence dd { margin: 0; color: var(--muted); line-height: 1.6; }
 
 .search-field { display: flex; align-items: center; gap: 12px; border: 1.5px solid var(--line-strong); border-radius: 8px; padding: 2px 16px; background: var(--paper-strong); }
@@ -1192,3 +1194,7 @@ p { color: var(--muted); line-height: 1.65; }
 .hero .commitment { margin: 24px 0 0; }
 @media (max-width: 1100px) { .hero-facts { grid-template-columns: repeat(2, 1fr); row-gap: 16px; } .hero-facts li:nth-child(3) { padding-left: 0; border-left: 0; } }
 @media (max-width: 560px) { .hero-facts { grid-template-columns: 1fr; } .hero-facts li { padding-left: 0; border-left: 0; } }
+
+/* Course additions — the note that sets the deck/course relationship. */
+.divergence-note { max-width: 760px; margin: -8px 0 26px; padding: 14px 18px; border-left: 3px solid var(--brand); border-radius: 0 10px 10px 0; background: var(--surface-alt); color: var(--muted); font-size: 14.5px; line-height: 1.6; }
+.divergence-scope { color: var(--muted); font-size: 12.5px; font-weight: 600; }

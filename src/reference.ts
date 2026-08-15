@@ -1,6 +1,6 @@
 /**
  * Reference material: flashcards, templates, the capstone, the DES field guide,
- * the divergence register and the diagnostic pool.
+ * the course additions and the diagnostic pool.
  *
  * The diagnostic pool is deliberately SEPARATE from the module and practice
  * questions. In the previous release the diagnostic reused each module's first
@@ -491,7 +491,15 @@ export const fieldGuide: FieldGuideEntry[] = [
 ];
 
 /* ------------------------------------------------------------------ *
- * Divergence register — where this course departs from the deck
+ * Course additions — where the course goes further than the briefing.
+ *
+ * Framing matters here. The deck has one session to cover the whole of
+ * product management; this course has about eight hours. Going deeper in a
+ * few places is what the extra time is for, not a verdict on the deck. Every
+ * entry is written that way: what the briefing says, what the course adds,
+ * and what the addition buys the learner. Where the two genuinely disagree,
+ * the entry says so and defers to the deck, because that is the artefact
+ * people are asked for at work.
  * ------------------------------------------------------------------ */
 
 export type Divergence = {
@@ -510,7 +518,7 @@ export const divergences: Divergence[] = [
     slides: "32",
     deck: "'We believe that [doing this] for [these people] will achieve [this outcome]. We'll know this is true when we see [this feedback / behaviour change].'",
     here: "Adds a disconfirming signal and a guardrail clause.",
-    why: "The deck's form can only be confirmed, never falsified, and it has no protection against achieving the outcome by harming another group. Both additions are required for the measure design taught in Stage 3 to work.",
+    why: "A hypothesis you can only confirm will always look confirmed. Naming the signal that would change your mind, and the group whose experience must not slide, turns the deck's statement into something the measure design in Stage 3 can actually test.",
   },
   {
     id: "d2",
@@ -518,31 +526,31 @@ export const divergences: Divergence[] = [
     slides: "31",
     deck: "'How might we [intended action] for [who] so that [desired outcome]?'",
     here: "Adds 'while [important guardrail]'.",
-    why: "Government services almost always have a group whose access must not be traded away for an average improvement. Naming it in the opportunity framing stops it being discovered at accessibility testing.",
+    why: "Government services almost always have a group whose access must not be traded away for an average improvement. Naming that group while you are still framing the opportunity is far cheaper than meeting it for the first time at accessibility testing.",
   },
   {
     id: "d3",
     topic: "Beta and Live",
     slides: "73",
-    deck: "Presents the DTA process as Discovery, Alpha, and a combined Beta/Live.",
-    here: "Treats Beta and Live as distinct phases.",
-    why: "The transition from Beta to Live is where enduring ownership is either assigned or lost. Combining them makes the most common product failure in government invisible.",
+    deck: "Shows the DTA process as Discovery, Alpha, and Beta/Live together — the right level of detail for a single slide on government alignment.",
+    here: "Separates Beta and Live, and spends a section on the handover between them.",
+    why: "The move from Beta to Live is where enduring ownership is either assigned or quietly dropped. It is worth a section of its own in a course, even though it is a fair simplification in a briefing.",
   },
   {
     id: "d4",
     topic: "Digital Service Standard",
     slides: "not covered",
-    deck: "The deck does not mention the Digital Service Standard.",
+    deck: "Not covered — the deck predates the current version and keeps to product-management fundamentals.",
     here: "Stage 8 covers Version 2.0: 10 criteria, applicability dates and lifecycle-wide use.",
-    why: "The standard is a live obligation for public-facing services and post-dates much of the deck's framing. Omitting it would leave a learner unaware of a requirement that applies to their work.",
+    why: "Version 2.0 is a live obligation for public-facing services, and a self-paced course has room for it. Knowing the ten criteria makes the deck's lifecycle material land against the standard your service is actually assessed on.",
   },
   {
     id: "d5",
     topic: "Attribution of the PM definition",
     slides: "8, 54",
-    deck: "Quotes 'the intersection of business, technology and user experience...' without attribution.",
-    here: "Attributes the framing to Martin Eriksson and lists him as a source.",
-    why: "Eriksson appears on the deck's own recommended-reading list (slide 97). Attributing the quote is a small correction that also points learners at the fuller argument.",
+    deck: "Uses the well-known 'intersection of business, technology and user experience' framing.",
+    here: "Names Martin Eriksson as its author and links his writing.",
+    why: "Eriksson is already on the deck's recommended-reading list at slide 97, so this simply joins the two up — and the original essay is worth the ten minutes.",
   },
   {
     id: "d6",
@@ -550,15 +558,15 @@ export const divergences: Divergence[] = [
     slides: "56",
     deck: "'MVPs aren't: a poor-quality solution, an unfinished product.'",
     here: "Adds that an MVP must still meet accessibility and security obligations.",
-    why: "In practice 'minimum' is the word most often used to defer accessibility. Making the obligation explicit closes that gap.",
+    why: "The deck is right that an MVP is not a poor-quality product. Saying so in terms of accessibility and security gives you the sentence to use when 'minimum' is offered as a reason to defer either.",
   },
   {
     id: "d7",
     topic: "Problem statement structure",
     slides: "30",
     deck: "Who / what / goal / where / when / why-impact.",
-    here: "Retained in full, with an added 'Evidence:' line.",
-    why: "An earlier version of this course collapsed where and when into 'context'. That diverged from what learners are asked to produce at work, so the deck's structure has been restored and only the evidence line added.",
+    here: "Kept exactly as the deck has it, with one 'Evidence:' line added underneath.",
+    why: "An earlier draft of this course compressed where and when into 'context'. That was a mistake: it stopped matching the artefact people are asked for at work, so the deck's structure was restored. Where the two disagree, the deck wins.",
   },
 ];
 

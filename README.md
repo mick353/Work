@@ -40,7 +40,7 @@ Because progress lives in one browser on one machine, use **Settings → Downloa
 | Practice contrasts | 17 pairs of what good looks like against what usually happens, each with a tell |
 | Glossary | 59 terms, each attributed to where it comes from |
 | DES field guide | Phases, principles, cadence, backlog fields and roles, for lookup at work |
-| Divergence register | Every place this course departs from the source deck, and why |
+| Course additions | The handful of places the course goes further than the briefing, and what the extra depth buys |
 | Sources | 15 primary and authoritative references, all free to read and date-checked |
 
 Also: a printable guide that reads as one continuous document, full-text search across the course *and* the deck, light and dark themes, keyboard-driven review, results charts, JSON backup and restore, and offline use as an installable app.
@@ -55,7 +55,7 @@ Also: a printable guide that reads as one continuous document, full-text search 
 
 **The sidebar groups by activity, not by category.** Fourteen destinations plus nine stages was one flat list — 23 buttons, taller than any laptop viewport, with everything weighted equally. They are now four collapsible groups (Learn, Practise, Apply, Reference). *Results* sits under Practise because you read it after drilling, not with the reference material it superficially resembles. Apply and Reference start collapsed; navigating into a collapsed group opens it.
 
-**The course sometimes improves on the deck.** Every such departure is listed in the **Divergence register** so you can quote either one deliberately and not be contradicted by the slides in a meeting.
+**The course goes further than the deck in a few places, and says where.** The deck is a briefing with one session to cover the whole field; this course has about eight hours, and spends some of it on depth a briefing has no room for. Those places are listed under **Course additions** — framed as what the extra depth buys rather than as corrections — so you always know which wording is the department's and which is the course's. Where the two genuinely disagree, the register defers to the deck.
 
 **The deck ships with the app, and the two builds carry it differently.** The standalone HTML inlines all 98 slides as data URIs, because a single file that loses its images the first time it is emailed on is not a single file. The GitHub Pages build leaves them as separate lazy-loaded files, so a phone downloads a ~580 KB page and fetches only the slides actually opened. Both are asserted by the QA suite, because getting it backwards is invisible until someone is on mobile data.
 
@@ -154,7 +154,7 @@ src/
   views-results.tsx   Results charts
   views-guide.tsx  The full printable guide
   views-deck.tsx   The source deck browser
-  views-meta.tsx   Search, sources, divergence register, settings
+  views-meta.tsx   Search, sources, course additions, settings
   App.tsx          Shell, routing, state wiring, mobile drawer
   styles.css       Single stylesheet
 ```
