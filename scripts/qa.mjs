@@ -493,6 +493,25 @@ check(
 );
 check("Dark theme is applied", (await page.locator("html").getAttribute("data-theme")) === "dark");
 
+// axe skips contrast checks on gradient backgrounds and reports "incomplete",
+// so light-on-gradient text can ship unreadable. Assert the computed colour.
+await page.evaluate(() => { window.location.hash = "dashboard"; });
+await page.waitForTimeout(300);
+const gradientText = await page.evaluate(() => {
+  const out = [];
+  document.querySelectorAll(".metric-strip span, .metric-strip strong, .hero h1, .hero p").forEach((el) => {
+    const c = getComputedStyle(el).color.match(/\d+/g).map(Number);
+    out.push({ text: (el.textContent || "").slice(0, 24), luminance: (c[0] + c[1] + c[2]) / 3 });
+  });
+  return out;
+});
+const tooDark = gradientText.filter((item) => item.luminance < 170);
+check(
+  "Text on gradient panels is light enough to read",
+  tooDark.length === 0,
+  tooDark.map((item) => `"${item.text}" avg ${Math.round(item.luminance)}`).join("; "),
+);
+
 await page.screenshot({ path: path.join(projectDir, "qa-desktop.png"), fullPage: false });
 
 /* ---------------------------------------------------------------- *

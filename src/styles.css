@@ -319,10 +319,14 @@ p { color: var(--muted); line-height: 1.65; }
 .metric-strip > div:nth-child(2) { background: linear-gradient(135deg, #1d4ed8, #0ea5e9); }
 .metric-strip > div:nth-child(3) { background: linear-gradient(135deg, #0f766e, #14b8a6); }
 .metric-strip > div:nth-child(4) { background: linear-gradient(135deg, #be185d, #f472b6); }
-.metric-strip strong, .metric-strip span { color: #fff; }
-.metric-strip span { opacity: 0.9; }
 .metric-strip strong { display: block; font-family: Georgia, serif; font-size: 30px; font-weight: 500; }
-.metric-strip span { display: block; margin-top: 4px; color: var(--muted); font-size: 12.5px; }
+.metric-strip span { display: block; margin-top: 4px; font-size: 12.5px; }
+/* Tiles are filled gradients, so their text must be white. Declared AFTER the
+   generic rule because source order decides, and axe cannot check contrast
+   over a gradient — it reports "incomplete", so this class of bug ships
+   silently unless the computed colour is asserted directly (see qa.mjs). */
+.metric-strip strong { color: #fff; }
+.metric-strip span { color: rgba(255, 255, 255, 0.92); }
 
 .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.75fr); gap: 26px; margin-top: 44px; }
 .study-plan, .study-rhythm { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 26px; box-shadow: var(--shadow); }
