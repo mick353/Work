@@ -28,16 +28,16 @@ function Defs({ id }: { id: string }) {
   return (
     <defs>
       <linearGradient id={`${id}-a`} x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="var(--accent)" />
-        <stop offset="100%" stopColor="var(--vivid)" />
+        <stop offset="0%" stopColor="var(--stage)" />
+        <stop offset="100%" stopColor="var(--stage)" stopOpacity="0.82" />
       </linearGradient>
       <linearGradient id={`${id}-soft`} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.16" />
-        <stop offset="100%" stopColor="var(--vivid)" stopOpacity="0.05" />
+        <stop offset="0%" stopColor="var(--stage)" stopOpacity="0.14" />
+        <stop offset="100%" stopColor="var(--stage)" stopOpacity="0.04" />
       </linearGradient>
       <linearGradient id={`${id}-panel`} x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.07" />
-        <stop offset="100%" stopColor="var(--vivid)" stopOpacity="0.02" />
+        <stop offset="0%" stopColor="var(--stage)" stopOpacity="0.05" />
+        <stop offset="100%" stopColor="var(--stage)" stopOpacity="0.015" />
       </linearGradient>
       <linearGradient id={`${id}-warm`} x1="0" y1="0" x2="1" y2="1">
         <stop offset="0%" stopColor="var(--vivid-8)" />
@@ -119,7 +119,7 @@ export function IllusProductVsProject({ className }: Props) {
       ].map((n) => (
         <g key={n.t}>
           <circle cx={n.x} cy={n.y} r="9" fill={`url(#${id}-a)`} />
-          <circle cx={n.x} cy={n.y} r="15" fill="none" stroke="var(--accent)" strokeOpacity="0.28" strokeWidth="2" />
+          <circle cx={n.x} cy={n.y} r="15" fill="none" stroke="var(--stage)" strokeOpacity="0.28" strokeWidth="2" />
         </g>
       ))}
       <text x="418" y="238" textAnchor="middle" className="illus-caption">value compounds while ownership holds</text>
@@ -144,12 +144,12 @@ export function IllusDiscoveryFunnel({ className }: Props) {
         const y = 48 + i * 46;
         return (
           <g key={label}>
-            <rect x="32" y={y} width="150" height="34" rx="12" fill={`url(#${id}-soft)`} stroke="var(--accent)" strokeOpacity="0.3" />
+            <rect x="32" y={y} width="150" height="34" rx="12" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.3" />
             <circle cx="52" cy={y + 17} r="5" fill={`url(#${id}-a)`} />
             <text x="68" y={y + 22} className="illus-caption-strong">{label}</text>
             <path
               d={`M188 ${y + 17} C 236 ${y + 17}, 244 130, 286 130`}
-              stroke="var(--accent)"
+              stroke="var(--stage)"
               strokeOpacity="0.4"
               strokeWidth="2.5"
               fill="none"
@@ -165,7 +165,7 @@ export function IllusDiscoveryFunnel({ className }: Props) {
       <text x="316" y="139" textAnchor="middle" className="illus-on-accent-lg">?</text>
       <text x="316" y="192" textAnchor="middle" className="illus-caption-dim">triangulate</text>
 
-      <path d="M356 130 h34" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" />
+      <path d="M356 130 h34" stroke="var(--stage)" strokeWidth="3" strokeLinecap="round" />
       <path d="M384 122 l12 8 -12 8 z" fill={`url(#${id}-a)`} />
 
       <g filter={`url(#${id}-lift)`}>
@@ -205,7 +205,7 @@ export function IllusOutputToOutcome({ className }: Props) {
       <path d="M222 200 C 288 196, 330 158, 380 122 S 470 66, 524 56 L524 212 L222 212 Z" fill={`url(#${id}-soft)`} />
       <path d="M222 200 C 288 196, 330 158, 380 122 S 470 66, 524 56" fill="none" stroke={`url(#${id}-a)`} strokeWidth="5" strokeLinecap="round" />
       <circle cx="524" cy="56" r="9" fill={`url(#${id}-a)`} />
-      <circle cx="524" cy="56" r="16" fill="none" stroke="var(--accent)" strokeOpacity="0.3" strokeWidth="2.5" />
+      <circle cx="524" cy="56" r="16" fill="none" stroke="var(--stage)" strokeOpacity="0.3" strokeWidth="2.5" />
 
       <line x1="222" y1="88" x2="530" y2="88" className="illus-guardrail" strokeDasharray="8 7" strokeWidth="3" />
       <rect x="430" y="66" width="98" height="22" rx="11" className="illus-warn-chip" />
@@ -230,9 +230,9 @@ export function IllusDvf({ className }: Props) {
       label="Three overlapping circles — desirable, feasible and viable. Each pair without the third has a named failure: usable but misaligned, operable but unwanted, or valuable but unbuildable. Only the centre satisfies all three."
     >
       <g filter={`url(#${id}-glow)`} opacity="0.9">
-        <circle cx="228" cy="112" r="82" fill={`url(#${id}-a)`} fillOpacity="0.24" stroke="var(--accent)" strokeWidth="2.5" />
-        <circle cx="332" cy="112" r="82" fill={`url(#${id}-cool)`} fillOpacity="0.24" stroke="var(--vivid-5)" strokeWidth="2.5" />
-        <circle cx="280" cy="188" r="82" fill={`url(#${id}-warm)`} fillOpacity="0.24" stroke="var(--vivid-8)" strokeWidth="2.5" />
+        <circle cx="228" cy="112" r="82" fill={`url(#${id}-a)`} fillOpacity="0.24" stroke="var(--stage)" strokeWidth="2.5" />
+        <circle cx="332" cy="112" r="82" fill={`url(#${id}-cool)`} fillOpacity="0.24" stroke="var(--stage-5)" strokeWidth="2.5" />
+        <circle cx="280" cy="188" r="82" fill={`url(#${id}-warm)`} fillOpacity="0.24" stroke="var(--stage-8)" strokeWidth="2.5" />
       </g>
 
       <text x="168" y="58" textAnchor="middle" className="illus-label">DESIRABLE</text>
@@ -266,11 +266,11 @@ export function IllusCadence({ className }: Props) {
       label="Discovery for the next Program Increment runs in parallel above delivery of the current one. Each ten-week increment contains five two-week sprints, and measurement from each feeds the next."
     >
       <text x="36" y="44" className="illus-kicker">DISCOVERY · PI N+1</text>
-      <rect x="36" y="56" width="488" height="40" rx="20" fill={`url(#${id}-soft)`} stroke="var(--accent)" strokeOpacity="0.32" strokeDasharray="10 8" />
+      <rect x="36" y="56" width="488" height="40" rx="20" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.32" strokeDasharray="10 8" />
       <text x="280" y="82" textAnchor="middle" className="illus-caption-strong">an increment ahead — refined before it is committed</text>
 
-      <path d="M280 100 v24" stroke="var(--accent)" strokeOpacity="0.5" strokeWidth="2.5" strokeDasharray="4 5" />
-      <path d="M272 118 l8 12 8 -12 z" fill="var(--accent)" fillOpacity="0.6" />
+      <path d="M280 100 v24" stroke="var(--stage)" strokeOpacity="0.5" strokeWidth="2.5" strokeDasharray="4 5" />
+      <path d="M272 118 l8 12 8 -12 z" fill="var(--stage)" fillOpacity="0.6" />
 
       <text x="36" y="152" className="illus-kicker">DELIVERY · PI N — 10 WEEKS</text>
       {[0, 1, 2, 3, 4].map((i) => (
@@ -302,7 +302,7 @@ export function IllusLifecycleLoop({ className }: Props) {
       className={className}
       label="A five-step continuous loop — discover, define, deliver, measure, iterate — which returns to discover rather than ending."
     >
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--accent)" strokeOpacity="0.22" strokeWidth="14" />
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--stage)" strokeOpacity="0.22" strokeWidth="14" />
       <circle cx={cx} cy={cy} r={r} fill="none" stroke={`url(#${id}-a)`} strokeWidth="4" strokeLinecap="round" strokeDasharray="86 24" />
       {steps.map((label, i) => {
         const angle = (i / steps.length) * Math.PI * 2 - Math.PI / 2;
@@ -455,7 +455,7 @@ export function IllusEvidenceChain({ className }: Props) {
             <text x={x + 49} y={y + 29} textAnchor="middle" className="illus-on-accent">{link}</text>
             {col < 3 && (
               <>
-                <path d={`M${x + 102} ${y + 23} h12`} stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" />
+                <path d={`M${x + 102} ${y + 23} h12`} stroke="var(--stage)" strokeWidth="3" strokeLinecap="round" />
                 <path d={`M${x + 112} ${y + 16} l10 7 -10 7 z`} fill={`url(#${id}-a)`} />
               </>
             )}
@@ -463,11 +463,11 @@ export function IllusEvidenceChain({ className }: Props) {
         );
       })}
       {/* row 1 wraps down to row 2 */}
-      <path d="M520 108 C 542 108, 542 146, 520 146" fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" />
+      <path d="M520 108 C 542 108, 542 146, 520 146" fill="none" stroke="var(--stage)" strokeWidth="3" strokeLinecap="round" />
       <path d="M528 139 l-10 7 0 -14 z" fill={`url(#${id}-a)`} />
       {/* learning returns to need */}
-      <path d="M44 192 C 18 192, 18 84, 44 84" fill="none" stroke="var(--vivid-3)" strokeWidth="3" strokeDasharray="7 6" strokeLinecap="round" />
-      <path d="M37 92 l8 -10 8 10 z" fill="var(--vivid-3)" />
+      <path d="M44 192 C 18 192, 18 84, 44 84" fill="none" stroke="var(--stage-3)" strokeWidth="3" strokeDasharray="7 6" strokeLinecap="round" />
+      <path d="M37 92 l8 -10 8 10 z" fill="var(--stage-3)" />
       <text x="280" y="36" textAnchor="middle" className="illus-caption-strong">
         every item traces back to a problem and forward to a measure
       </text>
