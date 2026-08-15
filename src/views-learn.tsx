@@ -581,7 +581,20 @@ export function ModuleView({
   );
 }
 
-const DIAGNOSTIC_LENGTH = 9;
+/**
+ * The diagnostic samples ONE question per stage rather than nine at random
+ * from the pool. Random sampling could miss stages entirely, which matters
+ * because the result recommends a starting stage — a recommendation drawn from
+ * a set that never tested half the curriculum is not worth much.
+ */
+function sampleDiagnostic() {
+  return modules
+    .map((module) => {
+      const forStage = diagnosticQuestions.filter((question) => question.moduleId === module.id);
+      return shuffle(forStage)[0];
+    })
+    .filter(Boolean);
+}
 
 export function Diagnostic({
   navigate,
@@ -594,7 +607,7 @@ export function Diagnostic({
 }) {
   const [seed, setSeed] = useState(0);
   const questions = useMemo(
-    () => shuffle(diagnosticQuestions).slice(0, DIAGNOSTIC_LENGTH),
+    sampleDiagnostic,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [seed],
   );
@@ -623,7 +636,7 @@ export function Diagnostic({
       <PageIntro
         eyebrow="Five-minute diagnostic"
         title="Find the first weak link"
-        body="This is not a grade. It samples nine questions from a pool that is separate from the course quizzes, so a good score here means the ideas transfer rather than that you remember the wording."
+        body="This is not a grade. It draws one question per stage from a 30-item pool kept separate from the course quizzes, so every stage is tested and a good score means the ideas transfer rather than that you remember the wording."
       />
       {!complete ? (
         <section className="knowledge-check diagnostic-list">
