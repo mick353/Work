@@ -3,6 +3,7 @@ import {
   Brain,
   BookMarked,
   Check,
+  BarChart3,
   ClipboardCheck,
   Compass,
   GitCompare,
@@ -33,6 +34,7 @@ import {
   emptyModuleProgress,
   masteryState,
   normaliseModuleProgress,
+  type HistoryEntry,
   useSalt,
   usePreferredTheme,
   useStorageStatus,
@@ -47,6 +49,7 @@ import { Dashboard, Diagnostic, LearningPath, ModuleView } from "./views-learn";
 import { Practice, Review, selectDueCards } from "./views-practice";
 import { Capstone, FieldGuide, Toolkit } from "./views-apply";
 import { Divergences, NotFound, SearchView, Settings, Sources, StorageWarning } from "./views-meta";
+import { Results } from "./views-results";
 
 const MOBILE_QUERY = "(max-width: 820px)";
 
@@ -79,6 +82,15 @@ export default function App() {
   const [rubric, setRubric, overwriteRubric] = useStoredState<RubricMap>("rubric", {});
   const [practiceBest, setPracticeBest, overwritePracticeBest] = useStoredState<number>("practice-best", 0);
   const [studyDays, setStudyDays, overwriteStudyDays] = useStoredState<string[]>("study-days", []);
+  const [history, setHistory, overwriteHistory] = useStoredState<HistoryEntry[]>("history", []);
+
+  const recordAttempt = useCallback(
+    (entry: Omit<HistoryEntry, "at">) => {
+      // Capped so a heavy user cannot grow local storage without bound.
+      setHistory((current) => [...current, { ...entry, at: Date.now() }].slice(-400));
+    },
+    [setHistory],
+  );
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -160,6 +172,7 @@ export default function App() {
       overwriteRubric((payload.rubric ?? {}) as RubricMap);
       overwriteStudyDays((payload.studyDays ?? []) as string[]);
       overwritePracticeBest((payload.practiceBest ?? 0) as number);
+      overwriteHistory((payload.history ?? []) as HistoryEntry[]);
     },
     [
       overwriteProgress,
@@ -169,6 +182,7 @@ export default function App() {
       overwriteRubric,
       overwriteStudyDays,
       overwritePracticeBest,
+      overwriteHistory,
     ],
   );
 
@@ -195,15 +209,26 @@ export default function App() {
   } else if (view === "path") {
     content = <LearningPath progress={progress} navigate={navigate} />;
   } else if (view === "diagnostic") {
-    content = <Diagnostic navigate={navigate} salt={salt} />;
+    content = <Diagnostic navigate={navigate} salt={salt} onComplete={recordAttempt} />;
   } else if (view === "review") {
     content = <Review reviews={reviews} onRate={recordReview} navigate={navigate as (view: string) => void} />;
   } else if (view === "practice") {
-    content = <Practice best={practiceBest} setBest={setPracticeBest} salt={salt} />;
+    content = <Practice best={practiceBest} setBest={setPracticeBest} salt={salt} onComplete={recordAttempt} />;
   } else if (view === "toolkit") {
     content = <Toolkit values={toolkit} setValues={setToolkit} />;
   } else if (view === "capstone") {
     content = <Capstone values={capstone} setValues={setCapstone} rubric={rubric} setRubric={setRubric} />;
+  } else if (view === "results") {
+    content = (
+      <Results
+        progress={progress}
+        reviews={reviews}
+        history={history}
+        studyDays={studyDays}
+        practiceBest={practiceBest}
+        navigate={navigate}
+      />
+    );
   } else if (view === "fieldguide") {
     content = <FieldGuide />;
   } else if (view === "sources") {
@@ -222,6 +247,7 @@ export default function App() {
         rubric={rubric}
         studyDays={studyDays}
         practiceBest={practiceBest}
+        history={history}
         salt={salt}
         onImport={handleImport}
         onReset={handleReset}
@@ -237,6 +263,7 @@ export default function App() {
         update={(changes) => updateModule(module.id, changes)}
         navigate={navigate}
         salt={salt}
+        onQuizScored={recordAttempt}
       />
     ) : (
       <NotFound navigate={navigate} />
@@ -347,6 +374,7 @@ function Shell({
     { id: "path", label: "Learning path", icon: <Compass size={18} aria-hidden="true" /> },
     { id: "review", label: "Review", icon: <Brain size={18} aria-hidden="true" /> },
     { id: "practice", label: "Mixed practice", icon: <ClipboardCheck size={18} aria-hidden="true" /> },
+    { id: "results", label: "Results", icon: <BarChart3 size={18} aria-hidden="true" /> },
     { id: "toolkit", label: "Product toolkit", icon: <Wrench size={18} aria-hidden="true" /> },
     { id: "capstone", label: "Capstone", icon: <Target size={18} aria-hidden="true" /> },
     { id: "fieldguide", label: "DES field guide", icon: <BookMarked size={18} aria-hidden="true" /> },

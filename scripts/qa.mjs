@@ -451,6 +451,7 @@ const axeViews = [
   ["module/thinking", "stage 1"],
   ["review", "review"],
   ["practice", "mixed practice"],
+  ["results", "results dashboard"],
   ["toolkit", "toolkit"],
   ["capstone", "capstone"],
   ["fieldguide", "field guide"],

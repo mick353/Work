@@ -24,6 +24,21 @@ export type ModuleProgress = {
   attempts: number;
 };
 
+/**
+ * An append-only log of scored attempts. The previous release stored only a
+ * best score per stage, which cannot answer "am I improving?" — the question a
+ * learner actually has. Every entry is timestamped so the results view can plot
+ * trends rather than a single number.
+ */
+export type HistoryEntry = {
+  at: number;
+  kind: "quiz" | "practice" | "diagnostic";
+  moduleId?: string;
+  score: number;
+  correct: number;
+  total: number;
+};
+
 export type ProgressMap = Record<string, ModuleProgress>;
 export type ReviewMap = Record<string, ReviewSchedule>;
 export type TextMap = Record<string, string>;

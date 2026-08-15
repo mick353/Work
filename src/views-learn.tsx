@@ -10,7 +10,14 @@ import {
 import { modules, totalMinutes, type Module } from "./course";
 import { diagnosticQuestions } from "./reference";
 import { daysAgoKey, formatMinutes, shuffle, type View } from "./lib";
-import { emptyModuleProgress, masteryState, MASTERY_QUIZ_THRESHOLD, type ModuleProgress, type ProgressMap } from "./state";
+import {
+  emptyModuleProgress,
+  masteryState,
+  MASTERY_QUIZ_THRESHOLD,
+  type HistoryEntry,
+  type ModuleProgress,
+  type ProgressMap,
+} from "./state";
 import { Feedback, LessonTableView, PageIntro, ProgressBar, QuestionCard, SourceChips } from "./components";
 
 type Navigate = (view: View) => void;
@@ -256,12 +263,14 @@ export function ModuleView({
   update,
   navigate,
   salt,
+  onQuizScored,
 }: {
   module: Module;
   progress: ModuleProgress;
   update: (changes: Partial<ModuleProgress>) => void;
   navigate: Navigate;
   salt: string;
+  onQuizScored: (entry: Omit<HistoryEntry, "at">) => void;
 }) {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
@@ -274,6 +283,7 @@ export function ModuleView({
     const correct = module.questions.filter((question) => answers[question.id] === question.answer).length;
     const score = Math.round((correct / module.questions.length) * 100);
     update({ quizScore: Math.max(progress.quizScore, score), attempts: progress.attempts + 1 });
+    onQuizScored({ kind: "quiz", moduleId: module.id, score, correct, total: module.questions.length });
     setQuizSubmitted(true);
   };
 
@@ -551,7 +561,15 @@ export function ModuleView({
 
 const DIAGNOSTIC_LENGTH = 9;
 
-export function Diagnostic({ navigate, salt }: { navigate: Navigate; salt: string }) {
+export function Diagnostic({
+  navigate,
+  salt,
+  onComplete,
+}: {
+  navigate: Navigate;
+  salt: string;
+  onComplete: (entry: Omit<HistoryEntry, "at">) => void;
+}) {
   const [seed, setSeed] = useState(0);
   const questions = useMemo(
     () => shuffle(diagnosticQuestions).slice(0, DIAGNOSTIC_LENGTH),
@@ -604,6 +622,12 @@ export function Diagnostic({ navigate, salt }: { navigate: Navigate; salt: strin
             disabled={Object.keys(answers).length !== questions.length}
             onClick={() => {
               setComplete(true);
+              onComplete({
+                kind: "diagnostic",
+                score: Math.round((correct / questions.length) * 100),
+                correct,
+                total: questions.length,
+              });
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
           >

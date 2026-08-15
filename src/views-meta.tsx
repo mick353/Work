@@ -3,7 +3,7 @@ import { AlertTriangle, Brain, ChevronRight, Download, ExternalLink, RotateCcw, 
 import { CONTENT_REVIEWED, modules, sources } from "./course";
 import { divergences, fieldGuide, flashcards, toolkitTemplates } from "./reference";
 import { BACKUP_VERSION, downloadFile, parseBackup, type View } from "./lib";
-import type { ProgressMap, ReviewMap, RubricMap, TextMap } from "./state";
+import type { HistoryEntry, ProgressMap, ReviewMap, RubricMap, TextMap } from "./state";
 import { EmptyState, PageIntro } from "./components";
 
 type Navigate = (view: View) => void;
@@ -291,6 +291,7 @@ export function Settings({
   rubric,
   studyDays,
   practiceBest,
+  history,
   salt,
   onImport,
   onReset,
@@ -302,6 +303,7 @@ export function Settings({
   rubric: RubricMap;
   studyDays: string[];
   practiceBest: number;
+  history: HistoryEntry[];
   salt: string;
   onImport: (payload: ReturnType<typeof parseBackup>) => void;
   onReset: () => void;
@@ -321,6 +323,7 @@ export function Settings({
         rubric,
         studyDays,
         practiceBest,
+        history,
         salt,
       },
       null,
@@ -384,7 +387,7 @@ export function Settings({
         <Download size={24} aria-hidden="true" />
         <div>
           <h2>Download a backup</h2>
-          <p>Save progress, review intervals, toolkit drafts, capstone answers and self-assessment as JSON.</p>
+          <p>Save progress, review intervals, attempt history, toolkit drafts, capstone answers and self-assessment as JSON.</p>
           <button className="secondary" onClick={exportData}>
             Download backup
           </button>

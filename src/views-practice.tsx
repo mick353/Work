@@ -3,7 +3,7 @@ import { Brain, ChevronRight, RefreshCw, Trophy } from "lucide-react";
 import { findModule, practiceQuestions, type PracticeQuestion } from "./course";
 import { FLASHCARD_KIND_LABEL, flashcards, type Flashcard } from "./reference";
 import { describeInterval, formatDue, shuffle, type Rating, type ReviewSchedule } from "./lib";
-import type { ReviewMap } from "./state";
+import type { HistoryEntry, ReviewMap } from "./state";
 import { Feedback, PageIntro, ProgressBar, QuestionCard } from "./components";
 
 const SESSION_SIZE = 8;
@@ -186,10 +186,12 @@ export function Practice({
   best,
   setBest,
   salt,
+  onComplete,
 }: {
   best: number;
   setBest: (score: number) => void;
   salt: string;
+  onComplete: (entry: Omit<HistoryEntry, "at">) => void;
 }) {
   const [questions, setQuestions] = useState<PracticeQuestion[]>([]);
   const [index, setIndex] = useState(0);
@@ -278,8 +280,10 @@ export function Practice({
     const nextResults = [...results, { question, correct }];
     setResults(nextResults);
     if (index === questions.length - 1) {
-      const score = Math.round((nextResults.filter((item) => item.correct).length / questions.length) * 100);
+      const correctCount = nextResults.filter((item) => item.correct).length;
+      const score = Math.round((correctCount / questions.length) * 100);
       if (score > best) setBest(score);
+      onComplete({ kind: "practice", score, correct: correctCount, total: questions.length });
       setFinished(true);
     } else {
       setIndex((current) => current + 1);

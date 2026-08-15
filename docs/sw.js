@@ -2,7 +2,7 @@
  * Offline service worker for the GitHub Pages build.
  *
  * The whole app is one HTML file, so the cache is tiny: the document, the
- * manifest and the icons. 54302ad60dee is replaced at build time with a
+ * manifest and the icons. b73c18248900 is replaced at build time with a
  * hash of the generated HTML, so a new release always busts the cache rather
  * than leaving someone stuck on an old copy of the course.
  *
@@ -11,7 +11,7 @@
  * fallback whenever the network is unavailable.
  */
 
-const VERSION = "54302ad60dee";
+const VERSION = "b73c18248900";
 const CACHE = `product-practice-${VERSION}`;
 const SHELL = [
   "./",

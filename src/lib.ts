@@ -18,6 +18,7 @@ export const TOP_LEVEL_VIEWS = [
   "diagnostic",
   "review",
   "practice",
+  "results",
   "toolkit",
   "capstone",
   "fieldguide",
@@ -355,6 +356,7 @@ export type BackupPayload = {
   rubric?: unknown;
   studyDays?: unknown;
   practiceBest?: unknown;
+  history?: unknown;
   salt?: unknown;
 };
 
@@ -404,6 +406,8 @@ export function parseBackup(raw: string): BackupParseResult {
       rubric: isRecord(candidate.rubric) ? candidate.rubric : {},
       studyDays: Array.isArray(candidate.studyDays) ? candidate.studyDays : [],
       practiceBest: typeof candidate.practiceBest === "number" ? candidate.practiceBest : 0,
+      // Absent in v1 backups; an empty log is the correct migration.
+      history: Array.isArray(candidate.history) ? candidate.history : [],
       salt: typeof candidate.salt === "string" ? candidate.salt : undefined,
     },
   };
