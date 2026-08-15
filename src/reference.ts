@@ -800,3 +800,323 @@ export const glossary: GlossaryEntry[] = [
   { term: "Whole-of-service", origin: "Deck", moduleId: "government", definition: "Optimising the end-to-end experience across channels and systems, including assisted and non-digital, rather than one interface or project." },
   { term: "WSJF", origin: "SAFe", moduleId: "delivery", definition: "Weighted Shortest Job First: relative cost of delay divided by relative job duration or size. A comparative sequencing aid, not a guarantee." },
 ];
+
+/* ------------------------------------------------------------------ *
+ * Supplementary question bank
+ *
+ * These join the MIXED PRACTICE pool but not the stage quizzes. Keeping the
+ * quizzes tight (4–5 questions) preserves the meaning of the 75% mastery
+ * threshold, while the practice pool gets deep enough that interleaving stays
+ * genuinely unpredictable rather than becoming a memorisation exercise.
+ *
+ * Answer indices cycle 0–3 so the stored data stays balanced; display order is
+ * permuted per learner regardless.
+ * ------------------------------------------------------------------ */
+
+export const supplementaryQuestions: Question[] = [
+  /* --- Stage 1: product thinking and strategy --- */
+  {
+    id: "x-think-1", moduleId: "thinking",
+    prompt: "A service has been live for three years, has a named owner, a backlog and a quarterly improvement cycle. Funding arrives as a series of discrete projects. What is it?",
+    options: ["A product, funded by projects", "A project, mislabelled as a product", "Neither — funding model decides", "A programme of work"],
+    answer: 0,
+    optionNotes: ["", "Ownership, backlog and improvement cadence are the defining properties. It is a product regardless of how the money arrives.", "Funding is a constraint on a product, not its definition. The deck is explicit that product thinking can operate inside project funding.", "A programme coordinates related projects. It says nothing about enduring ownership of a service."],
+    rationale: "Ongoing ownership, an evolving backlog and an improvement cadence make it a product. The funding model is a constraint to work within, not a definition.",
+  },
+  {
+    id: "x-think-2", moduleId: "thinking",
+    prompt: "Which is the clearest example of the deck's 'delivery → learning' shift?",
+    options: [ "Running a retrospective on team process", "Instrumenting a release so it produces evidence that changes the next decision", "Increasing deployment frequency","Publishing a release calendar"],
+    answer: 1,
+    optionNotes: [ "Retrospectives improve how the team works. Useful, but they examine process rather than whether the product changed anything.", "", "Frequency is a delivery capability. Shipping more often without measuring effect just produces wrong answers faster.","A calendar communicates timing. It generates no evidence about whether the work mattered."],
+    rationale: "The shift is about each release being expected to teach you something that alters what you do next — not about cadence or process hygiene.",
+  },
+  {
+    id: "x-think-3", moduleId: "thinking",
+    prompt: "Your vision statement could describe almost any government service. What is the likely problem?",
+    options: [ "It has no measurable target", "It is aspirational rather than operational", "It describes a generic quality rather than a specific future state for specific users","It is too short"],
+    answer: 2,
+    optionNotes: [ "Visions are not supposed to carry targets — that is what key results do.", "A vision should be aspirational. That is its job.", "","Length is not the issue; some of the best visions are one line."],
+    rationale: "'Simpler, faster, better' fits everything and therefore guides nothing. A vision has to name who it is for and what specifically becomes possible.",
+  },
+  {
+    id: "x-think-4", moduleId: "thinking",
+    prompt: "Which trade-off is the deck actually asking product managers to make?",
+    options: [ "Discovery versus delivery","Speed versus quality", "Users versus the business", "What to pursue now versus what to explicitly defer"],
+    answer: 3,
+    optionNotes: [ "The deck argues these run in parallel, an increment apart — not that you choose between them.","A real tension, but not the strategic choice the deck names.", "The role exists to hold these together, not to pick one.", ""],
+    rationale: "Strategy is choosing priorities, focusing investment and deciding what not to do. Naming the deferral is what makes it a decision rather than a wish list.",
+  },
+
+  /* --- Stage 2: discovery --- */
+  {
+    id: "x-disc-1", moduleId: "discovery",
+    prompt: "Support data shows the top call reason is 'status enquiry'. What does that tell you on its own?",
+    options: [ "That self-service would reduce calls", "That the portal needs a status page","That status information is hard to find", "That people are calling about status, and nothing about why"],
+    answer: 3,
+    optionNotes: [ "That is a hypothesis, and an untested one. Calls might move to another channel instead.", "A solution derived from a call-reason code. This is exactly the jump discovery exists to prevent.","Plausible, but it is an inference. They might be calling because they distrust what they can see.", ""],
+    rationale: "Operational data tells you what is happening at volume. It never tells you why, and call-reason codes are assigned by staff under time pressure.",
+  },
+  {
+    id: "x-disc-2", moduleId: "discovery",
+    prompt: "A five-whys chain ends at 'because the service grew through several projects and was never consolidated'. What kind of finding is that?",
+    options: ["A user need", "A usability problem", "A structural cause outside the current team's control", "An invalid conclusion — five whys should end at a user"],
+    answer: 2,
+    optionNotes: ["It describes the system's history, not what any user is trying to achieve.", "Usability is what people experience. This explains why the experience is that way.", "", "Five whys should end at a cause, wherever it sits. Ending at a structural one is common in government and is useful information."],
+    rationale: "The deck's own chain ends here deliberately. Naming a structural cause tells you the problem cannot be fully solved at the interface — which changes what you propose and to whom.",
+  },
+  {
+    id: "x-disc-3", moduleId: "discovery",
+    prompt: "Which is the strongest evidence that a persona is doing real work?",
+    options: [ "It is grounded in interviews and observation", "It changes a prioritisation decision","It has a name and a photograph", "It was signed off by stakeholders"],
+    answer: 1,
+    optionNotes: [ "Necessary, but not sufficient — well-researched personas still gather dust.", "","Presentation. It can be beautifully produced and entirely invented.", "Sign-off establishes agreement, not accuracy."],
+    rationale: "Research grounding is the entry price. The test the deck applies to every artefact is whether it improves a consequential decision.",
+  },
+  {
+    id: "x-disc-4", moduleId: "discovery",
+    prompt: "Which of these belongs in a journey map rather than a service blueprint?",
+    options: ["The user's emotional low point", "The queue that assessment requests sit in", "The legacy system holding application records", "The team responsible for manual verification"],
+    answer: 0,
+    optionNotes: ["", "Back-stage process. Blueprint.", "Supporting system. Blueprint.", "Back-stage people. Blueprint."],
+    rationale: "Journey maps capture the user's experience over time — goals, touchpoints, emotions, pain points. Blueprints capture what happens behind the curtain to produce it.",
+  },
+
+  /* --- Stage 3: outcomes --- */
+  {
+    id: "x-out-1", moduleId: "outcomes",
+    prompt: "A key result reads 'improve the provider experience'. What is missing?",
+    options: [ "A baseline, a target and a timeframe", "An initiative to deliver it", "Stakeholder agreement","A named owner"],
+    answer: 0,
+    optionNotes: [ "", "Initiatives are how you might move it. Their absence does not stop it being measurable.", "Agreement on an unmeasurable statement is agreement about nothing.","Ownership matters but is not what makes a key result measurable."],
+    rationale: "Without a baseline you cannot tell whether it moved; without a target you cannot tell whether it moved enough; without a timeframe you cannot tell when to check.",
+  },
+  {
+    id: "x-out-2", moduleId: "outcomes",
+    prompt: "Your team hits a grade 4 on every key result, three quarters running. What is the most likely explanation?",
+    options: [ "The measures are well designed", "The targets are being set below what the team already expects to achieve", "The grading scale is being applied too generously","Exceptional delivery performance"],
+    answer: 1,
+    optionNotes: [ "Well-designed targets should occasionally be missed. Never missing means they carry no information.", "", "Generous grading is a variant of the same problem, but the deck's scale is specific enough that target-setting is the usual culprit.","Possible, but consistently exceeding every target is a stronger signal about the targets than the team."],
+    rationale: "Targets that are always exceeded have stopped being targets. A mix of 2s and 3s with clear insight is more useful to the organisation than a wall of 4s.",
+  },
+  {
+    id: "x-out-3", moduleId: "outcomes",
+    prompt: "Which pairing would best detect that a faster online form is pushing failures onto the phone channel?",
+    options: [ "Submission count and error count","Completion rate and satisfaction", "Completion rate and assisted-channel contact volume", "Time on page and bounce rate"],
+    answer: 2,
+    optionNotes: [ "Both count online activity. A user who abandons and phones instead appears in neither.","Both measure the online channel. Neither can see the phone queue.", "", "Both are online engagement measures and neither speaks to the other channel."],
+    rationale: "Displacement is only visible if you measure the place the demand moves to. That is precisely what a guardrail on the assisted channel is for.",
+  },
+  {
+    id: "x-out-4", moduleId: "outcomes",
+    prompt: "A dashboard reports 'notifications sent: 42,000'. Under what condition is that worth reporting?",
+    options: ["When the number is growing", "When it is compared against last quarter", "Never — it is a pure activity count", "When it is paired with whether recipients acted on them"],
+    answer: 3,
+    optionNotes: ["Growth in an activity count tells you the system is busier, not better.", "A comparison of two activity counts is still an activity count.", "Too absolute — as a denominator for an action rate it is genuinely useful.", ""],
+    rationale: "Volume becomes meaningful the moment it is the denominator of a behaviour: of 42,000 sent, how many led to the action the notification existed to prompt?",
+  },
+
+  /* --- Stage 4: exploration --- */
+  {
+    id: "x-exp-1", moduleId: "exploration",
+    prompt: "Which option should always be on the table before a build option is chosen?",
+    options: [ "Buying a commercial product", "Extending an existing system", "Doing nothing this financial year","Removing the step or changing the process entirely"],
+    answer: 3,
+    optionNotes: [ "Sometimes right, but it is still a build-or-buy solution to an assumed problem.", "A sensible reuse option, but again a technology response.", "A legitimate choice, but deferral is not the same as questioning whether the step needs to exist.",""],
+    rationale: "The deck asks for non-build, process and policy options in the option set. The cheapest fix is often deleting a step that only exists because of how the department is organised.",
+  },
+  {
+    id: "x-exp-2", moduleId: "exploration",
+    prompt: "You run a prototype test with eight providers. Six complete the task, two do not. What have you learned?",
+    options: ["The design works for 75% of providers", "The design is ready to build", "That the concept is broadly comprehensible, and there are two failure modes worth understanding", "Nothing — the sample is too small"],
+    answer: 2,
+    optionNotes: ["Eight participants cannot support a percentage. Treating qualitative counts as rates is a common misreading.", "Comprehension is one risk. Feasibility, viability and scale are untested.", "", "Eight is a reasonable qualitative sample for comprehension. The failures are the most informative part."],
+    rationale: "Small-sample qualitative work tells you what can go wrong and why, not how often. The two failures are the finding; go and understand them.",
+  },
+  {
+    id: "x-exp-3", moduleId: "exploration",
+    prompt: "'We'll build a small version and see how it goes.' What is missing for this to be an MVP?",
+    options: ["A budget", "A defined decision and a result that would change it", "Full accessibility conformance", "A production release plan"],
+    answer: 1,
+    optionNotes: ["Cost matters, but a funded release that teaches you nothing is still not an MVP.", "", "Required regardless — but its presence does not make something an MVP.", "An MVP may or may not go to production; that is not the defining property."],
+    rationale: "'See how it goes' has no decision attached, so any result can be rationalised. An MVP exists to produce evidence about a specific question you have committed to acting on.",
+  },
+  {
+    id: "x-exp-4", moduleId: "exploration",
+    prompt: "Policy will not permit the detail your design depends on. Which lens has failed, and what happens next?",
+    options: [ "Viability — test whether the outcome can be reached within the constraint, or make the case to change it","Desirability — redesign around what users want", "Feasibility — find a technical workaround", "Usability — simplify the interface"],
+    answer: 0,
+    optionNotes: [ "","Users may well want it. That is not the blocker.", "The technology is not the constraint here; the rule is.", "Simplifying does not make a prohibited disclosure permitted."],
+    rationale: "Policy and legal conditions are the viability lens. The two legitimate moves are designing to meet the intent within the constraint, or taking evidence to the policy owner.",
+  },
+
+  /* --- Stage 5: delivery --- */
+  {
+    id: "x-del-1", moduleId: "delivery",
+    prompt: "Two items: A is high value, high urgency, very large. B is moderate value, moderate urgency, very small. What does WSJF typically suggest?",
+    options: [ "B first, because dividing by size favours it", "Neither — WSJF cannot compare them", "A first, because urgency breaks the tie","A first, because value dominates"],
+    answer: 0,
+    optionNotes: [ "", "Relative comparison is exactly what WSJF is for.", "Time criticality is part of cost of delay, still divided by size.","Value is the numerator, but the whole point of the formula is that it is divided by size."],
+    rationale: "Cost of delay divided by job size systematically favours small valuable work, because benefit and learning arrive sooner per unit of effort. Judgement can still override.",
+  },
+  {
+    id: "x-del-2", moduleId: "delivery",
+    prompt: "A stakeholder asks for a date for something in the 'Later' band. What is the right response?",
+    options: ["Give a date with a wide confidence range", "Explain what would have to be true before a date is meaningful, and what would move it into Next", "Refuse to discuss anything beyond Now", "Give the date the team currently believes"],
+    answer: 1,
+    optionNotes: ["A range still implies you have estimated something you have not yet scoped or validated.", "", "Unhelpful. Stakeholders need direction even where dates are not available.", "A believed date becomes a remembered commitment, regardless of caveats."],
+    rationale: "Confidence bands exist because the evidence does not yet support a date. The useful answer converts the question into what would need to be resolved for one to exist.",
+  },
+  {
+    id: "x-del-3", moduleId: "delivery",
+    prompt: "Which is the clearest sign a backlog has become a requirements dump?",
+    options: [ "Multiple business areas add to it","It contains more than 200 items", "Items describe solutions with no stated outcome or measure", "It has not been reordered in a month"],
+    answer: 2,
+    optionNotes: [ "The deck explicitly says anyone in the team may add; product management orders.","Size alone is normal for a long-lived product.", "", "Concerning, but the ordering could still be correct."],
+    rationale: "The defect is not volume or authorship, it is items that cannot be traced to a user or service outcome — which makes their priority unjustifiable and their success unmeasurable.",
+  },
+  {
+    id: "x-del-4", moduleId: "delivery",
+    prompt: "Halfway through a PI, discovery invalidates the hypothesis behind a committed feature. What should happen?",
+    options: [ "Finish a reduced version to show progress", "Continue and re-evaluate at PI close","Finish it — the PI commitment was made", "Stop it, record what was learned, and re-plan the remaining capacity"],
+    answer: 3,
+    optionNotes: [ "A smaller version of an invalidated idea is still an invalidated idea.", "Waiting until close means spending the remaining weeks on it regardless.","Delivering something you now believe will not work is the sunk-cost fallacy with a governance wrapper.", ""],
+    rationale: "The plan changes when the evidence does — that is the 'adaptive' quality. Learning mid-increment is the parallel discovery stream working as intended.",
+  },
+
+  /* --- Stage 6: lifecycle --- */
+  {
+    id: "x-life-1", moduleId: "lifecycle",
+    prompt: "Which is the strongest evidence that a Discovery phase has actually finished?",
+    options: [ "A solution has been agreed","The report has been signed off", "The allocated time has elapsed", "You can state the problem, the affected users, the constraints, and what you still do not know"],
+    answer: 3,
+    optionNotes: [ "Agreeing a solution in Discovery means it has run past its purpose into Alpha's territory.","Sign-off records agreement with a document, not that the uncertainty has reduced.", "Time elapsing is a budget event, not a knowledge event.", ""],
+    rationale: "Discovery ends when you can articulate the problem and constraints clearly and name the remaining unknowns. Naming what you still do not know is part of the output.",
+  },
+  {
+    id: "x-life-2", moduleId: "lifecycle",
+    prompt: "A Live service's completion rate has drifted down 8% over six months with no release in that period. What is the most likely cause?",
+    options: [ "Measurement error","The code has degraded", "Something outside the service changed — users, policy, upstream systems or volume", "The original design was wrong"],
+    answer: 2,
+    optionNotes: [ "Worth ruling out, but drift with no release usually points outward, not at the instrument.","Code does not rot on its own without deploys. Dependencies around it do change.", "", "Possible, but it would not explain a gradual change with a stable baseline earlier."],
+    rationale: "Services sit inside a moving system. Live-phase measurement exists to catch exactly this: the product did not change, but its context did.",
+  },
+  {
+    id: "x-life-3", moduleId: "lifecycle",
+    prompt: "Why does the deck describe the lifecycle as a loop rather than a sequence?",
+    options: ["Because teams often have to redo work", "Because measurement of one release becomes the discovery input for the next", "Because Agile methods are iterative", "Because phases frequently overlap in practice"],
+    answer: 1,
+    optionNotes: ["Rework is a symptom of a broken sequence, not the reason for the loop.", "", "True but circular — it names the method rather than the reason.", "They do overlap, but overlap is not what makes it a loop."],
+    rationale: "The loop closes because what you measure after release is what tells you which problem to solve next. Treating measurement as a terminal report breaks it.",
+  },
+  {
+    id: "x-life-4", moduleId: "lifecycle",
+    prompt: "Which handover is sufficient at the Beta-to-Live transition?",
+    options: [ "The above, plus a named owner for product performance and an improvement cadence", "A closure report and benefits statement", "Transfer to the operations team with an SLA","Documentation, runbooks and a support rota"],
+    answer: 0,
+    optionNotes: [ "", "Documents the past and assigns nobody to the future.", "An SLA covers availability, not whether the service achieves its outcome.","Keeps it running. Nobody is accountable for whether it still works for users."],
+    rationale: "Operational support keeps a service up; product ownership keeps it useful. Without a named owner, measures and a cadence, quality decays with nobody accountable for noticing.",
+  },
+
+  /* --- Stage 7: roles --- */
+  {
+    id: "x-role-1", moduleId: "roles",
+    prompt: "A designer and an engineer disagree about an approach in refinement. What is the product manager's job?",
+    options: [ "Make the trade-off explicit against the outcome, then ensure a decision is made at the right level", "Ask the Product Owner to break the tie","Decide, since the PM owns the product", "Escalate to the Solution Architect"],
+    answer: 0,
+    optionNotes: [ "", "It is not a backlog-clarity question, so it is not the PO's to break.","Deciding technical detail by authority wastes the expertise in the room.", "Escalating a reversible team decision spends senior time and teaches the team not to decide."],
+    rationale: "The trio exists so desirability, feasibility and viability are argued in the same conversation. The PM's contribution is framing the trade-off against the outcome, not overruling it.",
+  },
+  {
+    id: "x-role-2", moduleId: "roles",
+    prompt: "Which decision most clearly belongs at the strategic layer?",
+    options: [ "Whether to split a story","Whether to retire a service and fold it into another", "Which features go into the next PI", "How a validation error is worded"],
+    answer: 1,
+    optionNotes: [ "Delivery layer.","", "Coordination layer — 'what should we deliver next?'", "Delivery layer — 'how do we deliver this well?'"],
+    rationale: "The strategic layer asks what future we are trying to create, and owns cross-product experience and service direction. Retirement and consolidation sit squarely there.",
+  },
+  {
+    id: "x-role-3", moduleId: "roles",
+    prompt: "What is the practical cost of leaving decision rights unstated?",
+    options: [ "Documentation grows","Governance forums become longer", "Decisions default to whoever is most persistent or most available", "Teams make more mistakes"],
+    answer: 2,
+    optionNotes: [ "Documentation is not the mechanism by which authority gets captured.","A symptom, but not the core cost.", "", "Sometimes, but the deeper issue is that nobody knows whose call it was."],
+    rationale: "Authority does not stay vacant. Unstated rights get filled by availability and persistence, which is how a service ends up shaped by whoever attends the most meetings.",
+  },
+  {
+    id: "x-role-4", moduleId: "roles",
+    prompt: "In the deck's model, who is best placed to say whether the team is working on the right things?",
+    options: ["The Scrum Master", "The Product Owner", "The Senior Responsible Officer", "The Product Manager"],
+    answer: 3,
+    optionNotes: ["Owns team process and flow, not product direction.", "Asks the complementary question: do teams have what they need to deliver successfully?", "Owns the project outcomes and champions the change, at a level above product direction.", ""],
+    rationale: "The deck pairs the two questions explicitly: the product manager asks whether we are working on the right things; the Product Owner asks whether teams can deliver them.",
+  },
+
+  /* --- Stage 8: government --- */
+  {
+    id: "x-gov-1", moduleId: "government",
+    prompt: "Which is the best evidence that the Digital Service Standard is being met, rather than merely claimed?",
+    options: [ "A statement of intent in the business case", "Sign-off by the delivery manager","A completed assessment template", "Research, testing and performance data showing how each criterion is satisfied"],
+    answer: 3,
+    optionNotes: [ "Intent is not evidence, and business cases are written before the work.", "Sign-off attests to process, not to criteria being met.","A template records that the questions were asked, not what the answers were.", ""],
+    rationale: "The standard expects demonstration across the lifecycle. Governance evidence should show how criteria are being met, not that a document was completed.",
+  },
+  {
+    id: "x-gov-2", moduleId: "government",
+    prompt: "Principle 4 says decisions belong closest to the problem. What does that require of governance?",
+    options: [ "Faster approval turnaround","Fewer governance forums", "Delegating reversible decisions and reserving forums for material risk and investment", "Delegating all decisions to delivery teams"],
+    answer: 2,
+    optionNotes: [ "Speed helps but does not change which decisions need to go there at all.","Fewer forums without changed thresholds just delays the same decisions.", "", "Material risk, investment and cross-service trade-offs still need governance."],
+    rationale: "The principle is about placement, not volume or speed. Reversible and local decisions go down; material risk and investment stay up.",
+  },
+  {
+    id: "x-gov-3", moduleId: "government",
+    prompt: "Which is a legitimate reason for an accessibility issue to reach a governance gate unresolved?",
+    options: [ "The template did not require it","It was found late and a remediation plan with dates and interim mitigation is presented", "It affects a small number of users", "It will be fixed in a later phase"],
+    answer: 1,
+    optionNotes: [ "Gate scope does not change the legal and standard obligation.","", "Small user numbers do not reduce the obligation, and they usually undercount the people who never got far enough to be measured.", "Deferral without a plan is the same decision as ignoring it."],
+    rationale: "Finding a problem late is normal. Arriving without a plan, dates and interim mitigation is what turns a finding into a failure of assurance.",
+  },
+  {
+    id: "x-gov-4", moduleId: "government",
+    prompt: "Which artefact belongs to the Pre-Delivery phase rather than Pre-Approval?",
+    options: [ "A refined backlog with measures and baselines defined before build", "The investment case","Options analysis with risks", "Outcome hypotheses and user evidence"],
+    answer: 0,
+    optionNotes: [ "", "The investment case is the Pre-Approval output by definition.","Options and risks support the investment decision — Pre-Approval.", "Evidence and hypotheses make the case for investment — Pre-Approval."],
+    rationale: "Pre-Delivery is where planning gets the right level of detail and the runway is established: refined backlog, validated approach, and baselines captured before build starts.",
+  },
+
+  /* --- Stage 9: integration --- */
+  {
+    id: "x-int-1", moduleId: "integration",
+    prompt: "Which is the most honest thing to put in a status report when the outcome measure has not moved?",
+    options: [ "The measure has not moved, here is what we think is happening and what we will do about it", "It is too early to tell", "The measure needs revising","Delivery is on track"],
+    answer: 0,
+    optionNotes: [ "", "Sometimes legitimate — but stated without a date by which it will be tellable, it is a way of deferring the conversation.", "Sometimes right, but leading with it looks like moving the goalposts and destroys the baseline.","True and irrelevant if the work is not producing the change it was funded for."],
+    rationale: "The chain of evidence is only useful if you report the link that is breaking. Naming it early is what lets a decision still be made.",
+  },
+  {
+    id: "x-int-2", moduleId: "integration",
+    prompt: "Which of the six 'what good looks like' qualities is most at risk when a team optimises a single headline metric?",
+    options: [ "Evidence based", "User centred", "Adaptive","Collaborative"],
+    answer: 1,
+    optionNotes: [ "Ironically the metric is evidence — the problem is that it is the wrong evidence, narrowly held.", "", "The plan may still adapt; it just adapts toward the wrong target.","Collaboration concerns how options get shaped, which single-metric focus does not directly damage."],
+    rationale: "Optimising one number reliably produces decisions that serve the number rather than the people behind it — which is the failure mode user-centredness names.",
+  },
+  {
+    id: "x-int-3", moduleId: "integration",
+    prompt: "You have three minutes with a Minister's adviser. What do they need?",
+    options: [ "The technical architecture","The delivery timeline", "The outcome, the current evidence, the main risk, and what decision you need", "The full evidence base"],
+    answer: 2,
+    optionNotes: [ "Almost never the right level for this audience.","Timeline without outcome invites a question about dates rather than value.", "", "Depth without framing is unusable in three minutes."],
+    rationale: "Adjust the depth, not the facts. At the most senior level that means outcome, evidence, risk and the decision required — in that order.",
+  },
+  {
+    id: "x-int-4", moduleId: "integration",
+    prompt: "What most reliably distinguishes a defensible prioritisation decision from a defensive one?",
+    options: [ "It has stakeholder agreement", "It follows a scoring model","It was made in a governance forum", "It can name the evidence that would change it"],
+    answer: 3,
+    optionNotes: [ "Agreement can be reached about an unjustifiable decision.", "A score is the output of a judgement, not the justification for it.","Venue is not reasoning.", ""],
+    rationale: "A defensible decision is falsifiable: you can state what would make you change your mind. A defensive one is protected from evidence rather than grounded in it.",
+  },
+];

@@ -2242,6 +2242,8 @@ export const modules: Module[] = [
  * Derived collections
  * ------------------------------------------------------------------ */
 
+import { supplementaryQuestions } from "./reference";
+
 export type PracticeQuestion = Question & { context?: string };
 
 /** Every question that can appear in mixed practice. */
@@ -2258,7 +2260,11 @@ export const practiceQuestions: PracticeQuestion[] = modules.flatMap((module) =>
     /** Scenarios keep their setup so mixed practice still reads correctly. */
     context: scenario.context,
   })),
-]);
+]).concat(
+  // Supplementary items deepen mixed practice without lengthening the stage
+  // quizzes, so the 75% mastery threshold keeps its meaning.
+  supplementaryQuestions,
+);
 
 export const totalMinutes = modules.reduce((sum, module) => sum + module.minutes, 0);
 export const totalQuestions = practiceQuestions.length;
