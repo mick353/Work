@@ -763,9 +763,36 @@ export function Diagnostic({
     modules.find((module) => missedModuleIds.includes(module.id)) ?? modules[modules.length - 1];
   const allCorrect = missedModuleIds.length === 0;
 
+  const answered = questions.filter((question) => answers[question.id] !== undefined).length;
+
+  /** Set once you have tried to submit with gaps, so the gaps get marked. */
+  const [chased, setChased] = useState(false);
+
+  const submit = () => {
+    const firstGap = questions.findIndex((question) => answers[question.id] === undefined);
+    if (firstGap !== -1) {
+      setChased(true);
+      const slot = document.getElementById(`diagnostic-q${firstGap + 1}`);
+      slot?.scrollIntoView({ behavior: "smooth", block: "center" });
+      // Move focus as well as the viewport, so this works for a keyboard or
+      // screen-reader user rather than only for a sighted mouse user.
+      slot?.querySelector<HTMLElement>("input, button")?.focus({ preventScroll: true });
+      return;
+    }
+    setComplete(true);
+    onComplete({
+      kind: "diagnostic",
+      score: Math.round((correct / questions.length) * 100),
+      correct,
+      total: questions.length,
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const restart = () => {
     setAnswers({});
     setComplete(false);
+    setChased(false);
     setSeed((value) => value + 1);
   };
 
@@ -779,33 +806,47 @@ export function Diagnostic({
       {!complete ? (
         <section className="knowledge-check diagnostic-list">
           {questions.map((question, index) => (
-            <QuestionCard
+            <div
               key={question.id}
-              question={question}
-              number={index + 1}
-              total={questions.length}
-              salt={salt}
-              selected={answers[question.id] ?? null}
-              onSelect={(choice) => setAnswers((current) => ({ ...current, [question.id]: choice }))}
-              submitted={false}
-            />
+              id={`diagnostic-q${index + 1}`}
+              className={`diagnostic-slot ${chased && answers[question.id] === undefined ? "unanswered" : ""}`}
+            >
+              <QuestionCard
+                question={question}
+                number={index + 1}
+                total={questions.length}
+                salt={salt}
+                selected={answers[question.id] ?? null}
+                onSelect={(choice) => setAnswers((current) => ({ ...current, [question.id]: choice }))}
+                submitted={false}
+              />
+            </div>
           ))}
-          <button
-            className="primary"
-            disabled={Object.keys(answers).length !== questions.length}
-            onClick={() => {
-              setComplete(true);
-              onComplete({
-                kind: "diagnostic",
-                score: Math.round((correct / questions.length) * 100),
-                correct,
-                total: questions.length,
-              });
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-          >
-            Show recommendation
-          </button>
+
+          {/*
+            The button used to be `disabled` until all nine were answered, with
+            nothing but opacity to say so. Nine questions is a long scroll, so
+            missing one is easy — and the result was a solid-looking primary
+            button that did nothing when clicked, with no clue which question
+            was outstanding.
+
+            It is always enabled now. If anything is missing, the click takes
+            you to the first gap and marks the rest, which is what you actually
+            wanted the button to tell you.
+          */}
+          <div className="diagnostic-submit">
+            <button className="primary" onClick={submit}>
+              Show recommendation
+              <ChevronRight size={18} aria-hidden="true" />
+            </button>
+            <p className="diagnostic-progress" role="status" aria-live="polite">
+              {answered === questions.length
+                ? `All ${questions.length} answered.`
+                : `${answered} of ${questions.length} answered${
+                    chased ? ` — ${questions.length - answered} still to go, highlighted above.` : "."
+                  }`}
+            </p>
+          </div>
         </section>
       ) : (
         <>

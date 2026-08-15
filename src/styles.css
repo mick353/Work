@@ -1198,3 +1198,14 @@ p { color: var(--muted); line-height: 1.65; }
 /* Course additions — the note that sets the deck/course relationship. */
 .divergence-note { max-width: 760px; margin: -8px 0 26px; padding: 14px 18px; border-left: 3px solid var(--brand); border-radius: 0 10px 10px 0; background: var(--surface-alt); color: var(--muted); font-size: 14.5px; line-height: 1.6; }
 .divergence-scope { color: var(--muted); font-size: 12.5px; font-weight: 600; }
+
+/* ---- Diagnostic: unanswered questions, once you have tried to submit ---- */
+.diagnostic-slot { border-radius: 14px; transition: box-shadow 180ms ease; }
+.diagnostic-slot.unanswered { box-shadow: 0 0 0 2px var(--warning); }
+.diagnostic-slot.unanswered::before {
+  content: "Not answered yet"; display: block; margin-bottom: -6px; padding: 7px 14px 0;
+  color: var(--warning); font-size: 12px; font-weight: 750; letter-spacing: 0.07em; text-transform: uppercase;
+}
+.diagnostic-submit { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; }
+.diagnostic-progress { margin: 0; color: var(--muted); font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { .diagnostic-slot { transition: none; } }

@@ -655,6 +655,55 @@ const overlapsModuleQuiz = diagnosticPrompts.some((prompt) =>
 );
 check("Diagnostic does not reuse module quiz questions", !overlapsModuleQuiz);
 
+/*
+ * Submitting the diagnostic with a gap.
+ *
+ * "Show recommendation" used to be `disabled` until all nine were answered,
+ * styled with nothing but opacity, so a learner who missed one question in a
+ * long scroll got a solid-looking primary button that did nothing and said
+ * nothing. The button must always act, and must point at the gap.
+ */
+const diagSlots = page.locator(".diagnostic-list fieldset");
+for (let index = 0; index < 9; index += 1) {
+  if (index === 3) continue; // deliberately leave question 4 blank
+  await diagSlots.nth(index).locator(".answer-option").first().click();
+}
+const showRecommendation = page.getByRole("button", { name: "Show recommendation" });
+check("Submit is never a dead end", !(await showRecommendation.isDisabled()));
+check(
+  "Answered count is reported before submitting",
+  (await page.locator(".diagnostic-progress").innerText()).includes("8 of 9"),
+);
+
+await showRecommendation.click();
+await page.waitForTimeout(500);
+check(
+  "Submitting with a gap does not produce a result",
+  (await page.locator(".diagnostic-result").count()) === 0,
+);
+check(
+  "The unanswered question is marked",
+  (await page.locator(".diagnostic-slot.unanswered").count()) === 1,
+);
+check(
+  "Focus moves to the first unanswered question",
+  await page.evaluate(() => Boolean(document.activeElement?.closest("#diagnostic-q4"))),
+  "scrolling alone leaves a keyboard user stranded",
+);
+
+await diagSlots.nth(3).locator(".answer-option").first().click();
+await page.waitForTimeout(150);
+await showRecommendation.click();
+await page.waitForTimeout(600);
+check(
+  "Completing every question produces a recommendation",
+  (await page.locator(".diagnostic-result").count()) === 1,
+);
+check(
+  "The recommendation names a stage to start from",
+  /Stage \d/.test(await page.locator(".diagnostic-result h2").innerText()),
+);
+
 /* -- backup export and import ------------------------------------- */
 
 await page.getByRole("button", { name: "Learning settings" }).click();
