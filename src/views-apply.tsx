@@ -2,6 +2,7 @@ import { AlertTriangle, Check, ChevronRight, Download, Printer, Search } from "l
 import { useMemo, useState } from "react";
 import {
   CAPSTONE_MIN_WORDS,
+  capstoneBriefs,
   capstoneRubric,
   capstoneSteps,
   caseStudies,
@@ -69,22 +70,28 @@ export function Capstone({
   setValues,
   rubric,
   setRubric,
+  briefId,
+  setBriefId,
 }: {
   values: TextMap;
   setValues: (updater: (current: TextMap) => TextMap) => void;
   rubric: RubricMap;
   setRubric: (updater: (current: RubricMap) => RubricMap) => void;
+  briefId: string;
+  setBriefId: (id: string) => void;
 }) {
-  const drafted = capstoneSteps.filter((step) => wordCount(values[step.id] ?? "") >= CAPSTONE_MIN_WORDS).length;
+  const brief = capstoneBriefs.find((b) => b.id === briefId) ?? capstoneBriefs[0];
+  const key = (stepId: string) => `${briefId}:${stepId}`;
+  const drafted = capstoneSteps.filter((step) => wordCount(values[key(step.id)] ?? "") >= CAPSTONE_MIN_WORDS).length;
   const totalChecks = capstoneSteps.length * capstoneRubric.length;
-  const confirmedChecks = capstoneSteps.reduce((sum, step) => sum + (rubric[step.id]?.length ?? 0), 0);
+  const confirmedChecks = capstoneSteps.reduce((sum, step) => sum + (rubric[key(step.id)]?.length ?? 0), 0);
 
   const toggleRubric = (stepId: string, rubricId: string) => {
     setRubric((current) => {
-      const existing = current[stepId] ?? [];
+      const existing = current[key(stepId)] ?? [];
       return {
         ...current,
-        [stepId]: existing.includes(rubricId)
+        [key(stepId)]: existing.includes(rubricId)
           ? existing.filter((id) => id !== rubricId)
           : [...existing, rubricId],
       };
@@ -94,7 +101,7 @@ export function Capstone({
   const exportBrief = () => {
     const lines = [
       "PRODUCT MANAGEMENT CAPSTONE",
-      "Provider application-status service",
+      brief.title,
       `Exported: ${new Date().toLocaleString("en-AU")}`,
       `Sections drafted: ${drafted} of ${capstoneSteps.length}`,
       `Self-assessment checks confirmed: ${confirmedChecks} of ${totalChecks}`,
@@ -103,11 +110,11 @@ export function Capstone({
       "",
     ];
     capstoneSteps.forEach((step, index) => {
-      const confirmed = rubric[step.id] ?? [];
+      const confirmed = rubric[key(step.id)] ?? [];
       lines.push(
         `${index + 1}. ${step.title.toUpperCase()}`,
         "",
-        values[step.id]?.trim() || "[Not completed]",
+        values[key(step.id)]?.trim() || "[Not completed]",
         "",
         `Self-assessment: ${
           confirmed.length
@@ -124,7 +131,7 @@ export function Capstone({
     });
     lines.push("SELF-REVIEW RUBRIC", "");
     capstoneRubric.forEach((item) => lines.push(`${item.title}: ${item.detail}`));
-    downloadFile("product-management-capstone.txt", lines.join("\r\n"), "text/plain;charset=utf-8");
+    downloadFile(`product-management-capstone-${briefId}.txt`, lines.join("\r\n"), "text/plain;charset=utf-8");
   };
 
   return (
@@ -132,10 +139,10 @@ export function Capstone({
       <section className="capstone-hero">
         <div>
           <span className="eyebrow">Integrated assessment</span>
-          <h1>Provider application-status product brief</h1>
+          <h1>{brief.title}</h1>
           <p>
-            Use the recurring case from the source presentation to demonstrate the full chain from user evidence to
-            sustained service value.
+            Demonstrate the full chain from user evidence to sustained service value. Your answers are kept per brief,
+            so switching does not overwrite work.
           </p>
         </div>
         <div className="capstone-progress">
@@ -150,20 +157,34 @@ export function Capstone({
         </div>
       </section>
 
+      <div className="brief-switch" role="tablist" aria-label="Choose a capstone brief">
+        {capstoneBriefs.map((b) => (
+          <button
+            key={b.id}
+            role="tab"
+            aria-selected={briefId === b.id}
+            className={briefId === b.id ? "active" : ""}
+            onClick={() => setBriefId(b.id)}
+          >
+            <strong>{b.title}</strong>
+            <span>{b.short}</span>
+          </button>
+        ))}
+      </div>
+
       <section className="case-brief">
-        <strong>Case</strong>
-        <p>
-          Providers frequently contact support because they cannot reliably understand participant application
-          progress. Information is fragmented across systems, policy and operational constraints matter, and any
-          response must remain accessible, secure and clear about escalation.
-        </p>
+        <strong>Brief</strong>
+        <div>
+          <p>{brief.brief}</p>
+          <p className="brief-twist">{brief.twist}</p>
+        </div>
       </section>
 
       <div className="capstone-steps">
         {capstoneSteps.map((step, index) => {
-          const words = wordCount(values[step.id] ?? "");
+          const words = wordCount(values[key(step.id)] ?? "");
           const done = words >= CAPSTONE_MIN_WORDS;
-          const confirmed = rubric[step.id] ?? [];
+          const confirmed = rubric[key(step.id)] ?? [];
           return (
             <section key={step.id} className={done ? "done" : ""}>
               <div className="capstone-step-index" aria-hidden="true">
@@ -187,8 +208,8 @@ export function Capstone({
                   <span className="visually-hidden">Your response for {step.title}</span>
                   <textarea
                     rows={8}
-                    value={values[step.id] ?? ""}
-                    onChange={(event) => setValues((current) => ({ ...current, [step.id]: event.target.value }))}
+                    value={values[key(step.id)] ?? ""}
+                    onChange={(event) => setValues((current) => ({ ...current, [key(step.id)]: event.target.value }))}
                     placeholder="Write a decision-ready response with evidence, assumptions and rationale…"
                   />
                 </label>

@@ -499,6 +499,70 @@ await page.locator('input[type="file"]').setInputFiles(badPath);
 await page.locator(".settings-message.error").waitFor();
 check("Malformed backup is rejected with an error", true);
 
+/* -- keyboard shortcuts, capstone briefs, worked cases -------------- */
+
+await page.evaluate(() => { window.location.hash = "dashboard"; });
+await page.waitForTimeout(300);
+await page.keyboard.press("l");
+await page.waitForTimeout(300);
+check("Single-key shortcut navigates", (await page.evaluate(() => window.location.hash)) === "#path");
+
+// Must NOT fire while typing — otherwise writing a capstone answer would
+// teleport the learner away mid-sentence.
+await page.evaluate(() => { window.location.hash = "capstone"; });
+await page.waitForTimeout(400);
+await page.locator(".capstone-steps textarea").first().fill("delivery ratio plan");
+check(
+  "Shortcuts are suppressed while typing in a field",
+  (await page.evaluate(() => window.location.hash)) === "#capstone",
+);
+
+// Blur properly — body.focus() does not move focus off a textarea, so the
+// app was correctly suppressing the shortcut and the test was wrong.
+await page.evaluate(() => (document.activeElement instanceof HTMLElement ? document.activeElement.blur() : undefined));
+await page.waitForTimeout(150);
+await page.keyboard.press("?");
+await page.waitForTimeout(300);
+check("Question mark opens the shortcut panel", (await page.locator(".shortcut-panel").count()) === 1);
+await page.keyboard.press("Escape");
+await page.waitForTimeout(250);
+check("Escape closes the shortcut panel", (await page.locator(".shortcut-panel").count()) === 0);
+
+await page.evaluate(() => { window.location.hash = "capstone"; });
+await page.waitForTimeout(400);
+const briefCount = await page.locator(".brief-switch button").count();
+check("Capstone offers multiple briefs", briefCount === 3, `found ${briefCount}`);
+
+// Answers must be scoped per brief, or switching would silently overwrite work.
+const firstAnswer = await page.locator(".capstone-steps textarea").first().inputValue();
+await page.locator(".brief-switch button").nth(1).click();
+await page.waitForTimeout(300);
+const secondAnswer = await page.locator(".capstone-steps textarea").first().inputValue();
+check(
+  "Capstone answers are kept separately per brief",
+  firstAnswer.length > 0 && secondAnswer === "",
+  `brief 1 "${firstAnswer.slice(0, 20)}", brief 2 "${secondAnswer.slice(0, 20)}"`,
+);
+await page.locator(".brief-switch button").nth(0).click();
+await page.waitForTimeout(300);
+check(
+  "Switching back restores the original brief's answers",
+  (await page.locator(".capstone-steps textarea").first().inputValue()) === firstAnswer,
+);
+
+await page.evaluate(() => { window.location.hash = "cases"; });
+await page.waitForTimeout(400);
+check("Two worked cases are available", (await page.locator(".case-switch button").count()) === 2);
+const caseSteps = await page.locator(".case-steps > li").count();
+check("Worked case renders its chain", caseSteps >= 5, `found ${caseSteps}`);
+await page.locator(".case-switch button").nth(1).click();
+await page.waitForTimeout(300);
+check("Second case is the corrected one", (await page.locator(".case-summary.corrected").count()) === 1);
+
+await page.evaluate(() => { window.location.hash = "module/outcomes"; });
+await page.waitForTimeout(400);
+check("Stages appearing in a case link to it", (await page.locator(".worked-pointer").count()) === 1);
+
 /* -- accessibility ------------------------------------------------- */
 
 const axeViews = [

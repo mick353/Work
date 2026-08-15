@@ -17,6 +17,7 @@ import {
   Settings2,
   Sun,
   Target,
+  Keyboard,
   Wrench,
   X,
 } from "lucide-react";
@@ -85,6 +86,7 @@ export default function App() {
   const [practiceBest, setPracticeBest, overwritePracticeBest] = useStoredState<number>("practice-best", 0);
   const [studyDays, setStudyDays, overwriteStudyDays] = useStoredState<string[]>("study-days", []);
   const [history, setHistory, overwriteHistory] = useStoredState<HistoryEntry[]>("history", []);
+  const [briefId, setBriefId] = useStoredState<string>("capstone-brief", "provider");
 
   const recordAttempt = useCallback(
     (entry: Omit<HistoryEntry, "at">) => {
@@ -188,6 +190,50 @@ export default function App() {
     ],
   );
 
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+
+  /**
+   * Global shortcuts. Deliberately single-key with no modifier — this is a
+   * reading and drilling app, so the hands are not on the keyboard for input
+   * most of the time. Suppressed whenever focus is in a field.
+   */
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target && (/^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName) || target.isContentEditable)) return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+      const map: Record<string, View> = {
+        d: "dashboard",
+        l: "path",
+        r: "review",
+        p: "practice",
+        g: "results",
+        t: "toolkit",
+        c: "cases",
+        k: "capstone",
+        f: "fieldguide",
+        s: "search",
+      };
+      if (event.key === "?") {
+        event.preventDefault();
+        setShortcutsOpen((open) => !open);
+        return;
+      }
+      if (event.key === "Escape" && shortcutsOpen) {
+        setShortcutsOpen(false);
+        return;
+      }
+      const target2 = map[event.key.toLowerCase()];
+      if (target2) {
+        event.preventDefault();
+        navigate(target2);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [navigate, shortcutsOpen]);
+
   const handleReset = useCallback(() => {
     clearStored();
     window.location.hash = "";
@@ -219,7 +265,16 @@ export default function App() {
   } else if (view === "toolkit") {
     content = <Toolkit values={toolkit} setValues={setToolkit} />;
   } else if (view === "capstone") {
-    content = <Capstone values={capstone} setValues={setCapstone} rubric={rubric} setRubric={setRubric} />;
+    content = (
+      <Capstone
+        values={capstone}
+        setValues={setCapstone}
+        rubric={rubric}
+        setRubric={setRubric}
+        briefId={briefId}
+        setBriefId={setBriefId}
+      />
+    );
   } else if (view === "results") {
     content = (
       <Results
@@ -278,6 +333,8 @@ export default function App() {
 
   return (
     <Shell
+      shortcutsOpen={shortcutsOpen}
+      setShortcutsOpen={setShortcutsOpen}
       view={view}
       navigate={navigate}
       theme={theme}
@@ -295,6 +352,8 @@ export default function App() {
 
 function Shell({
   children,
+  shortcutsOpen,
+  setShortcutsOpen,
   view,
   navigate,
   theme,
@@ -306,6 +365,8 @@ function Shell({
   storageOk,
 }: {
   children: React.ReactNode;
+  shortcutsOpen: boolean;
+  setShortcutsOpen: (open: boolean) => void;
   view: View;
   navigate: (view: View) => void;
   theme: "light" | "dark";
@@ -434,6 +495,13 @@ function Shell({
           >
             {theme === "light" ? <Moon size={19} aria-hidden="true" /> : <Sun size={19} aria-hidden="true" />}
           </button>
+          <button
+            className="icon-button shortcut-button"
+            onClick={() => setShortcutsOpen(true)}
+            aria-label="Keyboard shortcuts"
+          >
+            <Keyboard size={19} aria-hidden="true" />
+          </button>
           <button className="icon-button" onClick={() => navigate("settings")} aria-label="Learning settings">
             <Settings2 size={19} aria-hidden="true" />
           </button>
@@ -486,6 +554,8 @@ function Shell({
         </p>
       </aside>
 
+      {shortcutsOpen && <ShortcutHelp onClose={() => setShortcutsOpen(false)} />}
+
       {mobileOpen && <button className="scrim" aria-label="Close navigation" onClick={() => setMobileOpen(false)} />}
 
       <main id="main-content" className="main-content" tabIndex={-1}>
@@ -499,6 +569,58 @@ function Shell({
           </p>
         </footer>
       </main>
+    </div>
+  );
+}
+
+
+const SHORTCUTS: { key: string; label: string }[] = [
+  { key: "D", label: "Today" },
+  { key: "L", label: "Learning path" },
+  { key: "R", label: "Review" },
+  { key: "P", label: "Mixed practice" },
+  { key: "G", label: "Results" },
+  { key: "T", label: "Product toolkit" },
+  { key: "C", label: "Worked cases" },
+  { key: "K", label: "Capstone" },
+  { key: "F", label: "DES field guide" },
+  { key: "S", label: "Search" },
+  { key: "?", label: "Show or hide this panel" },
+];
+
+function ShortcutHelp({ onClose }: { onClose: () => void }) {
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    closeRef.current?.focus();
+  }, []);
+  return (
+    <div className="shortcut-backdrop" onClick={onClose}>
+      <div
+        className="shortcut-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Keyboard shortcuts"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <header>
+          <h2>Keyboard shortcuts</h2>
+          <button ref={closeRef} className="icon-button" onClick={onClose} aria-label="Close keyboard shortcuts">
+            <X size={18} aria-hidden="true" />
+          </button>
+        </header>
+        <dl>
+          {SHORTCUTS.map((item) => (
+            <div key={item.key}>
+              <dt><kbd>{item.key}</kbd></dt>
+              <dd>{item.label}</dd>
+            </div>
+          ))}
+        </dl>
+        <p>
+          During review: <kbd>space</kbd> reveals, then <kbd>1</kbd>–<kbd>4</kbd> rate. Shortcuts are ignored while you
+          are typing in a field.
+        </p>
+      </div>
     </div>
   );
 }

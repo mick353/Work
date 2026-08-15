@@ -1386,3 +1386,51 @@ export const caseStudies: CaseStudy[] = [
       "Nothing in this case required unusual insight to avoid. A single guardrail on a downstream outcome would have surfaced the problem in the first month instead of the sixth. That is the entire argument for defining the measure set before delivery rather than after.",
   },
 ];
+
+/* ------------------------------------------------------------------ *
+ * Capstone briefs
+ *
+ * The capstone previously offered one case. A learner who wanted a second
+ * attempt could only rewrite the same answers, which trains recall of their
+ * own prose rather than the method. Two briefs, deliberately different in
+ * shape: one where the obvious solution is nearly right, one where the
+ * obvious solution is actively harmful.
+ * ------------------------------------------------------------------ */
+
+export type CapstoneBrief = {
+  id: string;
+  title: string;
+  short: string;
+  brief: string;
+  twist: string;
+};
+
+export const capstoneBriefs: CapstoneBrief[] = [
+  {
+    id: "provider",
+    title: "Provider application status",
+    short: "The deck's case. Support demand driven by uncertainty.",
+    brief:
+      "Providers frequently contact support because they cannot reliably understand participant application progress. Information is fragmented across systems, policy and operational constraints matter, and any response must remain accessible, secure and clear about escalation.",
+    twist:
+      "The obvious answer — a status page — is close to right but not quite. Whether you find the gap depends entirely on how you handle stage 2.",
+  },
+  {
+    id: "vacancy",
+    title: "Employer vacancy drop-off",
+    short: "High abandonment on a form. The obvious fix makes things worse.",
+    brief:
+      "Employers abandon the vacancy-advertising service at 61% at the position-details step. Leadership wants the form simplified and has asked for a completion-rate target. The service exists so that roles get filled, and downstream assessment capacity is already stretched.",
+    twist:
+      "Removing the friction is straightforward and will move the completion rate. Whether it moves the outcome is a different question, and the brief contains enough to work out why.",
+  },
+  {
+    id: "own",
+    title: "A service you actually work on",
+    short: "Bring your own. Hardest and most useful.",
+    brief:
+      "Choose a service you are responsible for or close to. You will not have clean evidence, the constraints will be real, and someone will already have a preferred solution. That is the point — the method has to survive contact with an actual organisation.",
+    twist:
+      "The discipline that matters here is honesty about what you do not know. Mark assumptions as assumptions rather than quietly promoting them to facts.",
+  },
+];

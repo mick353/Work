@@ -8,7 +8,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { modules, quizPoolFor, totalMinutes, type Module } from "./course";
-import { diagnosticQuestions } from "./reference";
+import { caseStudies, diagnosticQuestions } from "./reference";
 import { daysAgoKey, formatMinutes, shuffle, type View } from "./lib";
 import {
   emptyModuleProgress,
@@ -341,6 +341,9 @@ export function ModuleView({
     : null;
 
   const StageIllustration = stageIllustrations[module.id];
+  // Stages that appear in a worked case get a direct pointer to it, so the
+  // abstraction and the worked instance are one click apart.
+  const workedIn = caseStudies.filter((c) => c.steps.some((step) => step.moduleId === module.id));
   const allSourceIds = [...new Set(module.sections.flatMap((section) => section.sourceIds ?? []))];
   const next = modules.find((item) => item.number === module.number + 1);
 
@@ -548,6 +551,28 @@ export function ModuleView({
           </label>
         ))}
       </section>
+
+      {workedIn.length > 0 && (
+        <aside className="worked-pointer">
+          <div>
+            <span className="eyebrow">See it applied</span>
+            <p>
+              This stage is worked end to end in{" "}
+              {workedIn.map((c, i) => (
+                <span key={c.id}>
+                  {i > 0 && (i === workedIn.length - 1 ? " and " : ", ")}
+                  <strong>{c.title}</strong>
+                </span>
+              ))}
+              , with the real artefacts the team produced.
+            </p>
+          </div>
+          <button className="secondary" onClick={() => navigate("cases")}>
+            Open worked cases
+            <ChevronRight size={17} aria-hidden="true" />
+          </button>
+        </aside>
+      )}
 
       <section className="source-note">
         <span className="eyebrow">Sources used in this stage</span>
