@@ -562,6 +562,39 @@ check("Second case is the corrected one", (await page.locator(".case-summary.cor
 await page.evaluate(() => { window.location.hash = "module/outcomes"; });
 await page.waitForTimeout(400);
 check("Stages appearing in a case link to it", (await page.locator(".worked-pointer").count()) === 1);
+// Reading-time estimates must not claim minute precision — "8 hr 10 min" on
+// a guess about reading speed is false precision, not accuracy.
+await page.evaluate(() => { window.location.hash = "dashboard"; });
+await page.waitForTimeout(300);
+const heroText = await page.locator(".hero").innerText();
+check(
+  "Course length is stated as a rounded estimate",
+  /about \d+(\.\d+)?( and a half)? hours/.test(heroText) && !/\d+ hr \d+ min/.test(heroText),
+  heroText.split("\n").find((l) => /hour|hr/.test(l)) ?? "",
+);
+
+await page.evaluate(() => { window.location.hash = "guide"; });
+await page.waitForTimeout(600);
+const guideStages = await page.locator(".guide-stage").count();
+check("Guide contains every stage", guideStages === 9, `found ${guideStages}`);
+check("Guide has a contents list", (await page.locator(".guide-contents li").count()) >= 14);
+check("Guide includes the glossary", (await page.locator(".guide-glossary > div").count()) >= 50);
+check("Guide includes both worked cases", (await page.locator(".guide-case").count()) === 2);
+check("Guide carries a print-only cover", (await page.locator(".guide-cover").count()) === 1);
+check(
+  "Guide cover is hidden on screen",
+  await page.locator(".guide-cover").evaluate((el) => getComputedStyle(el).display === "none"),
+);
+// A reading copy must not contain assessment.
+const guideBodyText = await page.locator(".guide-page").innerText();
+check(
+  "Guide is assessment-free",
+  !guideBodyText.includes("Check my recall") && (await page.locator(".guide-page .answer-option").count()) === 0,
+);
+
+// Back to a stage page — the guide checks above navigated away.
+await page.evaluate(() => { window.location.hash = "module/outcomes"; });
+await page.waitForTimeout(500);
 check("Stage carries a printable one-page summary", (await page.locator(".stage-print-summary").count()) === 1);
 check("Print summary is hidden on screen", await page.locator(".stage-print-summary").evaluate((el) => getComputedStyle(el).display === "none"));
 const contrastCount = await page.locator(".contrast").count();
@@ -592,6 +625,7 @@ const axeViews = [
   ["fieldguide", "field guide"],
   ["glossary", "glossary"],
   ["cases", "worked cases"],
+  ["guide", "guide"],
   ["sources", "sources"],
   ["divergences", "divergence register"],
   ["settings", "settings"],

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { modules, quizPoolFor, totalMinutes, type Module } from "./course";
 import { caseStudies, contrasts, diagnosticQuestions } from "./reference";
-import { daysAgoKey, formatMinutes, shuffle, type View } from "./lib";
+import { daysAgoKey, estimateHours, shuffle, type View } from "./lib";
 import {
   emptyModuleProgress,
   masteryState,
@@ -74,7 +74,7 @@ export function Dashboard({
             from memory, apply it to a service decision, then review it later.
           </p>
           <p className="commitment">
-            Nine stages, about {formatMinutes(totalMinutes)} of lesson time. Dip in for an hour when you have one —
+            Nine stages, {estimateHours(totalMinutes)} of reading in total. Dip in for an hour when you have one —
             nothing needs finishing in a sitting, and the review queue picks up wherever you left off.
           </p>
           <div className="button-row">
@@ -221,7 +221,7 @@ export function LearningPath({ progress, navigate }: { progress: ProgressMap; na
         body={`Each stage names a capability, not just a topic. Mastery requires reading the lesson, scoring at least ${MASTERY_QUIZ_THRESHOLD}% on the knowledge check, and answering both decision scenarios correctly.`}
       />
       <p className="path-total">
-        About {formatMinutes(totalMinutes)} across {modules.length} stages. Take one stage at a time; each is a self-contained hour or less.
+        {estimateHours(totalMinutes).replace("about", "About")} across {modules.length} stages. Take one at a time — each is a self-contained hour or less.
       </p>
       <div className="path-list">
         {modules.map((module) => {

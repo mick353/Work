@@ -8,6 +8,7 @@ import {
   BarChart3,
   ClipboardCheck,
   Compass,
+  FileText,
   GitCompare,
   Home,
   Library,
@@ -53,6 +54,7 @@ import { Practice, Review, selectDueCards } from "./views-practice";
 import { Capstone, CaseStudies, FieldGuide, Glossary, Toolkit } from "./views-apply";
 import { Divergences, NotFound, SearchView, Settings, Sources, StorageWarning } from "./views-meta";
 import { Results } from "./views-results";
+import { Guide } from "./views-guide";
 
 const MOBILE_QUERY = "(max-width: 820px)";
 
@@ -213,6 +215,7 @@ export default function App() {
         c: "cases",
         k: "capstone",
         f: "fieldguide",
+        e: "guide",
         s: "search",
       };
       if (event.key === "?") {
@@ -290,6 +293,8 @@ export default function App() {
     content = <FieldGuide />;
   } else if (view === "glossary") {
     content = <Glossary />;
+  } else if (view === "guide") {
+    content = <Guide navigate={navigate} />;
   } else if (view === "cases") {
     content = <CaseStudies navigate={navigate} />;
   } else if (view === "sources") {
@@ -444,6 +449,7 @@ function Shell({
     { id: "results", label: "Results", icon: <BarChart3 size={18} aria-hidden="true" /> },
     { id: "toolkit", label: "Product toolkit", icon: <Wrench size={18} aria-hidden="true" /> },
     { id: "cases", label: "Worked cases", icon: <BookOpen size={18} aria-hidden="true" /> },
+    { id: "guide", label: "Read the guide", icon: <FileText size={18} aria-hidden="true" /> },
     { id: "capstone", label: "Capstone", icon: <Target size={18} aria-hidden="true" /> },
     { id: "fieldguide", label: "DES field guide", icon: <BookMarked size={18} aria-hidden="true" /> },
     { id: "glossary", label: "Glossary", icon: <BookA size={18} aria-hidden="true" /> },
@@ -584,6 +590,7 @@ const SHORTCUTS: { key: string; label: string }[] = [
   { key: "C", label: "Worked cases" },
   { key: "K", label: "Capstone" },
   { key: "F", label: "DES field guide" },
+  { key: "E", label: "Read the guide" },
   { key: "S", label: "Search" },
   { key: "?", label: "Show or hide this panel" },
 ];

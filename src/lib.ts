@@ -24,6 +24,7 @@ export const TOP_LEVEL_VIEWS = [
   "fieldguide",
   "glossary",
   "cases",
+  "guide",
   "sources",
   "divergences",
   "search",
@@ -104,12 +105,26 @@ export function formatDue(timestamp: number, now: number = Date.now()): string {
   return `on ${DAY_MONTH.format(timestamp)}`;
 }
 
+/** Exact duration — only for a single stage, where the number is real. */
 export function formatMinutes(total: number): string {
   const hours = Math.floor(total / 60);
   const minutes = total % 60;
   if (!hours) return `${minutes} min`;
   if (!minutes) return `${hours} hr`;
   return `${hours} hr ${minutes} min`;
+}
+
+/**
+ * Course-length estimate, rounded to the nearest half hour.
+ *
+ * "8 hr 10 min" is false precision: the underlying numbers are guesses about
+ * how long someone takes to read a page, so reporting them to the minute
+ * claims an accuracy that does not exist. Round, and say "about".
+ */
+export function estimateHours(totalMinutes: number): string {
+  const halves = Math.round(totalMinutes / 30) / 2;
+  if (halves % 1 === 0) return `about ${halves} hours`;
+  return `about ${Math.floor(halves)} and a half hours`;
 }
 
 /* ------------------------------------------------------------------ *
