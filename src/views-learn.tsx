@@ -5,6 +5,7 @@ import {
   ChevronRight,
   Clock3,
   FileText,
+  Printer,
   RefreshCw,
 } from "lucide-react";
 import { modules, quizPoolFor, totalMinutes, type Module } from "./course";
@@ -73,8 +74,8 @@ export function Dashboard({
             from memory, apply it to a service decision, then review it later.
           </p>
           <p className="commitment">
-            Nine stages, about {formatMinutes(totalMinutes)} of lesson time plus review. It is designed to be spread
-            across two to four weeks — spaced sessions beat one long sitting.
+            Nine stages, about {formatMinutes(totalMinutes)} of lesson time. Dip in for an hour when you have one —
+            nothing needs finishing in a sitting, and the review queue picks up wherever you left off.
           </p>
           <div className="button-row">
             <button className="primary" onClick={() => navigate(`module:${nextModule.id}`)}>
@@ -220,7 +221,7 @@ export function LearningPath({ progress, navigate }: { progress: ProgressMap; na
         body={`Each stage names a capability, not just a topic. Mastery requires reading the lesson, scoring at least ${MASTERY_QUIZ_THRESHOLD}% on the knowledge check, and answering both decision scenarios correctly.`}
       />
       <p className="path-total">
-        Total lesson time {formatMinutes(totalMinutes)} across {modules.length} stages, plus spaced review.
+        About {formatMinutes(totalMinutes)} across {modules.length} stages. Take one stage at a time; each is a self-contained hour or less.
       </p>
       <div className="path-list">
         {modules.map((module) => {
@@ -606,6 +607,56 @@ export function ModuleView({
         <SourceChips ids={allSourceIds} />
       </section>
 
+      {/* One-page summary. Hidden on screen; in print it replaces the page.
+          Deliberately the four things worth having at a desk: the core idea,
+          the capability outcome, the contrasts with their tells, and the
+          artefact prompts. Not the lesson prose — that is for reading, not
+          for pinning up. */}
+      <section className="stage-print-summary" aria-hidden="true">
+        <header>
+          <span>Stage {module.number} · Product Practice</span>
+          <h1>{module.title}</h1>
+          <p>{module.subtitle}</p>
+        </header>
+        <div className="print-core">
+          <strong>The idea to keep</strong>
+          <p>{module.coreIdea}</p>
+        </div>
+        <div className="print-outcome">
+          <strong>You should be able to</strong>
+          <p>{module.outcome}</p>
+        </div>
+        {stageContrasts.length > 0 && (
+          <div className="print-contrasts">
+            <strong>Check yourself</strong>
+            <table>
+              <thead>
+                <tr><th>Good</th><th>Usually</th><th>The tell</th></tr>
+              </thead>
+              <tbody>
+                {stageContrasts.map((item) => (
+                  <tr key={item.good}>
+                    <td>{item.good}</td>
+                    <td>{item.usual}</td>
+                    <td>{item.tell}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <footer>
+          Product Practice — internal learning aid, not an official Australian Government publication.
+        </footer>
+      </section>
+
+      <div className="stage-actions">
+        <button className="secondary" onClick={() => window.print()}>
+          <Printer size={17} aria-hidden="true" /> Print a one-page summary
+        </button>
+        <span>Core idea, outcome and the checks — without the lesson prose.</span>
+      </div>
+
       <footer className="module-footer">
         <div>
           <strong>Stage status</strong>
@@ -688,7 +739,7 @@ export function Diagnostic({
       <PageIntro
         eyebrow="Five-minute diagnostic"
         title="Find the first weak link"
-        body="This is not a grade. It draws one question per stage from a 30-item pool kept separate from the course quizzes, so every stage is tested and a good score means the ideas transfer rather than that you remember the wording."
+        body={`This is not a grade. It draws one question per stage from a ${diagnosticQuestions.length}-item pool kept separate from the course quizzes, so every stage is tested and a good score means the ideas transfer rather than that you remember the wording.`}
       />
       {!complete ? (
         <section className="knowledge-check diagnostic-list">

@@ -5,6 +5,7 @@ import { FLASHCARD_KIND_LABEL, flashcards, type Flashcard } from "./reference";
 import { describeInterval, formatDue, shuffle, type Rating, type ReviewSchedule } from "./lib";
 import type { HistoryEntry, ReviewMap } from "./state";
 import { Feedback, PageIntro, ProgressBar, QuestionCard } from "./components";
+import { IllusEmptyQueue } from "./illustrations";
 
 const SESSION_SIZE = 8;
 const PRACTICE_SIZE = 10;
@@ -99,6 +100,9 @@ export function Review({
 
     return (
       <div className="page narrow-page">
+        <figure className="empty-illus">
+          <IllusEmptyQueue />
+        </figure>
         <PageIntro
           eyebrow="Spaced review"
           title={finishedSome ? "Batch complete" : "Review queue clear"}

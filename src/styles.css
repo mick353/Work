@@ -916,3 +916,36 @@ p { color: var(--muted); line-height: 1.65; }
 .contrast-tell { margin: 14px 0 0; padding: 13px 16px; border-radius: 10px; background: var(--surface-alt); color: var(--ink); font-size: 14px; }
 .contrast-tell strong { color: var(--brand); }
 @media (max-width: 820px) { .contrast-panel { margin-left: 0; } .contrast-pair { grid-template-columns: 1fr; } }
+
+/* ---- One-page stage summary (print only) ---- */
+.stage-print-summary { display: none; }
+.stage-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; max-width: 900px; margin: 30px 0 0 90px; }
+.stage-actions span { color: var(--muted); font-size: 13px; }
+@media (max-width: 820px) { .stage-actions { margin-left: 0; } }
+
+@media print {
+  /* On a stage page, print ONLY the summary. Printing the whole lesson
+     produces six pages nobody pins up. */
+  .module-page > *:not(.stage-print-summary) { display: none !important; }
+  .stage-print-summary { display: block !important; }
+  .stage-print-summary header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 16px; }
+  .stage-print-summary header span { font-size: 10pt; letter-spacing: 0.08em; text-transform: uppercase; }
+  .stage-print-summary h1 { font-size: 22pt; margin: 6px 0 4px; }
+  .stage-print-summary header p { font-size: 11pt; margin: 0; }
+  .print-core, .print-outcome { margin-bottom: 14px; padding: 10px 12px; border: 1px solid #999; }
+  .print-core strong, .print-outcome strong, .print-contrasts strong {
+    display: block; font-size: 9pt; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 5px; }
+  .print-core p { font-size: 13pt; margin: 0; font-family: Georgia, serif; }
+  .print-outcome p { font-size: 10.5pt; margin: 0; }
+  .print-contrasts table { width: 100%; border-collapse: collapse; font-size: 9pt; margin-top: 6px; }
+  .print-contrasts th, .print-contrasts td { border: 1px solid #999; padding: 5px 7px; text-align: left; vertical-align: top; }
+  .print-contrasts th { background: #eee; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.05em; }
+  .print-contrasts tr { page-break-inside: avoid; }
+  .stage-print-summary > footer { margin-top: 14px; padding-top: 8px; border-top: 1px solid #999; font-size: 8pt; }
+  @page { margin: 14mm; }
+}
+
+/* ---- Empty-state illustrations ---- */
+.empty-illus { margin: 0 0 24px; }
+.empty-illus .illus { display: block; width: min(360px, 100%); height: auto; margin: 0 auto; }
+.empty-state .illus { display: block; width: min(360px, 100%); height: auto; margin: 0 auto 20px; }

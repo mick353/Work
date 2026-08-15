@@ -205,9 +205,20 @@ export function QuestionCard({
   );
 }
 
-export function EmptyState({ title, body, action }: { title: string; body: string; action?: React.ReactNode }) {
+export function EmptyState({
+  title,
+  body,
+  action,
+  illustration,
+}: {
+  title: string;
+  body: string;
+  action?: React.ReactNode;
+  illustration?: React.ReactNode;
+}) {
   return (
     <div className="empty-state">
+      {illustration}
       <h2>{title}</h2>
       <p>{body}</p>
       {action}

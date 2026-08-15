@@ -2267,7 +2267,6 @@ export const practiceQuestions: PracticeQuestion[] = modules.flatMap((module) =>
 );
 
 export const totalMinutes = modules.reduce((sum, module) => sum + module.minutes, 0);
-export const totalQuestions = practiceQuestions.length;
 
 /**
  * The pool a stage's knowledge check samples from.

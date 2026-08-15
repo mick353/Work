@@ -562,6 +562,8 @@ check("Second case is the corrected one", (await page.locator(".case-summary.cor
 await page.evaluate(() => { window.location.hash = "module/outcomes"; });
 await page.waitForTimeout(400);
 check("Stages appearing in a case link to it", (await page.locator(".worked-pointer").count()) === 1);
+check("Stage carries a printable one-page summary", (await page.locator(".stage-print-summary").count()) === 1);
+check("Print summary is hidden on screen", await page.locator(".stage-print-summary").evaluate((el) => getComputedStyle(el).display === "none"));
 const contrastCount = await page.locator(".contrast").count();
 check("Stage shows practice contrasts", contrastCount >= 2, `found ${contrastCount}`);
 check(

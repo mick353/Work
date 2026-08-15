@@ -82,10 +82,6 @@ export function masteryState(progress: ModuleProgress | undefined, scenarioCount
   return { learn, recall, apply, mastered: learn && recall && apply };
 }
 
-export function isMastered(progress: ModuleProgress | undefined, scenarioCount: number) {
-  return masteryState(progress, scenarioCount).mastered;
-}
-
 /**
  * State backed by localStorage, with writes that fail softly.
  *

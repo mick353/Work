@@ -5,6 +5,7 @@ import { flashcards } from "./reference";
 import { DAY_MS, daysAgoKey, localDayKey, type ReviewSchedule, type View } from "./lib";
 import { masteryState, type HistoryEntry, type ProgressMap, type ReviewMap } from "./state";
 import { BarList, ChartCard, ColumnChart, Heatmap, Radial, StackedBar, TrendChart } from "./charts";
+import { IllusEmptyResults } from "./illustrations";
 import { EmptyState, PageIntro } from "./components";
 
 const stageColour = (n: number) => `var(--accent-${n})`;
@@ -164,6 +165,7 @@ export function Results({
 
       {nothingYet ? (
         <EmptyState
+          illustration={<IllusEmptyResults />}
           title="No attempts recorded yet"
           body="Complete a knowledge check or a practice set and this page fills with your accuracy, trend and review forecast."
           action={
