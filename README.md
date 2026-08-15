@@ -53,6 +53,8 @@ Also: a printable guide that reads as one continuous document, full-text search 
 
 **Mastery states its rule plainly**: read the lesson, score at least 75% on the knowledge check, and answer both scenarios correctly. The stage footer reports how many attempts it took.
 
+**The sidebar groups by activity, not by category.** Fourteen destinations plus nine stages was one flat list — 23 buttons, taller than any laptop viewport, with everything weighted equally. They are now four collapsible groups (Learn, Practise, Apply, Reference). *Results* sits under Practise because you read it after drilling, not with the reference material it superficially resembles. Apply and Reference start collapsed; navigating into a collapsed group opens it.
+
 **The course sometimes improves on the deck.** Every such departure is listed in the **Divergence register** so you can quote either one deliberately and not be contradicted by the slides in a meeting.
 
 **The deck ships with the app, and the two builds carry it differently.** The standalone HTML inlines all 98 slides as data URIs, because a single file that loses its images the first time it is emailed on is not a single file. The GitHub Pages build leaves them as separate lazy-loaded files, so a phone downloads a ~580 KB page and fetches only the slides actually opened. Both are asserted by the QA suite, because getting it backwards is invisible until someone is on mobile data.

@@ -5,6 +5,7 @@ import {
   BookOpen,
   BookMarked,
   Check,
+  ChevronDown,
   BarChart3,
   ClipboardCheck,
   Compass,
@@ -61,6 +62,118 @@ import { SlideViewerProvider } from "./slide-viewer";
 
 const MOBILE_QUERY = "(max-width: 820px)";
 
+/**
+ * Sidebar structure.
+ *
+ * Fourteen destinations plus nine stages had been one flat list: 23 buttons,
+ * 1136px of it, in a column 834px tall on a normal laptop. Everything looked
+ * equally important, which meant nothing did, and the last few items were
+ * below the fold on every screen.
+ *
+ * Grouping alone would have made it taller, so the groups collapse. They are
+ * split by what you are doing rather than by what the thing is — "Results"
+ * sits with practice because you look at it after drilling, not with the
+ * reference material it superficially resembles.
+ *
+ * Apply and Reference start collapsed: they are the occasional-use halves, and
+ * the labels stay visible so nothing is actually hidden. Learn and Practise —
+ * the daily loop — start open. Navigating into a collapsed group opens it.
+ */
+type NavGroup = {
+  id: string;
+  label: string;
+  items: { id: View; label: string; icon: React.ReactNode }[];
+};
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    id: "learn",
+    label: "Learn",
+    items: [
+      { id: "dashboard", label: "Overview", icon: <Home size={18} aria-hidden="true" /> },
+      { id: "path", label: "Learning path", icon: <Compass size={18} aria-hidden="true" /> },
+    ],
+  },
+  {
+    id: "practise",
+    label: "Practise",
+    items: [
+      { id: "review", label: "Review", icon: <Brain size={18} aria-hidden="true" /> },
+      { id: "practice", label: "Mixed practice", icon: <ClipboardCheck size={18} aria-hidden="true" /> },
+      { id: "results", label: "Results", icon: <BarChart3 size={18} aria-hidden="true" /> },
+    ],
+  },
+  {
+    id: "apply",
+    label: "Apply",
+    items: [
+      { id: "toolkit", label: "Product toolkit", icon: <Wrench size={18} aria-hidden="true" /> },
+      { id: "cases", label: "Worked cases", icon: <BookOpen size={18} aria-hidden="true" /> },
+      { id: "capstone", label: "Capstone", icon: <Target size={18} aria-hidden="true" /> },
+    ],
+  },
+  {
+    id: "reference",
+    label: "Reference",
+    items: [
+      { id: "guide", label: "Read the guide", icon: <FileText size={18} aria-hidden="true" /> },
+      { id: "deck", label: "Source deck", icon: <Presentation size={18} aria-hidden="true" /> },
+      { id: "fieldguide", label: "DES field guide", icon: <BookMarked size={18} aria-hidden="true" /> },
+      { id: "glossary", label: "Glossary", icon: <BookA size={18} aria-hidden="true" /> },
+      { id: "sources", label: "Sources", icon: <Library size={18} aria-hidden="true" /> },
+      { id: "divergences", label: "Divergence register", icon: <GitCompare size={18} aria-hidden="true" /> },
+    ],
+  },
+];
+
+const DEFAULT_COLLAPSED: Record<string, boolean> = { apply: true, reference: true };
+
+/** Which group owns a view, so navigating into a collapsed one opens it. */
+function groupForView(view: View): string {
+  if (view.startsWith("module:")) return "curriculum";
+  return NAV_GROUPS.find((group) => group.items.some((item) => item.id === view))?.id ?? "";
+}
+
+function NavSection({
+  id,
+  label,
+  expanded,
+  onToggle,
+  className,
+  children,
+}: {
+  id: string;
+  label: string;
+  expanded: boolean;
+  onToggle: () => void;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={`nav-section ${className ?? ""}`}>
+      <button
+        className="nav-section-header"
+        onClick={onToggle}
+        aria-expanded={expanded}
+        aria-controls={`nav-${id}`}
+      >
+        <ChevronDown size={14} aria-hidden="true" />
+        <span>{label}</span>
+      </button>
+      {/*
+        Unmounted rather than hidden with CSS when collapsed: a `display: none`
+        list still leaves its buttons in the DOM, and the mobile drawer's focus
+        trap walks the DOM to find what to cycle through.
+      */}
+      {expanded && (
+        <nav id={`nav-${id}`} aria-label={label}>
+          {children}
+        </nav>
+      )}
+    </div>
+  );
+}
+
 function useMediaQuery(query: string) {
   const [matches, setMatches] = useState(
     () => typeof matchMedia === "function" && matchMedia(query).matches,
@@ -92,6 +205,26 @@ export default function App() {
   const [studyDays, setStudyDays, overwriteStudyDays] = useStoredState<string[]>("study-days", []);
   const [history, setHistory, overwriteHistory] = useStoredState<HistoryEntry[]>("history", []);
   const [briefId, setBriefId] = useStoredState<string>("capstone-brief", "provider");
+  const [collapsedNav, setCollapsedNav] = useStoredState<Record<string, boolean>>(
+    "nav-collapsed",
+    DEFAULT_COLLAPSED,
+  );
+
+  const toggleNavGroup = useCallback(
+    (id: string) => setCollapsedNav((current) => ({ ...current, [id]: !current[id] })),
+    [setCollapsedNav],
+  );
+
+  /*
+   * Opening the group that owns the current view. Without this, a keyboard
+   * shortcut or a deep link into a collapsed group lands you on a page whose
+   * sidebar entry is not visible, and the nav looks like it has lost you.
+   */
+  useEffect(() => {
+    const owner = groupForView(view);
+    if (!owner) return;
+    setCollapsedNav((current) => (current[owner] ? { ...current, [owner]: false } : current));
+  }, [view, setCollapsedNav]);
 
   const recordAttempt = useCallback(
     (entry: Omit<HistoryEntry, "at">) => {
@@ -356,6 +489,8 @@ export default function App() {
       setMobileOpen={setMobileOpen}
       progress={progress}
       storageOk={storageStatus === "ok"}
+      collapsedNav={collapsedNav}
+      toggleNavGroup={toggleNavGroup}
     >
       {content}
     </Shell>
@@ -376,6 +511,8 @@ function Shell({
   setMobileOpen,
   progress,
   storageOk,
+  collapsedNav,
+  toggleNavGroup,
 }: {
   children: React.ReactNode;
   shortcutsOpen: boolean;
@@ -389,6 +526,8 @@ function Shell({
   setMobileOpen: (open: boolean) => void;
   progress: ProgressMap;
   storageOk: boolean;
+  collapsedNav: Record<string, boolean>;
+  toggleNavGroup: (id: string) => void;
 }) {
   const isMobile = useMediaQuery(MOBILE_QUERY);
   const sidebarRef = useRef<HTMLElement>(null);
@@ -449,23 +588,6 @@ function Shell({
     };
   }, [isMobile, mobileOpen, setMobileOpen]);
 
-  const navItems: { id: View; label: string; icon: React.ReactNode }[] = [
-    { id: "dashboard", label: "Today", icon: <Home size={18} aria-hidden="true" /> },
-    { id: "path", label: "Learning path", icon: <Compass size={18} aria-hidden="true" /> },
-    { id: "review", label: "Review", icon: <Brain size={18} aria-hidden="true" /> },
-    { id: "practice", label: "Mixed practice", icon: <ClipboardCheck size={18} aria-hidden="true" /> },
-    { id: "results", label: "Results", icon: <BarChart3 size={18} aria-hidden="true" /> },
-    { id: "toolkit", label: "Product toolkit", icon: <Wrench size={18} aria-hidden="true" /> },
-    { id: "cases", label: "Worked cases", icon: <BookOpen size={18} aria-hidden="true" /> },
-    { id: "guide", label: "Read the guide", icon: <FileText size={18} aria-hidden="true" /> },
-    { id: "deck", label: "Source deck", icon: <Presentation size={18} aria-hidden="true" /> },
-    { id: "capstone", label: "Capstone", icon: <Target size={18} aria-hidden="true" /> },
-    { id: "fieldguide", label: "DES field guide", icon: <BookMarked size={18} aria-hidden="true" /> },
-    { id: "glossary", label: "Glossary", icon: <BookA size={18} aria-hidden="true" /> },
-    { id: "sources", label: "Sources", icon: <Library size={18} aria-hidden="true" /> },
-    { id: "divergences", label: "Divergence register", icon: <GitCompare size={18} aria-hidden="true" /> },
-  ];
-
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -524,46 +646,57 @@ function Shell({
       </header>
 
       <aside ref={sidebarRef} className={`sidebar ${mobileOpen ? "open" : ""}`} aria-label="Course navigation">
-        <nav aria-label="Sections">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              className={view === item.id ? "active" : ""}
-              aria-current={view === item.id ? "page" : undefined}
-              onClick={() => navigate(item.id)}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-        <div className="sidebar-modules">
-          <span className="eyebrow" id="curriculum-label">
-            Nine-stage curriculum
-          </span>
-          <nav aria-labelledby="curriculum-label">
-            {modules.map((module) => {
-              const done = masteryState(progress[module.id], module.scenarios.length).mastered;
-              return (
-                <button
-                  key={module.id}
-                  className={view === `module:${module.id}` ? "active" : ""}
-                  data-stage={module.number}
-                  aria-current={view === `module:${module.id}` ? "page" : undefined}
-                  onClick={() => navigate(`module:${module.id}`)}
-                >
-                  <span className={`module-dot ${done ? "done" : ""}`} aria-hidden="true">
-                    {done ? <Check size={12} /> : module.number}
-                  </span>
-                  <span>
-                    {module.title}
-                    {done && <span className="visually-hidden"> (mastered)</span>}
-                  </span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
+        {NAV_GROUPS.map((group) => (
+          <NavSection
+            key={group.id}
+            id={group.id}
+            label={group.label}
+            expanded={!collapsedNav[group.id]}
+            onToggle={() => toggleNavGroup(group.id)}
+          >
+            {group.items.map((item) => (
+              <button
+                key={item.id}
+                className={view === item.id ? "active" : ""}
+                aria-current={view === item.id ? "page" : undefined}
+                onClick={() => navigate(item.id)}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </NavSection>
+        ))}
+
+        <NavSection
+          id="curriculum"
+          label="Nine-stage curriculum"
+          expanded={!collapsedNav.curriculum}
+          onToggle={() => toggleNavGroup("curriculum")}
+          className="sidebar-modules"
+        >
+          {modules.map((module) => {
+            const done = masteryState(progress[module.id], module.scenarios.length).mastered;
+            return (
+              <button
+                key={module.id}
+                className={view === `module:${module.id}` ? "active" : ""}
+                data-stage={module.number}
+                aria-current={view === `module:${module.id}` ? "page" : undefined}
+                onClick={() => navigate(`module:${module.id}`)}
+              >
+                <span className={`module-dot ${done ? "done" : ""}`} aria-hidden="true">
+                  {done ? <Check size={12} /> : module.number}
+                </span>
+                <span>
+                  {module.title}
+                  {done && <span className="visually-hidden"> (mastered)</span>}
+                </span>
+              </button>
+            );
+          })}
+        </NavSection>
+
         <p className="privacy-note">
           Progress stays in this browser. Nothing is uploaded. Not an official Australian Government publication.
         </p>
@@ -590,7 +723,7 @@ function Shell({
 
 
 const SHORTCUTS: { key: string; label: string }[] = [
-  { key: "D", label: "Today" },
+  { key: "D", label: "Overview" },
   { key: "L", label: "Learning path" },
   { key: "R", label: "Review" },
   { key: "P", label: "Mixed practice" },

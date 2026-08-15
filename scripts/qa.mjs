@@ -318,11 +318,84 @@ watchPage(page, "desktop");
 await page.goto(artifactUrl, { waitUntil: "load" });
 await page.evaluate(() => localStorage.clear());
 await page.reload({ waitUntil: "load" });
-await page.getByRole("heading", { name: "Learn the judgement behind the frameworks." }).waitFor();
+await page.getByRole("heading", { name: "Product Management Fundamentals" }).waitFor();
+
+
+/* -- home page and sidebar structure ------------------------------- */
+
+/*
+ * The home page opened on a tagline and never said what the training was,
+ * and the nav item was called "Today" for a page that is not a daily view.
+ */
+const heroHeading = (await page.locator(".hero h1").innerText()).trim();
+check("Home page names the training", heroHeading === "Product Management Fundamentals", heroHeading);
+check(
+  "Home page states what the course covers before what to do next",
+  (await page.locator(".hero-lead").innerText()).length > 120,
+);
+const heroFacts = await page.locator(".hero-facts li strong").allInnerTexts();
+check("Home page carries the course facts", heroFacts.length === 4, heroFacts.join(" | "));
+// Counted independently of the app so the two can disagree. allQuestions
+// already folds in the diagnostic pool, so build this from the parts.
+const bankTotal =
+  bank.modules.reduce((n, m) => n + m.questions.length + m.scenarios.length, 0) +
+  bank.supplementaryQuestions.length +
+  bank.diagnosticQuestions.length;
+check(
+  "Stated question count matches the bank",
+  heroFacts.some((fact) => fact.startsWith(String(bankTotal))),
+  `hero says ${heroFacts.join(" | ")}, bank holds ${bankTotal}`,
+);
+check(
+  "First-time visitor is told where to start",
+  (await page.locator(".hero .button-row .primary").innerText()).includes("Start Stage 1"),
+);
+
+// Grouped nav. The flat list overflowed every laptop viewport.
+const groupLabels = await page.locator(".nav-section-header span").allInnerTexts();
+const normalisedGroups = groupLabels.map((label) => label.toLowerCase());
+check(
+  "Sidebar is grouped by activity",
+  ["learn", "practise", "apply", "reference"].every((label) => normalisedGroups.includes(label)),
+  groupLabels.join(" | "),
+);
+check(
+  "Occasional-use groups start collapsed",
+  (await page.locator('.nav-section-header[aria-expanded="false"]').count()) === 2,
+);
+/*
+ * The real requirement is not that the whole sidebar fits — the nine-stage
+ * list is a long list and long lists scroll. It is that every way into the
+ * app is reachable without scrolling, which is what failed before: the last
+ * four destinations sat below the fold on every laptop.
+ */
+const headersInView = await page.locator(".sidebar").evaluate((el) => {
+  const box = el.getBoundingClientRect();
+  return Array.from(el.querySelectorAll(".nav-section-header")).every((header) => {
+    const r = header.getBoundingClientRect();
+    return r.top >= box.top - 1 && r.bottom <= box.bottom + 1;
+  });
+});
+check("Every navigation group is reachable without scrolling", headersInView);
+check(
+  "Every group header reports its state to assistive tech",
+  await page.locator(".nav-section-header").evaluateAll((els) =>
+    els.every((el) => el.hasAttribute("aria-expanded") && el.hasAttribute("aria-controls"))),
+);
+
+// Navigating into a collapsed group must reveal it, or the nav looks lost.
+await page.evaluate(() => { window.location.hash = "glossary"; });
+await page.waitForTimeout(400);
+check(
+  "Navigating into a collapsed group opens it",
+  await page.locator(".nav-section").filter({ hasText: "Reference" }).locator("button.active").isVisible(),
+);
+await page.evaluate(() => { window.location.hash = ""; });
+await page.waitForTimeout(300);
 
 /* -- structure ---------------------------------------------------- */
 
-const stageButtons = await page.locator(".sidebar-modules button").count();
+const stageButtons = await page.locator(".sidebar-modules nav button").count();
 check("Nine curriculum stages in the sidebar", stageButtons === 9, `found ${stageButtons}`);
 
 await page.getByRole("button", { name: "Learning path", exact: true }).click();
@@ -503,6 +576,13 @@ check(
 
 /* -- persistence and the diagnostic pool -------------------------- */
 
+// Apply and Reference start collapsed, so open a group before clicking into it.
+const openNavGroup = async (label) => {
+  const header = page.locator(".nav-section-header").filter({ hasText: label });
+  if ((await header.getAttribute("aria-expanded")) === "false") await header.click();
+  await page.waitForTimeout(120);
+};
+await openNavGroup("Apply");
 await page.getByRole("button", { name: "Product toolkit", exact: true }).click();
 const toolkitCount = await page.locator(".toolkit-item").count();
 check("Ten toolkit templates", toolkitCount === 10, `found ${toolkitCount}`);
@@ -525,6 +605,7 @@ check(
   `found ${await page.locator(".rubric-check").count()}`,
 );
 
+await openNavGroup("Reference");
 await page.getByRole("button", { name: "DES field guide", exact: true }).click();
 await page.getByRole("heading", { name: "The reference half of the course" }).waitFor();
 const guideText = await page.locator(".field-guide").innerText();
@@ -669,7 +750,7 @@ await page.waitForTimeout(300);
 const heroText = await page.locator(".hero").innerText();
 check(
   "Course length is stated as a rounded estimate",
-  /about \d+(\.\d+)?( and a half)? hours/.test(heroText) && !/\d+ hr \d+ min/.test(heroText),
+  /(about|~)\s*\d+(\.\d+)?( and a half)? hours/.test(heroText) && !/\d+ hr \d+ min/.test(heroText),
   heroText.split("\n").find((l) => /hour|hr/.test(l)) ?? "",
 );
 
@@ -882,7 +963,7 @@ const mobileContext = await browser.newContext({ viewport: { width: 390, height:
 const mobilePage = await mobileContext.newPage();
 watchPage(mobilePage, "mobile");
 await mobilePage.goto(artifactUrl, { waitUntil: "load" });
-await mobilePage.getByRole("heading", { name: "Learn the judgement behind the frameworks." }).waitFor();
+await mobilePage.getByRole("heading", { name: "Product Management Fundamentals" }).waitFor();
 
 // The closed drawer must not be reachable by keyboard. Previously it was
 // translated off-screen but still in the tab order, so a keyboard user tabbed

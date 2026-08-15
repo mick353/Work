@@ -8,7 +8,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { modules, quizPoolFor, totalMinutes, type Module } from "./course";
-import { caseStudies, contrasts, diagnosticQuestions } from "./reference";
+import { caseStudies, contrasts, diagnosticQuestions, supplementaryQuestions } from "./reference";
 import { SlideRangeLink } from "./slide-viewer";
 import { daysAgoKey, estimateHours, shuffle, type View } from "./lib";
 import {
@@ -24,6 +24,16 @@ import { stageIllustrations } from "./illustrations";
 
 /** Questions per stage attempt, sampled from that stage's pool of 8-9. */
 const QUIZ_LENGTH = 5;
+
+/**
+ * Counted, not typed. The home page states this figure, and a hardcoded one
+ * silently becomes a lie the next time the bank grows — which is exactly how
+ * the README ended up claiming 68 questions against an actual 122.
+ */
+const QUESTION_COUNT =
+  modules.reduce((total, module) => total + module.questions.length + module.scenarios.length, 0) +
+  supplementaryQuestions.length +
+  diagnosticQuestions.length;
 
 type Navigate = (view: View) => void;
 
@@ -63,29 +73,56 @@ export function Dashboard({
     [studyDays],
   );
 
+  const started = Object.keys(progress).length > 0 || studyDays.length > 1;
+
   return (
     <div className="page dashboard-page">
+      {/*
+        The home page has to answer "what is this?" before it answers "what
+        next?". It previously opened on the tagline "Learn the judgement behind
+        the frameworks" — true, but it never named the training, so anyone
+        arriving cold had to infer what they had opened.
+      */}
       <section className="hero">
         <div>
-          <span className="eyebrow">Your product-management apprenticeship</span>
-          <h1>Learn the judgement behind the frameworks.</h1>
-          <p>
-            This course turns the 98-slide DEWR presentation into a practice system: understand the idea, retrieve it
-            from memory, apply it to a service decision, then review it later.
+          <span className="eyebrow">Internal training · DEWR Digital Experience and Solutions</span>
+          <h1>Product Management Fundamentals</h1>
+          <p className="hero-lead">
+            A nine-stage course in product management for Australian Government service delivery. It takes the
+            98-slide departmental deck and turns it into something you practise rather than sit through: understand
+            the idea, retrieve it from memory, apply it to a real service decision, then review it later.
           </p>
-          <p className="commitment">
-            Nine stages, {estimateHours(totalMinutes)} of reading in total. Dip in for an hour when you have one —
-            nothing needs finishing in a sitting, and the review queue picks up wherever you left off.
-          </p>
+          <ul className="hero-facts">
+            <li>
+              <strong>{modules.length} stages</strong>
+              <span>From need to measured value</span>
+            </li>
+            <li>
+              <strong>{estimateHours(totalMinutes).replace("about ", "~")}</strong>
+              <span>Reading, in total</span>
+            </li>
+            <li>
+              <strong>{QUESTION_COUNT} questions</strong>
+              <span>With feedback on every option</span>
+            </li>
+            <li>
+              <strong>Works offline</strong>
+              <span>Progress stays on your device</span>
+            </li>
+          </ul>
           <div className="button-row">
             <button className="primary" onClick={() => navigate(`module:${nextModule.id}`)}>
-              Continue with Stage {nextModule.number}
+              {started ? `Continue with Stage ${nextModule.number}` : "Start Stage 1"}
               <ChevronRight size={18} aria-hidden="true" />
             </button>
             <button className="secondary" onClick={() => navigate("diagnostic")}>
-              Take the diagnostic
+              {started ? "Take the diagnostic" : "Not sure where to start? Take the diagnostic"}
             </button>
           </div>
+          <p className="commitment">
+            Built for an hour here and there. Nothing needs finishing in a sitting, and the review queue picks up
+            wherever you left off.
+          </p>
         </div>
         <div className="hero-index">
           <span>Mastery</span>

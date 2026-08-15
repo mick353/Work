@@ -225,14 +225,13 @@ kbd { display: inline-block; border: 1px solid var(--line-strong); border-bottom
 
 .sidebar { position: fixed; z-index: 90; inset: 66px auto 0 0; width: 268px; overflow-y: auto; border-right: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(14px); padding: 20px 14px 26px; }
 .sidebar nav { display: grid; gap: 2px; }
-.sidebar > nav { padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+/* Groups now carry the rhythm; the single divider under a flat list is gone. */
+.sidebar-modules { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 10px; }
 .sidebar nav button { display: flex; align-items: center; gap: 11px; width: 100%; border: 0; border-radius: 6px; background: transparent; color: var(--muted); padding: 10px; text-align: left; cursor: pointer; transition: background 140ms ease, color 140ms ease; }
 .sidebar nav button svg { color: var(--muted); transition: color 140ms ease; }
 .sidebar nav button:hover { background: var(--surface-alt); color: var(--ink); }
 .sidebar nav button.active { background: var(--accent-soft); color: var(--accent); font-weight: 650; }
-.sidebar-modules { padding-top: 16px; }
-.sidebar-modules .eyebrow { display: block; margin: 0 10px 9px; color: var(--muted); }
-.sidebar-modules button { align-items: flex-start; font-size: 12.5px; line-height: 1.35; }
+.sidebar-modules nav button { align-items: flex-start; padding: 7px 10px; font-size: 12.5px; line-height: 1.35; }
 .module-dot { flex: 0 0 22px; display: grid; place-items: center; height: 22px; border: 1.5px solid var(--line-strong); border-radius: 50%; font-size: 10.5px; color: var(--muted); }
 .sidebar-modules button:hover .module-dot, .sidebar-modules button.active .module-dot { border-color: var(--accent); color: var(--accent); }
 .module-dot.done { background: var(--stage); border-color: transparent; color: #fff; }
@@ -1148,3 +1147,48 @@ p { color: var(--muted); line-height: 1.65; }
   .slide-cite { border: 0; padding: 0; background: none; color: inherit; font-weight: inherit; font-size: inherit; }
   .slide-cite svg, .deck-page { display: none !important; }
 }
+
+/* ================================================================== *
+ * Sidebar groups
+ *
+ * Twenty-three buttons in one flat list overflowed every laptop and gave
+ * no sense of what mattered. Four groups, split by what you are doing,
+ * each collapsible. The header is a disclosure control, so it needs to
+ * read as quieter than the destinations underneath it — a label you can
+ * act on, not a fifth item competing with them.
+ * ================================================================== */
+
+.nav-section + .nav-section { margin-top: 2px; }
+.nav-section-header {
+  display: flex; align-items: center; gap: 7px; width: 100%;
+  margin: 0; padding: 8px 10px 6px; border: 0; border-radius: 6px;
+  background: transparent; color: var(--muted); cursor: pointer;
+  font-size: 11.5px; font-weight: 750; letter-spacing: 0.11em; text-transform: uppercase;
+  transition: color 140ms ease, background 140ms ease;
+}
+.nav-section-header:hover { color: var(--ink); background: var(--surface-alt); }
+.nav-section-header:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.nav-section-header svg { flex: none; opacity: 0.7; transition: transform 160ms ease; }
+.nav-section-header[aria-expanded="false"] svg { transform: rotate(-90deg); }
+/* A collapsed group whose page you are on would otherwise look inactive. */
+.nav-section:has(button.active) .nav-section-header { color: var(--accent); }
+.nav-section nav { padding-bottom: 6px; }
+.sidebar > .nav-section:last-of-type nav { padding-bottom: 12px; }
+
+@media (prefers-reduced-motion: reduce) { .nav-section-header svg { transition: none; } }
+
+/* ---- Home hero ---- */
+.hero .hero-lead { max-width: 720px; margin: 14px 0 22px; font-size: 17.5px; line-height: 1.62; color: var(--muted); }
+.hero h1 { max-width: 760px; margin: 12px 0 0; }
+.hero-facts {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0;
+  max-width: 720px; margin: 0 0 26px; padding: 18px 0; list-style: none;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.hero-facts li { padding: 0 18px; border-left: 1px solid var(--line); }
+.hero-facts li:first-child { padding-left: 0; border-left: 0; }
+.hero-facts strong { display: block; color: var(--ink); font-size: 16px; font-weight: 700; line-height: 1.3; }
+.hero-facts span { display: block; margin-top: 4px; color: var(--muted); font-size: 12.5px; line-height: 1.4; }
+.hero .commitment { margin: 24px 0 0; }
+@media (max-width: 1100px) { .hero-facts { grid-template-columns: repeat(2, 1fr); row-gap: 16px; } .hero-facts li:nth-child(3) { padding-left: 0; border-left: 0; } }
+@media (max-width: 560px) { .hero-facts { grid-template-columns: 1fr; } .hero-facts li { padding-left: 0; border-left: 0; } }
