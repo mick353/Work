@@ -1,0 +1,132 @@
+# Product Practice — Product Management Learning System
+
+An offline learning system built from the 98-slide **Product Management Fundamentals — 12AUG2026** presentation (DEWR Digital Experience and Solutions Division).
+
+> Unofficial internal learning aid. **Not an official Australian Government publication**, and not a substitute for departmental guidance or the Digital Service Standard. See [NOTICE.md](NOTICE.md).
+
+## Use it
+
+**On the web:** <https://mick353.github.io/Work/>
+
+**On your phone:** open that link, then add it to your home screen — *Share → Add to Home Screen* on iOS, or *⋮ → Install app / Add to Home screen* on Android. It installs with its own icon, opens without browser chrome, and works offline afterwards.
+
+**Anywhere else:** download **`Product-Management-Learning-System.html`** and open it in any modern browser. That one file is the whole course — no installation, no server, no network. It works from a USB stick, an email attachment or a network share.
+
+Progress is stored in the browser's local storage and never leaves the device. That means it does **not** follow you between your laptop and your phone — use **Settings → Download a backup** and **Restore from a backup** to move it.
+
+The recommended loop:
+
+1. Take the diagnostic, or begin at Stage 1.
+2. Read a short lesson, then explain the idea from memory.
+3. Complete the knowledge check and both decision scenarios.
+4. Return to **Review** on later days for scheduled retrieval practice.
+5. Use the toolkit, the DES field guide and the nine-part capstone to apply the method to a realistic government-service case.
+
+Because progress lives in one browser on one machine, use **Settings → Download a backup** before switching machines, and **Restore from a backup** on the other side.
+
+## What is included
+
+| | |
+|---|---|
+| Nine stages | Mapped 1:1 onto the deck's nine sections, covering slides 1–98 |
+| Lesson time | ~8 hours, designed to be spread across two to four weeks |
+| Questions | 68 — 44 knowledge checks, 18 decision scenarios, 12 in a separate diagnostic pool |
+| Per-distractor feedback | Explains why the option you chose is wrong, not just why the answer is right |
+| Flashcards | 72 — definition, application and discrimination cards |
+| Templates | 10, including epic, feature and story written to the deck's minimum detail |
+| Capstone | Nine sections with per-section self-assessment against a five-part rubric |
+| DES field guide | Phases, principles, cadence, backlog fields and roles, for lookup at work |
+| Divergence register | Every place this course departs from the source deck, and why |
+| Sources | 15 primary and authoritative references, all date-checked |
+
+Also: full-text search, light and dark themes, keyboard-driven review, JSON backup and restore, and a print stylesheet.
+
+## Design decisions worth knowing
+
+**Answer options are shuffled per learner.** The permutation is seeded from the question id plus a per-install salt, so it is stable for you across reloads but differs between people. Position carries no information; the QA suite asserts this statistically across 40 simulated learners.
+
+**The diagnostic pool is separate** from the module quizzes and the mixed-practice pool, so a good diagnostic score means the ideas transfer rather than that you recognise the wording.
+
+**Mastery states its rule plainly**: read the lesson, score at least 75% on the knowledge check, and answer both scenarios correctly. The stage footer reports how many attempts it took.
+
+**The course sometimes improves on the deck.** Every such departure is listed in the **Divergence register** so you can quote either one deliberately and not be contradicted by the slides in a meeting.
+
+## Development
+
+Requires Node 18+.
+
+```bash
+npm install
+npm run build      # writes the single-file HTML
+npm run dev        # rebuild on change
+npm run typecheck  # tsc --noEmit
+npm run qa         # full verification suite (see below)
+npm run verify     # typecheck + build + qa
+```
+
+Before the first QA run:
+
+```bash
+npx playwright install chromium
+```
+
+### Build
+
+`scripts/build.mjs` uses esbuild to bundle `src/main.tsx` and inline the JS and CSS into `index.html`. It emits two things from one bundle:
+
+1. **`Product-Management-Learning-System.html`** (~387 KB) — pure single file, zero external references.
+2. **`docs/`** — the same app plus a web manifest, icons and a service worker, which is what GitHub Pages serves.
+
+The PWA pieces are deliberately kept out of the standalone file: a service worker registration that can never succeed on `file://` would only log errors. The service worker's cache name is stamped with a hash of the built HTML, so each release invalidates the last.
+
+### Deploying
+
+Pages is configured to serve **`/docs` on `main`**. To publish an update:
+
+```bash
+npm run verify        # typecheck + build + 77 QA checks
+git add -A && git commit -m "Update course"
+git push
+```
+
+GitHub Pages redeploys within a minute or two. Installed home-screen copies pick up the new version the next time they are opened with signal.
+
+### QA
+
+`scripts/qa.mjs` runs 65 checks and writes `qa-report.json`. It is portable: Playwright and its bundled Chromium are resolved from `node_modules`, with no absolute paths.
+
+It verifies:
+
+- **Question-bank integrity** — option counts, unique ids, `optionNotes` alignment, diagnostic/practice pool separation, and that the correct answer's position is balanced across simulated learners
+- **Scoring arithmetic** — answers are submitted, the reported score is compared against what was actually selected, and an all-correct retry must report 100%
+- **Mastery gating** — a stage must not report mastered until all three requirements are met
+- **Backup round trip** — export, wipe, restore, confirm mastery and drafts return; and that a malformed file is rejected rather than clearing progress
+- **Accessibility** — axe-core against WCAG 2.1 A/AA on all twelve views plus dark theme and mobile; no serious or critical violations
+- **Keyboard and focus** — the closed mobile drawer is `inert`, opening it moves focus in, Escape closes it and returns focus
+- **Console hygiene** — no uncaught page or console errors
+
+### Source layout
+
+```
+public/            PWA assets copied into docs/ at build time
+  manifest.webmanifest
+  sw.js            Offline service worker (version stamped at build)
+  icon-*.png
+docs/              Generated — the GitHub Pages build. Do not edit by hand.
+src/
+  course.ts        Nine stages: lessons, tables, questions, scenarios
+  reference.ts     Flashcards, templates, capstone, field guide, divergences, diagnostic pool
+  lib.ts           Routing, local-time dates, guarded storage, seeded shuffle, spaced repetition
+  state.ts         Progress types, storage hooks, mastery rules
+  components.tsx   Shared UI: question cards, feedback, tables, source chips
+  views-learn.tsx  Dashboard, learning path, stage view, diagnostic
+  views-practice.tsx  Spaced review, mixed practice
+  views-apply.tsx  Toolkit, capstone, field guide
+  views-meta.tsx   Search, sources, divergence register, settings
+  App.tsx          Shell, routing, state wiring, mobile drawer
+  styles.css       Single stylesheet
+```
+
+## Provenance
+
+The deck supplies the spine. Scrum definitions, SAFe prioritisation guidance and Australian Government standards are cited separately and are **not interchangeable** — in particular, epics, features and Program Increments are not Scrum terms, and the DES delivery phases (Pre-Approval, Pre-Delivery, Delivery, Closure) are not the DTA service phases (Discovery, Alpha, Beta, Live). The Sources page makes these boundaries explicit and carries a review date.

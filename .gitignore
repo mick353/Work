@@ -1,0 +1,23 @@
+# Dependencies and build caches
+node_modules/
+.build/
+.parcel-cache/
+dist/
+
+# Build output is committed deliberately:
+#   - Product-Management-Learning-System.html so it can be shared without a toolchain
+#   - docs/ because GitHub Pages serves it directly from the repository
+
+# QA artefacts
+qa-*.png
+qa-report.json
+shot-*.png
+.qa-backup.json
+.qa-bad.json
+
+# Editor and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.tsbuildinfo

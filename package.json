@@ -1,0 +1,27 @@
+{
+  "name": "product-management-learning-system",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "description": "Offline, single-file learning system built from the DEWR Product Management Fundamentals deck.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "qa": "node scripts/qa.mjs",
+    "verify": "npm run typecheck && npm run build && npm run qa"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "esbuild": "^0.24.2",
+    "playwright": "^1.49.1",
+    "typescript": "~5.7.2"
+  }
+}

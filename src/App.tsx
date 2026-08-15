@@ -1,0 +1,468 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Brain,
+  BookMarked,
+  Check,
+  ClipboardCheck,
+  Compass,
+  GitCompare,
+  Home,
+  Library,
+  Menu,
+  Moon,
+  Search,
+  Settings2,
+  Sun,
+  Target,
+  Wrench,
+  X,
+} from "lucide-react";
+import { findModule, modules } from "./course";
+import { flashcards } from "./reference";
+import {
+  clearStored,
+  localDayKey,
+  parseView,
+  scheduleNext,
+  viewToHash,
+  type BackupParseResult,
+  type Rating,
+  type View,
+} from "./lib";
+import {
+  emptyModuleProgress,
+  masteryState,
+  normaliseModuleProgress,
+  useSalt,
+  usePreferredTheme,
+  useStorageStatus,
+  useStoredState,
+  type ModuleProgress,
+  type ProgressMap,
+  type ReviewMap,
+  type RubricMap,
+  type TextMap,
+} from "./state";
+import { Dashboard, Diagnostic, LearningPath, ModuleView } from "./views-learn";
+import { Practice, Review, selectDueCards } from "./views-practice";
+import { Capstone, FieldGuide, Toolkit } from "./views-apply";
+import { Divergences, NotFound, SearchView, Settings, Sources, StorageWarning } from "./views-meta";
+
+const MOBILE_QUERY = "(max-width: 820px)";
+
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(
+    () => typeof matchMedia === "function" && matchMedia(query).matches,
+  );
+  useEffect(() => {
+    if (typeof matchMedia !== "function") return;
+    const list = matchMedia(query);
+    const onChange = (event: MediaQueryListEvent) => setMatches(event.matches);
+    list.addEventListener("change", onChange);
+    setMatches(list.matches);
+    return () => list.removeEventListener("change", onChange);
+  }, [query]);
+  return matches;
+}
+
+export default function App() {
+  const [view, setView] = useState<View>(() => parseView(window.location.hash));
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [theme, setTheme] = usePreferredTheme();
+  const storageStatus = useStorageStatus();
+  const salt = useSalt();
+
+  const [progress, setProgress, overwriteProgress] = useStoredState<ProgressMap>("progress", {});
+  const [reviews, setReviews, overwriteReviews] = useStoredState<ReviewMap>("reviews", {});
+  const [toolkit, setToolkit, overwriteToolkit] = useStoredState<TextMap>("toolkit", {});
+  const [capstone, setCapstone, overwriteCapstone] = useStoredState<TextMap>("capstone", {});
+  const [rubric, setRubric, overwriteRubric] = useStoredState<RubricMap>("rubric", {});
+  const [practiceBest, setPracticeBest, overwritePracticeBest] = useStoredState<number>("practice-best", 0);
+  const [studyDays, setStudyDays, overwriteStudyDays] = useStoredState<string[]>("study-days", []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
+
+  useEffect(() => {
+    const onHash = () => setView(parseView(window.location.hash));
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+
+  /**
+   * Record the study day in LOCAL time, and re-check periodically so a tab left
+   * open across midnight still records the new day. The previous build used a
+   * UTC date key, so at AEST every session before ~10am was filed against the
+   * previous day.
+   */
+  useEffect(() => {
+    const record = () => {
+      const today = localDayKey();
+      setStudyDays((days) => (days.includes(today) ? days : [...days, today].slice(-180)));
+    };
+    record();
+    const timer = window.setInterval(record, 10 * 60_000);
+    return () => window.clearInterval(timer);
+  }, [setStudyDays]);
+
+  const navigate = useCallback((next: View) => {
+    window.location.hash = viewToHash(next);
+    setView(next);
+    setMobileOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  const updateModule = useCallback(
+    (id: string, changes: Partial<ModuleProgress>) => {
+      setProgress((current) => ({
+        ...current,
+        [id]: { ...(current[id] ?? emptyModuleProgress()), ...changes },
+      }));
+    },
+    [setProgress],
+  );
+
+  const recordReview = useCallback(
+    (card: { id: string }, rating: Rating) => {
+      setReviews((current) => ({ ...current, [card.id]: scheduleNext(current[card.id], rating) }));
+    },
+    [setReviews],
+  );
+
+  const masteredCount = modules.filter(
+    (module) => masteryState(progress[module.id], module.scenarios.length).mastered,
+  ).length;
+  const completion = Math.round((masteredCount / modules.length) * 100);
+  const quizScores = Object.values(progress)
+    .map((item) => item.quizScore)
+    .filter((score) => score > 0);
+  const quizAverage = quizScores.length
+    ? Math.round(quizScores.reduce((sum, score) => sum + score, 0) / quizScores.length)
+    : 0;
+  const nextModule =
+    modules.find((module) => !masteryState(progress[module.id], module.scenarios.length).mastered) ??
+    modules[modules.length - 1];
+
+  const dueCount = useMemo(
+    () => selectDueCards(flashcards, reviews, Date.now(), flashcards.length).length,
+    [reviews],
+  );
+
+  const handleImport = useCallback(
+    (result: BackupParseResult) => {
+      if (!result.ok) return;
+      const { payload } = result;
+      overwriteProgress(payload.progress as ProgressMap);
+      overwriteReviews(payload.reviews as ReviewMap);
+      overwriteToolkit((payload.toolkit ?? {}) as TextMap);
+      overwriteCapstone((payload.capstone ?? {}) as TextMap);
+      overwriteRubric((payload.rubric ?? {}) as RubricMap);
+      overwriteStudyDays((payload.studyDays ?? []) as string[]);
+      overwritePracticeBest((payload.practiceBest ?? 0) as number);
+    },
+    [
+      overwriteProgress,
+      overwriteReviews,
+      overwriteToolkit,
+      overwriteCapstone,
+      overwriteRubric,
+      overwriteStudyDays,
+      overwritePracticeBest,
+    ],
+  );
+
+  const handleReset = useCallback(() => {
+    clearStored();
+    window.location.hash = "";
+    window.location.reload();
+  }, []);
+
+  let content: React.ReactNode;
+  if (view === "dashboard") {
+    content = (
+      <Dashboard
+        completion={completion}
+        mastered={masteredCount}
+        quizAverage={quizAverage}
+        dueCount={dueCount}
+        nextModule={nextModule}
+        progress={progress}
+        studyDays={studyDays}
+        navigate={navigate}
+      />
+    );
+  } else if (view === "path") {
+    content = <LearningPath progress={progress} navigate={navigate} />;
+  } else if (view === "diagnostic") {
+    content = <Diagnostic navigate={navigate} salt={salt} />;
+  } else if (view === "review") {
+    content = <Review reviews={reviews} onRate={recordReview} navigate={navigate as (view: string) => void} />;
+  } else if (view === "practice") {
+    content = <Practice best={practiceBest} setBest={setPracticeBest} salt={salt} />;
+  } else if (view === "toolkit") {
+    content = <Toolkit values={toolkit} setValues={setToolkit} />;
+  } else if (view === "capstone") {
+    content = <Capstone values={capstone} setValues={setCapstone} rubric={rubric} setRubric={setRubric} />;
+  } else if (view === "fieldguide") {
+    content = <FieldGuide />;
+  } else if (view === "sources") {
+    content = <Sources navigate={navigate} />;
+  } else if (view === "divergences") {
+    content = <Divergences />;
+  } else if (view === "search") {
+    content = <SearchView navigate={navigate} />;
+  } else if (view === "settings") {
+    content = (
+      <Settings
+        progress={progress}
+        reviews={reviews}
+        toolkit={toolkit}
+        capstone={capstone}
+        rubric={rubric}
+        studyDays={studyDays}
+        practiceBest={practiceBest}
+        salt={salt}
+        onImport={handleImport}
+        onReset={handleReset}
+      />
+    );
+  } else {
+    const module = findModule(view.slice("module:".length));
+    content = module ? (
+      <ModuleView
+        key={module.id}
+        module={module}
+        progress={normaliseModuleProgress(progress[module.id])}
+        update={(changes) => updateModule(module.id, changes)}
+        navigate={navigate}
+        salt={salt}
+      />
+    ) : (
+      <NotFound navigate={navigate} />
+    );
+  }
+
+  return (
+    <Shell
+      view={view}
+      navigate={navigate}
+      theme={theme}
+      setTheme={setTheme}
+      completion={completion}
+      mobileOpen={mobileOpen}
+      setMobileOpen={setMobileOpen}
+      progress={progress}
+      storageOk={storageStatus === "ok"}
+    >
+      {content}
+    </Shell>
+  );
+}
+
+function Shell({
+  children,
+  view,
+  navigate,
+  theme,
+  setTheme,
+  completion,
+  mobileOpen,
+  setMobileOpen,
+  progress,
+  storageOk,
+}: {
+  children: React.ReactNode;
+  view: View;
+  navigate: (view: View) => void;
+  theme: "light" | "dark";
+  setTheme: (theme: "light" | "dark") => void;
+  completion: number;
+  mobileOpen: boolean;
+  setMobileOpen: (open: boolean) => void;
+  progress: ProgressMap;
+  storageOk: boolean;
+}) {
+  const isMobile = useMediaQuery(MOBILE_QUERY);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerHidden = isMobile && !mobileOpen;
+
+  /**
+   * When the drawer is closed on mobile it is translated off-screen but still
+   * in the DOM. Without `inert` a keyboard user tabs from the menu button
+   * straight into sixteen invisible navigation buttons — which is what the
+   * previous build did.
+   */
+  useEffect(() => {
+    const element = sidebarRef.current;
+    if (!element) return;
+    if (drawerHidden) element.setAttribute("inert", "");
+    else element.removeAttribute("inert");
+  }, [drawerHidden]);
+
+  // Focus management and Escape-to-close for the mobile drawer.
+  useEffect(() => {
+    if (!isMobile || !mobileOpen) return;
+    const element = sidebarRef.current;
+    if (!element) return;
+
+    const focusables = () =>
+      Array.from(element.querySelectorAll<HTMLElement>("button, a[href], input, [tabindex]:not([tabindex='-1'])"));
+
+    // The drawer transitions from `visibility: hidden`, and a hidden element
+    // cannot take focus, so wait for the style to land before moving focus.
+    const focusTimer = window.setTimeout(() => focusables()[0]?.focus(), 60);
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setMobileOpen(false);
+        menuButtonRef.current?.focus();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const items = focusables();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isMobile, mobileOpen, setMobileOpen]);
+
+  const navItems: { id: View; label: string; icon: React.ReactNode }[] = [
+    { id: "dashboard", label: "Today", icon: <Home size={18} aria-hidden="true" /> },
+    { id: "path", label: "Learning path", icon: <Compass size={18} aria-hidden="true" /> },
+    { id: "review", label: "Review", icon: <Brain size={18} aria-hidden="true" /> },
+    { id: "practice", label: "Mixed practice", icon: <ClipboardCheck size={18} aria-hidden="true" /> },
+    { id: "toolkit", label: "Product toolkit", icon: <Wrench size={18} aria-hidden="true" /> },
+    { id: "capstone", label: "Capstone", icon: <Target size={18} aria-hidden="true" /> },
+    { id: "fieldguide", label: "DES field guide", icon: <BookMarked size={18} aria-hidden="true" /> },
+    { id: "sources", label: "Sources", icon: <Library size={18} aria-hidden="true" /> },
+    { id: "divergences", label: "Divergence register", icon: <GitCompare size={18} aria-hidden="true" /> },
+  ];
+
+  return (
+    <div className="app-shell">
+      <header className="topbar">
+        <button
+          ref={menuButtonRef}
+          className="mobile-menu"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
+          aria-expanded={mobileOpen}
+        >
+          {mobileOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+        </button>
+        <button className="brand" onClick={() => navigate("dashboard")} aria-label="Product Practice home">
+          <span className="brand-mark" aria-hidden="true">
+            PP
+          </span>
+          <span>
+            <strong>Product Practice</strong>
+            <small>DEWR Digital Experience and Solutions — internal learning aid</small>
+          </span>
+        </button>
+        <div className="topbar-actions">
+          <div className="top-progress">
+            <span>{completion}% mastered</span>
+            <div
+              role="progressbar"
+              aria-valuenow={completion}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Overall course mastery"
+            >
+              <i style={{ width: `${completion}%` }} />
+            </div>
+          </div>
+          <button className="icon-button" onClick={() => navigate("search")} aria-label="Search the course">
+            <Search size={19} aria-hidden="true" />
+          </button>
+          <button
+            className="icon-button"
+            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+            aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
+          >
+            {theme === "light" ? <Moon size={19} aria-hidden="true" /> : <Sun size={19} aria-hidden="true" />}
+          </button>
+          <button className="icon-button" onClick={() => navigate("settings")} aria-label="Learning settings">
+            <Settings2 size={19} aria-hidden="true" />
+          </button>
+        </div>
+      </header>
+
+      <aside ref={sidebarRef} className={`sidebar ${mobileOpen ? "open" : ""}`} aria-label="Course navigation">
+        <nav aria-label="Sections">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              className={view === item.id ? "active" : ""}
+              aria-current={view === item.id ? "page" : undefined}
+              onClick={() => navigate(item.id)}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </nav>
+        <div className="sidebar-modules">
+          <span className="eyebrow" id="curriculum-label">
+            Nine-stage curriculum
+          </span>
+          <nav aria-labelledby="curriculum-label">
+            {modules.map((module) => {
+              const done = masteryState(progress[module.id], module.scenarios.length).mastered;
+              return (
+                <button
+                  key={module.id}
+                  className={view === `module:${module.id}` ? "active" : ""}
+                  data-stage={module.number}
+                  aria-current={view === `module:${module.id}` ? "page" : undefined}
+                  onClick={() => navigate(`module:${module.id}`)}
+                >
+                  <span className={`module-dot ${done ? "done" : ""}`} aria-hidden="true">
+                    {done ? <Check size={12} /> : module.number}
+                  </span>
+                  <span>
+                    {module.title}
+                    {done && <span className="visually-hidden"> (mastered)</span>}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+        <p className="privacy-note">
+          Progress stays in this browser. Nothing is uploaded. Not an official Australian Government publication.
+        </p>
+      </aside>
+
+      {mobileOpen && <button className="scrim" aria-label="Close navigation" onClick={() => setMobileOpen(false)} />}
+
+      <main id="main-content" className="main-content" tabIndex={-1}>
+        {!storageOk && <StorageWarning />}
+        {children}
+        <footer className="app-footer">
+          <p>
+            An internal learning aid built from <em>Product Management Fundamentals — 12AUG2026</em> (DEWR Digital
+            Experience and Solutions Division). Not an official Australian Government publication and not a substitute
+            for departmental guidance or the Digital Service Standard.
+          </p>
+        </footer>
+      </main>
+    </div>
+  );
+}

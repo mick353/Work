@@ -1,0 +1,19 @@
+{
+  "name": "Product Practice — Product Management Learning System",
+  "short_name": "Product Practice",
+  "description": "An offline learning system for product management in an Australian Government delivery context. Internal learning aid, not an official publication.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f4f6f8",
+  "theme_color": "#16325c",
+  "categories": ["education", "productivity"],
+  "lang": "en-AU",
+  "dir": "ltr",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
