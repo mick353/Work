@@ -121,6 +121,27 @@ export const flashcards: Flashcard[] = [
   { id: "f70", moduleId: "integration", kind: "definition", front: "Product judgement", back: "Choosing a defensible course under uncertainty by balancing evidence, outcomes, constraints, risk and learning." },
   { id: "f71", moduleId: "integration", kind: "application", front: "A pilot improves the average but worsens results for assistive-technology users. What does the evidence require?", back: "Treat it as a guardrail failure, investigate the cause and adapt before scaling. Averages can conceal distributional harm." },
   { id: "f72", moduleId: "integration", kind: "application", front: "Ten minutes with the SRO: delivery is green but the outcome measure probably will not move. What do you lead with?", back: "The outcome risk, the evidence behind it and the decision you need — schedule as context. The SRO owns the project outcomes." },
+  /* ---- Expansion: cross-cutting judgement and vocabulary ---- */
+  { id: "f73", moduleId: "thinking", kind: "application", front: "A stakeholder says 'the users want it' about a feature nobody has researched. What do you ask?", back: "Which users, doing what, and what evidence shows they cannot do it today? 'Users want it' is an assumption wearing the costume of a finding." },
+  { id: "f74", moduleId: "thinking", kind: "discrimination", front: "Output or outcome: 'Portal migrated to the new platform'", back: "Output. The outcome would be what changed for users or operations because of the migration — faster completion, fewer failures, lower running cost." },
+  { id: "f75", moduleId: "discovery", kind: "application", front: "Analytics show a 60% drop-off. Interviews say the wording is confusing. What have you still not established?", back: "That wording is the binding constraint. Removing it might reveal a second barrier. Only a test establishes that fixing it changes the outcome." },
+  { id: "f76", moduleId: "discovery", kind: "definition", front: "Triangulation", back: "Comparing evidence from different methods — behaviour, stated preference, operational data — because they routinely disagree, and the disagreement is itself the finding." },
+  { id: "f77", moduleId: "discovery", kind: "discrimination", front: "Insight or requirement: 'Providers check status an average of four times per application'", back: "Insight. It describes observed behaviour. The requirement would be a solution someone chose in response to it." },
+  { id: "f78", moduleId: "outcomes", kind: "application", front: "Your only measure is 'user satisfaction'. What is the risk?", back: "It is lagging, slow-moving and heavily confounded. You will not know whether you helped until long after the decisions are made. Pair it with a leading behavioural measure." },
+  { id: "f79", moduleId: "outcomes", kind: "definition", front: "Vanity metric", back: "A number that reliably goes up and never changes a decision — page views, notifications sent, releases shipped. If no result would make you act differently, stop reporting it." },
+  { id: "f80", moduleId: "outcomes", kind: "discrimination", front: "Guardrail or key result: 'Escalation for unresolved cases stays above 95%'", back: "Guardrail. It must not get worse; it is not what you are trying to improve. Key results move; guardrails hold." },
+  { id: "f81", moduleId: "exploration", kind: "application", front: "You have three weeks and one engineer. Which assumption do you test?", back: "The one that is both most uncertain and most consequential — where being wrong kills the idea. Cheapness is measured against the decision, not the effort." },
+  { id: "f82", moduleId: "exploration", kind: "definition", front: "Falsifiable test", back: "One where you have written down, in advance, the result that would make you stop or change direction. Without that line, you will rationalise any outcome." },
+  { id: "f83", moduleId: "exploration", kind: "discrimination", front: "Which risk: 'The API exists but only refreshes overnight, and users need same-day status'", back: "Feasibility, surfacing as a value problem. The technology works; it cannot meet the need. Test the data freshness before designing around it." },
+  { id: "f84", moduleId: "delivery", kind: "application", front: "A feature has acceptance criteria but no feature measurement. What breaks?", back: "You can tell whether it was built, never whether it worked. The PI closes, the benefit is assumed, and nothing feeds the next decision." },
+  { id: "f85", moduleId: "delivery", kind: "definition", front: "Refinement", back: "Confirming the detail, scope and feasibility of candidate features before an increment starts. Committing to unrefined work is committing to a guess." },
+  { id: "f86", moduleId: "delivery", kind: "discrimination", front: "Now/Next/Later or PI X/PI Y — which is the outcome roadmap?", back: "Now/Next/Later, carrying objectives and key results. PI X/PI Y is the feature roadmap, carrying likely solution work. Confidence bands versus committed slots." },
+  { id: "f87", moduleId: "lifecycle", kind: "application", front: "Live service, falling completion rate, nobody has noticed for six months. What was missing?", back: "An owner, a measure and a cadence. Any one of the three missing and decay goes unobserved until someone complains." },
+  { id: "f88", moduleId: "roles", kind: "application", front: "Every decision is going to the Project Board. What is the cost?", back: "Board capacity is spent on reversible detail, so material risk gets less attention, and the team learns not to decide anything. Push reversible decisions down." },
+  { id: "f89", moduleId: "government", kind: "application", front: "You are asked to 'just make it accessible at the end'. What do you say?", back: "Accessibility is a delivery obligation and a design input, not a remediation phase. Retrofitting costs more and usually still fails the people it was meant to serve." },
+  { id: "f90", moduleId: "government", kind: "discrimination", front: "Which framework: 'Discovery, Alpha, Beta, Live'?", back: "The DTA service design and delivery process. The DES pipeline is Pre-Approval, Pre-Delivery, Delivery, Closure. The Digital Service Standard is a third thing again — 10 criteria applied across all of it." },
+  { id: "f91", moduleId: "integration", kind: "application", front: "How do you know a roadmap item is justified?", back: "Trace it back to a user or service problem with evidence, and forward to a measure that would show whether it worked. If either end is missing, priority is unjustifiable." },
+  { id: "f92", moduleId: "integration", kind: "definition", front: "Distributional harm", back: "An intervention that improves the average while making things worse for a specific group. Averages conceal it; disaggregated guardrails reveal it." },
 ];
 
 /* ------------------------------------------------------------------ *
@@ -702,4 +723,80 @@ export const diagnosticQuestions: Question[] = [
     rationale:
       "Averages conceal distributional harm. The disaggregated result is the finding, and it should change the scaling decision rather than be annotated.",
   },
+];
+
+/* ------------------------------------------------------------------ *
+ * Glossary — every term the course uses, in one alphabetical place.
+ * Written so someone can look up a word mid-meeting and get a usable
+ * answer, including which framework the term belongs to.
+ * ------------------------------------------------------------------ */
+
+export type GlossaryEntry = {
+  term: string;
+  definition: string;
+  /** Which body of practice the term belongs to. */
+  origin: "Deck" | "Scrum" | "SAFe" | "Government" | "General";
+  moduleId?: string;
+};
+
+export const glossary: GlossaryEntry[] = [
+  { term: "Acceptance criteria", origin: "General", moduleId: "delivery", definition: "The observable conditions that must hold for a story or feature to be considered done. They answer 'is it built', not 'should we build it'." },
+  { term: "Alpha", origin: "Government", moduleId: "lifecycle", definition: "The DTA phase for exploring and testing several approaches through prototypes and research, before committing to a Beta service." },
+  { term: "Area path", origin: "SAFe", moduleId: "delivery", definition: "An Azure DevOps field assigning a work item to a team or product. Required on stories in the DES backlog." },
+  { term: "Assumption", origin: "General", moduleId: "integration", definition: "Something believed true but not yet supported strongly enough for the decision being made. The riskiest one is what you test first." },
+  { term: "Beta", origin: "Government", moduleId: "lifecycle", definition: "The DTA phase for building and trialling an accessible, secure service with real users — the first test under real operating conditions." },
+  { term: "Closure", origin: "Deck", moduleId: "government", definition: "The fourth DES delivery phase. Transition and completion — and where product risk is highest, because the project ends but the product does not." },
+  { term: "Cost of delay", origin: "SAFe", moduleId: "delivery", definition: "In WSJF, user and business value plus time criticality plus risk reduction or opportunity enablement. The numerator, divided by job size." },
+  { term: "Created need", origin: "Deck", moduleId: "discovery", definition: "Something users are forced to do because of policy or the way government works. A need manufactured by the system, not held by the user." },
+  { term: "Decision rights", origin: "General", moduleId: "roles", definition: "Explicit agreement about who decides, who contributes evidence, who is consulted, and what threshold requires escalation." },
+  { term: "Desirability", origin: "General", moduleId: "exploration", definition: "Whether the problem matters and people will choose or benefit from the proposed response. The human lens in DVF." },
+  { term: "Digital Service Standard", origin: "Government", moduleId: "government", definition: "The Australian Government's current 10-criterion standard, reduced from 13. Fully in effect: new services from 1 July 2024, pre-existing public-facing services from 1 July 2025." },
+  { term: "Discovery", origin: "Deck", moduleId: "discovery", definition: "Work that reduces uncertainty about users, problems, opportunities and solution risks. Produces insight and hypotheses — never requirements or features." },
+  { term: "Distributional harm", origin: "General", moduleId: "integration", definition: "An intervention that improves the average while worsening outcomes for a specific group. Guardrails on disaggregated measures reveal it." },
+  { term: "DVF", origin: "General", moduleId: "exploration", definition: "Desirable, Viable, Feasible — a three-lens filter applied before investing. Delivery fails when one perspective dominates." },
+  { term: "Epic", origin: "SAFe", moduleId: "delivery", definition: "A measurable business outcome spanning many PIs and teams. Not a Scrum term. Requires a hypothesis, description, business outcomes and benefits, and an objective." },
+  { term: "Feasibility", origin: "General", moduleId: "exploration", definition: "Whether the team can build and operate the solution with available technology, data, skills and time. The technology lens in DVF." },
+  { term: "Feature", origin: "SAFe", moduleId: "delivery", definition: "A smaller tangible outcome contributing to an epic, demonstrable within a PI. Requires a hypothesis, sizing, acceptance criteria, scope boundaries, measurement, and risks." },
+  { term: "Feature measurement", origin: "Deck", moduleId: "delivery", definition: "The metric that shows whether a delivered feature worked, e.g. '30% reduction in processing time'. The field most often skipped and the one that decides whether you learn anything." },
+  { term: "Guardrail", origin: "General", moduleId: "outcomes", definition: "A measure that detects unacceptable harm, trade-offs or displacement while pursuing the primary outcome. It must not worsen; it is not what you are improving." },
+  { term: "How might we", origin: "Deck", moduleId: "discovery", definition: "A design-thinking reframe turning a problem into an actionable opportunity, without prescribing a solution." },
+  { term: "Hypothesis", origin: "Deck", moduleId: "discovery", definition: "A testable statement linking a proposed action for a group to an expected outcome and observable evidence — including what would show it false." },
+  { term: "Increment", origin: "Scrum", moduleId: "delivery", definition: "A usable step toward the Product Goal. Each increment is additive to all prior increments and must be verified." },
+  { term: "Iteration path", origin: "SAFe", moduleId: "delivery", definition: "An Azure DevOps field aligning a story to the sprint in which delivery is expected. Misaligned iteration paths make PI reporting silently drift." },
+  { term: "Lagging indicator", origin: "Deck", moduleId: "outcomes", definition: "A measure of past performance — customer satisfaction, outcome achieved. Confirms the result after it has happened." },
+  { term: "Leading indicator", origin: "Deck", moduleId: "outcomes", definition: "A predictive measure of future performance — feature usage, completion rate. Moves early, but must itself be validated." },
+  { term: "Lean Canvas", origin: "General", moduleId: "discovery", definition: "A one-page model of problem, users, solution ideas, business outcomes, hypotheses and riskiest assumptions. Its function is to expose what to test first." },
+  { term: "Live", origin: "Government", moduleId: "lifecycle", definition: "The DTA phase for operating the service and continuing to improve it through performance data and user feedback. Needs an owner, measures and a cadence." },
+  { term: "MVP", origin: "Deck", moduleId: "exploration", definition: "The smallest coherent thing that delivers value and generates learning. Focused and intentional — not a poor-quality or unfinished product, and never an excuse to defer accessibility." },
+  { term: "Objective", origin: "Deck", moduleId: "outcomes", definition: "In OKRs, a qualitative, specific and motivating direction. Measured by two to five key results." },
+  { term: "OKR", origin: "Deck", moduleId: "outcomes", definition: "Objectives and Key Results. We will [objective], as measured by [key results], via [actions]. Graded 1 to 4 at review." },
+  { term: "Opportunity", origin: "General", moduleId: "discovery", definition: "A problem or need reframed as something the team could act on, before any solution has been chosen." },
+  { term: "Outcome", origin: "Deck", moduleId: "outcomes", definition: "A meaningful change in behaviour, performance, experience, risk or value resulting from the work. The why." },
+  { term: "Output", origin: "Deck", moduleId: "outcomes", definition: "The thing produced or delivered — a feature, form, policy or release. The what. Can be delivered perfectly and change nothing." },
+  { term: "Persona", origin: "Deck", moduleId: "discovery", definition: "A research-grounded synthesis of user goals, needs, behaviours, motivations, challenges and context. Not a demographic stereotype." },
+  { term: "Pre-Approval", origin: "Deck", moduleId: "government", definition: "The first DES delivery phase. Establishing the case for investment: problem definition, user evidence, outcome hypotheses, options and risks." },
+  { term: "Pre-Delivery", origin: "Deck", moduleId: "government", definition: "The second DES delivery phase. Planning with the right amount of detail and establishing the runway: refined backlog, validated approach, baselines defined before build." },
+  { term: "Product", origin: "Deck", moduleId: "thinking", definition: "An enduring vehicle for delivering value to identifiable users, with ongoing ownership and improvement. May be software, policy, operational procedures, or a combination." },
+  { term: "Product Backlog", origin: "Scrum", moduleId: "delivery", definition: "An emergent, ordered list of what is needed to improve the product; the Scrum Team's single source of work. Anyone may add; product management orders." },
+  { term: "Product Goal", origin: "Scrum", moduleId: "delivery", definition: "The long-term objective for the Scrum Team and the target against which the Product Backlog emerges." },
+  { term: "Product Manager", origin: "Deck", moduleId: "roles", definition: "Holds vision, strategy, outcomes, roadmaps and stakeholder alignment. Asks: are we working on the right things?" },
+  { term: "Product Owner", origin: "Scrum", moduleId: "roles", definition: "Holds backlog management, refinement, acceptance criteria and sprint support. Asks: do teams have what they need to deliver? Must not become a requirements courier." },
+  { term: "Product trio", origin: "General", moduleId: "roles", definition: "Product manager (viable), designer (desirable) and technology lead (feasible) collaborating on discovery. A working pattern, not an approval committee." },
+  { term: "Program Increment", origin: "SAFe", moduleId: "delivery", definition: "Ten weeks / 50 working days in the DES cadence, delivering key business outcomes. Five two-week sprints fit inside one. Not a Scrum term." },
+  { term: "Project", origin: "Deck", moduleId: "thinking", definition: "A temporary structure for coordinating investment and delivery toward a defined change. Ends; the product does not." },
+  { term: "Root cause analysis", origin: "Deck", moduleId: "discovery", definition: "Working back from a visible symptom to the structural cause, commonly by asking why repeatedly. Prevents solving the first thing you noticed." },
+  { term: "Senior Responsible Officer", origin: "Deck", moduleId: "roles", definition: "Owns the project outcomes, the delivery roadmap and championing the change. Product decisions that alter the outcome need the SRO." },
+  { term: "Service", origin: "Deck", moduleId: "thinking", definition: "The series of interactions that helps someone do something. A product is a tool created to deliver the service." },
+  { term: "Service blueprint", origin: "Deck", moduleId: "discovery", definition: "A view connecting user actions and front-stage interactions to back-stage activities, supporting systems and processes." },
+  { term: "Spike", origin: "General", moduleId: "exploration", definition: "A bounded piece of technical investigation run against representative interfaces and data, to answer a feasibility question before committing." },
+  { term: "Sprint", origin: "Scrum", moduleId: "delivery", definition: "Two weeks / 10 working days in the DES cadence, delivering small increments of releasable value." },
+  { term: "Story", origin: "General", moduleId: "delivery", definition: "A small slice a team can complete and validate in a sprint. As a [persona] I want [goal] so that [reason], plus points, area path and iteration path." },
+  { term: "Story points", origin: "General", moduleId: "delivery", definition: "A relative estimate of size and complexity, used for forecasting throughput. Not hours, and not a productivity measure." },
+  { term: "Triangulation", origin: "General", moduleId: "discovery", definition: "Comparing evidence from different methods, because stated preference, observed behaviour and system constraints routinely disagree." },
+  { term: "Vanity metric", origin: "General", moduleId: "outcomes", definition: "A number that reliably rises and never changes a decision. If no value would make you act differently, it is not worth reporting." },
+  { term: "Viability", origin: "General", moduleId: "exploration", definition: "Whether policy, operational, legal, financial and organisational conditions can sustain the solution. The business and policy lens in DVF." },
+  { term: "Vision", origin: "Deck", moduleId: "thinking", definition: "A description of the future state the product or service is trying to create. The destination, not the route." },
+  { term: "Ways of Working", origin: "Deck", moduleId: "government", definition: "The DES behaviours plus the Digital Delivery Framework — an end-to-end, repeatable delivery pipeline underpinned by seven principles." },
+  { term: "Whole-of-service", origin: "Deck", moduleId: "government", definition: "Optimising the end-to-end experience across channels and systems, including assisted and non-digital, rather than one interface or project." },
+  { term: "WSJF", origin: "SAFe", moduleId: "delivery", definition: "Weighted Shortest Job First: relative cost of delay divided by relative job duration or size. A comparative sequencing aid, not a guarantee." },
 ];

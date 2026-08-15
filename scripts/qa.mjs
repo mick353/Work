@@ -455,6 +455,7 @@ const axeViews = [
   ["toolkit", "toolkit"],
   ["capstone", "capstone"],
   ["fieldguide", "field guide"],
+  ["glossary", "glossary"],
   ["sources", "sources"],
   ["divergences", "divergence register"],
   ["settings", "settings"],

@@ -1,14 +1,17 @@
-import { Check, Download, Printer } from "lucide-react";
+import { Check, Download, Printer, Search } from "lucide-react";
+import { useMemo, useState } from "react";
 import {
   CAPSTONE_MIN_WORDS,
   capstoneRubric,
   capstoneSteps,
   fieldGuide,
+  glossary,
   toolkitTemplates,
+  type GlossaryEntry,
 } from "./reference";
 import { downloadFile } from "./lib";
 import type { RubricMap, TextMap } from "./state";
-import { PageIntro, ProgressBar, SourceChips } from "./components";
+import { EmptyState, PageIntro, ProgressBar, SourceChips } from "./components";
 
 function wordCount(value: string) {
   const trimmed = value.trim();
@@ -275,6 +278,93 @@ export function FieldGuide() {
           </section>
         ))}
       </div>
+    </div>
+  );
+}
+
+
+const ORIGINS: GlossaryEntry["origin"][] = ["Deck", "Scrum", "SAFe", "Government", "General"];
+
+export function Glossary() {
+  const [term, setTerm] = useState("");
+  const [origin, setOrigin] = useState<"All" | GlossaryEntry["origin"]>("All");
+
+  const filtered = useMemo(() => {
+    const q = term.trim().toLowerCase();
+    return glossary.filter(
+      (entry) =>
+        (origin === "All" || entry.origin === origin) &&
+        (!q || entry.term.toLowerCase().includes(q) || entry.definition.toLowerCase().includes(q)),
+    );
+  }, [term, origin]);
+
+  const grouped = useMemo(() => {
+    const map = new Map<string, GlossaryEntry[]>();
+    filtered.forEach((entry) => {
+      const letter = entry.term[0].toUpperCase();
+      map.set(letter, [...(map.get(letter) ?? []), entry]);
+    });
+    return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  }, [filtered]);
+
+  return (
+    <div className="page">
+      <PageIntro
+        eyebrow="Glossary"
+        title="Every term, and which framework it belongs to"
+        body="Product vocabulary gets muddled because four bodies of practice overlap. Each entry says where the term actually comes from, so you can tell a Scrum definition from a SAFe one from a departmental convention."
+      />
+
+      <div className="glossary-controls">
+        <div className="search-field">
+          <Search size={20} aria-hidden="true" />
+          <label className="visually-hidden" htmlFor="glossary-search">Search the glossary</label>
+          <input
+            id="glossary-search"
+            type="search"
+            value={term}
+            placeholder="Try WSJF, guardrail, created need…"
+            onChange={(event) => setTerm(event.target.value)}
+          />
+        </div>
+        <div className="origin-filter" role="group" aria-label="Filter by origin">
+          {(["All", ...ORIGINS] as const).map((option) => (
+            <button
+              key={option}
+              className={origin === option ? "active" : ""}
+              aria-pressed={origin === option}
+              onClick={() => setOrigin(option)}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <p className="search-count" aria-live="polite">
+        {filtered.length} of {glossary.length} terms
+      </p>
+
+      {filtered.length === 0 ? (
+        <EmptyState title="No matches" body="Try a shorter term, or clear the origin filter." />
+      ) : (
+        grouped.map(([letter, entries]) => (
+          <section key={letter} className="glossary-group">
+            <h2>{letter}</h2>
+            <dl>
+              {entries.map((entry) => (
+                <div key={entry.term}>
+                  <dt>
+                    {entry.term}
+                    <span className={`origin-tag origin-${entry.origin.toLowerCase()}`}>{entry.origin}</span>
+                  </dt>
+                  <dd>{entry.definition}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ))
+      )}
     </div>
   );
 }

@@ -22,6 +22,7 @@ export const TOP_LEVEL_VIEWS = [
   "toolkit",
   "capstone",
   "fieldguide",
+  "glossary",
   "sources",
   "divergences",
   "search",

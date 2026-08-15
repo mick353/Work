@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Brain,
+  BookA,
   BookMarked,
   Check,
   BarChart3,
@@ -47,7 +48,7 @@ import {
 } from "./state";
 import { Dashboard, Diagnostic, LearningPath, ModuleView } from "./views-learn";
 import { Practice, Review, selectDueCards } from "./views-practice";
-import { Capstone, FieldGuide, Toolkit } from "./views-apply";
+import { Capstone, FieldGuide, Glossary, Toolkit } from "./views-apply";
 import { Divergences, NotFound, SearchView, Settings, Sources, StorageWarning } from "./views-meta";
 import { Results } from "./views-results";
 
@@ -231,6 +232,8 @@ export default function App() {
     );
   } else if (view === "fieldguide") {
     content = <FieldGuide />;
+  } else if (view === "glossary") {
+    content = <Glossary />;
   } else if (view === "sources") {
     content = <Sources navigate={navigate} />;
   } else if (view === "divergences") {
@@ -378,6 +381,7 @@ function Shell({
     { id: "toolkit", label: "Product toolkit", icon: <Wrench size={18} aria-hidden="true" /> },
     { id: "capstone", label: "Capstone", icon: <Target size={18} aria-hidden="true" /> },
     { id: "fieldguide", label: "DES field guide", icon: <BookMarked size={18} aria-hidden="true" /> },
+    { id: "glossary", label: "Glossary", icon: <BookA size={18} aria-hidden="true" /> },
     { id: "sources", label: "Sources", icon: <Library size={18} aria-hidden="true" /> },
     { id: "divergences", label: "Divergence register", icon: <GitCompare size={18} aria-hidden="true" /> },
   ];
