@@ -232,6 +232,34 @@ check(
   );
 }
 
+{
+  const bankAll2 = [];
+  const seen2 = new Set();
+  for (const q of [...bank.practiceQuestions, ...bank.diagnosticQuestions, ...bank.supplementaryQuestions]) {
+    if (seen2.has(q.id)) continue;
+    seen2.add(q.id);
+    bankAll2.push(q);
+  }
+  // Thirty diagnostic items carried a rationale but no per-option note, so a
+  // learner who chose wrongly was told the right answer and never why theirs
+  // was wrong — which is where most of this course's teaching happens.
+  const incomplete = bankAll2.filter((q) => {
+    const notes = q.optionNotes ?? [];
+    return q.options.some((_, i) => i !== q.answer && !String(notes[i] ?? "").trim());
+  });
+  check(
+    "Every question explains every wrong option",
+    incomplete.length === 0,
+    `${incomplete.length} question(s) missing distractor feedback: ${incomplete.slice(0, 5).map((q) => q.id).join(", ")}`,
+  );
+  const keyNoted = bankAll2.filter((q) => String((q.optionNotes ?? [])[q.answer] ?? "").trim());
+  check(
+    "The correct option carries no note",
+    keyNoted.length === 0,
+    `${keyNoted.length} question(s) annotate the key, which would give it away`,
+  );
+}
+
 check("Question ids are unique", new Set(allQuestions.map((q) => q.id)).size === allQuestions.length);
 check(
   "Diagnostic pool does not overlap the practice pool",
@@ -824,6 +852,27 @@ check(
   /Stage \d/.test(await page.locator(".diagnostic-result h2").innerText()),
 );
 
+/* -- stage navigation and targeted re-teaching --------------------- */
+
+await page.evaluate(() => { window.location.hash = "module/delivery"; });
+await page.waitForTimeout(500);
+const stageContents = await page.locator(".stage-contents button").count();
+check(
+  "A stage lists its own sections",
+  stageContents >= 5,
+  `${stageContents} entries — a stage is now 8-9 sections including a 300-word passage`,
+);
+const firstSection = page.locator(".stage-contents button").nth(3);
+const sectionLabel = (await firstSection.innerText()).trim();
+await firstSection.click();
+await page.waitForTimeout(1200);
+check(
+  "Stage contents scroll rather than re-route",
+  (await page.locator(".lesson-sections").count()) === 1 &&
+    (await page.evaluate(() => window.location.hash)).includes("delivery"),
+  `landed on ${await page.evaluate(() => window.location.hash)} after clicking "${sectionLabel}"`,
+);
+
 /* -- errors drive the review queue -------------------------------- */
 
 /*
@@ -865,6 +914,21 @@ const resurfacedDueNow = await page.evaluate(() => {
   return Object.values(map).filter((entry) => entry.due <= now).length;
 });
 check("Resurfaced cards are due immediately", resurfacedDueNow > 0, `${resurfacedDueNow} due now`);
+
+// Failing used to yield a score and nothing else. Name the sections instead.
+const revisitEntries = await page.locator(".revisit-panel button").count();
+check(
+  "A failed check names what to reread",
+  revisitEntries > 0,
+  "rereading the whole stage is the least efficient response to a failed check",
+);
+check(
+  "Suggested sections exist on the page",
+  await page.locator(".revisit-panel button").first().evaluate((el) => {
+    const label = el.textContent.trim();
+    return Array.from(document.querySelectorAll(".lesson-section h2")).some((h) => h.textContent.trim() === label);
+  }),
+);
 
 /* -- backup export and import ------------------------------------- */
 

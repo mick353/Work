@@ -18,7 +18,7 @@
  */
 
 import { flashcards, type Flashcard } from "./reference";
-import type { Question } from "./course";
+import type { Module, Question } from "./course";
 import { NEW_SCHEDULE, type ReviewSchedule } from "./lib";
 
 /** Words too common to carry topic signal. */
@@ -103,4 +103,43 @@ export function cardsToResurface(missed: Question[], limit = 2): Flashcard[] {
     }
   }
   return [...byId.values()];
+}
+
+/* ------------------------------------------------------------------ *
+ * Targeted re-teaching
+ * ------------------------------------------------------------------ */
+
+/**
+ * The lesson sections a learner should revisit after missing questions.
+ *
+ * Failing a knowledge check used to produce a score and nothing else: you were
+ * told you scored 40% and left to reread the whole stage, which is the least
+ * efficient possible response and the one most likely to end the session.
+ * Mastery learning routes a failure back to the specific material, so this
+ * names the sections rather than the stage.
+ *
+ * Same overlap scoring as the flashcard matcher, against the section text.
+ */
+export function sectionsToRevisit(module: Module, missed: Question[], limit = 3): string[] {
+  if (!missed.length) return [];
+  const scores = new Map<string, number>();
+
+  for (const question of missed) {
+    const target = significantWords(`${question.prompt} ${question.options[question.answer] ?? ""}`);
+    for (const section of module.sections) {
+      const words = significantWords(
+        `${section.heading} ${section.body} ${(section.bullets ?? []).join(" ")} ${section.example ?? ""}`,
+      );
+      let overlap = 0;
+      target.forEach((word) => {
+        if (words.has(word)) overlap += 1;
+      });
+      if (overlap > 0) scores.set(section.heading, (scores.get(section.heading) ?? 0) + overlap);
+    }
+  }
+
+  return [...scores.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, limit)
+    .map(([heading]) => heading);
 }

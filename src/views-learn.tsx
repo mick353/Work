@@ -10,7 +10,8 @@ import {
 import { modules, quizPoolFor, totalMinutes, type Module, type Question } from "./course";
 import { caseStudies, contrasts, diagnosticQuestions, supplementaryQuestions } from "./reference";
 import { SlideRangeLink } from "./slide-viewer";
-import { daysAgoKey, estimateHours, shuffle, type View } from "./lib";
+import { daysAgoKey, estimateHours, scrollToSection, shuffle, type View } from "./lib";
+import { sectionsToRevisit } from "./recall";
 import {
   emptyModuleProgress,
   masteryState,
@@ -34,6 +35,9 @@ const QUESTION_COUNT =
   modules.reduce((total, module) => total + module.questions.length + module.scenarios.length, 0) +
   supplementaryQuestions.length +
   diagnosticQuestions.length;
+
+/** Stable per-section anchor, so the contents list and the re-teach panel agree. */
+const sectionId = (moduleId: string, index: number) => `s-${moduleId}-${index + 1}`;
 
 type Navigate = (view: View) => void;
 
@@ -333,6 +337,7 @@ export function ModuleView({
   const quizAnswered = quizQuestions.filter((question) => answers[question.id] !== undefined).length;
   const [quizChased, setQuizChased] = useState(false);
   const [resurfaced, setResurfaced] = useState(0);
+  const [revisit, setRevisit] = useState<string[]>([]);
 
   const submitQuiz = () => {
     // Point at the first gap rather than refusing to act. Same rule as the
@@ -350,6 +355,7 @@ export function ModuleView({
     update({ quizScore: Math.max(progress.quizScore, score), attempts: progress.attempts + 1 });
     const missed = quizQuestions.filter((question) => answers[question.id] !== question.answer);
     setResurfaced(onQuizScored({ kind: "quiz", moduleId: module.id, score, correct, total: quizQuestions.length }, missed));
+    setRevisit(sectionsToRevisit(module, missed));
     setQuizSubmitted(true);
   };
 
@@ -357,6 +363,7 @@ export function ModuleView({
     setAnswers({});
     setQuizSubmitted(false);
     setQuizChased(false);
+    setRevisit([]);
     setQuizAttempt((n) => n + 1);
   };
 
@@ -443,9 +450,25 @@ export function ModuleView({
         <blockquote>{module.coreIdea}</blockquote>
       </section>
 
+      {/*
+        In-page contents. A stage is now eight or nine sections including a
+        300-word worked-reasoning passage, which is a long scroll with no way
+        to see the shape of it or come back to one part.
+      */}
+      <nav className="stage-contents" aria-label="Sections in this stage">
+        <span className="eyebrow">In this stage</span>
+        <ol>
+          {module.sections.map((section, index) => (
+            <li key={section.heading}>
+              <button onClick={() => scrollToSection(sectionId(module.id, index))}>{section.heading}</button>
+            </li>
+          ))}
+        </ol>
+      </nav>
+
       <div className="lesson-sections">
         {module.sections.map((section, index) => (
-          <section key={section.heading} className="lesson-section">
+          <section key={section.heading} id={sectionId(module.id, index)} className="lesson-section">
             <div className="section-count" aria-hidden="true">
               {String(index + 1).padStart(2, "0")}
             </div>
@@ -591,6 +614,26 @@ export function ModuleView({
                 {resurfaced} card{resurfaced === 1 ? "" : "s"} covering what you missed{" "}
                 {resurfaced === 1 ? "has" : "have"} been added to your review queue.
               </p>
+            )}
+            {/*
+              Failing used to produce a score and nothing else — reread the
+              whole stage, which is the least efficient response and the one
+              most likely to end the session. Name the sections instead.
+            */}
+            {revisit.length > 0 && (
+              <div className="revisit-panel">
+                <span className="eyebrow">Worth rereading</span>
+                <ul>
+                  {revisit.map((heading) => {
+                    const index = module.sections.findIndex((s) => s.heading === heading);
+                    return (
+                      <li key={heading}>
+                        <button onClick={() => scrollToSection(sectionId(module.id, index))}>{heading}</button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
             )}
             <button className="secondary" onClick={retryQuiz}>
               <RefreshCw size={16} aria-hidden="true" /> Try these again

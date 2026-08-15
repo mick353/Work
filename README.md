@@ -32,7 +32,7 @@ Because progress lives in one browser on one machine, use **Settings → Downloa
 | Source deck | All 98 slides, in the app. Every citation in the course opens the slide it names |
 | Lesson time | Derived from the content, not typed: about 2 hours to read and answer everything |
 | Questions | 122 — 74 knowledge checks, 18 decision scenarios, 30 in a separate diagnostic pool |
-| Per-distractor feedback | Explains why the option you chose is wrong, not just why the answer is right |
+| Per-distractor feedback | Every wrong option on all 122 questions explains why it is wrong, not just why the answer is right |
 | Flashcards | 92 — definition, application and discrimination cards |
 | Templates | 10, including epic, feature and story written to the deck's minimum detail |
 | Worked cases | 2 end-to-end, carrying the artefacts each step produces |
@@ -51,6 +51,8 @@ Also: a printable guide that reads as one continuous document, full-text search 
 **Stage length is computed, never typed.** The course used to advertise "about 8 hours" against 5,852 words of lesson prose — roughly 27 minutes of reading — because the per-stage `minutes` were guesses that the content had long since outgrown. `stageMinutes()` now derives them from word count at 220 wpm plus an allowance per question and scenario, rounded to five minutes. The figure moves when the content does.
 
 **Every stage teaches, not just tests.** The bank tested 2.7x more than the lessons taught, and the real reasoning only appeared in per-option feedback — after a learner had already committed. Each stage now carries a worked-reasoning passage: a decision made badly, why that fails, and the better move with the thinking exposed. Lesson prose went from 5,852 to 8,281 words, and the QA suite fails the build if any stage drops below 300 body words or a passage below 150.
+
+**A failed check names what to reread.** Scoring below the threshold used to produce a number and nothing else, leaving a learner to reread the whole stage — the least efficient response and the one most likely to end the session. The result now lists the specific sections the missed questions came from, as links that scroll to them.
 
 **Errors drive the review queue.** Getting a question wrong brings forward the flashcards that cover it, so the queue is shaped by what you actually missed rather than by a fixed order. Matching is significant-word overlap within the same stage — deterministic, and explainable to a learner who asks why a card appeared. It moves the due date only, never the card's ease or lapse count, because rating a card the learner has not seen would corrupt it with data from a different exercise.
 
