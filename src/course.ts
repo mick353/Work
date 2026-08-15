@@ -2269,6 +2269,20 @@ export const practiceQuestions: PracticeQuestion[] = modules.flatMap((module) =>
 export const totalMinutes = modules.reduce((sum, module) => sum + module.minutes, 0);
 export const totalQuestions = practiceQuestions.length;
 
+/**
+ * The pool a stage's knowledge check samples from.
+ *
+ * Previously the check rendered `module.questions` directly, so every retake
+ * showed the identical 4-5 items in the identical order — which tested memory
+ * of which option was right rather than the idea, on the one surface where
+ * retaking matters most (75% unlocks the Recall requirement).
+ */
+export function quizPoolFor(moduleId: string): Question[] {
+  const module = modules.find((item) => item.id === moduleId);
+  if (!module) return [];
+  return [...module.questions, ...supplementaryQuestions.filter((q) => q.moduleId === moduleId)];
+}
+
 export function findModule(id: string): Module | undefined {
   return modules.find((module) => module.id === id);
 }

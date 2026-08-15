@@ -7,7 +7,7 @@ import {
   FileText,
   RefreshCw,
 } from "lucide-react";
-import { modules, totalMinutes, type Module } from "./course";
+import { modules, quizPoolFor, totalMinutes, type Module } from "./course";
 import { diagnosticQuestions } from "./reference";
 import { daysAgoKey, formatMinutes, shuffle, type View } from "./lib";
 import {
@@ -19,6 +19,10 @@ import {
   type ProgressMap,
 } from "./state";
 import { Feedback, LessonTableView, PageIntro, ProgressBar, QuestionCard, SourceChips } from "./components";
+import { stageIllustrations } from "./illustrations";
+
+/** Questions per stage attempt, sampled from that stage's pool of 8-9. */
+const QUIZ_LENGTH = 5;
 
 type Navigate = (view: View) => void;
 
@@ -272,6 +276,15 @@ export function ModuleView({
   salt: string;
   onQuizScored: (entry: Omit<HistoryEntry, "at">) => void;
 }) {
+  // Each attempt draws a fresh sample from the stage's pool, so retaking is a
+  // new test rather than a memory check of the same five items.
+  const [quizAttempt, setQuizAttempt] = useState(0);
+  const quizPool = useMemo(() => quizPoolFor(module.id), [module.id]);
+  const quizQuestions = useMemo(
+    () => shuffle(quizPool).slice(0, Math.min(QUIZ_LENGTH, quizPool.length)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [module.id, quizAttempt],
+  );
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [scenarioAnswers, setScenarioAnswers] = useState<Record<string, number>>({});
@@ -280,16 +293,17 @@ export function ModuleView({
   const state = masteryState(progress, module.scenarios.length);
 
   const submitQuiz = () => {
-    const correct = module.questions.filter((question) => answers[question.id] === question.answer).length;
-    const score = Math.round((correct / module.questions.length) * 100);
+    const correct = quizQuestions.filter((question) => answers[question.id] === question.answer).length;
+    const score = Math.round((correct / quizQuestions.length) * 100);
     update({ quizScore: Math.max(progress.quizScore, score), attempts: progress.attempts + 1 });
-    onQuizScored({ kind: "quiz", moduleId: module.id, score, correct, total: module.questions.length });
+    onQuizScored({ kind: "quiz", moduleId: module.id, score, correct, total: quizQuestions.length });
     setQuizSubmitted(true);
   };
 
   const retryQuiz = () => {
     setAnswers({});
     setQuizSubmitted(false);
+    setQuizAttempt((n) => n + 1);
   };
 
   const checkScenario = (scenarioId: string, answer: number) => {
@@ -320,12 +334,13 @@ export function ModuleView({
 
   const lastQuizScore = quizSubmitted
     ? Math.round(
-        (module.questions.filter((question) => answers[question.id] === question.answer).length /
-          module.questions.length) *
+        (quizQuestions.filter((question) => answers[question.id] === question.answer).length /
+          quizQuestions.length) *
           100,
       )
     : null;
 
+  const StageIllustration = stageIllustrations[module.id];
   const allSourceIds = [...new Set(module.sections.flatMap((section) => section.sourceIds ?? []))];
   const next = modules.find((item) => item.number === module.number + 1);
 
@@ -360,6 +375,12 @@ export function ModuleView({
           </div>
         </div>
       </header>
+
+      {StageIllustration && (
+        <figure className="stage-illustration">
+          <StageIllustration />
+        </figure>
+      )}
 
       <section className="core-idea" aria-label="The core idea of this stage">
         <span className="eyebrow">The idea to keep</span>
@@ -435,15 +456,16 @@ export function ModuleView({
           </span>
         </div>
         <p className="check-note">
-          {MASTERY_QUIZ_THRESHOLD}% or better completes the Recall requirement for this stage. Answer order is shuffled,
-          so position carries no information.
+          {MASTERY_QUIZ_THRESHOLD}% or better completes the Recall requirement. Each attempt draws{" "}
+          {quizQuestions.length} questions at random from {quizPool.length} for this stage, and answer order is
+          shuffled — so retaking is a fresh test, not a memory check.
         </p>
-        {module.questions.map((question, index) => (
+        {quizQuestions.map((question, index) => (
           <QuestionCard
             key={question.id}
             question={question}
             number={index + 1}
-            total={module.questions.length}
+            total={quizQuestions.length}
             salt={salt}
             selected={answers[question.id] ?? null}
             onSelect={(choice) => setAnswers((current) => ({ ...current, [question.id]: choice }))}
@@ -453,7 +475,7 @@ export function ModuleView({
         {!quizSubmitted ? (
           <button
             className="primary"
-            disabled={module.questions.some((question) => answers[question.id] === undefined)}
+            disabled={quizQuestions.some((question) => answers[question.id] === undefined)}
             onClick={submitQuiz}
           >
             Check my recall

@@ -873,3 +873,43 @@ p { color: var(--muted); line-height: 1.65; }
 .origin-government { background: var(--accent-7); }
 .origin-general { background: var(--accent-9); }
 @media (max-width: 820px) { .glossary-group dl > div { grid-template-columns: 1fr; gap: 6px; } }
+
+/* ==================================================================
+   Illustrations — original inline SVG, accent-aware.
+   Colours come from the surrounding [data-stage] scope, so each stage's
+   diagram picks up that stage's hue without any per-stage markup.
+   ================================================================== */
+.stage-illustration { margin: 26px 0 8px 90px; max-width: 900px; padding: 26px 30px; background: var(--paper); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+.stage-illustration .illus { display: block; width: 100%; height: auto; max-height: 260px; }
+.illus text { font-family: "Segoe UI", Arial, sans-serif; }
+.illus-label { fill: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: 0.12em; }
+.illus-label-sm { fill: var(--ink); font-size: 10.5px; font-weight: 750; letter-spacing: 0.06em; }
+.illus-label-xs { fill: var(--ink); font-size: 9.5px; font-weight: 700; }
+.illus-sub { fill: var(--muted); font-size: 9.5px; }
+.illus-sub-warn { fill: var(--warning); font-size: 9.5px; font-weight: 700; }
+.illus-stroke { stroke: var(--accent); fill: none; }
+.illus-stroke-box { stroke: var(--line-strong); fill: var(--paper-strong); stroke-width: 1.5; }
+.illus-line-dim { stroke: var(--line-strong); stroke-width: 1.5; }
+.illus-fill { fill: var(--accent); }
+.illus-fill-dim { fill: var(--line-strong); }
+.illus-fill-soft { fill: var(--accent-soft); stroke: var(--line); stroke-width: 1; }
+.illus-fill-success { fill: var(--success); }
+.illus-fill-warn { fill: var(--warning-soft); stroke: var(--warning); stroke-width: 1.5; }
+.illus-on-fill { fill: #fff; font-size: 11px; font-weight: 750; }
+.illus-on-fill-label { fill: #fff; font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; }
+.illus-on-fill-sub { fill: rgba(255,255,255,0.86); font-size: 9.5px; }
+:root[data-theme="dark"] .illus-on-fill,
+:root[data-theme="dark"] .illus-on-fill-label { fill: #0d1117; }
+:root[data-theme="dark"] .illus-on-fill-sub { fill: rgba(13,17,23,0.78); }
+.illus-dot { fill: var(--accent); opacity: 0.55; }
+.illus-dot-on-fill { fill: #fff; opacity: 0.85; }
+:root[data-theme="dark"] .illus-dot-on-fill { fill: #0d1117; }
+.illus-guardrail { stroke: var(--warning); }
+.illus-check { stroke: #fff; }
+:root[data-theme="dark"] .illus-check { stroke: #0d1117; }
+.illus-venn { fill: var(--accent); fill-opacity: 0.18; stroke: var(--accent); stroke-width: 1.5; }
+.illus-venn-b { fill: var(--vivid-5); stroke: var(--vivid-5); }
+.illus-venn-c { fill: var(--vivid-8); stroke: var(--vivid-8); }
+.empty-state .illus { display: block; width: min(320px, 100%); height: auto; margin: 0 auto 18px; }
+@media (max-width: 820px) { .stage-illustration { margin-left: 0; padding: 18px; } }
+@media print { .stage-illustration { break-inside: avoid; } }

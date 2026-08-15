@@ -66,7 +66,7 @@ const bankModule = await esbuild({
   stdin: {
     contents: `
       export { practiceQuestions, modules } from ${JSON.stringify(path.join(projectDir, "src/course.ts"))};
-      export { diagnosticQuestions, flashcards, toolkitTemplates } from ${JSON.stringify(path.join(projectDir, "src/reference.ts"))};
+      export { diagnosticQuestions, flashcards, toolkitTemplates, supplementaryQuestions } from ${JSON.stringify(path.join(projectDir, "src/reference.ts"))};
       export { presentOptions } from ${JSON.stringify(path.join(projectDir, "src/lib.ts"))};
     `,
     resolveDir: projectDir,
@@ -82,6 +82,23 @@ const bank = await import(
 );
 
 const allQuestions = [...bank.practiceQuestions, ...bank.diagnosticQuestions];
+
+/**
+ * Stage quizzes now RESAMPLE on every attempt, so the suite cannot replay
+ * answer text recorded from a previous set. It knows the bank, so it looks the
+ * correct option up by prompt instead.
+ */
+const answerByPrompt = new Map();
+for (const q of [...allQuestions, ...bank.supplementaryQuestions]) {
+  answerByPrompt.set(q.prompt.slice(0, 60), q.options[q.answer]);
+}
+const correctOptionFor = async (block) => {
+  const legend = (await block.locator("legend").textContent()) ?? "";
+  for (const [prompt, option] of answerByPrompt) {
+    if (legend.includes(prompt.slice(0, 40))) return option;
+  }
+  return null;
+};
 check("Question bank is substantially larger than one practice set", allQuestions.length >= 60, `${allQuestions.length} questions`);
 check("Every question has four options", allQuestions.every((q) => q.options.length === 4));
 check(
@@ -224,7 +241,7 @@ await page.getByRole("heading", { name: /Product thinking and strategy/ }).first
 
 const quiz = page.locator(".knowledge-check .question-block");
 const quizCount = await quiz.count();
-check("Stage 1 knowledge check has four questions", quizCount === 4, `found ${quizCount}`);
+check("Stage quiz presents five sampled questions", quizCount === 5, `found ${quizCount}`);
 
 for (let index = 0; index < quizCount; index += 1) {
   await quiz.nth(index).locator(".answer-option").first().click();
@@ -263,19 +280,41 @@ check(
 
 check("Per-distractor feedback is shown", (await page.locator(".feedback-chosen").count()) > 0);
 
+// Retaking now RESAMPLES from the stage pool rather than repeating the same
+// items, so the previous set's answer text will not exist here. Verify the
+// resampling, then re-verify the arithmetic against the new set.
+const firstSet = await quiz.locator("legend").allTextContents();
 await page.getByRole("button", { name: "Try these again" }).click();
-for (let index = 0; index < quizCount; index += 1) {
-  await quiz
-    .nth(index)
-    .locator(".answer-option")
-    .filter({ hasText: correctByQuestion[index] })
-    .first()
-    .click();
+await page.waitForTimeout(300);
+const secondSet = await quiz.locator("legend").allTextContents();
+check(
+  "Retaking a stage quiz draws a different question set",
+  JSON.stringify(firstSet.map((t) => t.slice(0, 40)).sort()) !==
+    JSON.stringify(secondSet.map((t) => t.slice(0, 40)).sort()),
+  "a static retake tests memory of the answer, not the idea",
+);
+
+const retakeCount = await quiz.count();
+for (let index = 0; index < retakeCount; index += 1) {
+  await quiz.nth(index).locator(".answer-option").first().click();
 }
 await page.getByRole("button", { name: "Check my recall" }).click();
 await page.locator(".quiz-result").waitFor();
-const perfectText = (await page.locator(".quiz-result strong").textContent()) ?? "";
-check("All-correct answers score 100%", /scored 100%/.test(perfectText), perfectText);
+const retakeText = (await page.locator(".quiz-result strong").textContent()) ?? "";
+const retakeScore = Number(retakeText.match(/scored (\d+)%/)?.[1] ?? "-1");
+const retakeExpected = Math.round(
+  (await Promise.all(
+    Array.from({ length: retakeCount }, (_, index) =>
+      quiz.nth(index).locator(".answer-option").first().evaluate((el) => el.classList.contains("correct")),
+    ),
+  ).then((flags) => flags.filter(Boolean).length / retakeCount)) * 100,
+);
+check(
+  "Scoring is correct on the resampled set too",
+  retakeScore === retakeExpected,
+  `reported ${retakeScore}%, expected ${retakeExpected}%`,
+);
+check("Stage quiz samples five questions", retakeCount === 5, `found ${retakeCount}`);
 
 /* -- mastery gating ----------------------------------------------- */
 
@@ -285,6 +324,21 @@ check(
   statusBefore.startsWith("Outstanding"),
   statusBefore,
 );
+
+// Score 100% on a fresh sample so the Recall requirement is genuinely met.
+await page.getByRole("button", { name: "Try these again" }).click();
+await page.waitForTimeout(300);
+const masteryCount = await quiz.count();
+for (let index = 0; index < masteryCount; index += 1) {
+  const block = quiz.nth(index);
+  const correctText = await correctOptionFor(block);
+  if (correctText) await block.locator(".answer-option").filter({ hasText: correctText }).first().click();
+  else await block.locator(".answer-option").first().click();
+}
+await page.getByRole("button", { name: "Check my recall" }).click();
+await page.locator(".quiz-result").waitFor();
+const masteryText = (await page.locator(".quiz-result strong").textContent()) ?? "";
+check("Answering from the bank scores 100% on a resampled set", /scored 100%/.test(masteryText), masteryText);
 
 await page.getByLabel("I can explain the lesson without relying on the slide wording.").check();
 
@@ -317,9 +371,11 @@ const orderForSalt = async (salt) => {
     localStorage.setItem("product-practice-v2:salt", JSON.stringify(value));
   }, salt);
   await page.reload({ waitUntil: "load" });
-  await page.locator(".knowledge-check .question-block").first().waitFor();
+  await page.locator(".scenario-panel .question-block").first().waitFor();
+  // Scenarios are fixed per stage (only the quiz resamples), so they are the
+  // stable surface for testing that a learner's option order does not drift.
   return page
-    .locator(".knowledge-check .question-block")
+    .locator(".scenario-panel .question-block")
     .first()
     .locator(".answer-text")
     .allTextContents();
