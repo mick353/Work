@@ -810,21 +810,36 @@ function Shell({
           className="sidebar-modules"
         >
           {modules.map((module) => {
-            const done = masteryState(progress[module.id], module.scenarios.length).mastered;
+            /*
+              Three states, not two. The list previously showed "mastered" or
+              nothing, so a stage you had read and half-answered looked
+              identical to one you had never opened — the sidebar is the
+              learner's map of where they are, and it was hiding the most
+              useful thing on it.
+            */
+            const item = progress[module.id];
+            const done = masteryState(item, module.scenarios.length).mastered;
+            const started =
+              !done &&
+              Boolean(item) &&
+              (item.lessonRead || item.quizScore > 0 || item.scenariosCorrect.length > 0);
+            const state = done ? "done" : started ? "started" : "new";
+            const label = done ? " (mastered)" : started ? " (in progress)" : "";
             return (
               <button
                 key={module.id}
                 className={view === `module:${module.id}` ? "active" : ""}
                 data-stage={module.number}
+                data-state={state}
                 aria-current={view === `module:${module.id}` ? "page" : undefined}
                 onClick={() => navigate(`module:${module.id}`)}
               >
-                <span className={`module-dot ${done ? "done" : ""}`} aria-hidden="true">
+                <span className={`module-dot ${state}`} aria-hidden="true">
                   {done ? <Check size={12} /> : module.number}
                 </span>
                 <span>
                   {module.title}
-                  {done && <span className="visually-hidden"> (mastered)</span>}
+                  {label && <span className="visually-hidden">{label}</span>}
                 </span>
               </button>
             );

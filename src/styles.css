@@ -251,8 +251,12 @@ kbd { display: inline-block; border: 1px solid var(--line-strong); border-bottom
 .sidebar nav button:hover { background: var(--surface-alt); color: var(--ink); }
 .sidebar nav button.active { background: var(--accent-soft); color: var(--accent); font-weight: 650; }
 .sidebar-modules nav button { align-items: flex-start; padding: 7px 10px; font-size: 12.5px; line-height: 1.35; }
-.module-dot { flex: 0 0 22px; display: grid; place-items: center; height: 22px; border: 1.5px solid var(--line-strong); border-radius: 50%; font-size: 10.5px; color: var(--muted); }
+.module-dot { flex: 0 0 22px; display: grid; place-items: center; height: 22px; border: 1.5px solid var(--line-strong); border-radius: 50%; font-size: 10.5px; color: var(--muted); transition: border-color 140ms ease, background 140ms ease, color 140ms ease; }
 .sidebar-modules button:hover .module-dot, .sidebar-modules button.active .module-dot { border-color: var(--accent); color: var(--accent); }
+/* Underway: the stage's own colour as a ring, not a fill. Reads as started
+   without reading as finished, which a filled dot would. */
+.module-dot.started { border-width: 2px; border-color: var(--stage); background: var(--accent-soft); color: var(--ink); font-weight: 700; }
+.sidebar-modules button[data-state="started"] { color: var(--ink); }
 .module-dot.done { background: var(--stage); border-color: transparent; color: #fff; }
 :root[data-theme="dark"] .module-dot.done { color: #0d1117; }
 .privacy-note { margin: 20px 10px 0; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
