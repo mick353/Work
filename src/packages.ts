@@ -29,12 +29,28 @@ import {
   modules,
   practiceQuestions,
   sources,
+  stageMinutes,
   totalMinutes,
   type Module,
   type PracticeQuestion,
   type Question,
   type Source,
 } from "./course";
+import { CLOSURE_REVIEWED, closureModules, closureSources } from "./closure-course";
+import {
+  closureCapstoneBriefs,
+  closureCapstoneRubric,
+  closureCapstoneSteps,
+  closureCaseStudies,
+  closureContrasts,
+  closureDiagnostic,
+  closureDivergences,
+  closureFieldGuide,
+  closureFlashcards,
+  closureGlossary,
+  closureSupplementary,
+  closureToolkit,
+} from "./closure-reference";
 import {
   capstoneBriefs,
   capstoneRubric,
@@ -152,7 +168,76 @@ const pmFundamentals: TrainingPackage = {
   },
 };
 
-export const trainingPackages: TrainingPackage[] = [pmFundamentals];
+/* ------------------------------------------------------------------ *
+ * Closure Reports
+ *
+ * The first package not built from a slide deck, which is why it is a real
+ * test of the container rather than a second copy of the first one: no slides,
+ * no divergence register, its own sources, its own stage count. Everything the
+ * player does with it, it does because the content says so.
+ * ------------------------------------------------------------------ */
+
+export const CLOSURE_REPORTS_ID = "closure-reports";
+
+/*
+  Derive stage length from the writing, exactly as the first package does —
+  authored `minutes` values are guesses and were wrong by an order of magnitude
+  the last time anyone trusted them.
+*/
+for (const module of closureModules) {
+  module.minutes = stageMinutes(module);
+}
+
+const closurePractice: PracticeQuestion[] = closureModules.flatMap((module) => [
+  ...module.questions,
+  ...module.scenarios.map((scenario) => ({
+    id: scenario.id,
+    moduleId: scenario.moduleId,
+    prompt: scenario.prompt,
+    options: scenario.options,
+    answer: scenario.answer,
+    rationale: scenario.rationale,
+    optionNotes: scenario.optionNotes,
+    context: scenario.context,
+  })),
+]);
+
+const closureReports: TrainingPackage = {
+  manifest: {
+    id: CLOSURE_REPORTS_ID,
+    title: "Closure Reports",
+    subtitle: "Evidence, benefits and handover at the end of delivery",
+    publisher: "DEWR Digital Experience and Solutions",
+    source: "Commonwealth assurance and performance frameworks",
+    reviewed: CLOSURE_REVIEWED,
+    status: "available",
+    summary:
+      "Seven stages on writing a closure report that survives an audit — marked claims, transferred benefits, lessons that change behaviour, and a handover that works once the team has gone.",
+  },
+  content: {
+    modules: closureModules,
+    sources: closureSources,
+    totalMinutes: closureModules.reduce((sum, module) => sum + module.minutes, 0),
+    practiceQuestions: closurePractice,
+    diagnosticQuestions: closureDiagnostic,
+    supplementaryQuestions: closureSupplementary,
+    flashcards: closureFlashcards,
+    glossary: closureGlossary,
+    caseStudies: closureCaseStudies,
+    contrasts: closureContrasts,
+    divergences: closureDivergences,
+    toolkitTemplates: closureToolkit,
+    capstoneSteps: closureCapstoneSteps,
+    capstoneBriefs: closureCapstoneBriefs,
+    capstoneRubric: closureCapstoneRubric,
+    fieldGuide: closureFieldGuide,
+    slides: [],
+    slideCount: 0,
+    contentReviewed: CLOSURE_REVIEWED,
+  },
+};
+
+export const trainingPackages: TrainingPackage[] = [pmFundamentals, closureReports];
 
 export function findPackage(id: string): TrainingPackage | undefined {
   return trainingPackages.find((entry) => entry.manifest.id === id);

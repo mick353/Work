@@ -276,6 +276,9 @@ export function SlideCaption({ text }: { text: string }) {
 /** "Deck slides 21–35" on a stage header, as a control that opens the first. */
 export function SlideRangeLink({ range, className }: { range: string; className?: string }) {
   const { open } = useSlideViewer();
+  // A package need not have been built from a deck. Render nothing at all
+  // rather than the words "Deck slides" followed by a blank.
+  if (!range?.trim()) return null;
   const first = Number(/^\s*(\d+)/.exec(range)?.[1]);
   // "Deck slides 32" when it names exactly one slide is just sloppy.
   const label = `Deck slide${/^\s*\d+\s*$/.test(range) ? "" : "s"} ${range}`;

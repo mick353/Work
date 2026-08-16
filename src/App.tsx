@@ -1,4 +1,4 @@
-import { findModule, flashcards, modules } from "./content";
+import { divergences, findModule, flashcards, modules, slides } from "./content";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Brain,
@@ -157,6 +157,33 @@ const NAV_STATE_KEY = "nav-collapsed-v2";
 function groupForView(view: View): string {
   if (view.startsWith("module:")) return "curriculum";
   return NAV_GROUPS.find((group) => group.items.some((item) => item.id === view))?.id ?? "";
+}
+
+/**
+ * "Nine-stage curriculum" was hardcoded, which was true of exactly one package.
+ * Spelled out to twelve, then numeric — a sidebar heading reading "13-stage" is
+ * fine; one reading "Nine" for a seven-stage course is not.
+ */
+const NUMBER_WORDS = [
+  "", "One", "Two", "Three", "Four", "Five", "Six",
+  "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve",
+];
+
+function stageWord(count: number): string {
+  return `${NUMBER_WORDS[count] ?? count}-stage`;
+}
+
+/**
+ * Whether a nav item has anything to show in this package.
+ *
+ * A menu entry that leads to an empty state is worse than no entry: the reader
+ * spends a click discovering the absence, and the absence looks like a fault.
+ * The empty states still exist for anyone arriving by URL or search.
+ */
+function navItemApplies(item: { id: string }): boolean {
+  if (item.id === "deck") return slides.length > 0;
+  if (item.id === "divergences") return divergences.length > 0;
+  return true;
 }
 
 function NavSection({
@@ -788,7 +815,7 @@ function Shell({
             expanded={!collapsedNav[group.id]}
             onToggle={() => toggleNavGroup(group.id)}
           >
-            {group.items.map((item) => (
+            {group.items.filter(navItemApplies).map((item) => (
               <button
                 key={item.id}
                 className={view === item.id ? "active" : ""}
@@ -804,7 +831,7 @@ function Shell({
 
         <NavSection
           id="curriculum"
-          label="Nine-stage curriculum"
+          label={`${stageWord(modules.length)} curriculum`}
           expanded={!collapsedNav.curriculum}
           onToggle={() => toggleNavGroup("curriculum")}
           className="sidebar-modules"

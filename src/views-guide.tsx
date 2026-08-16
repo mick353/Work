@@ -108,7 +108,12 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
               <h2>{module.title}</h2>
               <p className="guide-stage-sub">{module.subtitle}</p>
               <p className="guide-stage-meta">
-                <SlideRangeLink range={module.slides} /> · {module.minutes} minutes
+                {module.slides?.trim() && (
+                  <>
+                    <SlideRangeLink range={module.slides} /> ·{" "}
+                  </>
+                )}
+                {module.minutes} minutes
               </p>
             </header>
 

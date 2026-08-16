@@ -111,9 +111,14 @@ function PackageCard({
           <dt>Cards</dt>
           <dd>{stats.cards}</dd>
         </div>
+        {/*
+          A package need not have been built from a deck, and "Source slides: 0"
+          reads as a missing feature rather than a different provenance. Show
+          worked cases instead, which every package has.
+        */}
         <div>
-          <dt>Source slides</dt>
-          <dd>{stats.slides}</dd>
+          <dt>{stats.slides > 0 ? "Source slides" : "Worked cases"}</dt>
+          <dd>{stats.slides > 0 ? stats.slides : entry.content.caseStudies.length}</dd>
         </div>
       </dl>
 
