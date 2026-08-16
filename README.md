@@ -39,6 +39,7 @@ Because progress lives in one browser on one machine, use **Settings → Downloa
 | Capstone | 3 briefs, nine sections, per-section self-assessment against a five-part rubric |
 | Constructed response | Every stage assignment has a worked answer, revealed only after you have written your own, plus self-check criteria |
 | Item statistics | Per-question accuracy from your own attempts, so the bank can be calibrated rather than assumed |
+| Record of completion | A printable statement of what was recorded, framed as self-reported rather than as a credential |
 | Practice contrasts | 17 pairs of what good looks like against what usually happens, each with a tell |
 | Glossary | 59 terms, each attributed to where it comes from |
 | DES field guide | Phases, principles, cadence, backlog fields and roles, for lookup at work |
@@ -49,6 +50,10 @@ Because progress lives in one browser on one machine, use **Settings → Downloa
 Also: a printable guide that reads as one continuous document, full-text search across the course *and* the deck, light and dark themes, keyboard-driven review, results charts, JSON backup and restore, and offline use as an installable app.
 
 ## Design decisions worth knowing
+
+**Motion preference is honoured in JavaScript, not just CSS.** The stylesheet neutralises transitions under `prefers-reduced-motion`, but a JavaScript `scrollIntoView({ behavior: "smooth" })` is not CSS and that rule never reaches it. Five such calls were animating the page for people who had explicitly asked them not to. `scrollBehavior()` reads the preference and the QA suite runs a reduced-motion browser context to prove it.
+
+**The completion record is deliberately not a certificate.** Internal training has to be evidenced to somebody, and the only export was a JSON backup — a machine file, not something a person can hand over. The record is readable and printable, and it states on its face that it is self-recorded in one browser, not issued or verified by anyone. Dressing local self-reported data as a credential would be misleading anywhere and more so on departmental material; a QA check fails the build if the wording drifts that way.
 
 **Assignments are checked against a model, not left blank.** The stage assignments asked for exactly the writing this course is about — problem statements, key results, decision rights — and nothing looked at any of it. Marking free text is impossible in an offline single file; revealing a worked answer *after* the learner commits their own, against explicit criteria they tick themselves, is not. The model stays disabled until something is written, because seeing a good answer first replaces the work with recognition.
 

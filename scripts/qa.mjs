@@ -978,6 +978,51 @@ check(
   `${footerWords} words — it repeats on every page, so it earns very little space`,
 );
 
+/* -- motion preference and the completion record -------------------- */
+
+/*
+ * The stylesheet neutralises CSS transitions under prefers-reduced-motion, but
+ * a JavaScript scrollIntoView({ behavior: "smooth" }) is not CSS and that rule
+ * does not reach it. Five such calls were animating the page for people who
+ * had explicitly asked them not to.
+ */
+{
+  const reduced = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
+  const reducedPage = await reduced.newPage();
+  watchPage(reducedPage, "reduced-motion");
+  await reducedPage.goto(`${artifactUrl}#/guide`, { waitUntil: "load" });
+  await reducedPage.waitForSelector(".guide-contents button");
+  const behaviour = await reducedPage.evaluate(() => {
+    const original = Element.prototype.scrollIntoView;
+    let seen = null;
+    Element.prototype.scrollIntoView = function (options) { seen = options?.behavior ?? "auto"; };
+    document.querySelector(".guide-contents button")?.click();
+    Element.prototype.scrollIntoView = original;
+    return seen;
+  });
+  check(
+    "In-page scrolling honours reduced motion",
+    behaviour === "auto",
+    `scrollIntoView used "${behaviour}" for a user who asked for reduced motion`,
+  );
+  await reduced.close();
+}
+
+await page.evaluate(() => { window.location.hash = "results"; });
+await page.waitForTimeout(600);
+const recordRows = await page.locator(".record-table tbody tr").count();
+check("The completion record covers every stage", recordRows === 9, `${recordRows} rows`);
+const recordText = (await page.locator(".record-sheet").innerText()).toLowerCase();
+check(
+  "The record does not present itself as a certification",
+  recordText.includes("not a certification") && !/certificate of/i.test(recordText),
+  "self-reported local data dressed as a credential would be misleading",
+);
+check(
+  "The record states who has verified it",
+  recordText.includes("not issued or verified"),
+);
+
 /* -- typography: the prose measure --------------------------------- */
 
 /*

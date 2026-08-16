@@ -71,6 +71,24 @@ export function parseView(rawHash: string): View {
 }
 
 /**
+ * Whether the user has asked the operating system for reduced motion.
+ *
+ * The stylesheet already neutralises CSS transitions and `scroll-behavior`
+ * under `prefers-reduced-motion`, but a JavaScript
+ * `scrollIntoView({ behavior: "smooth" })` is not CSS and that rule does not
+ * reach it. Five of those were animating the page for people who had
+ * explicitly asked them not to — mostly ones added while fixing other things.
+ */
+export function prefersReducedMotion(): boolean {
+  return typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+/** Scroll behaviour that honours the preference. */
+export function scrollBehavior(): ScrollBehavior {
+  return prefersReducedMotion() ? "auto" : "smooth";
+}
+
+/**
  * Scroll to a section of the current page and put focus there.
  *
  * Focus as well as scroll: scrolling alone moves the viewport but leaves the
@@ -81,7 +99,7 @@ export function parseView(rawHash: string): View {
 export function scrollToSection(id: string) {
   const target = document.getElementById(id);
   if (!target) return;
-  target.scrollIntoView({ behavior: "smooth", block: "start" });
+  target.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
   const heading = target.querySelector<HTMLElement>("h2, h3") ?? target;
   heading.tabIndex = -1;
   heading.focus({ preventScroll: true });

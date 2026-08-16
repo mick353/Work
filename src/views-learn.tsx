@@ -10,7 +10,7 @@ import {
 import { modules, quizPoolFor, totalMinutes, type Module, type Question } from "./course";
 import { caseStudies, contrasts, diagnosticQuestions, supplementaryQuestions } from "./reference";
 import { SlideRangeLink } from "./slide-viewer";
-import { daysAgoKey, estimateHours, scrollToSection, shuffle, type View } from "./lib";
+import { daysAgoKey, estimateHours, scrollBehavior, scrollToSection, shuffle, type View } from "./lib";
 import { sectionsToRevisit } from "./recall";
 import {
   emptyModuleProgress,
@@ -353,7 +353,7 @@ export function ModuleView({
     if (firstGap !== -1) {
       setQuizChased(true);
       const slot = document.getElementById(`quiz-q${firstGap + 1}`);
-      slot?.scrollIntoView({ behavior: "smooth", block: "center" });
+      slot?.scrollIntoView({ behavior: scrollBehavior(), block: "center" });
       slot?.querySelector<HTMLElement>("input, button")?.focus({ preventScroll: true });
       return;
     }
@@ -944,7 +944,7 @@ export function Diagnostic({
     if (firstGap !== -1) {
       setChased(true);
       const slot = document.getElementById(`diagnostic-q${firstGap + 1}`);
-      slot?.scrollIntoView({ behavior: "smooth", block: "center" });
+      slot?.scrollIntoView({ behavior: scrollBehavior(), block: "center" });
       // Move focus as well as the viewport, so this works for a keyboard or
       // screen-reader user rather than only for a sighted mouse user.
       slot?.querySelector<HTMLElement>("input, button")?.focus({ preventScroll: true });
@@ -958,7 +958,7 @@ export function Diagnostic({
       correct,
       total: questions.length,
     }, missed, questions.map((question) => ({ id: question.id, correct: answers[question.id] === question.answer }))));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: scrollBehavior() });
   };
 
   const restart = () => {

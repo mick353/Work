@@ -1,9 +1,9 @@
 import { useMemo } from "react";
-import { ChevronRight, TrendingUp } from "lucide-react";
-import { modules, practiceQuestions, type Question } from "./course";
+import { ChevronRight, Printer, TrendingUp } from "lucide-react";
+import { CONTENT_REVIEWED, modules, practiceQuestions, type Question } from "./course";
 import { diagnosticQuestions, flashcards } from "./reference";
 import { DAY_MS, daysAgoKey, localDayKey, type ReviewSchedule, type View } from "./lib";
-import { masteryState, type HistoryEntry, type ItemStatMap, type ProgressMap, type ReviewMap } from "./state";
+import { MASTERY_QUIZ_THRESHOLD, masteryState, type HistoryEntry, type ItemStatMap, type ProgressMap, type ReviewMap } from "./state";
 import { BarList, ChartCard, ColumnChart, Heatmap, Radial, StackedBar, TrendChart } from "./charts";
 import { IllusEmptyResults } from "./illustrations";
 import { EmptyState, PageIntro } from "./components";
@@ -192,6 +192,48 @@ export function Results({
   const lifetimeAccuracy = lifetimeTotal ? Math.round((lifetimeCorrect / lifetimeTotal) * 100) : 0;
   const dueNow = forecast[0].value;
 
+  /**
+   * A record of completion.
+   *
+   * Internal training generally has to be evidenced to somebody — a manager, a
+   * capability plan, a performance conversation — and the only export was a
+   * JSON backup, which is a machine file rather than something a person can
+   * show. This is the human-readable version.
+   *
+   * Deliberately NOT styled as a certificate and deliberately not called one.
+   * Nothing here is issued or verified by anyone: it is a statement of what
+   * this browser recorded, and it says so on its face. Dressing self-reported
+   * local data as a credential would be misleading anywhere, and more so on
+   * departmental material.
+   */
+  const record = useMemo(() => {
+    const rows = modules.map((module) => {
+      const entry = progress[module.id];
+      const state = masteryState(entry, module.scenarios.length);
+      const last = [...history]
+        .filter((item) => item.moduleId === module.id)
+        .sort((a, b) => b.at - a.at)[0];
+      return {
+        number: module.number,
+        title: module.title,
+        mastered: state.mastered,
+        score: entry?.quizScore ?? 0,
+        attempts: entry?.attempts ?? 0,
+        scenarios: `${(entry?.scenariosCorrect ?? []).filter(Boolean).length}/${module.scenarios.length}`,
+        on: last ? new Date(last.at).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" }) : "—",
+      };
+    });
+    const diagnostic = [...history].filter((item) => item.kind === "diagnostic").sort((a, b) => b.at - a.at)[0];
+    const first = [...history].sort((a, b) => a.at - b.at)[0];
+    return {
+      rows,
+      masteredCount: rows.filter((row) => row.mastered).length,
+      diagnostic,
+      started: first ? new Date(first.at).toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" }) : null,
+      answered: quizEntries.reduce((sum, entry) => sum + entry.total, 0),
+    };
+  }, [progress, history, quizEntries]);
+
   const nothingYet = history.length === 0 && Object.keys(progress).length === 0;
 
   return (
@@ -353,6 +395,98 @@ export function Results({
                 A high accuracy bar next to a low maturity split means you can recognise the answers but have not yet
                 held them over time. That is the gap spaced review closes — and it is exactly the difference between
                 remembering the slide and being able to use the idea in a meeting six weeks from now.
+              </p>
+            </div>
+          </section>
+
+          <section className="record-panel">
+            <div className="record-actions no-print">
+              <div>
+                <span className="eyebrow">Record of completion</span>
+                <h2>Something you can show someone</h2>
+                <p>
+                  A plain statement of what this browser recorded. It is not a certificate and nobody has verified it —
+                  print it or save it as PDF for a capability plan or a performance conversation, alongside the capstone
+                  brief you wrote.
+                </p>
+              </div>
+              <button className="primary" onClick={() => window.print()}>
+                <Printer size={18} aria-hidden="true" /> Print the record
+              </button>
+            </div>
+
+            <div className="record-sheet">
+              <header>
+                <span>Product Management Fundamentals · DEWR Digital Experience and Solutions</span>
+                <h3>Record of completion</h3>
+                <p>
+                  Self-recorded in a single browser. Not a certification, not issued or verified by the department, and
+                  not evidence of assessment by anyone other than the learner.
+                </p>
+              </header>
+
+              <dl className="record-summary">
+                <div>
+                  <dt>Stages demonstrated</dt>
+                  <dd>{record.masteredCount} of {modules.length}</dd>
+                </div>
+                <div>
+                  <dt>Questions answered</dt>
+                  <dd>{record.answered}</dd>
+                </div>
+                <div>
+                  <dt>Lifetime accuracy</dt>
+                  <dd>{lifetimeAccuracy || "—"}{lifetimeAccuracy ? "%" : ""}</dd>
+                </div>
+                <div>
+                  <dt>Study days recorded</dt>
+                  <dd>{studyDays.length}</dd>
+                </div>
+                <div>
+                  <dt>First recorded attempt</dt>
+                  <dd>{record.started ?? "—"}</dd>
+                </div>
+                <div>
+                  <dt>Record produced</dt>
+                  <dd>{new Date().toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" })}</dd>
+                </div>
+              </dl>
+
+              <table className="record-table">
+                <caption>Per-stage outcome. Mastery requires the lesson read, {MASTERY_QUIZ_THRESHOLD}% on the knowledge check, and both decision scenarios correct.</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Stage</th>
+                    <th scope="col">Best check</th>
+                    <th scope="col">Attempts</th>
+                    <th scope="col">Scenarios</th>
+                    <th scope="col">Last attempt</th>
+                    <th scope="col">Demonstrated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {record.rows.map((row) => (
+                    <tr key={row.number}>
+                      <th scope="row">{row.number}. {row.title}</th>
+                      <td>{row.score ? `${row.score}%` : "—"}</td>
+                      <td>{row.attempts || "—"}</td>
+                      <td>{row.scenarios}</td>
+                      <td>{row.on}</td>
+                      <td>{row.mastered ? "Yes" : "Not yet"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {record.diagnostic && (
+                <p className="record-note">
+                  Most recent diagnostic: {record.diagnostic.correct} of {record.diagnostic.total} correct
+                  ({record.diagnostic.score}%), {new Date(record.diagnostic.at).toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" })}.
+                </p>
+              )}
+              <p className="record-foot">
+                Content reviewed {CONTENT_REVIEWED}. Built from <em>Product Management Fundamentals — 12AUG2026</em>.
+                Not an official Australian Government publication.
               </p>
             </div>
           </section>

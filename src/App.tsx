@@ -29,6 +29,7 @@ import { bringForward, cardsToResurface } from "./recall";
 import { flashcards } from "./reference";
 import {
   clearStored,
+  scrollBehavior,
   localDayKey,
   matchView,
   parseView,
@@ -323,7 +324,7 @@ export default function App() {
     window.location.hash = viewToHash(next);
     setView(next);
     setMobileOpen(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: scrollBehavior() });
   }, []);
 
   const updateModule = useCallback(
