@@ -1,0 +1,83 @@
+{
+  "thinking": {
+    "modelAnswer": "User: provider administrators submitting participant claims, trying to get a claim paid without a rejection they have to chase.\n\nFuture state: a provider can submit a claim once, know immediately whether it will be accepted, and be told what to fix if it will not.\n\nFirst focus: rejection-and-resubmission, because it consumes both provider effort and departmental assessment capacity, and every rejected claim is a cost paid twice.\n\nExplicitly deferred: the reporting dashboard providers have asked for. It is genuinely wanted, it will not reduce rejections, and naming it as deferred is what stops it drifting into scope through goodwill.\n\nHardest pair: requirements to problems. Our funding is approved against a defined scope, so arriving with a problem rather than a specification reads as being unprepared. What would make it easier is one worked example where a problem framing produced a cheaper answer than the specified one.",
+    "criteria": [
+      "Names a specific user group and what they are trying to achieve — not 'users' in general",
+      "Describes a future state, not a feature or a system",
+      "Names one first focus AND something explicitly deferred",
+      "The deferred item is something genuinely wanted, not a straw man"
+    ]
+  },
+  "discovery": {
+    "modelAnswer": "Direct evidence: 38% of claims are rejected at first submission (system data, 12 months); the top three rejection reasons are missing evidence, wrong service date and duplicate claim (assessment records); six providers observed submitting claims.\n\nTreated as fact but actually inference: that providers do not read the guidance. Observation showed they read it and it did not answer the question they had. The guidance describes the field, not the decision the provider is making.\n\nMost decision-relevant unknown: whether the evidence requirement can be validated at submission or only after assessment. If it can be validated at submission, an inline check solves most of it. If it cannot, the whole approach changes. Investigate by walking three rejected claims through with an assessor and establishing what they had to look up.\n\nCreated needs: the requirement to re-enter participant details already held against the participant record, and the requirement to attach a document the department itself issued. Both exist because two systems do not talk to each other, not because anyone needs them.",
+    "criteria": [
+      "Separates observed evidence from inference, and labels the inference",
+      "At least one belief the team holds is identified as an assumption rather than a fact",
+      "The named unknown would actually change the decision, not just add detail",
+      "Identifies at least one created need — a requirement the department itself generated"
+    ]
+  },
+  "outcomes": {
+    "modelAnswer": "Objective: providers get claims right first time.\n\nKR1: reduce first-submission rejection rate from 38% to 20% by 30 June.\nKR2: reduce median time from first submission to payment from 19 days to 12.\nGuardrail: assisted-channel contacts do not rise above the current baseline of 340 per week.\n\nThe guardrail exists because the fastest way to reduce rejections is to reject less strictly, and the second fastest is to push providers to phone before submitting. Both would move KR1 and neither would be a success.\n\nLeading indicator: proportion of claims where the inline validation fires and the provider corrects before submitting. It moves within days and tells us the mechanism is working.\nLagging indicator: rejection rate itself, which takes a full assessment cycle to read.\n\nGrading honestly: if we land at 26% we grade it a 2 — progress, short of expectation — and say what we learned, rather than restating the target as 26%.",
+    "criteria": [
+      "Key results describe measured change with a baseline, a target and a date",
+      "At least one guardrail, and it protects against a plausible way of gaming the key result",
+      "Distinguishes a leading from a lagging indicator and says why each is there",
+      "Could someone tell from the key results alone whether the objective was achieved?"
+    ]
+  },
+  "exploration": {
+    "modelAnswer": "Riskiest assumption: that rejection reasons are knowable at submission time. If assessment requires judgement that cannot be encoded, inline validation cannot work and the whole approach fails.\n\nWhy this one: it is both uncertain — nobody has checked — and consequential, because being wrong invalidates the option entirely rather than requiring a redesign. Desirability is not in doubt; providers have asked for this repeatedly.\n\nCheapest credible test: take 40 recently rejected claims, and have two assessors independently mark which rejections could have been detected from the submitted data alone. No engineering, two days, and it produces a number we can act on.\n\nWhat would stop us: if under half are detectable at submission, inline validation addresses a minority of the problem and the better option is changing what evidence is required at all — which is a policy conversation, not a build.\n\nMVP if it passes: validation on the three top rejection reasons only, for one provider cohort, with the existing submission flow otherwise untouched. Smallest thing that produces a real rejection-rate number.",
+    "criteria": [
+      "Names one assumption and justifies it as both uncertain and consequential",
+      "The test is proportionate — cheapest thing that resolves the assumption, not the most thorough",
+      "States in advance what result would stop the work",
+      "The MVP is scoped as a test of value, not as a smaller version of the full build"
+    ]
+  },
+  "delivery": {
+    "modelAnswer": "Feature: inline validation of the three highest-volume rejection reasons.\nOutcome it serves: reduce first-submission rejection rate (KR1).\nMeasurement: rejection rate for claims that passed inline validation, compared with those that did not.\nIn scope: the three named reasons, provider portal only.\nOut of scope: assisted channel, bulk upload, the remaining eleven rejection reasons.\n\nOrder: this before the reporting dashboard, despite the dashboard having a more senior sponsor. WSJF reasoning — similar effort, but the validation work carries a cost of delay measured in provider effort and assessment capacity every week it is not shipped, while the dashboard's cost of delay is reputational and flat.\n\nRoadmap framing: Now — inline validation, dates meaningful because it is refined and started. Next — assisted-channel parity, outcome committed, shape not yet proven. Later — remaining rejection reasons, direction only, no dates.\n\nWhat I will say to the dashboard sponsor: the outcome their dashboard serves is visibility of claim status, and here is the evidence that fewer rejections serves it better and sooner.",
+    "criteria": [
+      "The item names its outcome and how it will be measured, not just what will be built",
+      "Prioritisation is argued economically — cost of delay against size — not by seniority",
+      "The roadmap distinguishes confidence levels rather than giving everything a date",
+      "Something is explicitly out of scope"
+    ]
+  },
+  "lifecycle": {
+    "modelAnswer": "Named owner after go-live: the product manager for provider claiming, not the project. Named in the closure pack, with 0.1 FTE against it.\n\nFour measures reviewed monthly: first-submission rejection rate; median submission-to-payment days; assisted-channel contacts; and the proportion of claims where validation fires and is corrected.\n\nCadence: half a day, monthly, standing. Not a governance forum — a look at four numbers and a decision about whether anything needs doing.\n\nWhat would tell us it is decaying: rejection rate drifting up with no release in the period. That means something outside the service moved — a policy change, a new provider cohort, an upstream system change, or volume. All four are checkable in an afternoon if someone is watching; none are findable at all if nobody is.\n\nWhat the handover must transfer beyond runbooks: accountability for those four measures, the remaining backlog, and the research contacts. Operational ownership without product ownership passes every review and still loses the service.",
+    "criteria": [
+      "A named owner for performance, distinct from operational support",
+      "A small number of measures — not a dashboard of everything available",
+      "A stated cadence at which someone will actually look",
+      "Says what a decline would mean and where to look first"
+    ]
+  },
+  "roles": {
+    "modelAnswer": "Decisions the team should make without asking: wording of validation messages, field order, which of two equivalent technical approaches, how to split a story. All reversible, all local, and the cost of being wrong is a later change.\n\nDecisions with a named business owner and an agreed response time: what counts as acceptable evidence for a claim; retention periods; whether a rejection reason can be waived. Owner is the claims policy lead, agreed response within three working days.\n\nDecisions that belong at a forum: whether to support bulk upload at all; whether to change the evidence requirement in policy; investment beyond the current PI.\n\nThe trio on this work: me on the outcome and the trade-offs, the designer on how providers understand a rejection, the tech lead on what is knowable at submission time. The feasibility question was the one that reframed the whole approach, which is the argument for having them in discovery rather than consulted after it.\n\nWhat I would stop doing: writing acceptance criteria. It is Product Owner work, and while I am doing it nobody is on the outcome.",
+    "criteria": [
+      "Sorts decisions into at least two tiers by reversibility and cost of being wrong",
+      "Business-rule decisions have a named owner and an agreed response time",
+      "The trio is described by the question each member answers, not by job title",
+      "Identifies something the product manager should stop absorbing"
+    ]
+  },
+  "government": {
+    "modelAnswer": "Constraint: claims evidence requirements are set in the program guidelines, which are not changing this financial year.\n\nWhat is actually binding versus inherited: binding is that specified evidence must be held before payment. Inherited is that the provider must upload it as a document at submission — the guidelines do not specify the mechanism, and where the department already holds the evidence it could be checked rather than re-supplied.\n\nDigital Service Standard criteria most engaged: solve a whole problem for users (the claim spans portal, phone and assessment), make it accessible and inclusive (providers vary enormously in capability and connection), and use and contribute to open standards and common platforms (the participant record already exists).\n\nInclusion risk: small providers without dedicated admin staff are the ones most affected by rejections and least able to absorb rework. Measure their rejection rate separately rather than in the aggregate, because the aggregate is dominated by large providers.\n\nWhat I take to the policy owner: the proportion of rejections caused by evidence the department already holds. That is a finding they cannot get from anywhere else, and it is not an exemption request.",
+    "criteria": [
+      "Separates what the instrument binds from the implementation inherited with it",
+      "Names specific Standard criteria rather than the Standard in general",
+      "Identifies a group at risk of exclusion and how it will be measured separately",
+      "Any policy conversation is framed as evidence, not as a request for relief"
+    ]
+  },
+  "integration": {
+    "modelAnswer": "The chain: providers cannot tell whether a claim will be accepted (problem, evidenced by 38% rejection and six observations) → so claims are rejected and resubmitted, costing provider effort and assessment capacity (why it matters) → reduce first-submission rejection to 20% by June, with an assisted-channel guardrail (outcome) → inline validation of the top three reasons, tested first against whether rejections are detectable at submission (option and evidence) → shipped ahead of the dashboard on cost of delay (ordered delivery) → rejection rate and validation-correction rate reviewed monthly by a named owner (measurement and learning).\n\nTo an executive: rejection rate is down 14 points, the mechanism is confirmed, and the remaining rejections are concentrated in evidence the department already holds — which is a policy decision, not a build. I need a decision on whether to pursue that.\n\nTo the delivery team: the top three reasons are done and working; next is establishing which of the remaining eleven are detectable, before we commit to any of them.\n\nTo providers: fewer claims will come back, here is what changed, and here is where to tell us when it gets it wrong.\n\nSame facts, three depths.",
+    "criteria": [
+      "Every link in the chain connects backwards to a problem and forwards to a measure",
+      "The executive version leads with the decision needed, not with delivery status",
+      "The three versions differ in depth and framing but not in facts",
+      "Nothing in the chain is asserted without saying what it rests on"
+    ]
+  }
+}

@@ -195,7 +195,11 @@ export function Practice({
   best: number;
   setBest: (score: number) => void;
   salt: string;
-  onComplete: (entry: Omit<HistoryEntry, "at">, missed?: Question[]) => number;
+  onComplete: (
+    entry: Omit<HistoryEntry, "at">,
+    missed?: Question[],
+    answered?: { id: string; correct: boolean }[],
+  ) => number;
 }) {
   const [questions, setQuestions] = useState<PracticeQuestion[]>([]);
   const [index, setIndex] = useState(0);
@@ -295,7 +299,10 @@ export function Practice({
       const score = Math.round((correctCount / questions.length) * 100);
       if (score > best) setBest(score);
       const missed = nextResults.filter((item) => !item.correct).map((item) => item.question);
-      setResurfaced(onComplete({ kind: "practice", score, correct: correctCount, total: questions.length }, missed));
+      const answered = nextResults.map((item) => ({ id: item.question.id, correct: item.correct }));
+      setResurfaced(
+        onComplete({ kind: "practice", score, correct: correctCount, total: questions.length }, missed, answered),
+      );
       setFinished(true);
     } else {
       setIndex((current) => current + 1);

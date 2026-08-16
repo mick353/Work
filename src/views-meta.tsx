@@ -5,7 +5,7 @@ import { caseStudies, contrasts, divergences, fieldGuide, flashcards, glossary, 
 import { slides } from "./slides";
 import { SlideRangeLink } from "./slide-viewer";
 import { BACKUP_VERSION, downloadFile, parseBackup, type View } from "./lib";
-import type { HistoryEntry, ProgressMap, ReviewMap, RubricMap, TextMap } from "./state";
+import type { HistoryEntry, ItemStatMap, ProgressMap, ReviewMap, RubricMap, TextMap } from "./state";
 import { EmptyState, PageIntro } from "./components";
 
 type Navigate = (view: View) => void;
@@ -348,6 +348,7 @@ export function Settings({
   studyDays,
   practiceBest,
   history,
+  itemStats,
   salt,
   onImport,
   onReset,
@@ -360,6 +361,7 @@ export function Settings({
   studyDays: string[];
   practiceBest: number;
   history: HistoryEntry[];
+  itemStats: ItemStatMap;
   salt: string;
   onImport: (payload: ReturnType<typeof parseBackup>) => void;
   onReset: () => void;
@@ -380,6 +382,7 @@ export function Settings({
         studyDays,
         practiceBest,
         history,
+        itemStats,
         salt,
       },
       null,

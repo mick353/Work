@@ -20,6 +20,8 @@ export type ModuleProgress = {
   scenarioAttempts: Record<string, number>;
   reflection: string;
   assignment: string[];
+  /** Which self-check criteria the learner has ticked on the assignment. */
+  assignmentChecks?: Record<string, boolean>;
   /** Number of quiz attempts, so "best score" cannot be silently farmed. */
   attempts: number;
 };
@@ -39,6 +41,18 @@ export type HistoryEntry = {
   total: number;
 };
 
+/**
+ * Per-item outcomes.
+ *
+ * History records a score per attempt and nothing about which questions were
+ * involved, so there was no way to tell an item everyone gets right (teaching
+ * nothing) from one everyone gets wrong (ambiguous rather than hard). A bank
+ * can be designed well and still be uncalibrated; this is the evidence that
+ * distinguishes the two.
+ */
+export type ItemStat = { seen: number; correct: number };
+export type ItemStatMap = Record<string, ItemStat>;
+
 export type ProgressMap = Record<string, ModuleProgress>;
 export type ReviewMap = Record<string, ReviewSchedule>;
 export type TextMap = Record<string, string>;
@@ -53,13 +67,19 @@ export function emptyModuleProgress(): ModuleProgress {
     scenarioAttempts: {},
     reflection: "",
     assignment: [],
+    assignmentChecks: {},
     attempts: 0,
   };
 }
 
 /** Tolerates partial objects from older backups. */
 export function normaliseModuleProgress(value: Partial<ModuleProgress> | undefined): ModuleProgress {
-  return { ...emptyModuleProgress(), ...(value ?? {}), scenarioAttempts: value?.scenarioAttempts ?? {} };
+  return {
+    ...emptyModuleProgress(),
+    ...(value ?? {}),
+    scenarioAttempts: value?.scenarioAttempts ?? {},
+    assignmentChecks: value?.assignmentChecks ?? {},
+  };
 }
 
 /**

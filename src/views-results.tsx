@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { ChevronRight, TrendingUp } from "lucide-react";
-import { modules } from "./course";
-import { flashcards } from "./reference";
+import { modules, practiceQuestions, type Question } from "./course";
+import { diagnosticQuestions, flashcards } from "./reference";
 import { DAY_MS, daysAgoKey, localDayKey, type ReviewSchedule, type View } from "./lib";
-import { masteryState, type HistoryEntry, type ProgressMap, type ReviewMap } from "./state";
+import { masteryState, type HistoryEntry, type ItemStatMap, type ProgressMap, type ReviewMap } from "./state";
 import { BarList, ChartCard, ColumnChart, Heatmap, Radial, StackedBar, TrendChart } from "./charts";
 import { IllusEmptyResults } from "./illustrations";
 import { EmptyState, PageIntro } from "./components";
@@ -14,6 +14,7 @@ export function Results({
   progress,
   reviews,
   history,
+  itemStats,
   studyDays,
   practiceBest,
   navigate,
@@ -21,6 +22,7 @@ export function Results({
   progress: ProgressMap;
   reviews: ReviewMap;
   history: HistoryEntry[];
+  itemStats: ItemStatMap;
   studyDays: string[];
   practiceBest: number;
   navigate: (view: View) => void;
@@ -147,6 +149,43 @@ export function Results({
     return streak;
   }, [studyDays]);
 
+  /**
+   * Item calibration.
+   *
+   * A bank can be designed well and still be uncalibrated. An item everyone
+   * gets right teaches nothing; one everyone gets wrong is usually ambiguous
+   * rather than hard. Neither is visible from a score, so this reports the
+   * items themselves — the only view in the app about the questions rather
+   * than about the learner.
+   */
+  const itemView = useMemo(() => {
+    const all = new Map<string, Question>();
+    for (const question of [...practiceQuestions, ...diagnosticQuestions]) all.set(question.id, question);
+
+    const rows = Object.entries(itemStats)
+      .map(([id, stat]) => {
+        const question = all.get(id);
+        if (!question || stat.seen === 0) return null;
+        return {
+          id,
+          prompt: question.prompt,
+          moduleId: question.moduleId,
+          seen: stat.seen,
+          accuracy: Math.round((stat.correct / stat.seen) * 100),
+        };
+      })
+      .filter((row): row is NonNullable<typeof row> => row !== null);
+
+    // Two or more sightings before an item is called hard: one miss is noise.
+    const settled = rows.filter((row) => row.seen >= 2);
+    return {
+      answered: rows.length,
+      hardest: [...settled].sort((a, b) => a.accuracy - b.accuracy || b.seen - a.seen).slice(0, 5),
+      solid: settled.filter((row) => row.accuracy === 100).length,
+      settled: settled.length,
+    };
+  }, [itemStats]);
+
   const quizEntries = history.filter((entry) => entry.kind !== "diagnostic");
   const lifetimeCorrect = quizEntries.reduce((sum, entry) => sum + entry.correct, 0);
   const lifetimeTotal = quizEntries.reduce((sum, entry) => sum + entry.total, 0);
@@ -245,6 +284,45 @@ export function Results({
               empty={accuracy.length === 0 ? "Complete a knowledge check to populate this." : undefined}
             >
               <BarList series={accuracy} ariaLabel="Best knowledge check score for each stage" />
+            </ChartCard>
+
+            {/*
+              The only panel in the app about the questions rather than about
+              the learner. An item everyone gets right teaches nothing; one
+              everyone gets wrong is usually ambiguous rather than hard.
+            */}
+            <ChartCard
+              title="Which questions are actually hard"
+              hint="Accuracy per question, from your own attempts. Items seen at least twice, because a single miss is noise."
+              empty={
+                itemView.hardest.length === 0
+                  ? itemView.answered === 0
+                    ? "No questions answered yet."
+                    : "Answer a few more sets — an item needs two sightings before its accuracy means anything."
+                  : undefined
+              }
+            >
+              {itemView.hardest.length > 0 && (
+                <>
+                  <ul className="item-stats">
+                    {itemView.hardest.map((row) => (
+                      <li key={row.id}>
+                        <span className="item-accuracy" data-band={row.accuracy < 50 ? "low" : row.accuracy < 80 ? "mid" : "high"}>
+                          {row.accuracy}%
+                        </span>
+                        <span className="item-prompt">{row.prompt}</span>
+                        <span className="item-seen">
+                          seen {row.seen}× · Stage {modules.find((m) => m.id === row.moduleId)?.number ?? "—"}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="item-note">
+                    {itemView.solid} of {itemView.settled} settled items are at 100%. Those are the ones you can stop
+                    revisiting.
+                  </p>
+                </>
+              )}
             </ChartCard>
 
             <ChartCard

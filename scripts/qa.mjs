@@ -423,6 +423,17 @@ const totalMinutes = bank.modules.reduce((sum, module) => sum + module.minutes, 
   check("Every case step carries a decision in the data", everyStepDecides);
 }
 
+{
+  const withModel = bank.modules.filter((m) => m.assignment.modelAnswer && m.assignment.modelAnswer.trim());
+  check("Every stage assignment has a worked answer", withModel.length === 9, `${withModel.length} of 9`);
+  const withCriteria = bank.modules.filter((m) => (m.assignment.criteria ?? []).length >= 3);
+  check("Every worked answer has self-check criteria", withCriteria.length === 9, `${withCriteria.length} of 9`);
+  const thinModels = bank.modules.filter(
+    (m) => (m.assignment.modelAnswer ?? "").trim().split(/\s+/).length < 100,
+  );
+  check("Worked answers are substantial", thinModels.length === 0, `${thinModels.length} under 100 words`);
+}
+
 check("Stated stage count is nine", bank.modules.length === 9);
 // Four is the minimum that makes the 75% mastery threshold meaningful; the
 // delivery and government stages carry five because they cover more ground.
@@ -1009,6 +1020,77 @@ check(
   (await page.locator(".lesson-sections").count()) === 1 &&
     (await page.evaluate(() => window.location.hash)).includes("delivery"),
   `landed on ${await page.evaluate(() => window.location.hash)} after clicking "${sectionLabel}"`,
+);
+
+/* -- constructed response and item statistics ---------------------- */
+
+/*
+ * The assignments asked for exactly the writing this course is about and
+ * nothing checked any of it. Marking free text is impossible offline; a worked
+ * answer revealed after commitment, against explicit criteria, is not — but it
+ * only works if the model stays hidden until the learner has attempted it.
+ */
+await page.evaluate(() => { window.location.hash = "module/outcomes"; });
+await page.waitForSelector(".assignment-panel");
+const compareButton = page.getByRole("button", { name: "Compare with a worked answer" });
+check(
+  "The worked answer stays hidden until the learner attempts it",
+  await compareButton.isDisabled(),
+  "seeing a good answer first replaces the work with recognition",
+);
+const draftBox = page.locator(".assignment-panel textarea").first();
+await draftBox.scrollIntoViewIfNeeded();
+await draftBox.click();
+await draftBox.fill(
+  "Objective: providers get claims right first time, measured by the first-submission rejection rate against a June target.",
+);
+await draftBox.blur();
+// Wait for the state round-trip rather than assuming a fixed delay.
+const unlocked = await compareButton
+  .waitFor({ state: "attached" })
+  .then(() => page.waitForFunction(
+    () => {
+      const button = [...document.querySelectorAll("button")].find(
+        (b) => b.textContent.trim() === "Compare with a worked answer",
+      );
+      return button && !button.disabled;
+    },
+    undefined,
+    { timeout: 4000 },
+  ))
+  .then(() => true)
+  .catch(() => false);
+check("Writing an answer unlocks the comparison", unlocked, "the draft did not register");
+if (unlocked) await compareButton.click();
+await page.waitForTimeout(400);
+check("The worked answer appears", (await page.locator(".model-answer p").count()) > 0);
+const criteriaCount = await page.locator(".model-criteria input").count();
+check("Self-check criteria are offered", criteriaCount >= 3, `${criteriaCount} criteria`);
+
+// Per-item outcomes must actually be recorded, or the Results panel is fiction.
+const itemsBefore = await page.evaluate(() => {
+  const raw = localStorage.getItem("product-practice-v2:item-stats");
+  return raw ? Object.keys(JSON.parse(raw)).length : 0;
+});
+// Use a stage this suite has not already quizzed: submitting a quiz disables
+// its options, and every other stage referenced above has been submitted.
+await page.evaluate(() => { window.location.hash = "module/roles"; });
+await page.waitForSelector(".knowledge-check fieldset");
+const statGroups = page.locator(".knowledge-check fieldset");
+const statCount = await statGroups.count();
+for (let index = 0; index < statCount; index += 1) {
+  await statGroups.nth(index).locator(".answer-option").first().click();
+}
+await page.getByRole("button", { name: "Check my recall" }).click();
+await page.waitForTimeout(700);
+const itemsAfter = await page.evaluate(() => {
+  const raw = localStorage.getItem("product-practice-v2:item-stats");
+  return raw ? Object.keys(JSON.parse(raw)).length : 0;
+});
+check(
+  "Per-item outcomes are recorded",
+  itemsAfter > itemsBefore,
+  `${itemsBefore} items before, ${itemsAfter} after — history alone records only a score`,
 );
 
 /* -- errors drive the review queue -------------------------------- */

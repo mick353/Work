@@ -37,6 +37,8 @@ Because progress lives in one browser on one machine, use **Settings → Downloa
 | Templates | 10, including epic, feature and story written to the deck's minimum detail |
 | Worked cases | 4 end-to-end across all nine stages, each step naming the decision on the table before what the team did |
 | Capstone | 3 briefs, nine sections, per-section self-assessment against a five-part rubric |
+| Constructed response | Every stage assignment has a worked answer, revealed only after you have written your own, plus self-check criteria |
+| Item statistics | Per-question accuracy from your own attempts, so the bank can be calibrated rather than assumed |
 | Practice contrasts | 17 pairs of what good looks like against what usually happens, each with a tell |
 | Glossary | 59 terms, each attributed to where it comes from |
 | DES field guide | Phases, principles, cadence, backlog fields and roles, for lookup at work |
@@ -47,6 +49,10 @@ Because progress lives in one browser on one machine, use **Settings → Downloa
 Also: a printable guide that reads as one continuous document, full-text search across the course *and* the deck, light and dark themes, keyboard-driven review, results charts, JSON backup and restore, and offline use as an installable app.
 
 ## Design decisions worth knowing
+
+**Assignments are checked against a model, not left blank.** The stage assignments asked for exactly the writing this course is about — problem statements, key results, decision rights — and nothing looked at any of it. Marking free text is impossible in an offline single file; revealing a worked answer *after* the learner commits their own, against explicit criteria they tick themselves, is not. The model stays disabled until something is written, because seeing a good answer first replaces the work with recognition.
+
+**The bank reports on itself.** History recorded a score per attempt and nothing about which questions were involved, so an item everyone gets right (teaching nothing) was indistinguishable from one everyone gets wrong (ambiguous rather than hard). Per-item accuracy is now recorded and surfaced on Results, with a two-sighting minimum because a single miss is noise.
 
 **Body copy is set to a measure, not to the container.** Prose was rendering at 117 characters per line against a published optimum of 66. `--measure: 54ch` is applied to running text only — tables and artefacts deliberately break out, because a table is scanned rather than read. Expressed in `ch` so it self-adjusts per font size; a fixed rem width gives smaller text more characters, which is backwards. Measures ~67 characters across every view, and the QA suite fails the build if any view drifts outside 45-80.
 

@@ -1377,3 +1377,30 @@ p { color: var(--muted); line-height: 1.65; }
 
 @media (max-width: 820px) { .case-switch { grid-template-columns: 1fr; } }
 @media print { .case-stage-link { border: 0; padding: 0; background: none; } .case-coverage { display: none; } }
+
+/* ---- Item calibration ---- */
+.item-stats { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.item-stats li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 12px 14px; align-items: start; }
+.item-accuracy {
+  display: grid; place-items: center; padding: 5px 0; border-radius: 8px;
+  font-size: 14px; font-weight: 750; font-variant-numeric: tabular-nums;
+}
+.item-accuracy[data-band="low"] { background: var(--warning-soft); color: var(--warning); }
+.item-accuracy[data-band="mid"] { background: var(--surface-alt); color: var(--ink); }
+.item-accuracy[data-band="high"] { background: var(--success-soft); color: var(--success); }
+.item-prompt { color: var(--ink); font-size: 14.5px; line-height: 1.5; max-width: var(--measure); }
+.item-seen { grid-column: 2; color: var(--muted); font-size: 12.5px; }
+.item-note { margin: 16px 0 0; color: var(--muted); font-size: 13.5px; max-width: var(--measure); }
+
+/* ---- Constructed response: worked answer + self-check ---- */
+.model-answer { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); }
+.model-gate { margin: 12px 0 0; max-width: var(--measure); color: var(--muted); font-size: 13.5px; line-height: 1.6; }
+.model-caveat { margin: 6px 0 16px; max-width: var(--measure); color: var(--muted); font-size: 14px; font-style: italic; }
+.model-answer .eyebrow { display: block; }
+.model-answer p { max-width: var(--measure); font-size: 15.5px; line-height: 1.65; }
+.model-criteria { margin-top: 22px; padding: 18px 20px; border-radius: 12px; background: var(--surface-alt); }
+.model-criteria ul { display: grid; gap: 10px; margin: 10px 0 0; padding: 0; list-style: none; }
+.model-criteria label { display: grid; grid-template-columns: 20px 1fr; gap: 11px; align-items: start; cursor: pointer; }
+.model-criteria input { margin-top: 3px; width: 17px; height: 17px; accent-color: var(--accent); }
+.model-criteria span { color: var(--ink); font-size: 14.5px; line-height: 1.55; max-width: var(--measure); }
+@media print { .model-answer { display: none; } }

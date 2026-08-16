@@ -49,6 +49,7 @@ import {
   useStoredState,
   type ModuleProgress,
   type ProgressMap,
+  type ItemStatMap,
   type ReviewMap,
   type RubricMap,
   type TextMap,
@@ -223,6 +224,7 @@ export default function App() {
   const [studyDays, setStudyDays, overwriteStudyDays] = useStoredState<string[]>("study-days", []);
   const [history, setHistory, overwriteHistory] = useStoredState<HistoryEntry[]>("history", []);
   const [briefId, setBriefId] = useStoredState<string>("capstone-brief", "provider");
+  const [itemStats, setItemStats, overwriteItemStats] = useStoredState<ItemStatMap>("item-stats", {});
   const [collapsedNav, setCollapsedNav] = useStoredState<Record<string, boolean>>(
     NAV_STATE_KEY,
     DEFAULT_COLLAPSED,
@@ -256,9 +258,21 @@ export default function App() {
    * that grows silently is indistinguishable from one that does not work.
    */
   const recordAttempt = useCallback(
-    (entry: Omit<HistoryEntry, "at">, missed: Question[] = []) => {
+    (entry: Omit<HistoryEntry, "at">, missed: Question[] = [], answered: { id: string; correct: boolean }[] = []) => {
       // Capped so a heavy user cannot grow local storage without bound.
       setHistory((current) => [...current, { ...entry, at: Date.now() }].slice(-400));
+
+      // Per-item outcomes, so the bank can be calibrated rather than assumed.
+      if (answered.length) {
+        setItemStats((current) => {
+          const next = { ...current };
+          for (const item of answered) {
+            const prior = next[item.id] ?? { seen: 0, correct: 0 };
+            next[item.id] = { seen: prior.seen + 1, correct: prior.correct + (item.correct ? 1 : 0) };
+          }
+          return next;
+        });
+      }
 
       const cards = cardsToResurface(missed);
       if (cards.length) {
@@ -271,7 +285,7 @@ export default function App() {
       }
       return cards.length;
     },
-    [setHistory, setReviews],
+    [setHistory, setReviews, setItemStats],
   );
 
   useEffect(() => {
@@ -360,6 +374,7 @@ export default function App() {
       overwriteStudyDays((payload.studyDays ?? []) as string[]);
       overwritePracticeBest((payload.practiceBest ?? 0) as number);
       overwriteHistory((payload.history ?? []) as HistoryEntry[]);
+      overwriteItemStats((payload.itemStats ?? {}) as ItemStatMap);
     },
     [
       overwriteProgress,
@@ -370,6 +385,7 @@ export default function App() {
       overwriteStudyDays,
       overwritePracticeBest,
       overwriteHistory,
+      overwriteItemStats,
     ],
   );
 
@@ -466,6 +482,7 @@ export default function App() {
         progress={progress}
         reviews={reviews}
         history={history}
+        itemStats={itemStats}
         studyDays={studyDays}
         practiceBest={practiceBest}
         navigate={navigate}
@@ -498,6 +515,7 @@ export default function App() {
         studyDays={studyDays}
         practiceBest={practiceBest}
         history={history}
+        itemStats={itemStats}
         salt={salt}
         onImport={handleImport}
         onReset={handleReset}

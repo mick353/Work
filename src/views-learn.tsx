@@ -316,7 +316,11 @@ export function ModuleView({
   update: (changes: Partial<ModuleProgress>) => void;
   navigate: Navigate;
   salt: string;
-  onQuizScored: (entry: Omit<HistoryEntry, "at">, missed?: Question[]) => number;
+  onQuizScored: (
+    entry: Omit<HistoryEntry, "at">,
+    missed?: Question[],
+    answered?: { id: string; correct: boolean }[],
+  ) => number;
 }) {
   // Each attempt draws a fresh sample from the stage's pool, so retaking is a
   // new test rather than a memory check of the same five items.
@@ -334,9 +338,12 @@ export function ModuleView({
 
   const state = masteryState(progress, module.scenarios.length);
 
+  const assignmentDrafted = progress.assignment.some((entry) => (entry ?? "").trim().length >= 20);
+
   const quizAnswered = quizQuestions.filter((question) => answers[question.id] !== undefined).length;
   const [quizChased, setQuizChased] = useState(false);
   const [resurfaced, setResurfaced] = useState(0);
+  const [modelShown, setModelShown] = useState(false);
   const [revisit, setRevisit] = useState<string[]>([]);
 
   const submitQuiz = () => {
@@ -354,7 +361,13 @@ export function ModuleView({
     const score = Math.round((correct / quizQuestions.length) * 100);
     update({ quizScore: Math.max(progress.quizScore, score), attempts: progress.attempts + 1 });
     const missed = quizQuestions.filter((question) => answers[question.id] !== question.answer);
-    setResurfaced(onQuizScored({ kind: "quiz", moduleId: module.id, score, correct, total: quizQuestions.length }, missed));
+    const answered = quizQuestions.map((question) => ({
+      id: question.id,
+      correct: answers[question.id] === question.answer,
+    }));
+    setResurfaced(
+      onQuizScored({ kind: "quiz", moduleId: module.id, score, correct, total: quizQuestions.length }, missed, answered),
+    );
     setRevisit(sectionsToRevisit(module, missed));
     setQuizSubmitted(true);
   };
@@ -697,6 +710,73 @@ export function ModuleView({
             />
           </label>
         ))}
+
+        {/*
+          Constructed response, checked against a model rather than marked.
+          The assignments asked for exactly the writing this course is about
+          and nothing looked at any of it. Marking free text is impossible in
+          an offline single file; revealing a worked answer AFTER commitment,
+          against explicit criteria, is not — and it is the difference between
+          an exercise and a blank box.
+
+          The model stays hidden until the learner has written something. Seeing
+          a good answer before attempting one replaces the work with recognition.
+        */}
+        {module.assignment.modelAnswer && (
+          <div className="model-answer">
+            {!modelShown ? (
+              <>
+                <button
+                  className="secondary"
+                  onClick={() => setModelShown(true)}
+                  disabled={!assignmentDrafted}
+                >
+                  Compare with a worked answer
+                </button>
+                <p className="model-gate">
+                  {assignmentDrafted
+                    ? "Your own answer is saved on this device. The worked answer stays available afterwards."
+                    : "Write something against at least one prompt first — reading a good answer before attempting one replaces the work with recognition."}
+                </p>
+              </>
+            ) : (
+              <>
+                <span className="eyebrow">One worked answer</span>
+                <p className="model-caveat">
+                  Not the answer. One that satisfies the criteria below, written about provider claiming — yours will be
+                  about your service and should look different.
+                </p>
+                <LessonBody text={module.assignment.modelAnswer} />
+                {module.assignment.criteria && (
+                  <div className="model-criteria">
+                    <span className="eyebrow">Check your own against these</span>
+                    <ul>
+                      {module.assignment.criteria.map((criterion) => (
+                        <li key={criterion}>
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={Boolean(progress.assignmentChecks?.[criterion])}
+                              onChange={(event) =>
+                                update({
+                                  assignmentChecks: {
+                                    ...(progress.assignmentChecks ?? {}),
+                                    [criterion]: event.target.checked,
+                                  },
+                                })
+                              }
+                            />
+                            <span>{criterion}</span>
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </section>
 
       {workedIn.length > 0 && (
@@ -827,7 +907,11 @@ export function Diagnostic({
 }: {
   navigate: Navigate;
   salt: string;
-  onComplete: (entry: Omit<HistoryEntry, "at">, missed?: Question[]) => number;
+  onComplete: (
+    entry: Omit<HistoryEntry, "at">,
+    missed?: Question[],
+    answered?: { id: string; correct: boolean }[],
+  ) => number;
 }) {
   const [seed, setSeed] = useState(0);
   const questions = useMemo(
@@ -873,7 +957,7 @@ export function Diagnostic({
       score: Math.round((correct / questions.length) * 100),
       correct,
       total: questions.length,
-    }, missed));
+    }, missed, questions.map((question) => ({ id: question.id, correct: answers[question.id] === question.answer }))));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 

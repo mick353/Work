@@ -407,6 +407,7 @@ export type BackupPayload = {
   studyDays?: unknown;
   practiceBest?: unknown;
   history?: unknown;
+  itemStats?: unknown;
   salt?: unknown;
 };
 
