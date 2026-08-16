@@ -1,4 +1,4 @@
-import { caseStudies, CONTENT_REVIEWED, contrasts, divergences, fieldGuide, flashcards, glossary, modules, slides, sources, toolkitTemplates } from "./content";
+import { caseStudies, CONTENT_REVIEWED, contrasts, divergences, fieldGuide, flashcards, glossary, manifest, modules, slides, sources, toolkitTemplates } from "./content";
 import { useMemo, useRef, useState } from "react";
 import { AlertTriangle, Brain, ChevronRight, Download, ExternalLink, RotateCcw, Search, Upload } from "lucide-react";
 import { SlideRangeLink } from "./slide-viewer";
@@ -182,7 +182,7 @@ export function SearchView({ navigate }: { navigate: Navigate }) {
       <PageIntro
         eyebrow="Search"
         title="Find anything in the course"
-        body="Searches lesson content, flashcards, templates, the field guide, the course additions, the sources, and all 98 slides of the source deck."
+        body={`Searches lesson content, flashcards, templates, the field guide, the sources${slides.length ? `, and all ${slides.length} slides of the source deck` : ""}.`}
       />
       <div className="search-field">
         <Search size={20} aria-hidden="true" />
@@ -230,7 +230,7 @@ export function Sources({ navigate }: { navigate: Navigate }) {
       <PageIntro
         eyebrow="Research and provenance"
         title="What the system is built on"
-        body="The DEWR deck supplies the course spine. Primary and authoritative sources clarify framework boundaries, update government guidance and explain the learning method."
+        body={`${manifest.source} supplies the course spine. Primary and authoritative sources clarify framework boundaries, update government guidance and explain the learning method.`}
       />
 
       <section className="method-note">
@@ -440,7 +440,7 @@ export function Settings({
 
   const resetWithBackup = () => {
     const confirmed = window.confirm(
-      "This clears all Product Practice progress from this browser, including capstone answers.\n\nA backup will download first. Continue?",
+      `This clears all ${manifest.title} progress from this browser, including capstone answers.\n\nOther training packages are not affected.\n\nA backup will download first. Continue?`,
     );
     if (!confirmed) return;
     downloadFile(
@@ -490,7 +490,7 @@ export function Settings({
             type="file"
             accept="application/json,.json"
             className="visually-hidden"
-            aria-label="Choose a Product Practice backup file to restore"
+            aria-label={`Choose a ${manifest.title} backup file to restore`}
             onChange={(event) => {
               const file = event.target.files?.[0];
               if (file) void handleFile(file);

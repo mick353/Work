@@ -1,4 +1,4 @@
-import { CONTENT_REVIEWED, diagnosticQuestions, flashcards, modules, practiceQuestions } from "./content";
+import { CONTENT_REVIEWED, diagnosticQuestions, flashcards, manifest, modules, practiceQuestions } from "./content";
 import { useMemo } from "react";
 import { ChevronRight, Printer, TrendingUp } from "lucide-react";
 import { type Question } from "./course";
@@ -417,7 +417,7 @@ export function Results({
 
             <div className="record-sheet">
               <header>
-                <span>Product Management Fundamentals · DEWR Digital Experience and Solutions</span>
+                <span>{manifest.title} · {manifest.publisher}</span>
                 <h3>Record of completion</h3>
                 <p>
                   Self-recorded in a single browser. Not a certification, not issued or verified by the department, and
@@ -485,7 +485,7 @@ export function Results({
                 </p>
               )}
               <p className="record-foot">
-                Content reviewed {CONTENT_REVIEWED}. Built from <em>Product Management Fundamentals — 12AUG2026</em>.
+                Content reviewed {CONTENT_REVIEWED}. Source: <em>{manifest.source}</em>.
                 Not an official Australian Government publication.
               </p>
             </div>

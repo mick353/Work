@@ -1,4 +1,4 @@
-import { divergences, findModule, flashcards, modules, slides } from "./content";
+import { divergences, findModule, flashcards, manifest, modules, slides } from "./content";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Brain,
@@ -746,13 +746,13 @@ function Shell({
         >
           {mobileOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
         </button>
-        <button className="brand" onClick={() => navigate("dashboard")} aria-label="Product Practice home">
+        <button className="brand" onClick={() => navigate("dashboard")} aria-label={`${manifest.title} home`}>
           <span className="brand-mark" aria-hidden="true">
             PP
           </span>
           <span>
-            <strong>Product Practice</strong>
-            <small>DEWR Digital Experience and Solutions — internal learning aid</small>
+            <strong>{manifest.title}</strong>
+            <small>{manifest.publisher} — internal learning aid</small>
           </span>
         </button>
         <div className="topbar-actions">

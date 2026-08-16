@@ -1,4 +1,4 @@
-import { caseStudies, contrasts, diagnosticQuestions, modules, quizPoolFor, supplementaryQuestions, totalMinutes } from "./content";
+import { caseStudies, contrasts, diagnosticQuestions, manifest, modules, quizPoolFor, supplementaryQuestions, totalMinutes } from "./content";
 import { useMemo, useState } from "react";
 import {
   ArrowLeft,
@@ -89,12 +89,11 @@ export function Dashboard({
       */}
       <section className="hero">
         <div>
-          <span className="eyebrow">Internal training · DEWR Digital Experience and Solutions</span>
-          <h1>Product Management Fundamentals</h1>
+          <span className="eyebrow">Internal training · {manifest.publisher}</span>
+          <h1>{manifest.title}</h1>
           <p className="hero-lead">
-            A nine-stage course in product management for Australian Government service delivery. It takes the
-            98-slide departmental deck and turns it into something you practise rather than sit through: understand
-            the idea, retrieve it from memory, apply it to a real service decision, then review it later.
+            {manifest.summary} Four moves, in order: understand the idea, retrieve it from memory, apply it to a
+            real service decision, then review it later.
           </p>
           <ul className="hero-facts">
             <li>
@@ -815,7 +814,7 @@ export function ModuleView({
         {/* h2, not h1: the visible stage heading already owns the h1 on this
             page, and two of them breaks the document outline. */}
         <header>
-          <span>Stage {module.number} · Product Practice</span>
+          <span>Stage {module.number} · {manifest.title}</span>
           <h2>{module.title}</h2>
           <p>{module.subtitle}</p>
         </header>
@@ -847,7 +846,7 @@ export function ModuleView({
           </div>
         )}
         <footer>
-          Product Practice — internal learning aid, not an official Australian Government publication.
+          {manifest.title} — internal learning aid, not an official Australian Government publication.
         </footer>
       </section>
 

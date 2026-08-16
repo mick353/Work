@@ -3,7 +3,7 @@
  * them. The lightbox and the citation controls live in slide-viewer.tsx.
  */
 
-import { modules, SLIDE_COUNT, slides } from "./content";
+import { manifest, modules, SLIDE_COUNT, slides } from "./content";
 import { useEffect, useRef, useState } from "react";
 import { slideAlt, slideLabel, slideSrc, useSlideViewer } from "./slide-viewer";
 import { PageIntro } from "./components";
@@ -44,7 +44,7 @@ export function Deck({ initial }: { initial?: number }) {
       <PageIntro
         eyebrow="Source deck"
         title={`All ${SLIDE_COUNT} slides the course was built from`}
-        body="Product Management Fundamentals — 12AUG2026, from the DEWR Digital Experience and Solutions Division. Every slide citation in the course opens the slide it names, so you can check the course against its source rather than take it on trust."
+        body={`${manifest.source}, from ${manifest.publisher}. Every slide citation in the course opens the slide it names, so you can check the course against its source rather than take it on trust.`}
       />
 
       <div className="deck-filter" role="group" aria-label="Filter slides by stage">

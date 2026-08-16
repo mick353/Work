@@ -1,4 +1,4 @@
-import { caseStudies, CONTENT_REVIEWED, contrasts, fieldGuide, glossary, modules, sources, toolkitTemplates, totalMinutes } from "./content";
+import { caseStudies, CONTENT_REVIEWED, contrasts, fieldGuide, glossary, manifest, modules, sources, toolkitTemplates, totalMinutes } from "./content";
 import { Printer } from "lucide-react";
 import { estimateHours, scrollToSection, type View } from "./lib";
 import { LessonBody, LessonTableView, PageIntro } from "./components";
@@ -36,7 +36,7 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
       <div className="guide-actions no-print">
         <PageIntro
           eyebrow="The whole thing, in one read"
-          title="Product Practice — the complete guide"
+          title={`${manifest.title} — the complete guide`}
           body="Every stage in order, with the tables, the contrasts, both worked cases, the templates, the field guide and the glossary. No questions — this is the reading copy. Print it and it comes out as a proper booklet."
         />
         <div className="button-row">
@@ -52,10 +52,10 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
       {/* Cover — print only */}
       <section className="guide-cover">
         <span className="guide-cover-kicker">Internal learning aid</span>
-        <h1>Product Practice</h1>
-        <p className="guide-cover-sub">Product management fundamentals, in nine stages</p>
+        <h1>{manifest.title}</h1>
+        <p className="guide-cover-sub">{manifest.subtitle}</p>
         <dl>
-          <div><dt>Source</dt><dd>Product Management Fundamentals — 12AUG2026, DEWR Digital Experience and Solutions Division</dd></div>
+          <div><dt>Source</dt><dd>{manifest.source}, {manifest.publisher}</dd></div>
           <div><dt>Reading time</dt><dd>{estimateHours(totalMinutes)}</dd></div>
           <div><dt>Content reviewed</dt><dd>{CONTENT_REVIEWED}</dd></div>
         </dl>
@@ -265,7 +265,7 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
       </section>
 
       <footer className="guide-end">
-        Product Practice — unofficial internal learning aid built from the DEWR Product Management Fundamentals deck.
+        {manifest.title} — unofficial internal learning aid. Source: {manifest.source}.
         Content reviewed {CONTENT_REVIEWED}. Not an official Australian Government publication.
       </footer>
     </div>

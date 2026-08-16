@@ -22,7 +22,7 @@
  * one way only.
  */
 
-import { modules, SLIDE_COUNT, slides } from "./content";
+import { manifest, modules, SLIDE_COUNT, slides } from "./content";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Images, Maximize2, X } from "lucide-react";
 import { type Slide } from "./slides";
@@ -230,7 +230,7 @@ function Lightbox({
           </div>
         )}
         <p className="slide-foot">
-          From <em>Product Management Fundamentals — 12AUG2026</em>.
+          From <em>{manifest.source}</em>.
           <span className="slide-foot-keys">
             {" "}Use <kbd>←</kbd> <kbd>→</kbd> to move between slides, <kbd>Esc</kbd> to close.
           </span>

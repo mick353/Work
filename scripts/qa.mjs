@@ -1066,6 +1066,70 @@ check(
  * overwrite it. A clean profile is the only place first-run behaviour is real.
  */
 {
+/*
+  Switching package, through the button a learner actually clicks.
+
+  This is here because it was missed. The package switch was verified by
+  writing the active-package key into localStorage and loading the page, which
+  proved the content layer resolved correctly and proved nothing about the
+  control. Shipped, and the app kept showing the first package's title, because
+  the views still carried its name as literal text. Test the path the user
+  takes, not the state it produces.
+*/
+{
+  const swap = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const swapPage = await swap.newPage();
+  watchPage(swapPage, "package-switch");
+  await swapPage.goto(artifactUrl, { waitUntil: "load" });
+  await swapPage.waitForSelector(".sidebar");
+
+  const read = () =>
+    swapPage.evaluate(() => ({
+      brand: document.querySelector(".brand strong")?.textContent?.trim() ?? "",
+      h1: document.querySelector("#main-content h1")?.textContent?.trim() ?? "",
+      heading: [...document.querySelectorAll(".nav-section-header span")].map((s) => s.textContent).pop() ?? "",
+      stages: document.querySelectorAll(".module-dot").length,
+    }));
+
+  const before = await read();
+
+  await swapPage.click(".package-switch");
+  await swapPage.waitForTimeout(400);
+  const titles = await swapPage.$$eval(".package-card h2", (els) => els.map((e) => e.textContent ?? ""));
+  const otherIndex = titles.findIndex((t) => !before.brand || !t.includes(before.brand));
+
+  await check("Library offers more than one package", titles.length > 1, titles.join(" / "));
+
+  if (otherIndex >= 0) {
+    const cards = await swapPage.$$(".package-card");
+    await cards[otherIndex].$eval("footer button", (b) => b.click());
+    await swapPage.waitForTimeout(1600);
+    const after = await read();
+
+    await check(
+      "Switching package changes the topbar title",
+      after.brand !== before.brand && after.brand.length > 0,
+      `${before.brand} -> ${after.brand}`,
+    );
+    await check(
+      "Switching package changes the dashboard heading",
+      after.h1 !== before.h1 && after.h1.length > 0,
+      `${before.h1} -> ${after.h1}`,
+    );
+    await check(
+      "Switching package changes the curriculum heading and stage count",
+      after.heading !== before.heading && after.stages !== before.stages && after.stages > 0,
+      `${before.heading}/${before.stages} -> ${after.heading}/${after.stages}`,
+    );
+    await check(
+      "No view still renders the previous package's name",
+      !after.h1.includes(before.brand) && !after.brand.includes(before.brand),
+      `after switch: brand="${after.brand}" h1="${after.h1}"`,
+    );
+  }
+  await swap.close();
+}
+
   const fresh = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
   const freshPage = await fresh.newPage();
   watchPage(freshPage, "migration");
