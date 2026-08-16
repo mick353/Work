@@ -1,6 +1,5 @@
+import { caseStudies, CONTENT_REVIEWED, contrasts, fieldGuide, glossary, modules, sources, toolkitTemplates, totalMinutes } from "./content";
 import { Printer } from "lucide-react";
-import { CONTENT_REVIEWED, modules, sources, totalMinutes } from "./course";
-import { caseStudies, contrasts, fieldGuide, glossary, toolkitTemplates } from "./reference";
 import { estimateHours, scrollToSection, type View } from "./lib";
 import { LessonBody, LessonTableView, PageIntro } from "./components";
 import { SlideRangeLink } from "./slide-viewer";

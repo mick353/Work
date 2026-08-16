@@ -1,7 +1,7 @@
+import { findSource } from "./content";
 import { useId, useMemo } from "react";
 import { ExternalLink } from "lucide-react";
 import type { LessonTable, Question } from "./course";
-import { findSource } from "./course";
 import { presentOptions } from "./lib";
 import { SlideCaption } from "./slide-viewer";
 

@@ -1,3 +1,4 @@
+import { findModule, flashcards, modules } from "./content";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Brain,
@@ -25,10 +26,9 @@ import {
   Wrench,
   X,
 } from "lucide-react";
-import { findModule, modules, type Question } from "./course";
+import { type Question } from "./course";
 import { PM_FUNDAMENTALS_ID, activePackage, trainingPackages } from "./packages";
 import { bringForward, cardsToResurface } from "./recall";
-import { flashcards } from "./reference";
 import {
   clearStored,
   scrollBehavior,

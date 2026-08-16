@@ -17,7 +17,8 @@
  * and would be harder to explain to a learner who asks why a card appeared.
  */
 
-import { flashcards, type Flashcard } from "./reference";
+import { flashcards } from "./content";
+import { type Flashcard } from "./reference";
 import type { Module, Question } from "./course";
 import { NEW_SCHEDULE, type ReviewSchedule } from "./lib";
 

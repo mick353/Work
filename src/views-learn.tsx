@@ -1,3 +1,4 @@
+import { caseStudies, contrasts, diagnosticQuestions, modules, quizPoolFor, supplementaryQuestions, totalMinutes } from "./content";
 import { useMemo, useState } from "react";
 import {
   ArrowLeft,
@@ -7,8 +8,7 @@ import {
   Printer,
   RefreshCw,
 } from "lucide-react";
-import { modules, quizPoolFor, totalMinutes, type Module, type Question } from "./course";
-import { caseStudies, contrasts, diagnosticQuestions, supplementaryQuestions } from "./reference";
+import { type Module, type Question } from "./course";
 import { SlideRangeLink } from "./slide-viewer";
 import { daysAgoKey, estimateHours, scrollBehavior, scrollToSection, shuffle, type View } from "./lib";
 import { sectionsToRevisit } from "./recall";

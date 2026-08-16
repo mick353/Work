@@ -978,6 +978,47 @@ check(
   `${footerWords} words — it repeats on every page, so it earns very little space`,
 );
 
+/* -- the package container holds ----------------------------------- */
+
+/*
+ * A structural check rather than a behavioural one, because this invariant
+ * cannot be observed by clicking. The player must read content ONLY through
+ * the active package. Views used to import `modules` and `flashcards` straight
+ * from course.ts and reference.ts, which hard-wired the player to one course
+ * and made "adding a package is a data operation" untrue.
+ *
+ * Types may still be imported from the content files — a type is the same
+ * whichever package supplies the value. Only the VALUES have to come through
+ * the container.
+ */
+{
+  const { readdir } = await import("node:fs/promises");
+  const srcDir = path.join(projectDir, "src");
+  const files = (await readdir(srcDir)).filter((name) => /^(views-|App|components|recall|slide-viewer)/.test(name));
+  const contentValues = [
+    "modules", "sources", "totalMinutes", "practiceQuestions", "diagnosticQuestions",
+    "supplementaryQuestions", "flashcards", "glossary", "caseStudies", "contrasts",
+    "divergences", "toolkitTemplates", "capstoneSteps", "capstoneBriefs", "capstoneRubric",
+    "fieldGuide", "slides", "SLIDE_COUNT", "CONTENT_REVIEWED", "quizPoolFor", "findModule", "findSource",
+  ];
+  const offenders = [];
+  for (const file of files) {
+    const text = await readFile(path.join(srcDir, file), "utf8");
+    for (const match of text.matchAll(/import \{([^}]*)\} from "\.\/(course|reference|slides)";/gs)) {
+      for (const raw of match[1].split(",")) {
+        const name = raw.trim();
+        if (!name || name.startsWith("type ")) continue;
+        if (contentValues.includes(name)) offenders.push(`${file}: ${name} from ./${match[2]}`);
+      }
+    }
+  }
+  check(
+    "No view can bypass the package container",
+    offenders.length === 0,
+    offenders.slice(0, 6).join(" | "),
+  );
+}
+
 /* -- training packages --------------------------------------------- */
 
 /*

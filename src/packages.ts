@@ -26,12 +26,13 @@
 
 import {
   CONTENT_REVIEWED,
-  findModule,
   modules,
   practiceQuestions,
   sources,
   totalMinutes,
   type Module,
+  type PracticeQuestion,
+  type Question,
   type Source,
 } from "./course";
 import {
@@ -47,8 +48,17 @@ import {
   glossary,
   supplementaryQuestions,
   toolkitTemplates,
+  type CapstoneBrief,
+  type CapstoneStep,
+  type CaseStudy,
+  type Contrast,
+  type Divergence,
+  type FieldGuideEntry,
+  type Flashcard,
+  type GlossaryEntry,
+  type ToolkitTemplate,
 } from "./reference";
-import { SLIDE_COUNT, slides } from "./slides";
+import { SLIDE_COUNT, slides, type Slide } from "./slides";
 
 export type PackageStatus = "available" | "in-development";
 
@@ -68,12 +78,37 @@ export type PackageManifest = {
   summary: string;
 };
 
-export type TrainingPackage = {
-  manifest: PackageManifest;
+/**
+ * Everything a package owns.
+ *
+ * The player reads content through this and nothing else, so a second package
+ * is authored rather than built: write the arrays, add a manifest, register it.
+ */
+export type PackageContent = {
   modules: Module[];
   sources: Source[];
   totalMinutes: number;
+  practiceQuestions: PracticeQuestion[];
+  diagnosticQuestions: Question[];
+  supplementaryQuestions: Question[];
+  flashcards: Flashcard[];
+  glossary: GlossaryEntry[];
+  caseStudies: CaseStudy[];
+  contrasts: Contrast[];
+  divergences: Divergence[];
+  toolkitTemplates: ToolkitTemplate[];
+  capstoneSteps: CapstoneStep[];
+  capstoneBriefs: CapstoneBrief[];
+  capstoneRubric: typeof capstoneRubric;
+  fieldGuide: FieldGuideEntry[];
+  slides: Slide[];
   slideCount: number;
+  contentReviewed: string;
+};
+
+export type TrainingPackage = {
+  manifest: PackageManifest;
+  content: PackageContent;
 };
 
 /* ------------------------------------------------------------------ *
@@ -94,10 +129,27 @@ const pmFundamentals: TrainingPackage = {
     summary:
       "Nine stages from user need to measured value, built from the departmental deck and turned into something you practise rather than sit through.",
   },
-  modules,
-  sources,
-  totalMinutes,
-  slideCount: SLIDE_COUNT,
+  content: {
+    modules,
+    sources,
+    totalMinutes,
+    practiceQuestions,
+    diagnosticQuestions,
+    supplementaryQuestions,
+    flashcards,
+    glossary,
+    caseStudies,
+    contrasts,
+    divergences,
+    toolkitTemplates,
+    capstoneSteps,
+    capstoneBriefs,
+    capstoneRubric,
+    fieldGuide,
+    slides,
+    slideCount: SLIDE_COUNT,
+    contentReviewed: CONTENT_REVIEWED,
+  },
 };
 
 export const trainingPackages: TrainingPackage[] = [pmFundamentals];
@@ -117,43 +169,21 @@ export function activePackage(id: string): TrainingPackage {
   return findPackage(id) ?? pmFundamentals;
 }
 
-/** Everything the views need, resolved for the active package. */
-export const content = {
-  modules,
-  findModule,
-  practiceQuestions,
-  sources,
-  totalMinutes,
-  flashcards,
-  glossary,
-  caseStudies,
-  contrasts,
-  divergences,
-  toolkitTemplates,
-  capstoneSteps,
-  capstoneBriefs,
-  capstoneRubric,
-  fieldGuide,
-  diagnosticQuestions,
-  supplementaryQuestions,
-  slides,
-  slideCount: SLIDE_COUNT,
-};
-
 /* ------------------------------------------------------------------ *
  * Package-scoped counts, for the library card
  * ------------------------------------------------------------------ */
 
 export function packageStats(entry: TrainingPackage) {
+  const c = entry.content;
   const questions =
-    entry.modules.reduce((sum, module) => sum + module.questions.length + module.scenarios.length, 0) +
-    supplementaryQuestions.length +
-    diagnosticQuestions.length;
+    c.modules.reduce((sum, module) => sum + module.questions.length + module.scenarios.length, 0) +
+    c.supplementaryQuestions.length +
+    c.diagnosticQuestions.length;
   return {
-    stages: entry.modules.length,
+    stages: c.modules.length,
     questions,
-    cards: flashcards.length,
-    slides: entry.slideCount,
-    minutes: entry.totalMinutes,
+    cards: c.flashcards.length,
+    slides: c.slideCount,
+    minutes: c.totalMinutes,
   };
 }

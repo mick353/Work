@@ -1,7 +1,8 @@
+import { findModule, flashcards, practiceQuestions } from "./content";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Brain, ChevronRight, RefreshCw, Trophy } from "lucide-react";
-import { findModule, practiceQuestions, type PracticeQuestion, type Question } from "./course";
-import { FLASHCARD_KIND_LABEL, flashcards, type Flashcard } from "./reference";
+import { type PracticeQuestion, type Question } from "./course";
+import { FLASHCARD_KIND_LABEL, type Flashcard } from "./reference";
 import { describeInterval, formatDue, shuffle, type Rating, type ReviewSchedule } from "./lib";
 import type { HistoryEntry, ReviewMap } from "./state";
 import { Feedback, PageIntro, ProgressBar, QuestionCard } from "./components";

@@ -1,7 +1,7 @@
+import { CONTENT_REVIEWED, diagnosticQuestions, flashcards, modules, practiceQuestions } from "./content";
 import { useMemo } from "react";
 import { ChevronRight, Printer, TrendingUp } from "lucide-react";
-import { CONTENT_REVIEWED, modules, practiceQuestions, type Question } from "./course";
-import { diagnosticQuestions, flashcards } from "./reference";
+import { type Question } from "./course";
 import { DAY_MS, daysAgoKey, localDayKey, type ReviewSchedule, type View } from "./lib";
 import { MASTERY_QUIZ_THRESHOLD, masteryState, type HistoryEntry, type ItemStatMap, type ProgressMap, type ReviewMap } from "./state";
 import { BarList, ChartCard, ColumnChart, Heatmap, Radial, StackedBar, TrendChart } from "./charts";

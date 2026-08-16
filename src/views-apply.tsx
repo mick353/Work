@@ -1,17 +1,7 @@
+import { capstoneBriefs, capstoneRubric, capstoneSteps, caseStudies, fieldGuide, glossary, modules, toolkitTemplates } from "./content";
 import { AlertTriangle, Check, ChevronRight, Download, Printer, Search } from "lucide-react";
 import { useMemo, useState } from "react";
-import {
-  CAPSTONE_MIN_WORDS,
-  capstoneBriefs,
-  capstoneRubric,
-  capstoneSteps,
-  caseStudies,
-  fieldGuide,
-  glossary,
-  toolkitTemplates,
-  type GlossaryEntry,
-} from "./reference";
-import { modules } from "./course";
+import { CAPSTONE_MIN_WORDS, type GlossaryEntry } from "./reference";
 import { downloadFile, scrollToSection, type View } from "./lib";
 import type { RubricMap, TextMap } from "./state";
 import { EmptyState, LessonBody, PageIntro, ProgressBar, SourceChips } from "./components";
@@ -83,6 +73,7 @@ export function Capstone({
   setBriefId: (id: string) => void;
 }) {
   const brief = capstoneBriefs.find((b) => b.id === briefId) ?? capstoneBriefs[0];
+  const hasCapstone = capstoneBriefs.length > 0 && capstoneSteps.length > 0;
   const key = (stepId: string) => `${briefId}:${stepId}`;
   const drafted = capstoneSteps.filter((step) => wordCount(values[key(step.id)] ?? "") >= CAPSTONE_MIN_WORDS).length;
   const totalChecks = capstoneSteps.length * capstoneRubric.length;
@@ -135,6 +126,14 @@ export function Capstone({
     capstoneRubric.forEach((item) => lines.push(`${item.title}: ${item.detail}`));
     downloadFile(`product-management-capstone-${briefId}.txt`, lines.join("\r\n"), "text/plain;charset=utf-8");
   };
+
+  if (!hasCapstone) {
+    return (
+      <div className="page">
+        <PageIntro eyebrow="Capstone" title="No capstone in this package" body="This package does not include a capstone brief. Everything else — stages, checks, review and results — works as normal." />
+      </div>
+    );
+  }
 
   return (
     <div className="page">
@@ -268,6 +267,14 @@ export function Capstone({
 }
 
 export function FieldGuide() {
+  if (!fieldGuide.length) {
+    return (
+      <div className="page">
+        <PageIntro eyebrow="Field guide" title="No field guide in this package" body="This package does not include a reference field guide. The stages and the complete guide carry the same material in context." />
+      </div>
+    );
+  }
+
   return (
     <div className="page">
       <PageIntro
@@ -331,6 +338,14 @@ export function Glossary() {
     });
     return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
   }, [filtered]);
+
+  if (!glossary.length) {
+    return (
+      <div className="page">
+        <PageIntro eyebrow="Glossary" title="No glossary in this package" body="This package does not define glossary terms. Search still covers the lessons, cards and source material." />
+      </div>
+    );
+  }
 
   return (
     <div className="page">
@@ -396,8 +411,21 @@ export function Glossary() {
 
 
 export function CaseStudies({ navigate }: { navigate: (view: View) => void }) {
-  const [active, setActive] = useState(caseStudies[0].id);
+  /*
+   * A package need not carry worked cases. Indexing [0] on an empty array is
+   * how a smaller package took the whole app down — the container only holds
+   * if every optional section can be absent.
+   */
+  const [active, setActive] = useState(caseStudies[0]?.id ?? "");
   const study = caseStudies.find((c) => c.id === active) ?? caseStudies[0];
+
+  if (!caseStudies.length) {
+    return (
+      <div className="page">
+        <PageIntro eyebrow="Worked cases" title="No worked cases in this package" body="This package does not include worked cases. The stages, the question bank and the review queue all work as normal." />
+      </div>
+    );
+  }
 
   return (
     <div className="page">

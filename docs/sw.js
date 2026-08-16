@@ -2,7 +2,7 @@
  * Offline service worker for the GitHub Pages build.
  *
  * The shell is one HTML file, so the precache is tiny: the document, the
- * manifest and the icons. 2fa6407f5efd is replaced at build time with a
+ * manifest and the icons. ad66d4b4287f is replaced at build time with a
  * hash of the generated HTML, so a new release always busts the cache rather
  * than leaving someone stuck on an old copy of the course.
  *
@@ -17,7 +17,7 @@
  * fallback whenever the network is unavailable.
  */
 
-const VERSION = "2fa6407f5efd";
+const VERSION = "ad66d4b4287f";
 const CACHE = `product-practice-${VERSION}`;
 const SHELL = [
   "./",

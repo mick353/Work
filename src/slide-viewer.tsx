@@ -22,10 +22,10 @@
  * one way only.
  */
 
+import { modules, SLIDE_COUNT, slides } from "./content";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Images, Maximize2, X } from "lucide-react";
-import { modules } from "./course";
-import { SLIDE_COUNT, slides, type Slide } from "./slides";
+import { type Slide } from "./slides";
 
 /* ------------------------------------------------------------------ *
  * Where the picture comes from

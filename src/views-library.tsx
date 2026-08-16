@@ -82,11 +82,11 @@ function PackageCard({
   onOpen: () => void;
 }) {
   const stats = packageStats(entry);
-  const mastered = entry.modules.filter(
+  const mastered = entry.content.modules.filter(
     (module) => masteryState(progress[module.id], module.scenarios.length).mastered,
   ).length;
   const started = Object.keys(progress).length > 0;
-  const percent = Math.round((mastered / entry.modules.length) * 100);
+  const percent = Math.round((mastered / entry.content.modules.length) * 100);
 
   return (
     <article className={`package-card ${active ? "active" : ""}`}>

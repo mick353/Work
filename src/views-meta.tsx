@@ -1,8 +1,6 @@
+import { caseStudies, CONTENT_REVIEWED, contrasts, divergences, fieldGuide, flashcards, glossary, modules, slides, sources, toolkitTemplates } from "./content";
 import { useMemo, useRef, useState } from "react";
 import { AlertTriangle, Brain, ChevronRight, Download, ExternalLink, RotateCcw, Search, Upload } from "lucide-react";
-import { CONTENT_REVIEWED, modules, sources } from "./course";
-import { caseStudies, contrasts, divergences, fieldGuide, flashcards, glossary, toolkitTemplates } from "./reference";
-import { slides } from "./slides";
 import { SlideRangeLink } from "./slide-viewer";
 import { BACKUP_VERSION, downloadFile, parseBackup, type View } from "./lib";
 import type { HistoryEntry, ItemStatMap, ProgressMap, ReviewMap, RubricMap, TextMap } from "./state";
@@ -305,6 +303,18 @@ export function Sources({ navigate }: { navigate: Navigate }) {
  * ------------------------------------------------------------------ */
 
 export function Divergences() {
+  if (!divergences.length) {
+    return (
+      <div className="page">
+        <PageIntro
+          eyebrow="Course additions"
+          title="No additions recorded for this package"
+          body="This package does not depart from or extend its source material anywhere that needed recording."
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="page">
       <PageIntro

@@ -3,9 +3,8 @@
  * them. The lightbox and the citation controls live in slide-viewer.tsx.
  */
 
+import { modules, SLIDE_COUNT, slides } from "./content";
 import { useEffect, useRef, useState } from "react";
-import { modules } from "./course";
-import { SLIDE_COUNT, slides } from "./slides";
 import { slideAlt, slideLabel, slideSrc, useSlideViewer } from "./slide-viewer";
 import { PageIntro } from "./components";
 
@@ -27,6 +26,18 @@ export function Deck({ initial }: { initial?: number }) {
   }, [initial, open]);
 
   const shown = stage === "all" ? slides : slides.filter((slide) => slide.stage === stage);
+
+  if (!slides.length) {
+    return (
+      <div className="page">
+        <PageIntro
+          eyebrow="Source deck"
+          title="No source slides in this package"
+          body="This package was not built from a slide deck, so there is nothing to browse here. Citations elsewhere in the course point at its own sources instead."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="page deck-page">
