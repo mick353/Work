@@ -262,7 +262,12 @@ export function Sources({ navigate }: { navigate: Navigate }) {
         </button>
       </section>
 
-      <p className="currency-note">All sources checked and content reviewed {CONTENT_REVIEWED}.</p>
+      <p className="currency-note">
+        All sources checked and content reviewed {CONTENT_REVIEWED}. This is an internal learning aid built from the
+        departmental deck — not an official Australian Government publication, and not a substitute for departmental
+        guidance or the Digital Service Standard. Where this and any official source disagree, the official source
+        governs.
+      </p>
 
       <div className="source-list">
         {sources.map((source, index) => (
@@ -272,12 +277,21 @@ export function Sources({ navigate }: { navigate: Navigate }) {
               <h2>{source.title}</h2>
               <strong>{source.publisher}</strong>
               <p>{source.note}</p>
-              {source.url && (
-                <a href={source.url} target="_blank" rel="noreferrer">
-                  Open primary source <ExternalLink size={15} aria-hidden="true" />
-                  <span className="visually-hidden"> (opens in a new tab)</span>
-                </a>
-              )}
+              <div className="source-links">
+                {source.url && (
+                  <a href={source.url} target="_blank" rel="noreferrer">
+                    Open primary source <ExternalLink size={15} aria-hidden="true" />
+                    <span className="visually-hidden"> (opens in a new tab)</span>
+                  </a>
+                )}
+                {/* An alternative FORMAT of the same document, not a second source. */}
+                {source.altUrl && (
+                  <a href={source.altUrl} target="_blank" rel="noreferrer" className="source-alt">
+                    {source.altLabel ?? "Alternative format"} <ExternalLink size={14} aria-hidden="true" />
+                    <span className="visually-hidden"> (same document, opens in a new tab)</span>
+                  </a>
+                )}
+              </div>
             </div>
           </article>
         ))}

@@ -79,6 +79,15 @@ export type Source = {
   title: string;
   publisher: string;
   url?: string;
+  /**
+   * An alternative format of the SAME document — a PDF of a web page, say.
+   *
+   * The Digital Service Standard was listed twice, once as the web version and
+   * once as the PDF, which reads as two sources and is one. A format is not a
+   * reference.
+   */
+  altUrl?: string;
+  altLabel?: string;
   note: string;
   /** Shown on the Sources page so currency is visible rather than implied. */
   checked?: string;
@@ -99,15 +108,9 @@ export const sources: Source[] = [
     title: "Digital Service Standard, Version 2.0",
     publisher: "Australian Government / Digital Transformation Agency",
     url: "https://www.digital.gov.au/policy/digital-experience/digital-service-standard",
+    altUrl: "https://www.digital.gov.au/sites/default/files/documents/2024-10/Digital%20Service%20Standard.pdf",
+    altLabel: "PDF",
     note: "Current standard: 10 criteria, reduced from the former 13. Fully in effect — new services from 1 July 2024, and public-facing services that existed before that date from 1 July 2025.",
-    checked: CONTENT_REVIEWED,
-  },
-  {
-    id: "dsspdf",
-    title: "The Digital Service Standard Version 2.0 (PDF)",
-    publisher: "Australian Government",
-    url: "https://www.digital.gov.au/sites/default/files/documents/2024-10/Digital%20Service%20Standard.pdf",
-    note: "The criteria in full. The October 2024 file is the current one; it supersedes the July 2024 PDF still in circulation elsewhere.",
     checked: CONTENT_REVIEWED,
   },
   {
@@ -1956,7 +1959,7 @@ export const modules: Module[] = [
           "Governance evidence should demonstrate how the criteria are being met, not merely that a template was completed.",
           "Staff-facing internal services sit outside the Phase 2 scope; check current DTA guidance before assuming applicability.",
         ],
-        sourceIds: ["dss", "dsspdf"],
+        sourceIds: ["dss"],
       },
       {
         heading: "Make governance a learning and risk conversation",

@@ -761,7 +761,7 @@ function Shell({
         </NavSection>
 
         <p className="privacy-note">
-          Progress stays in this browser. Nothing is uploaded. Not an official Australian Government publication.
+          Progress stays in this browser. Nothing is uploaded.
         </p>
       </aside>
 
@@ -772,11 +772,24 @@ function Shell({
       <main id="main-content" className="main-content" tabIndex={-1}>
         {!storageOk && <StorageWarning />}
         {children}
+        {/*
+          One line, once.
+
+          The same disclaimer was running in three places at once — the sidebar
+          privacy note, this footer, and again in the body of the Sources page —
+          so a reader met it three times on one screen. Repetition does not make
+          a caveat more binding; it makes the whole page read as boilerplate and
+          teaches people to skip the region it lives in. The full statement now
+          lives on the Sources page, where somebody checking provenance will
+          actually be looking for it, and this is the persistent reminder.
+        */}
         <footer className="app-footer">
           <p>
-            An internal learning aid built from <em>Product Management Fundamentals — 12AUG2026</em> (DEWR Digital
-            Experience and Solutions Division). Not an official Australian Government publication and not a substitute
-            for departmental guidance or the Digital Service Standard.
+            Internal learning aid
+            {view !== "sources" && " · not an official Australian Government publication"} ·{" "}
+            <button className="text-button" onClick={() => navigate("sources")}>
+              provenance and sources
+            </button>
           </p>
         </footer>
       </main>

@@ -1404,3 +1404,12 @@ p { color: var(--muted); line-height: 1.65; }
 .model-criteria input { margin-top: 3px; width: 17px; height: 17px; accent-color: var(--accent); }
 .model-criteria span { color: var(--ink); font-size: 14.5px; line-height: 1.55; max-width: var(--measure); }
 @media print { .model-answer { display: none; } }
+
+/* Footer: one line. It repeats on every page, so it earns very little space. */
+.app-footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); }
+.app-footer p { max-width: none; margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.6; }
+.app-footer .text-button { font-size: 12.5px; }
+.source-links { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; }
+/* No opacity: it blends the text toward the background and quietly drops the
+   contrast ratio below AA. Use a real colour so the value is what it says. */
+.source-alt { font-size: 13px; color: var(--muted); }

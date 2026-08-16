@@ -434,6 +434,20 @@ const totalMinutes = bank.modules.reduce((sum, module) => sum + module.minutes, 
   check("Worked answers are substantial", thinModels.length === 0, `${thinModels.length} under 100 words`);
 }
 
+{
+  // One document listed twice is one source, not two. The Digital Service
+  // Standard had a web entry and a PDF entry whose note explained which PDF
+  // superseded which — version housekeeping in a learner-facing list.
+  const titles = bank.sources.map((s) => s.title.toLowerCase().replace(/\s*\(pdf\)\s*/g, "").trim());
+  check(
+    "No source is listed twice in different formats",
+    new Set(titles).size === titles.length,
+    titles.filter((t, i) => titles.indexOf(t) !== i).join(", "),
+  );
+  const versionChatter = bank.sources.filter((s) => /supersedes .*that earlier|earlier versions of this course/i.test(s.note));
+  check("Source notes carry no version housekeeping", versionChatter.length === 0);
+}
+
 check("Stated stage count is nine", bank.modules.length === 9);
 // Four is the minimum that makes the 75% mastery threshold meaningful; the
 // delivery and government stages carry five because they cover more ground.
@@ -932,6 +946,36 @@ check(
 check(
   "The recommendation names a stage to start from",
   /Stage \d/.test(await page.locator(".diagnostic-result h2").innerText()),
+);
+
+/* -- the disclaimer appears once per page --------------------------- */
+
+/*
+ * The same statement was running in the sidebar note, the page footer and the
+ * body of the Sources page at once, so a reader met it three times on one
+ * screen. Repetition does not make a caveat more binding — it makes the page
+ * read as boilerplate and teaches people to skip the region it lives in.
+ */
+for (const view of ["dashboard", "sources", "module/thinking", "glossary"]) {
+  await page.evaluate((h) => { window.location.hash = h; }, view);
+  await page.waitForTimeout(400);
+  const occurrences = await page.evaluate(() => {
+    const text = document.body.innerText;
+    return (text.match(/not an official Australian Government publication/gi) ?? []).length;
+  });
+  check(
+    `The disclaimer appears once per page (${view})`,
+    occurrences <= 1,
+    `${occurrences} occurrences on one screen`,
+  );
+}
+const footerWords = await page.evaluate(
+  () => (document.querySelector(".app-footer")?.innerText ?? "").trim().split(/\s+/).length,
+);
+check(
+  "The persistent footer stays small",
+  footerWords <= 20,
+  `${footerWords} words — it repeats on every page, so it earns very little space`,
 );
 
 /* -- typography: the prose measure --------------------------------- */
