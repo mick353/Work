@@ -1089,6 +1089,11 @@ check(
       h1: document.querySelector("#main-content h1")?.textContent?.trim() ?? "",
       heading: [...document.querySelectorAll(".nav-section-header span")].map((s) => s.textContent).pop() ?? "",
       stages: document.querySelectorAll(".module-dot").length,
+      // Stage titles, not the count. Two packages can legitimately have the
+      // same number of stages — the first version of this check compared
+      // counts and started failing the moment they did.
+      firstStage:
+        document.querySelector(".sidebar-modules nav button span:nth-child(2)")?.textContent?.trim() ?? "",
     }));
 
   const before = await read();
@@ -1117,9 +1122,9 @@ check(
       `${before.h1} -> ${after.h1}`,
     );
     await check(
-      "Switching package changes the curriculum heading and stage count",
-      after.heading !== before.heading && after.stages !== before.stages && after.stages > 0,
-      `${before.heading}/${before.stages} -> ${after.heading}/${after.stages}`,
+      "Switching package changes the curriculum to the other package's stages",
+      after.firstStage !== before.firstStage && after.firstStage.length > 0 && after.stages > 0,
+      `${before.firstStage} -> ${after.firstStage}`,
     );
     await check(
       "No view still renders the previous package's name",

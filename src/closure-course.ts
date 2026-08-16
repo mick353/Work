@@ -76,6 +76,30 @@ export const closureSources: Source[] = [
     checked: CLOSURE_REVIEWED,
   },
   {
+    id: "archives",
+    title: "Archives Act 1983 and records authorities",
+    publisher: "National Archives of Australia",
+    url: "https://www.naa.gov.au/information-management/records-authorities/types-records-authorities",
+    note: "Records authorities give permission to destroy, retain or transfer Commonwealth records and set minimum retention periods. Destruction without authority is unauthorised however it happens.",
+    checked: CLOSURE_REVIEWED,
+  },
+  {
+    id: "naa-data",
+    title: "Retaining, managing and disposing of data and datasets",
+    publisher: "National Archives of Australia",
+    url: "https://www.naa.gov.au/information-management/disposing-information/retaining-managing-and-disposing-data-and-datasets",
+    note: "Data held in business systems is a Commonwealth record. Access must be maintained for the prescribed period, and migration to a new system does not discharge the obligation.",
+    checked: CLOSURE_REVIEWED,
+  },
+  {
+    id: "cprs",
+    title: "Commonwealth Procurement Rules",
+    publisher: "Australian Government / Department of Finance",
+    url: "https://www.finance.gov.au/government/procurement/buying-australian-government/commonwealth-procurement-rules",
+    note: "The procurement framework the contract sits inside. Relevant at closure for final acceptance, warranty and defects liability, retentions, and obligations that survive termination.",
+    checked: CLOSURE_REVIEWED,
+  },
+  {
     id: "teal",
     title: "Benefits management — Government Project Delivery (Teal Book)",
     publisher: "UK Government / Infrastructure and Projects Authority",
@@ -1108,8 +1132,435 @@ export const closureModules: Module[] = [
   },
 
   {
-    id: "writing",
+    id: "financial",
     number: 6,
+    title: "Financial and contractual closeout",
+    subtitle: "Settling the money before the people go",
+    minutes: 0,
+    slides: "",
+    outcome: "Close the financial and contractual position: costs finalised, assets recognised, obligations either discharged or transferred with an owner.",
+    coreIdea:
+      "The financial close is the one part of closure with a hard deadline and a statutory audience, and it is routinely left to a finance officer who was not there. Commitments that are neither settled nor transferred do not disappear — they surface as an unexplained accrual, a lapsed warranty, or a payment nobody can approve.",
+    sections: [
+      {
+        heading: "What must be true before the ledger closes",
+        body: "Financial closure is not 'we stopped spending'. It is a set of positive assertions: every cost incurred is recorded in the right period, every commitment is either paid or accrued, everything capitalised is an asset that exists and works, and everything that will keep costing money has a budget holder who knows.",
+        bullets: [
+          "All invoices received, matched and either paid or accrued in the correct period.",
+          "Purchase orders and commitments closed, or carried with a documented reason.",
+          "Capitalised costs tested against what was actually delivered — assets that exist and are in use.",
+          "Work-in-progress cleared: nothing left sitting in a WIP account with no owner.",
+          "Recurring costs transferred to a named, funded budget line for the next financial year.",
+        ],
+        example:
+          "A program closes in May. In September, Finance queries a $410k accrual nobody can explain. The delivery team is gone; the invoice related to a variation cancelled in March that was never backed out. Two hours of work in May became two weeks of forensic work in September.",
+        sourceIds: ["closure"],
+      },
+      {
+        heading: "Capitalise or expense",
+        body: "The distinction matters beyond accounting tidiness: capitalised costs sit on the balance sheet and depreciate, so an over-capitalised project reports a smaller hit now and an unexplained drag for years. The test is whether the spend produced an identifiable asset the entity controls and will derive benefit from — not whether the project would prefer it that way.",
+        table: {
+          caption: "Common judgements at closure",
+          head: ["Spend", "Usual treatment", "Where it goes wrong"],
+          rows: [
+            ["Build of the delivered system", "Capitalise", "Includes work on abandoned options"],
+            ["Discovery and options analysis", "Expense", "Capitalised to protect the operating result"],
+            ["Data migration", "Depends on whether it creates the asset", "Treated inconsistently across releases"],
+            ["Training and change management", "Expense", "Bundled into the build cost"],
+            ["Post-go-live defect fixing", "Usually expense", "Capitalised as 'completion of build'"],
+            ["Licences prepaid beyond year end", "Prepayment", "Expensed in full, distorting the year"],
+          ],
+        },
+        example:
+          "Discovery explored four options and three were abandoned. The cost of the three is not part of the asset — an asset is the thing you have, not the thinking that led to it. Capitalising all four overstates the asset and understates what the decision cost.",
+        sourceIds: ["closure"],
+      },
+      {
+        heading: "Contract closeout",
+        body: "A contract does not end when the work stops. Final acceptance is a formal act with consequences: it starts warranty periods, releases retentions, and closes the window in which defects are the supplier's problem rather than yours. Signing it because the project is over — rather than because the obligations were met — transfers risk quietly and permanently.",
+        bullets: [
+          "Confirm every deliverable was received and accepted against the contract, not against the current expectation.",
+          "Record the warranty or defects-liability period, when it ends, and who will act on it.",
+          "Settle retentions, milestone holdbacks and any liquidated damages position.",
+          "Confirm intellectual property, source code and data have actually been delivered — not merely licensed in principle.",
+          "Check transition-out obligations: what the supplier must still do, and for how long.",
+          "Note obligations that survive termination — confidentiality, records access, audit rights.",
+        ],
+        example:
+          "A twelve-month warranty is worth nothing if it expires unnoticed. Name the person who holds it, put the end date somewhere they will see it, and record what to do if a defect appears in month eleven.",
+        sourceIds: ["cprs", "closure"],
+      },
+    ],
+    questions: [
+      {
+        id: "cl-f1",
+        moduleId: "financial",
+        prompt: "Why is an unexplained accrual at closure more expensive than it looks?",
+        options: [
+          "It is resolved months later by people who were not there",
+          "Accruals attract additional audit scrutiny under the PGPA framework",
+          "It prevents the entity from closing its financial statements on time",
+          "Unresolved accruals must be written off against the following year",
+        ],
+        answer: 0,
+        rationale:
+          "The cost is the forensic work later. What takes two hours while the team remembers the variation takes weeks once they have gone and only the ledger entry remains.",
+        optionNotes: [
+          "",
+          "Audit interest is a consequence, not the reason it costs more.",
+          "Entities close their statements regardless; the item is resolved or provided for.",
+          "No such automatic rule — the treatment depends on what the accrual turns out to be.",
+        ],
+      },
+      {
+        id: "cl-f2",
+        moduleId: "financial",
+        prompt: "Discovery explored four options; three were abandoned. How should that cost be treated?",
+        options: [
+          "Expensed — an asset is what you have, not the analysis that led to it",
+          "Capitalised in full, as necessary cost of producing the delivered asset",
+          "Capitalised in proportion to the option that proceeded",
+          "Deferred and amortised over the life of the delivered system",
+        ],
+        answer: 0,
+        rationale:
+          "Capitalisation requires an identifiable asset the entity controls. Abandoned options produced none. Including them overstates the asset and hides what the decision actually cost.",
+        optionNotes: [
+          "",
+          "This is the common error, and it protects the operating result at the cost of a misstated balance sheet.",
+          "Apportionment does not fix it — the abandoned work still produced no asset.",
+          "Deferral has the same effect as capitalising, by another route.",
+        ],
+      },
+      {
+        id: "cl-f3",
+        moduleId: "financial",
+        prompt: "What does final acceptance under a contract actually do?",
+        options: [
+          "Starts warranties, releases retentions, closes the defects window",
+          "Confirms the supplier has been paid in full for all work performed",
+          "Formally terminates the contract and all obligations under it",
+          "Transfers ownership of the delivered system to the entity",
+        ],
+        answer: 0,
+        rationale:
+          "It is a substantive legal act with timing consequences, which is why signing it because the project is over rather than because obligations were met transfers risk to the entity.",
+        optionNotes: [
+          "",
+          "Payment usually follows acceptance; it is not what acceptance means.",
+          "Several obligations survive — confidentiality, warranty, records access, audit rights.",
+          "IP and ownership are governed by their own clauses, not by acceptance.",
+        ],
+      },
+      {
+        id: "cl-f4",
+        moduleId: "financial",
+        prompt: "Which is most often missed at contract closeout?",
+        options: [
+          "Naming who holds the warranty and when it ends",
+          "Obtaining a final invoice from the supplier",
+          "Confirming the last milestone payment was made",
+          "Recording the contract as complete in the register",
+        ],
+        answer: 0,
+        rationale:
+          "Invoices, payments and register updates all have owners in the finance process. A warranty is a right with no natural owner once the project dissolves, so it expires unnoticed.",
+        optionNotes: [
+          "",
+          "Suppliers reliably pursue their own final invoices.",
+          "Payment runs are systematised and chased by the supplier.",
+          "Administrative, and usually prompted by the procurement team.",
+        ],
+      },
+    ],
+    scenarios: [
+      {
+        id: "cl-f-s1",
+        moduleId: "financial",
+        context:
+          "Two weeks before closure the supplier asks you to sign final acceptance so they can invoice before their financial year end. Three low-severity defects remain open, all with agreed fixes scheduled for the following month.",
+        prompt: "What is the right course?",
+        options: [
+          "Withhold, or accept subject to the defects, recorded in writing",
+          "Sign, since the defects are low severity and the fixes are already agreed",
+          "Sign, and raise the defects separately as warranty claims after acceptance",
+          "Refuse to engage until all three defects are closed, regardless of timing",
+        ],
+        answer: 0,
+        rationale:
+          "Acceptance changes who carries the defects. Signing while they are open moves three known problems onto the entity in exchange for the supplier's reporting convenience. Conditional acceptance with the obligation written down is the ordinary commercial answer and costs nobody anything.",
+        optionNotes: [
+          "",
+          "Severity is not the issue — an agreed fix before acceptance is a right; after acceptance it is a request.",
+          "This converts a present entitlement into a future claim, which is strictly worse.",
+          "Unnecessarily rigid; conditional acceptance meets both parties' needs.",
+        ],
+      },
+      {
+        id: "cl-f-s2",
+        moduleId: "financial",
+        context:
+          "Your program capitalised $31m of $47m spend. Included in the capitalised figure are $2.1m of change management and training, and $1.4m of post-go-live defect fixing.",
+        prompt: "What should closure do?",
+        options: [
+          "Flag both to Finance before the ledger closes, with reasoning",
+          "Leave the treatment as approved, since it was agreed with Finance during delivery",
+          "Reclassify both to expense immediately without further consultation",
+          "Disclose the amounts in the closure report and leave the accounting unchanged",
+        ],
+        answer: 0,
+        rationale:
+          "Both are conventionally expensed and both are large enough to matter. Closure is the last point at which the judgement can be revisited cheaply, and the decision belongs jointly with Finance — which is why it is raised with reasoning rather than either accepted silently or reclassified unilaterally.",
+        optionNotes: [
+          "",
+          "A treatment agreed mid-delivery was agreed on expectations, not on what was ultimately delivered.",
+          "The delivery team does not own the accounting judgement, and acting alone invites reversal.",
+          "Disclosure without correction leaves a known misstatement in place.",
+        ],
+      },
+    ],
+    assignment: {
+      title: "Close the position",
+      instruction:
+        "For a piece of work you know, write the financial and contractual closing position: commitments, capitalisation judgements you would question, and every contractual obligation that outlives the project.",
+      prompts: [
+        "Open commitments, and whether each is settled, accrued or carried",
+        "One capitalisation judgement you would put back to Finance, and why",
+        "Warranty or defects-liability periods: end dates and who holds them",
+        "Recurring costs and the funded budget line receiving them",
+      ],
+      criteria: [
+        "Every surviving obligation has an end date and a named holder",
+        "The capitalisation question is argued from what was delivered, not from preference",
+        "Recurring costs name a budget line, not a business area",
+      ],
+      modelAnswer:
+        "Commitments: two purchase orders remain open — $84k with the integration vendor, to be accrued as the work was performed in June and invoiced in July; $12k of unused contingency on the training PO, which should be closed rather than carried. Capitalisation to question: $2.1m of change management and training is inside the capitalised figure. It produced no asset the entity controls and is conventionally expensed; I would put this back to Finance with the delivery breakdown before the ledger closes rather than after. Warranty: twelve-month defects liability on the integration build, expiring 14 August 2027, held by the Assistant Director, Platform Services — recorded in the platform team's risk register with a calendar entry, because a warranty with no holder expires unnoticed. Transition-out: the supplier must provide source code and build documentation within 30 days of acceptance; this is outstanding and acceptance should not be signed until it is delivered. Recurring: $310k p.a. licences and hosting, transferred to cost centre PLT-4420 from FY2027-28, accepted by the Platform Services budget holder at the July finance meeting.",
+    },
+  },
+
+  {
+    id: "records",
+    number: 7,
+    title: "Decommissioning, data and records",
+    subtitle: "What the law requires you to keep after you switch it off",
+    minutes: 0,
+    slides: "",
+    outcome: "Decommission a system without destroying Commonwealth records or losing access the entity is obliged to maintain.",
+    coreIdea:
+      "Data held in a government business system is a Commonwealth record, and the obligation to keep it accessible does not end when the system holding it is switched off. Decommissioning is therefore a records decision before it is a technical one.",
+    sections: [
+      {
+        heading: "Data in a business system is a record",
+        body: "Information created or received in the course of Australian Government business is a Commonwealth record under the Archives Act 1983, including the data sitting inside a business system. It cannot be destroyed because a project ended, a contract lapsed, or a cloud subscription was not renewed. Destruction requires authority — normally a records authority issued by the National Archives, which sets the minimum retention period.",
+        bullets: [
+          "Records authorities give permission to destroy, retain or transfer, and set minimum retention.",
+          "The obligation attaches to the information, not to the system that happens to hold it.",
+          "Migration to a new system does not restart or discharge the obligation.",
+          "Access must be maintained for the prescribed period, which can outlast several platforms.",
+          "Disposal can mean secure destruction, transfer to the Archives, or transfer to another entity.",
+        ],
+        example:
+          "A cloud workspace deleted when the subscription lapsed took eleven years of case data with it. Nobody decided to destroy those records; that is precisely the problem — destruction without authority is still destruction.",
+        sourceIds: ["archives", "naa-data"],
+      },
+      {
+        heading: "Continuing access, not just continuing storage",
+        body: "Keeping a database backup is not keeping a record accessible. If the only way to read the data is software the entity no longer licenses, running on an operating system it no longer supports, the obligation is not met in any practical sense — and the failure is discovered when someone asks for the data, usually under FOI or in litigation.",
+        table: {
+          caption: "Retention approaches at decommissioning",
+          head: ["Approach", "Access in five years", "When it is appropriate"],
+          rows: [
+            ["Leave the system running", "Good, at full run cost", "Short residual period, active use continues"],
+            ["Migrate records to the successor", "Good, if the migration is complete", "A successor exists and the records fit"],
+            ["Export to an open, documented format", "Good, with the schema retained", "Most decommissioning of retired systems"],
+            ["Retain a database backup", "Poor — needs the original software", "Almost never sufficient on its own"],
+            ["Virtual machine snapshot", "Fragile, degrades over time", "Short-term bridge only"],
+            ["Transfer to National Archives", "Good, permanent", "Records of archival value, per the authority"],
+          ],
+        },
+        example:
+          "An export to CSV with the schema, the code tables and a plain-English data dictionary will be readable in a decade. A .bak file for a database version nobody licenses will not.",
+        sourceIds: ["naa-data", "archives"],
+      },
+      {
+        heading: "Sequencing the shutdown",
+        body: "Decommissioning done in the wrong order destroys the evidence the closure report depends on and the records the entity is obliged to keep. The ordering is not complicated; it is simply never planned, because switching things off is treated as an operational task rather than part of closure.",
+        bullets: [
+          "Sentence the records first: what must be kept, for how long, under which authority.",
+          "Export and verify — read the export back and confirm it is complete before anything is deleted.",
+          "Retain the closure evidence separately, with its queries and definitions.",
+          "Confirm no downstream system, report or interface still consumes the data.",
+          "Revoke access and integrations before deleting anything, so failures surface while recovery is still possible.",
+          "Only then release infrastructure, close accounts and cancel subscriptions.",
+        ],
+        example:
+          "Turn off the integrations a fortnight before deleting the data. Anything that breaks in that fortnight was a dependency nobody had documented, and you still have the system to turn back on.",
+        sourceIds: ["naa-data", "closure"],
+      },
+      {
+        heading: "The legacy system nobody switched off",
+        body: "The mirror-image failure: the new service goes live, the closure report describes it, and the thing it replaced keeps running — costing money, holding duplicate data, and quietly accepting transactions. Closure should state the disposition of what was replaced, or say plainly that it remains in service and why.",
+        bullets: [
+          "Name the system or process replaced, and its current status.",
+          "If it is still running, say who owns it, what it costs, and when it will stop.",
+          "If both are running, name the system of record — two sources of truth is a data-integrity issue, not a transitional inconvenience.",
+          "Record any residual users who have not migrated, and what the plan for them is.",
+        ],
+        sourceIds: ["closure", "naa-data"],
+      },
+    ],
+    questions: [
+      {
+        id: "cl-r1",
+        moduleId: "records",
+        prompt: "A cloud subscription lapses and eleven years of case data is deleted. How is this best characterised?",
+        options: [
+          "Destruction of Commonwealth records without authority",
+          "A procurement failure with data loss as a consequence",
+          "An acceptable outcome, since the retention period was not specified",
+          "A technical incident to be managed through the incident process",
+        ],
+        answer: 0,
+        rationale:
+          "Nobody decided to destroy the records, which is the point. Data in a government business system is a Commonwealth record under the Archives Act, and unauthorised destruction is unauthorised however it happens.",
+        optionNotes: [
+          "",
+          "Accurate as a proximate cause, and it understates what was actually breached.",
+          "An unspecified retention period does not create a permission to destroy.",
+          "Incident handling addresses the outage; it does not address the legal position.",
+        ],
+      },
+      {
+        id: "cl-r2",
+        moduleId: "records",
+        prompt: "Why is a database backup usually insufficient for long-term retention?",
+        options: [
+          "Reading it needs software the entity may no longer have",
+          "Backups are not recognised as records under the Archives Act",
+          "Backup media degrade faster than the required retention periods",
+          "Backups exclude the metadata needed to interpret the records",
+        ],
+        answer: 0,
+        rationale:
+          "The obligation is continuing access, not continuing storage. A backup that can only be read by a database version nobody licenses does not deliver access, and the gap is discovered when the data is requested.",
+        optionNotes: [
+          "",
+          "Format has no bearing on whether something is a record.",
+          "Media degradation is real and secondary to the software dependency.",
+          "Often true, and the binding problem is being unable to open it at all.",
+        ],
+      },
+      {
+        id: "cl-r3",
+        moduleId: "records",
+        prompt: "What should happen first when decommissioning a system?",
+        options: [
+          "Sentence the records — what to keep, how long, under what authority",
+          "Revoke user access to prevent further data being created",
+          "Export the data to an open format for long-term retention",
+          "Confirm that no downstream system still consumes the data",
+        ],
+        answer: 0,
+        rationale:
+          "Everything else depends on the answer. Exporting, revoking and checking dependencies are all necessary, and doing any of them before you know what must be retained risks doing them to the wrong scope.",
+        optionNotes: [
+          "",
+          "Necessary, and premature — do it after you know what must be preserved.",
+          "You cannot decide the export scope before sentencing tells you what to keep.",
+          "Essential, and it comes after retention scope is known.",
+        ],
+      },
+      {
+        id: "cl-r4",
+        moduleId: "records",
+        prompt: "Why revoke integrations before deleting data rather than after?",
+        options: [
+          "Undocumented dependencies surface while the system can still be restored",
+          "Deletion is faster once integrations are removed",
+          "Retaining integrations during deletion risks propagating the deletion downstream",
+          "Access revocation is required before disposal under records authorities",
+        ],
+        answer: 0,
+        rationale:
+          "It is a deliberately reversible test. Whatever breaks in that window is a dependency nobody documented, and you still have the system to turn back on — which you do not once the data is gone.",
+        optionNotes: [
+          "",
+          "Speed is irrelevant to the sequencing decision.",
+          "Plausible-sounding and not the reason; the point is discovering dependencies safely.",
+          "Records authorities govern disposal of records, not access sequencing.",
+        ],
+      },
+    ],
+    scenarios: [
+      {
+        id: "cl-r-s1",
+        moduleId: "records",
+        context:
+          "The replaced legacy system is still running six months after go-live. It costs $190k a year, holds duplicate participant data, and about 40 users still transact in it because a niche function was never rebuilt.",
+        prompt: "What must the closure report do?",
+        options: [
+          "Name it as still in service, its owner and cost, and the system of record",
+          "Record the new service as delivered and treat the legacy system as a separate operational matter",
+          "Recommend immediate decommissioning of the legacy system to realise the saving",
+          "Defer the closure report until the residual users have been migrated",
+        ],
+        answer: 0,
+        rationale:
+          "Two live systems holding the same participant data is a data-integrity problem and an unfunded cost, and it is a direct consequence of what this project did. Naming the system of record is the urgent part — without it, staff cannot know which record is authoritative.",
+        optionNotes: [
+          "",
+          "It is not separate; the duplication exists because of this delivery.",
+          "Premature — 40 users depend on a function that was never rebuilt.",
+          "Deferral leaves the ambiguity unrecorded for however long migration takes.",
+        ],
+      },
+      {
+        id: "cl-r-s2",
+        moduleId: "records",
+        context:
+          "You plan to export case records to CSV before decommissioning. A colleague suggests also keeping a VM snapshot of the whole system 'just in case', and skipping the data dictionary since the column names are self-explanatory.",
+        prompt: "What is the correct position?",
+        options: [
+          "Keep the dictionary and schema; the snapshot is a short-term bridge",
+          "The snapshot is sufficient on its own, since it preserves the system exactly as it was",
+          "Both are unnecessary if the CSV export is verified as complete",
+          "Skip the CSV and rely on the snapshot, which preserves relationships the CSV would lose",
+        ],
+        answer: 0,
+        rationale:
+          "Column names are self-explanatory to people who worked on the system, which is a group that shrinks to zero. Code tables, units and exclusions are what a future reader needs. A snapshot degrades — it needs a hypervisor, an OS and licences that all age.",
+        optionNotes: [
+          "",
+          "Snapshots depend on infrastructure and licensing that will not survive the retention period.",
+          "A verified export without its schema is a grid of values nobody can interpret.",
+          "Relationships can be preserved in exports; long-term readability cannot be preserved in a snapshot.",
+        ],
+      },
+    ],
+    assignment: {
+      title: "Plan the shutdown",
+      instruction:
+        "For a system you know, write the decommissioning position: what must be retained and under what authority, how access will be maintained, the shutdown sequence, and the disposition of whatever it replaced.",
+      prompts: [
+        "Records to be retained, retention period, and the authority relied on",
+        "How access will be maintained — format, schema, dictionary, holder",
+        "Shutdown sequence, with the reversible checkpoint identified",
+        "Disposition of the system or process replaced",
+      ],
+      criteria: [
+        "Retention names an authority or states plainly that one has not been identified",
+        "The access approach would still be readable without the original software",
+        "The sequence puts a reversible step before anything irreversible",
+      ],
+      modelAnswer:
+        "Retention: participant case records, minimum seven years from last action, under the entity's records authority for programme administration — confirmed with the information governance team rather than assumed. Financial transaction records fall under a separate authority with a longer period; both were checked. Access: export to CSV per table, with the DDL schema, all code and lookup tables, and a plain-English data dictionary covering every column, its units and its exclusions. Held by the Assistant Director, Information Governance, in the departmental records store — not in the platform team's storage, which is itself subject to future decommissioning. Sequence: sentence records → export → read the export back and reconcile row counts and totals against the live system → retain closure evidence separately → confirm no downstream consumers → revoke integrations and monitor for a fortnight, which is the reversible checkpoint and the last point at which the system can simply be turned back on → then release infrastructure and cancel subscriptions. Replaced system: the legacy register is still running and will be until the niche reporting function is rebuilt, currently scheduled for Q3. Owner: Platform Services; cost $190k p.a.; the new service is the system of record from go-live and the legacy register is read-only for the 40 residual users — stated explicitly because two writable copies of participant data would be a data-integrity failure, not a transitional inconvenience.",
+    },
+  },
+
+  {
+    id: "writing",
+    number: 8,
     title: "Writing the report",
     subtitle: "Structure, candour and the shortfall paragraph",
     minutes: 0,
@@ -1308,7 +1759,7 @@ export const closureModules: Module[] = [
 
   {
     id: "assurance",
-    number: 7,
+    number: 9,
     title: "Assurance and audit readiness",
     subtitle: "Writing for a reader who will test the claim",
     minutes: 0,

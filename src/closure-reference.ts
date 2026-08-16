@@ -64,6 +64,23 @@ export const closureFlashcards: Flashcard[] = [
   { id: "cf29", moduleId: "handover", kind: "application", front: "What is known fragility, and why is it omitted?", back: "The parts the team knows are weak — retry loops, timing dependencies, config nobody understands. Omitted because writing it down feels like confessing." },
   { id: "cf30", moduleId: "handover", kind: "application", front: "How do you find the real handover gaps?", back: "Have the receiving team make a routine change, delivery team away. What they need to ask is the handover backlog." },
 
+  { id: "cf43", moduleId: "financial", kind: "definition", front: "What must be true before the ledger closes?", back: "Costs recorded in the right period; commitments paid or accrued; capitalised spend tests as a real asset; WIP cleared; recurring costs on a funded budget line." },
+  { id: "cf44", moduleId: "financial", kind: "discrimination", front: "Capitalise or expense: abandoned discovery options?", back: "Expense. An asset is what you have, not the analysis that led to it. Capitalising all options overstates the asset and hides the cost of deciding." },
+  { id: "cf45", moduleId: "financial", kind: "discrimination", front: "Capitalise or expense: training and change management?", back: "Expense, conventionally. It is frequently bundled into build cost, which is large enough to matter and worth putting back to Finance at closure." },
+  { id: "cf46", moduleId: "financial", kind: "definition", front: "What does final acceptance do?", back: "Starts warranties, releases retentions, closes the defects window. A substantive legal act, not an administrative one." },
+  { id: "cf47", moduleId: "financial", kind: "application", front: "Supplier wants acceptance signed with defects open. What now?", back: "Withhold, or accept subject to the defects with the obligation in writing. Before acceptance a fix is a right; after acceptance it is a request." },
+  { id: "cf48", moduleId: "financial", kind: "application", front: "Why do warranties expire unnoticed?", back: "Invoices and payments have owners in the finance process. A warranty is a right with no natural owner once the project dissolves — so name one and record the end date." },
+  { id: "cf49", moduleId: "financial", kind: "application", front: "What obligations survive contract termination?", back: "Typically confidentiality, warranty and defects liability, records access, audit rights, and transition-out duties. Record them with end dates." },
+
+  { id: "cf50", moduleId: "records", kind: "definition", front: "Is data in a business system a Commonwealth record?", back: "Yes. Information created or received in the course of Australian Government business is a Commonwealth record under the Archives Act 1983, wherever it is held." },
+  { id: "cf51", moduleId: "records", kind: "definition", front: "What does a records authority do?", back: "Gives permission to destroy, retain or transfer described records, and sets the minimum retention period. Destruction without authority is unauthorised." },
+  { id: "cf52", moduleId: "records", kind: "discrimination", front: "Continuing storage or continuing access?", back: "Access. A backup readable only by software the entity no longer licenses does not meet the obligation, and the gap is found when the data is requested." },
+  { id: "cf53", moduleId: "records", kind: "application", front: "Best long-term retention format at decommissioning", back: "Export to an open, documented format with the schema, code tables and a plain-English data dictionary. Not a database backup; not a VM snapshot." },
+  { id: "cf54", moduleId: "records", kind: "application", front: "What comes first in a decommissioning sequence?", back: "Sentence the records — what must be kept, how long, under which authority. Export scope and everything after it depends on that answer." },
+  { id: "cf55", moduleId: "records", kind: "application", front: "Why revoke integrations before deleting data?", back: "It is a reversible test. Whatever breaks is an undocumented dependency, and the system can still be turned back on — which it cannot once data is gone." },
+  { id: "cf56", moduleId: "records", kind: "discrimination", front: "The legacy system is still running. Closure report?", back: "State it: owner, cost, when it stops, and which system is the system of record. Two writable copies of the same data is a data-integrity failure." },
+  { id: "cf57", moduleId: "records", kind: "application", front: "Does migrating to a new system discharge the retention obligation?", back: "No. The obligation attaches to the information, not the system, and access must be maintained for the prescribed period across however many platforms." },
+
   { id: "cf31", moduleId: "writing", kind: "application", front: "What belongs on page one?", back: "What was promised, what was delivered, and the gap. Not governance, not acknowledgements, not the financial position against a revised budget." },
   { id: "cf32", moduleId: "writing", kind: "definition", front: "The shortfall paragraph", back: "A single direct passage: what was not achieved, by how much against the original commitment, the cause, and where the lesson is recorded." },
   { id: "cf33", moduleId: "writing", kind: "discrimination", front: "'Broadly in line with expectations' — how is it read?", back: "As a miss, by an amount the writer chose not to state. Results that meet expectations are reported with the number." },
@@ -105,6 +122,16 @@ export const closureGlossary: GlossaryEntry[] = [
   { term: "New Policy Proposal", origin: "Government", moduleId: "purpose", definition: "A proposal put to Government for funding. Where high risk and above the financial thresholds, Finance may recommend it be subject to the Gateway Review Process." },
   { term: "PGPA Act", origin: "Government", moduleId: "assurance", definition: "The Public Governance, Performance and Accountability Act 2013, which establishes the Commonwealth performance framework requiring entities to measure and report performance against their purposes." },
   { term: "Post-implementation review", origin: "Government", moduleId: "benefits", definition: "A review conducted after delivery — typically 6 to 12 months post-closure — to assess whether benefits are being realised and to capture findings for future work." },
+  { term: "Capitalisation", origin: "Government", moduleId: "financial", definition: "Recording spend as an asset rather than an expense. Requires an identifiable asset the entity controls and will benefit from — which abandoned options, training and most post-go-live defect work are not." },
+  { term: "Commonwealth record", origin: "Government", moduleId: "records", definition: "Information created or received in the course of Australian Government business, including data inside a business system. Governed by the Archives Act 1983; cannot be destroyed without authority." },
+  { term: "Continuing access", origin: "Government", moduleId: "records", definition: "The obligation to keep retained records readable for the prescribed period — not merely stored. A backup requiring software the entity no longer licenses does not satisfy it." },
+  { term: "Defects liability period", origin: "General", moduleId: "financial", definition: "The window after final acceptance during which the supplier must remedy defects at their cost. Worthless without a named holder and a recorded end date." },
+  { term: "Final acceptance", origin: "General", moduleId: "financial", definition: "The formal act confirming contracted deliverables were received and met the contract. Starts warranty periods, releases retentions and closes the defects window." },
+  { term: "Records authority", origin: "Government", moduleId: "records", definition: "An instrument issued by the National Archives giving permission to destroy, retain or transfer described records, and setting minimum retention periods." },
+  { term: "Sentencing", origin: "Government", moduleId: "records", definition: "Determining, against a records authority, which records must be kept, for how long, destroyed, or transferred. The first step in any decommissioning, because everything else depends on the answer." },
+  { term: "System of record", origin: "General", moduleId: "records", definition: "The authoritative source for a given set of data. Must be named explicitly when a replaced system stays running, or staff cannot know which copy governs." },
+  { term: "Transition-out obligations", origin: "General", moduleId: "financial", definition: "What a supplier must still do after the engagement ends — deliver source code and documentation, support handover, provide records access. Frequently unenforced because nobody records the deadline." },
+  { term: "Work in progress", origin: "Government", moduleId: "financial", definition: "Costs accumulated against a project not yet transferred to an asset or an expense. Left uncleared at closure it becomes an unexplained balance nobody can resolve later." },
   { term: "Reference class data", origin: "General", moduleId: "lessons", definition: "Pooled estimate-versus-actual figures across comparable projects, used to forecast new work from what similar work actually cost rather than from what a team hopes." },
   { term: "Residual risk", origin: "General", moduleId: "handover", definition: "A risk that survives closure. Must transfer to a named owner in the entity's risk register, or it disappears from view without disappearing from existence." },
   { term: "Retention", origin: "Government", moduleId: "assurance", definition: "Keeping the extract, method and definition behind a reported figure for long enough that the claim can still be tested. A design decision at closure, not an afterthought." },
@@ -150,6 +177,18 @@ export const closureContrasts: Contrast[] = [
     good: "The receiving team has already made a change without the delivery team present, and the gaps that surfaced were closed.",
     usual: "A handover pack was delivered and a walkthrough held, and the delivery lead is still answering messages.",
     tell: "Ask the receiving team who they contacted last time something went wrong. If it is someone who has left, the handover has not happened.",
+  },
+  {
+    moduleId: "financial",
+    good: "Every commitment is settled or accrued, and every surviving obligation has an end date and a named holder.",
+    usual: "Spending stopped, the PO was left open, and the warranty end date exists only in the contract PDF.",
+    tell: "Ask who holds the warranty and when it ends. If nobody can answer in a minute, it will expire unnoticed.",
+  },
+  {
+    moduleId: "records",
+    good: "Records were sentenced against an authority, exported with their schema and dictionary, and verified before anything was deleted.",
+    usual: "The data was backed up, the subscription was cancelled, and the retention question was never asked.",
+    tell: "Ask what happens if someone requests this data in five years. If the answer needs software you no longer license, you have storage, not access.",
   },
   {
     moduleId: "writing",
@@ -260,6 +299,32 @@ export const closureDiagnostic: Question[] = [
     ],
     answer: 0,
     rationale: "The usual failure is evaporation rather than falsification. The analysis was done and the thing it drew on no longer exists.",
+  },
+  {
+    id: "cd9",
+    moduleId: "records",
+    prompt: "A cloud subscription lapses, deleting eleven years of case data. What has happened?",
+    options: [
+      "Commonwealth records were destroyed without authority",
+      "A procurement failure occurred, with data loss as a side effect",
+      "Nothing improper, as no retention period had been specified",
+      "A technical incident requiring incident management",
+    ],
+    answer: 0,
+    rationale: "Data in a government business system is a Commonwealth record under the Archives Act. Nobody decided to destroy it, which is exactly why the control failed.",
+  },
+  {
+    id: "cd10",
+    moduleId: "financial",
+    prompt: "What does signing final acceptance change?",
+    options: [
+      "Warranties start, retentions release, the defects window closes",
+      "The supplier becomes entitled to payment for all work performed",
+      "All obligations under the contract are terminated",
+      "Ownership of the delivered system transfers to the entity",
+    ],
+    answer: 0,
+    rationale: "It is a substantive act with timing consequences. Before acceptance an open defect is the supplier's obligation; after it, a request.",
   },
   {
     id: "cd8",
@@ -478,6 +543,76 @@ export const closureSupplementary: Question[] = [
     optionNotes: ["", "The project manager's role ends with the project.", "Operational managers may hold specific benefits, not overall accountability.", "The CFO reports on performance rather than owning delivery benefits."],
   },
   {
+    id: "cs16",
+    moduleId: "financial",
+    prompt: "Which cost is most likely to be wrongly capitalised?",
+    options: [
+      "Training and change management, swept into build cost",
+      "Development of the delivered system",
+      "Hardware purchased for the production environment",
+      "Configuration of the licensed platform",
+    ],
+    answer: 0,
+    rationale: "It is conventionally expensed, it is usually large, and it sits close enough to the build that it gets swept in without anyone deciding to.",
+    optionNotes: ["", "Properly capitalised — it produces the asset.", "Tangible and clearly capital.", "Generally capital where it creates the working system."],
+  },
+  {
+    id: "cs17",
+    moduleId: "financial",
+    prompt: "Why clear work in progress before closure?",
+    options: [
+      "An uncleared balance becomes a figure nobody can later resolve",
+      "WIP balances attract interest charges against the program",
+      "Records authorities require WIP to be cleared at project end",
+      "It is a precondition for the entity to close its financial statements",
+    ],
+    answer: 0,
+    rationale: "The same pattern as the unexplained accrual: cheap to resolve while the team remembers, expensive once only the ledger entry survives.",
+    optionNotes: ["", "No interest applies to internal WIP.", "Records authorities govern records, not ledgers.", "Entities close regardless; the balance is provided for or written off."],
+  },
+  {
+    id: "cs18",
+    moduleId: "records",
+    prompt: "Which retention approach is most likely to still be readable in ten years?",
+    options: [
+      "An open-format export with schema and dictionary",
+      "A virtual machine snapshot of the whole system",
+      "A native database backup file",
+      "A copy of the reporting dashboard exported to PDF",
+    ],
+    answer: 0,
+    rationale: "Only the first is independent of software the entity may no longer license. The others all depend on an environment that ages.",
+    optionNotes: ["", "Needs a hypervisor, an OS and licences that all age out.", "Needs the original database version to restore.", "Preserves a rendering, not the records."],
+  },
+  {
+    id: "cs19",
+    moduleId: "records",
+    prompt: "The replaced system is still live and holds duplicate data. What is the most urgent thing to record?",
+    options: [
+      "Which system is the system of record",
+      "The annual cost of continuing to run it",
+      "The date it is expected to be decommissioned",
+      "The number of users who have not yet migrated",
+    ],
+    answer: 0,
+    rationale: "All four belong in the report. Only one determines whether staff can tell which copy of a participant's data governs today.",
+    optionNotes: ["", "Important for budgeting, not for correctness of decisions made this week.", "Useful planning information that does not resolve current ambiguity.", "Scopes the migration; does not tell anyone which record is authoritative."],
+  },
+  {
+    id: "cs20",
+    moduleId: "records",
+    prompt: "Does migrating records into a new system discharge the original retention obligation?",
+    options: [
+      "No — it attaches to the information, not the system",
+      "Yes, provided the migration is verified as complete",
+      "Yes, because the new system inherits the old system's authority",
+      "Only where the records authority explicitly permits migration",
+    ],
+    answer: 0,
+    rationale: "Access must be maintained for the prescribed period across however many platforms the information passes through. Migration moves the record; it does not reset the clock.",
+    optionNotes: ["", "Verification matters and does not end the obligation.", "Authorities describe records and functions, not systems.", "Migration does not require specific permission; the retention period continues either way."],
+  },
+  {
     id: "cs15",
     moduleId: "evidence",
     prompt: "What is the risk of a metric definition that could reasonably be read two ways?",
@@ -587,6 +722,96 @@ export const closureCaseStudies: CaseStudy[] = [
     ],
     closing:
       "Nothing about the delivery changed in those six weeks. What changed was whether anyone could tell — and whether the $6.2m benefit had an owner when the team walked out. The report went from 34 pages nobody would act on to 19 pages with three items the SRO chased personally.",
+  },
+  {
+    id: "register-shutdown",
+    title: "The register that was switched off twice",
+    subtitle: "Eleven years of records, a lapsed subscription, and the fortnight that saved them",
+    outcome: "corrected",
+    summary:
+      "A licensing register was replaced and decommissioned. The first attempt would have destroyed Commonwealth records without authority; the second was sequenced properly and cost three weeks.",
+    steps: [
+      {
+        moduleId: "records",
+        stage: 1,
+        heading: "The decommissioning plan that was a cancellation plan",
+        decision: "Accept the plan as written, or ask what happens to the data?",
+        tempting:
+          "The plan was clear, costed and endorsed. It read like competence: three tidy steps, a date, a saving of $240k a year. Questioning it looked like obstruction.",
+        body: "The plan had three steps: migrate active licences to the new platform, notify users, cancel the hosting subscription at end of quarter. Nobody had asked what happened to the eleven years of superseded, refused and lapsed applications that were not being migrated because they were not active.",
+        artefact:
+          "Decommissioning plan v1.2 — extract\n  1. Migrate active licence records (approx 8,400)\n  2. Notify users; redirect the URL\n  3. Cancel hosting subscription 30 June — saving $240k p.a.\n  Records disposition: not addressed.",
+        insight:
+          "The plan was competent about everything it considered. What it did not consider was the majority of the data, because 'not active' had been quietly read as 'not needed'.",
+      },
+      {
+        moduleId: "records",
+        stage: 2,
+        heading: "Sentencing, which nobody had done",
+        decision: "Assume the standard seven years, or check the authority?",
+        tempting:
+          "Seven years is the number everyone recites, and applying it would have covered most of the data and taken an afternoon.",
+        body: "Information governance was asked to sentence the holdings properly. Three different retention periods applied. Refused applications carried a longer period than anyone expected because of the review and appeal history attached to them, and a small set had potential archival value and could not be destroyed at all.",
+        artefact:
+          "Sentencing outcome\n  Active licences            migrate to new platform, retention continues\n  Lapsed/superseded         7 years from last action — 61,300 records\n  Refused + appeal history  longer period applies — 4,180 records\n  Pre-2015 policy files     potential archival value — refer to NAA\n  Destroy now under authority: NIL",
+        insight:
+          "Nothing at all could be destroyed on the planned date. The assumption that a decommissioning date is a technical decision was the whole error, and it was one question away from being caught.",
+      },
+      {
+        moduleId: "records",
+        stage: 3,
+        heading: "Export, and reading it back",
+        decision: "Trust the export, or reconcile it?",
+        tempting:
+          "The export ran without errors and produced files of a plausible size. Verification felt like ceremony over a job already done.",
+        body: "The team exported every table to CSV with the DDL schema, all code and lookup tables, and a written data dictionary. Then they read it back and reconciled it against the live system. Row counts matched on every table but one: the appeals table was short by 312 rows, because the export query joined on a status code that had been retired in 2019 and left nulls behind.",
+        artefact:
+          "Reconciliation — export v1\n  applications      61,300 / 61,300   OK\n  licences           8,400 /  8,400   OK\n  appeals            3,868 /  4,180   SHORT 312\n  Cause: join on status_code, retired value 'RV' not mapped.\n  Re-exported and re-reconciled: 4,180 / 4,180 OK.",
+        insight:
+          "An export that runs cleanly is not an export that is complete. The 312 records were the ones with the longest retention period and the highest likelihood of being requested.",
+      },
+      {
+        moduleId: "financial",
+        stage: 4,
+        heading: "The subscription that was already cancelled",
+        decision: "Let the cancellation stand, or reinstate at cost?",
+        tempting:
+          "Reinstating meant admitting the plan had been wrong and paying $60k for a quarter of a system everyone had been told was finished.",
+        body: "The cancellation had been lodged with the vendor two weeks earlier, effective 30 June, with data deletion 30 days after. The team reinstated for one quarter at $60k to complete the export, verification and archival referral. The finance position was corrected at the same time: $180k of the expected saving was reversed out of the following year's budget submission, which had already been lodged assuming it.",
+        artefact:
+          "Financial correction\n  Reinstate hosting Q1 FY27      $60k unbudgeted\n  Saving reversed from submission $180k (3 quarters, not 4)\n  Warranty on migration tooling   expires 12 Nov 2027,\n                                  holder: AD Platform Services\n  Note: saving had been booked before disposition was resolved.",
+        insight:
+          "The saving had been promised to a budget process before anyone knew whether the system could lawfully be switched off. That is the ordinary sequence, and it is backwards.",
+      },
+      {
+        moduleId: "records",
+        stage: 5,
+        heading: "The fortnight with the integrations off",
+        decision: "Delete on schedule, or run a reversible test first?",
+        tempting:
+          "Everything had been exported and verified. Waiting another fortnight extended an already embarrassing overrun for no obvious benefit.",
+        body: "Integrations and access were revoked, and the system was left running but unreachable for fourteen days. On day four, a monthly compliance report failed. It drew licence status directly from the register and had been built by a different branch three years earlier; nobody in the project knew it existed.",
+        artefact:
+          "Integration blackout log\n  Day 1  access revoked, 6 known integrations disabled\n  Day 4  FAIL — Compliance Monthly (COMP-114) unable to source\n         licence_status. Owner: Regulatory Branch. Not in\n         any dependency register. Not known to the project.\n  Day 9  no further failures\n  Day 14 proceed to release infrastructure",
+        insight:
+          "One undocumented consumer, found while the system could still be turned back on. Deleting on the original schedule would have found it in the same way and at a very different price.",
+      },
+      {
+        moduleId: "writing",
+        stage: 6,
+        heading: "Writing down what nearly happened",
+        decision: "Report the outcome, or report the near miss?",
+        tempting:
+          "The records were preserved, the system was decommissioned, the saving was mostly realised. Reporting it as a success would have been accurate and nobody would have queried it.",
+        body: "The closure report stated plainly that the approved decommissioning plan would have destroyed approximately 65,000 Commonwealth records without authority, that this was caught by a question rather than by a control, and that no step in the entity's process would have caught it. The recommendation was a mandatory sentencing gate before any decommissioning date can be set.",
+        artefact:
+          "What nearly went wrong\n  ----------------------------------------\n  Plan v1.2 would have destroyed approx 65,000 Commonwealth\n  records without authority on 30 July. Detected on 12 June by\n  a question at design review, not by any control. No approval\n  step in the current process requires records disposition to\n  be resolved before a decommissioning date is committed.\n\n  R1 (accepted): sentencing sign-off from Information\n  Governance is a precondition of setting any decommissioning\n  date, and of booking any saving arising from one.",
+        insight:
+          "The valuable output was not the preserved records. It was the sentence saying the control did not exist — which changed the process for every future decommissioning in the entity.",
+      },
+    ],
+    closing:
+      "The saving was real, the migration was competent, and the plan was endorsed by people who knew what they were doing. It would still have destroyed sixty-five thousand records that the entity was legally obliged to keep, on a date chosen because a subscription renewed then. Nothing in the process would have stopped it.",
   },
   {
     id: "grants-portal",
@@ -767,6 +992,29 @@ export const closureCapstoneSteps: CapstoneStep[] = [
     ],
   },
   {
+    id: "cc3b",
+    title: "Close the financial and contractual position",
+    prompt:
+      "State the closing position: open commitments and their treatment, any capitalisation judgement you would put back to Finance, and every contractual obligation that outlives the project.",
+    checks: [
+      "Every surviving obligation has an end date and a named holder",
+      "The capitalisation question is argued from what was delivered, not from preference",
+      "Recurring costs name a funded budget line, not a business area",
+    ],
+  },
+  {
+    id: "cc3c",
+    title: "Records and decommissioning",
+    prompt:
+      "State what must be retained and under what authority, how access will be maintained after the system is gone, the shutdown sequence, and the disposition of whatever this replaced.",
+    checks: [
+      "Retention names an authority, or states plainly that none has been identified",
+      "The access approach would still be readable without the original software",
+      "The sequence puts a reversible step before anything irreversible",
+      "If the replaced system is still running, the system of record is named",
+    ],
+  },
+  {
     id: "cc4",
     title: "The shortfall",
     prompt:
@@ -818,6 +1066,8 @@ export const closureCapstoneRubric = [
   { id: "owned", title: "Owned", detail: "Every benefit, risk, cost and obligation that outlives the project has a named individual who has agreed." },
   { id: "candid", title: "Candid", detail: "Shortfalls are stated directly, in original units, without compensating successes attached." },
   { id: "transferable", title: "Transferable", detail: "Lessons carry context, magnitude, cost and action, and are published where they will be found." },
+  { id: "settled", title: "Settled", detail: "Financial and contractual obligations are discharged, or transferred with an end date and a named holder." },
+  { id: "lawful", title: "Lawful", detail: "Records disposition is resolved against an authority, and retained information stays accessible after the system is gone." },
   { id: "durable", title: "Durable", detail: "The evidence behind every claim survives decommissioning, with a named holder and a retention period." },
 ];
 
@@ -839,6 +1089,15 @@ export const closureCapstoneBriefs: CapstoneBrief[] = [
       "A grants portal went live on time and within budget and is performing well. The handover pack is complete and signed. The receiving operations team has not yet performed any change independently, and the technical lead is leaving the department in three weeks. Two benefits depend on take-up that will not be measurable for nine months.",
     twist:
       "The operations manager has asked, informally, whether the technical lead would 'stay contactable for a while'. Everyone has agreed this is sensible.",
+  },
+  {
+    id: "register",
+    title: "Licensing register decommissioning",
+    short: "A replacement delivered; the old system holds eleven years of records.",
+    brief:
+      "A licensing register has been replaced. Active licences migrated to the new platform; roughly 65,000 superseded, lapsed and refused applications did not, because they are not active. The hosting subscription is due for renewal in six weeks and a $240k annual saving has already been booked into next year's budget submission.",
+    twist:
+      "Nobody has asked Information Governance anything, and the decommissioning date was set by the renewal date.",
   },
   {
     id: "caseload",
@@ -897,6 +1156,44 @@ export const closureFieldGuide: FieldGuideEntry[] = [
       { term: "Next delivery team", detail: "Specific, transferable detail. If absent: cannot obtain it anywhere else, and repeats the failure at the same cost." },
       { term: "Receiving operational team", detail: "How to run, support and change it. If absent: contacts departed staff until they stop replying." },
       { term: "ANAO or internal audit", detail: "Whether claims are supported by evidence. If absent: tests it anyway and raises a finding against the entity." },
+    ],
+  },
+  {
+    id: "closeout",
+    title: "Financial and contractual closeout checklist",
+    summary:
+      "The items that have a hard deadline and a statutory audience. Everything here is cheap to settle while the team remembers and expensive to reconstruct afterwards.",
+    sourceIds: ["closure", "cprs"],
+    items: [
+      { term: "Invoices and accruals", detail: "All costs recorded in the correct period; anything performed but not invoiced is accrued with a stated basis." },
+      { term: "Open commitments", detail: "Purchase orders closed, or carried with a documented reason and an owner." },
+      { term: "Capitalisation", detail: "Tested against what was actually delivered. Abandoned options, training and most post-go-live defect work are expensed." },
+      { term: "Work in progress", detail: "Cleared to asset or expense. An uncleared balance becomes unexplained the moment the team disperses." },
+      { term: "Final acceptance", detail: "Signed because obligations were met, not because the project ended. Starts warranties, releases retentions, closes the defects window." },
+      { term: "Warranty / defects liability", detail: "End date recorded and a named holder who will act on it. The most commonly lost entitlement at closure." },
+      { term: "Retentions and holdbacks", detail: "Settled, or the position documented with the condition for release." },
+      { term: "IP, source and data", detail: "Actually delivered, not licensed in principle. Check before acceptance, not after." },
+      { term: "Transition-out", detail: "What the supplier must still do, by when, and who will enforce it." },
+      { term: "Surviving obligations", detail: "Confidentiality, records access and audit rights typically continue past termination. List them with end dates." },
+      { term: "Recurring costs", detail: "Licences, hosting and support moved to a funded budget line whose holder has accepted them." },
+    ],
+  },
+  {
+    id: "shutdown",
+    title: "Decommissioning sequence",
+    summary:
+      "In order, with the reversible checkpoint before anything irreversible. Data in a government business system is a Commonwealth record; the disposition question comes before the date, not after it.",
+    sourceIds: ["archives", "naa-data"],
+    items: [
+      { term: "1. Sentence the records", detail: "What must be kept, for how long, under which authority. Everything downstream depends on this, and it is the step routinely skipped." },
+      { term: "2. Decide the retention approach", detail: "Open-format export with schema and dictionary for most cases; migration where a successor fits; referral to the National Archives where archival value applies." },
+      { term: "3. Export", detail: "Every table, with DDL schema, code and lookup tables, and a plain-English data dictionary covering units and exclusions." },
+      { term: "4. Verify by reading it back", detail: "Reconcile row counts and control totals against the live system. An export that ran cleanly is not necessarily complete." },
+      { term: "5. Retain closure evidence separately", detail: "Baseline extracts, queries and metric definitions, with a named holder outside the platform being retired." },
+      { term: "6. Check downstream consumers", detail: "Reports, interfaces and extracts built by other areas. The dependency register is usually incomplete." },
+      { term: "7. Revoke access and integrations", detail: "The reversible checkpoint. Leave the system running but unreachable for a fortnight and see what breaks." },
+      { term: "8. Release infrastructure", detail: "Only now: delete data, close accounts, cancel subscriptions. The first irreversible step in the sequence." },
+      { term: "9. State the disposition of what it replaced", detail: "Still running? Name the owner, the cost, the stop date, and which system is the system of record." },
     ],
   },
   {
