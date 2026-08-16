@@ -65,8 +65,8 @@ function watchPage(page, label) {
 const bankModule = await esbuild({
   stdin: {
     contents: `
-      export { practiceQuestions, modules } from ${JSON.stringify(path.join(projectDir, "src/course.ts"))};
-      export { diagnosticQuestions, flashcards, toolkitTemplates, supplementaryQuestions } from ${JSON.stringify(path.join(projectDir, "src/reference.ts"))};
+      export { practiceQuestions, modules, sources } from ${JSON.stringify(path.join(projectDir, "src/course.ts"))};
+      export { diagnosticQuestions, flashcards, toolkitTemplates, supplementaryQuestions, divergences, glossary } from ${JSON.stringify(path.join(projectDir, "src/reference.ts"))};
       export { presentOptions } from ${JSON.stringify(path.join(projectDir, "src/lib.ts"))};
       export { slides, SLIDE_COUNT } from ${JSON.stringify(path.join(projectDir, "src/slides.ts"))};
     `,
@@ -349,6 +349,60 @@ const totalMinutes = bank.modules.reduce((sum, module) => sum + module.minutes, 
     "Stage length is derived, not declared",
     bank.modules.every((m) => m.minutes % 5 === 0 && m.minutes >= 5),
     bank.modules.map((m) => m.minutes).join(", "),
+  );
+}
+
+/*
+ * The course never refers to its own past.
+ *
+ * A divergence entry read "An earlier draft of this course compressed where
+ * and when into 'context'. That was a mistake..." — development history
+ * leaking into learner-facing copy. A learner is reading the course, not its
+ * changelog: the current version IS the course, and referring to earlier ones
+ * makes it read like a draft rather than a finished thing.
+ *
+ * This scans every learner-visible string in the content files. Code comments
+ * are exempt and should keep explaining why decisions were made; the rule is
+ * about what a reader sees.
+ */
+{
+  const selfReferential = [
+    /earlier (draft|version|release)s? of th(is|e) course/i,
+    /previous(ly)? (version|draft)s? of th(is|e) course/i,
+    /th(is|e) course (previously|used to|no longer|now includes)/i,
+    /an earlier draft/i,
+    /in (a|the) (previous|earlier) (version|release|draft)/i,
+    /(we|this) (have )?(since )?(added|changed|removed|revised|corrected) (it|this|that)/i,
+  ];
+  const strings = [];
+  for (const module of bank.modules) {
+    strings.push(module.outcome, module.coreIdea, module.subtitle);
+    for (const section of module.sections) {
+      strings.push(section.heading, section.body, section.example ?? "", ...(section.bullets ?? []));
+      if (section.table) strings.push(section.table.caption ?? "", ...section.table.rows.flat());
+    }
+    for (const q of [...module.questions, ...module.scenarios]) {
+      strings.push(q.prompt, q.rationale ?? "", ...q.options, ...(q.optionNotes ?? []));
+    }
+  }
+  for (const source of bank.sources) strings.push(source.note, source.title);
+  for (const item of bank.divergences) strings.push(item.deck, item.here, item.why, item.topic);
+  for (const card of bank.flashcards) strings.push(card.front, card.back);
+  for (const entry of bank.glossary) strings.push(entry.definition);
+
+  const offenders = [];
+  for (const text of strings) {
+    for (const pattern of selfReferential) {
+      if (pattern.test(String(text ?? ""))) {
+        offenders.push(String(text).slice(0, 90));
+        break;
+      }
+    }
+  }
+  check(
+    "The course never refers to its own earlier versions",
+    offenders.length === 0,
+    offenders.join(" | "),
   );
 }
 

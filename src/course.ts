@@ -94,7 +94,7 @@ export const sources: Source[] = [
     title: "The Digital Service Standard Version 2.0 (PDF)",
     publisher: "Australian Government",
     url: "https://www.digital.gov.au/sites/default/files/documents/2024-10/Digital%20Service%20Standard.pdf",
-    note: "The criteria in full. This October 2024 file supersedes the July 2024 PDF that earlier versions of this course linked to.",
+    note: "The criteria in full. The October 2024 file is the current one; it supersedes the July 2024 PDF still in circulation elsewhere.",
     checked: CONTENT_REVIEWED,
   },
   {
@@ -1921,7 +1921,7 @@ export const modules: Module[] = [
         optionNotes: [
           "It sits alongside internal governance. Both apply, and confusing them is a common source of duplicated or missed evidence.",
           "Thirteen was the former standard. Version 2.0 reduced it to 10.",
-          "It is explicitly lifecycle-wide. Treating it as a single-phase checkpoint is the failure it was revised to prevent.",
+          "It is explicitly lifecycle-wide. Treating it as a single-phase checkpoint is exactly what that framing exists to prevent.",
           ""],
         rationale: "Version 2.0 reduced the former 13 criteria to 10 and explicitly encourages lifecycle-wide application.",
       },

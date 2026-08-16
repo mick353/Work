@@ -566,7 +566,7 @@ export const divergences: Divergence[] = [
     slides: "30",
     deck: "Who / what / goal / where / when / why-impact.",
     here: "Kept exactly as the deck has it, with one 'Evidence:' line added underneath.",
-    why: "An earlier draft of this course compressed where and when into 'context'. That was a mistake: it stopped matching the artefact people are asked for at work, so the deck's structure was restored. Where the two disagree, the deck wins.",
+    why: "Where and when are kept as separate fields rather than folded into a single 'context' line, because that is the artefact people are actually asked to produce at work and the two questions get answered differently. The Evidence line is the only addition: it forces the statement to name what the claim rests on, which is what makes it reviewable rather than merely well written.",
   },
 ];
 
