@@ -1389,6 +1389,17 @@ export type CaseStep = {
   moduleId: string;
   stage: number;
   heading: string;
+  /**
+   * The decision actually on the table at this point.
+   *
+   * Cases used to read as narrative — what the team did, then what to notice.
+   * That is a story, and a story is easy to nod along to without ever making a
+   * judgement. Naming the decision first turns each step into something the
+   * reader can answer before reading on.
+   */
+  decision?: string;
+  /** The plausible wrong move, and why it is tempting rather than stupid. */
+  tempting?: string;
   /** What the team actually did, written as narrative. */
   body: string;
   /** The concrete artefact produced — shown in a monospace panel. */
@@ -1420,6 +1431,8 @@ export const caseStudies: CaseStudy[] = [
         moduleId: "thinking",
         stage: 1,
         heading: "Framing it as a product, not a ticket",
+        decision: "Accept the request as specified and plan a status page, or hold it open long enough to establish what the calls are actually about.",
+        tempting: "Accepting is tempting because the request is specific, sponsored and immediately plannable — and because pushing back on a branch head reads as obstruction rather than diligence.",
         body: "The request arrived as 'build a status page', already scoped and already funded as a project deliverable. The product manager's first move was not to refuse it but to ask what would still be true in two years: who owns the status experience, who notices when it degrades, and what happens when the underlying systems change again.",
         insight:
           "The request was not wrong, it was premature. Reframing it as an owned capability rather than a deliverable is what created room to ask why the calls happen at all.",
@@ -1428,6 +1441,8 @@ export const caseStudies: CaseStudy[] = [
         moduleId: "discovery",
         stage: 2,
         heading: "Finding the actual difficulty",
+        decision: "Trust the volume of status calls as the problem, or find out what people were unable to work out for themselves.",
+        tempting: "Call volume is a real number from a real system, which makes it feel like evidence about cause when it is only evidence about symptom.",
         body: "Call-reason coding said 'status enquiry' was the top driver. Twelve provider interviews and four hours of contact-centre observation said something more specific: providers were not confused about where an application was, they were unable to tell whether they needed to do anything. Most calls ended with the agent saying 'nothing needed at your end'.",
         artefact:
           "Our providers are currently experiencing uncertainty about whether action is required from them when supporting a participant's application. This occurs across the provider portal and the support line, and has been happening since the 2023 platform split. This is critical because it generates avoidable support demand and delays participants. Evidence: call-reason coding, 12 interviews, 4 hours of contact-centre observation.",
@@ -1438,6 +1453,8 @@ export const caseStudies: CaseStudy[] = [
         moduleId: "outcomes",
         stage: 3,
         heading: "Defining success before building",
+        decision: "Measure the thing that is easy to count, or the thing that would tell you the problem had gone.",
+        tempting: "Page views were available on day one and would have risen no matter what — a measure that cannot fail is comfortable to commit to.",
         body: "The team wrote the objective around resolution rather than deflection, precisely because deflection is easy to fake by making it harder to call. A guardrail was set on the assisted channel so that any improvement achieved by pushing demand elsewhere would show up immediately.",
         artefact:
           "Objective: providers can tell whether action is required, without contacting us.\nKR1: avoidable status contacts down 30% (baseline 4,100/month).\nKR2: providers correctly state their next action unprompted in 8 of 10 usability sessions.\nLeading: proportion of sessions reaching the next-action panel.\nGuardrail: median time to resolution for unresolved cases does not worsen.",
@@ -1448,6 +1465,8 @@ export const caseStudies: CaseStudy[] = [
         moduleId: "exploration",
         stage: 4,
         heading: "Testing the cheap thing first",
+        decision: "Build the integration, or test the assumption that would make the integration worthless.",
+        tempting: "The integration was well understood and the team could start it immediately; testing first feels like delay when everyone already agrees on the destination.",
         body: "Three options went on the table: the requested status page, an action-required notification, and a non-build option of changing the provider's default view. The riskiest assumption was shared by all three — that providers would trust departmental status enough to act on it. A prototype with manually supplied data tested comprehension and trust before any integration work was scoped.",
         artefact:
           "Decision: whether to fund the status integration.\nRiskiest assumption: providers will act on departmental status rather than ringing to confirm it.\nMethod: clickable prototype, manually supplied data, 8 representative providers.\nProceed if 6 of 8 state the correct next action unprompted AND say they would not call to confirm.",
@@ -1458,6 +1477,8 @@ export const caseStudies: CaseStudy[] = [
         moduleId: "delivery",
         stage: 5,
         heading: "Ordering the work honestly",
+        decision: "Sequence by what the sponsor asked for first, or by what would produce learning soonest per unit of effort.",
+        tempting: "Sponsor order is the path of least resistance and needs no justification in the room.",
         body: "The feature was sized to a single PI and written with a measurement field from the start. A dependency on the assessment platform's status API was recorded as a risk rather than assumed away, and the roadmap said Now/Next/Later rather than naming dates the evidence could not support.",
         artefact:
           "Feature hypothesis: providers shown a plain-language next action will resolve without contacting support.\nMeasurement: successful self-service rate for status queries, target 65% in the first PI after release.\nIn scope: application progress and required action. Out of scope: payment status.\nDependency: status API refresh frequency from the assessment platform.",
@@ -1468,6 +1489,8 @@ export const caseStudies: CaseStudy[] = [
         moduleId: "government",
         stage: 8,
         heading: "Meeting the standard without theatre",
+        decision: "Treat the Standard as a gate to pass at the end, or as criteria to design against from the start.",
+        tempting: "Assessing at the end is how most projects do it, and it defers work that has no immediate deadline attached.",
         body: "Accessibility testing during Beta found that status was conveyed by colour alone in the first build. It was fixed before Live rather than logged as an enhancement. At the gate the team presented the finding, the fix and the residual risk on data freshness rather than a completed template.",
         insight:
           "Presenting a problem you have already fixed builds more governance confidence than presenting a clean template. It also makes the next honest report easier.",
@@ -1476,6 +1499,8 @@ export const caseStudies: CaseStudy[] = [
         moduleId: "integration",
         stage: 9,
         heading: "What the evidence said afterwards",
+        decision: "Report the headline improvement, or report what the measure set as a whole showed.",
+        tempting: "The headline was genuinely good, and leading with it would have been true.",
         body: "Avoidable contacts fell 34%. The guardrail held: time to resolution for unresolved cases was flat. Usability sessions reached 9 of 10 on next-action comprehension. One finding was uncomfortable — providers with the largest caseloads still called, because they were checking several participants at once and the design assumed one.",
         insight:
           "The result was good and incomplete. Naming the caseload finding turned a successful release into the start of the next cycle rather than the end of the project.",
@@ -1496,6 +1521,8 @@ export const caseStudies: CaseStudy[] = [
         moduleId: "discovery",
         stage: 2,
         heading: "Where the team started — and stopped",
+        decision: "Treat the drop-off as the problem, or ask what employers were trying to achieve when they abandoned.",
+        tempting: "The drop-off was precisely located and unambiguous, which makes it feel like a problem rather than a symptom of one.",
         body: "Analytics showed 61% abandonment at the position-details step. The team ran a heuristic review, found the step long and the wording dense, and moved straight to redesign. No employer was interviewed. The reasoning felt sound: the data showed exactly where people left.",
         insight:
           "Analytics told them WHERE. Nobody established WHY. The team treated a location as a diagnosis — the single most common discovery failure.",
@@ -1504,7 +1531,9 @@ export const caseStudies: CaseStudy[] = [
         moduleId: "outcomes",
         stage: 3,
         heading: "The measure that let it happen",
-        body: "Success was defined as form completion rate. It was specific, baselined and time-bound — it looked like a good key result and satisfied every formal test. What it never asked was whether a completed form produced a filled vacancy.",
+        decision: "Track completion of the form, or track whether the vacancy got filled.",
+        tempting: "Completion is inside the team's control and moves quickly; fill rate depends on the labour market and takes months to read.",
+        body: "Success was defined as form completion rate. It was specific, baselined and time-bound — it looked like a good key result and satisfied every formal test anyone would apply to it.\n\nWhat it never asked was whether a completed form produced a filled vacancy. Completion is a step in the employer's journey, not the thing the employer came for, and the two can move in opposite directions: a shorter form is easier to finish and can carry less of the information a jobseeker needs to decide whether to apply. Nothing in the measure would report that, which is precisely why the measure survived review.",
         artefact:
           "Objective: make advertising a vacancy easier.\nKR1: completion rate 39% → 65% by March.\n(no guardrail, no outcome measure beyond the form itself)",
         insight:
@@ -1514,7 +1543,9 @@ export const caseStudies: CaseStudy[] = [
         moduleId: "delivery",
         stage: 5,
         heading: "A clean delivery of the wrong thing",
-        body: "The redesign shipped in one PI. Completion rose from 39% to 71%, beating the target. The team graded the key result a 4 and closed the epic. Delivery performance was genuinely excellent.",
+        decision: "Ship on the evidence held, or ask what the completion measure could not see.",
+        tempting: "Everything the team was measuring said the work was succeeding, and stopping to question a measure that is going the right way is counter-intuitive.",
+        body: "The redesign shipped in one PI. Completion rose from 39% to 71%, comfortably beating the target. The team graded the key result a 4, closed the epic and moved on. Delivery performance was genuinely excellent and nobody involved did anything careless.\n\nThat is what makes this the instructive case. Every signal the team had agreed to watch said the work was succeeding, and the signal that would have contradicted it — whether vacancies were being filled — had never been agreed as something to watch. A team cannot notice what it has not instrumented, and by the time the epic closed there was no longer anyone looking.",
         insight:
           "Every delivery signal was green. This is what makes output-based measurement so persistent: it rewards teams accurately for the wrong achievement.",
       },
@@ -1522,6 +1553,8 @@ export const caseStudies: CaseStudy[] = [
         moduleId: "integration",
         stage: 9,
         heading: "The finding nobody was looking for",
+        decision: "Explain the fill-rate result as market conditions, or investigate whether the change caused it.",
+        tempting: "The market explanation was plausible, external, and required nobody to have been wrong.",
         body: "Six months later an unrelated analysis showed vacancies filled had not moved. Digging in: the abandoned step had been acting as an unintentional filter. Employers who found it hard were largely those posting roles with pay or conditions that would not attract candidates. Making the form easier produced more listings, not more filled vacancies — and increased assessment workload downstream.",
         insight:
           "The friction was doing work nobody had noticed. Removing it optimised the measure and degraded the service, which is the exact failure a guardrail on a downstream outcome would have caught within weeks.",
@@ -1530,6 +1563,8 @@ export const caseStudies: CaseStudy[] = [
         moduleId: "outcomes",
         stage: 3,
         heading: "What the correction looked like",
+        decision: "Revert the simplification, or keep it and add what the shortened form had removed.",
+        tempting: "Reverting is clean, defensible and undoes the harm immediately — it also discards a genuine improvement.",
         body: "The team rewrote the measure set around the outcome the service exists for, kept the completion improvement, and added the guardrail that should have been there. Crucially they did not revert the redesign — the form genuinely was better, it just was not sufficient.",
         artefact:
           "Objective: employers fill roles through the service.\nKR1: vacancies filled within 30 days 22% → 30%.\nLeading: completion rate (retained — it moves early).\nGuardrail: downstream assessment workload per filled vacancy does not rise.\nGuardrail: proportion of listings receiving zero applications does not rise.",
@@ -1539,6 +1574,128 @@ export const caseStudies: CaseStudy[] = [
     ],
     closing:
       "Nothing in this case required unusual insight to avoid. A single guardrail on a downstream outcome would have surfaced the problem in the first month instead of the sixth. That is the entire argument for defining the measure set before delivery rather than after.",
+  },
+  {
+    id: "identity-policy",
+    title: "The mandated identity step",
+    subtitle: "Product work against a constraint that will not move",
+    outcome: "worked",
+    summary:
+      "Legislation requires identity verification before a participant record can be created. Research shows it is where the most vulnerable applicants abandon. The constraint is real and is not going to change this financial year. This case is about what product management can still do when the obvious answer — remove the step — is not available.",
+    steps: [
+      {
+        moduleId: "discovery",
+        stage: 2,
+        heading: "Establishing what is actually binding",
+        decision: "Accept 'identity verification is mandatory' as the constraint, or find out precisely what the legislation requires.",
+        tempting: "Taking the constraint at the level it was handed over is faster, and challenging a legal requirement feels well outside a product manager's remit.",
+        body: "The team read the instrument rather than the summary of it. It requires that identity be established to a specified assurance level before a record is created. It does not specify a document set, a channel, an order of steps, or that verification happen in one sitting.\n\nThat distinction is the entire case. 'Identity must be verified' is binding. 'Applicants must upload three documents in a single session before proceeding' was an implementation decision made years earlier by people solving a different problem, and had been inherited as though it were the law.",
+        artefact: "Binding:      identity established to assurance level 2 before record creation\nNot binding:  which documents, which channel, what order, single session\nSource:       s.14(2), read directly — not the process guide summarising it",
+        insight: "Constraints arrive bundled with the implementation someone chose for them. Separating the two is often the whole of the available design space, and it costs an afternoon of reading.",
+      },
+      {
+        moduleId: "discovery",
+        stage: 2,
+        heading: "Finding who the step actually excludes",
+        decision: "Treat the 31% abandonment as a general usability problem, or find out whether it is concentrated.",
+        tempting: "An aggregate abandonment rate suggests an aggregate fix — better instructions, a clearer page — which is cheap and looks responsive.",
+        body: "Disaggregated, the rate was not general at all. Applicants with a current driver licence and a stable address abandoned at 6%. Applicants without one — people recently released from custody, people escaping family violence with no documents in their own name, people with no fixed address — abandoned at 74%.\n\nObservation with twelve people in the second group found the failure was not comprehension. They understood the page. They did not have the documents, could not obtain them quickly, and the service offered no path that acknowledged this.",
+        artefact: "Abandonment at identity step\n  with standard documents      6%   (n=1,240)\n  without standard documents  74%   (n=310)\nThe aggregate 31% describes nobody.",
+        insight: "An average across two populations with different experiences describes neither. Disaggregation before intervention is the difference between fixing a page and finding the actual exclusion.",
+      },
+      {
+        moduleId: "exploration",
+        stage: 4,
+        heading: "Options when the constraint stays",
+        decision: "Redesign the screen, or change what the journey does when verification cannot complete.",
+        tempting: "Redesigning the screen is squarely within the team's control, needs nobody's permission, and would produce a visible improvement to show at the next checkpoint.",
+        body: "The team listed options against the binding requirement rather than the inherited process. Verification still had to happen before a record existed — but nothing required the applicant to be alone, unaided, in one sitting, or online.\n\nThree options survived: an assisted pathway where a caseworker completes verification with the applicant present; a save-and-return state so a partial application persists while documents are obtained; and a referral to the existing documentation-support service, which already existed and which no one in the journey had ever been told about.",
+        artefact: "Option                         Binding req met?   Cost      Reaches the 74%?\nRewrite the screen             yes                low       no\nAssisted pathway               yes                medium    yes\nSave and return                yes                medium    partly\nRemove the step                NO                 --        --",
+        insight: "The option that removes the constraint is usually the only one anybody names, and it is usually the one that is unavailable. Listing options against what is actually binding produces three you had not considered.",
+      },
+      {
+        moduleId: "government",
+        stage: 8,
+        heading: "Taking the evidence to the policy owner",
+        decision: "Implement the workaround quietly, or give the policy owner the data they have never had.",
+        tempting: "Implementing quietly avoids a difficult conversation and delivers the improvement sooner. It also leaves the underlying requirement untouched for every other service that inherits it.",
+        body: "The team presented the disaggregated abandonment data to the policy area as a finding, not a complaint, and did not ask for an exemption. The framing was: here is who your requirement is currently excluding, here is what we can do inside it, and here is what only you can change.\n\nThe policy owner had never seen the requirement's effect on people without documents, because nothing in the assurance process reported it. They kept the assurance level and revised the guidance to name the assisted pathway as an acceptable route — which then applied across every service using the instrument.",
+        insight: "A policy owner is not the opposition. They are usually the person with the least visibility of what their instrument does at the counter, because nothing routinely reports it back to them.",
+      },
+      {
+        moduleId: "outcomes",
+        stage: 3,
+        heading: "Measuring the thing that mattered",
+        decision: "Report the overall abandonment rate, or the rate for the group the work existed to reach.",
+        tempting: "The overall rate improved and is the number the dashboard already carried.",
+        body: "The team measured completion for the group without standard documents specifically, and paired it with a guardrail on assisted-channel wait times — because a pathway that works only by pushing people into a queue that then takes six weeks has moved the problem rather than solved it.\n\nAbandonment in that group fell from 74% to 22% over two quarters. The overall rate moved from 31% to 14%, which is the number that would have been reported anyway and which would have looked like a modest usability win.",
+        artefact: "Outcome:    applicants without standard documents complete identity verification\nBaseline:   26% completion\nTarget:     60% by Q4\nActual:     78%\nGuardrail:  assisted-channel wait <= 5 working days (held at 3)",
+        insight: "The headline would have improved on its own and told you almost nothing. The measure that made the work legible was the one scoped to the people it was for.",
+      },
+    ],
+    closing:
+      "Nothing here required the constraint to move, and the constraint did not move. What moved was the assumption that the inherited process was the requirement. That distinction — binding versus inherited — is available on almost every piece of government product work, and it is where most of the real design space is hiding.",
+  },
+  {
+    id: "service-decay",
+    title: "The service that quietly stopped working",
+    subtitle: "What Live costs when nobody owns it",
+    outcome: "corrected",
+    summary:
+      "A claims service launched well, met every target, and the project closed. Eighteen months later completion had drifted down eight points with no release in that period. This case is about what a product manager does when the problem is that nobody has been looking — and about why the Beta-to-Live handover is where services are most often lost.",
+    steps: [
+      {
+        moduleId: "lifecycle",
+        stage: 6,
+        heading: "The handover that recorded everything except ownership",
+        decision: "At closure, treat the service as delivered, or as something that now needs an owner.",
+        tempting: "Everything was genuinely finished. The documentation was complete, the runbooks existed, operations had accepted support, and the benefits statement was signed. Closure was the correct administrative act.",
+        body: "The handover pack was thorough. It transferred the ability to keep the service running — incidents, availability, patching — to a team accountable for exactly that.\n\nWhat it did not transfer was accountability for whether the service still worked for the people using it. Nobody was named against completion rate. No cadence existed at which anyone would look. Operations were meeting every commitment they had been given, and the service was degrading, and both of those were true at once.",
+        artefact: "Transferred:   incident response, availability, patching, support rota\nNot transferred: completion rate, user research, the backlog, the outcome\nNamed owner for service performance: (blank)",
+        insight: "Operational ownership and product ownership are different things, and a closure pack that transfers only the first will pass every review. The gap is invisible until a measure moves.",
+      },
+      {
+        moduleId: "outcomes",
+        stage: 3,
+        heading: "Reading a drift with no release to blame",
+        decision: "Attribute the drop to the original design, or work outward from what could have changed.",
+        tempting: "'The design was never right' is available immediately, requires no investigation, and is unfalsifiable — which is precisely why it survives so long in post-launch conversations.",
+        body: "The code had not changed in the period. That rules out the design as a cause of the *change*, whatever its merits: a static system producing a declining result means something around it moved.\n\nThe team worked through the four things that move underneath a stable service. Users: a new cohort had entered following an eligibility expansion. Policy: a rule change had added a condition. Upstream: a register had altered a field's format. Volume: a seasonal peak had pushed a queue past a threshold with no alarm on it. Three of the four had happened.",
+        artefact: "Completion, monthly (no releases in period)\n  Mar 82% ####################\n  Jun 79% ###################\n  Sep 76% ##################\n  Dec 74% #################\nCandidate causes:  users [yes]  policy [yes]  upstream [yes]  volume [no]",
+        insight: "A drift with no release is diagnostic, not mysterious. It narrows the cause to the environment, and the environment has a short and checkable list.",
+      },
+      {
+        moduleId: "discovery",
+        stage: 2,
+        heading: "Which of the three actually caused it",
+        decision: "Fix all three plausible causes, or establish which one is responsible.",
+        tempting: "Fixing all three is decisive, fast to authorise, and feels responsible. It also guarantees you will never learn which one mattered, and two of the three fixes carry their own risk.",
+        body: "The team segmented completion by cohort and by date. The eligibility expansion had brought in applicants whose circumstances the form handled poorly, but their completion was flat, not falling. The upstream field change affected a validation path used by 2% of applicants.\n\nThe policy rule change matched the timing exactly, and the decline was concentrated among applicants the change was specifically intended to help — because the form asked about the new condition in language lifted directly from the instrument.",
+        artefact: "Segment                     Mar    Dec    Delta\nPre-existing cohort         83%    76%    -7\nNew eligibility cohort      71%    70%    -1\nAffected by upstream field  79%    77%    -2\nSubject to new condition    80%    58%   -22   <-- here",
+        insight: "Three plausible causes and one real one is the normal ratio. Segmenting before acting cost a week and prevented two changes that would have been risk without benefit.",
+      },
+      {
+        moduleId: "roles",
+        stage: 7,
+        heading: "Fixing the thing that let it happen",
+        decision: "Fix the wording and close the incident, or fix the absence of an owner.",
+        tempting: "The wording fix is a day's work, resolves the visible problem, and is the entire ask as it was handed to the team.",
+        body: "The wording change took a day and recovered the completion rate within a month. The team also proposed the structural fix, which was harder to get funded because nothing was visibly broken any more.\n\nWhat they asked for was small: a named product owner for the service, four measures reported monthly, and a standing half-day each month to look at them. Not a team, not a project — an owner and a cadence.",
+        artefact: "Fix:        reword the condition question in plain language  (1 day)\nStructural: named owner for service performance             (0.1 FTE)\n            four measures, reported monthly\n            half-day monthly review, standing\nDetection:  four months  ->  target one month",
+        insight: "The wording was the fault. The absence of an owner was the reason it took four months to find. Fixing only the first guarantees the next one takes four months too.",
+      },
+      {
+        moduleId: "integration",
+        stage: 9,
+        heading: "Reporting it without burying it",
+        decision: "Report the recovery, or report the four months.",
+        tempting: "The recovery is a genuine success and reflects well on everyone involved, including the people who would have to fund the structural fix.",
+        body: "The team led with the gap in detection rather than the fix. The sentence was: a policy change reduced completion for the group it was meant to help, it took us four months to notice because nobody owned the measure, we have fixed the cause in a day, and we are asking for the owner so the next one takes a month.\n\nThat framing made the structural request fundable. Leading with the recovery would have made it a story about competence, and competence does not need investment.",
+        insight: "How a result is framed determines what happens next. Leading with the fix closes the item; leading with the detection gap opens the decision that prevents the recurrence.",
+      },
+    ],
+    closing:
+      "This service was never badly built and was never badly run. It was unowned, which is a different failure and a much more common one. The Beta-to-Live transition is where it happens, it happens quietly, and the cost is measured in how long it takes anyone to notice.",
   },
 ];
 

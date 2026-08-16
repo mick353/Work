@@ -418,7 +418,7 @@ export function ModuleView({
 
       <header className="module-hero">
         <div className="module-index" aria-hidden="true">
-          Stage {String(module.number).padStart(2, "0")}
+          {String(module.number).padStart(2, "0")}
         </div>
         <div>
           <div className="path-meta">

@@ -11,9 +11,10 @@ import {
   toolkitTemplates,
   type GlossaryEntry,
 } from "./reference";
+import { modules } from "./course";
 import { downloadFile, scrollToSection, type View } from "./lib";
 import type { RubricMap, TextMap } from "./state";
-import { EmptyState, PageIntro, ProgressBar, SourceChips } from "./components";
+import { EmptyState, LessonBody, PageIntro, ProgressBar, SourceChips } from "./components";
 import { SlideRangeLink } from "./slide-viewer";
 
 function wordCount(value: string) {
@@ -402,23 +403,43 @@ export function CaseStudies({ navigate }: { navigate: (view: View) => void }) {
     <div className="page">
       <PageIntro
         eyebrow="Worked cases"
-        title="The whole chain, twice, on real decisions"
-        body="Knowing what a good problem statement contains is not the same as having seen one derived. These two cases run the full method end to end — one that works, and one where the method catches a mistake the team had already shipped."
+        title="The whole chain, four times, on real decisions"
+        body="Knowing what a good problem statement contains is not the same as having seen one derived. Four cases run the method on real departmental decisions: one worked cleanly, one where the method caught a mistake already shipped, one against a policy constraint that would not move, and one where a service quietly decayed because nobody owned it. Each step names the decision that was on the table before it says what the team did — so you can answer it first."
       />
 
+      {/*
+        The tab strip now carries a stage-coverage map. Four cases exercise
+        different parts of the curriculum, and a learner who knows they are
+        weak on lifecycle should be able to see which case will make them
+        practise it without opening all four.
+      */}
       <div className="case-switch" role="tablist" aria-label="Choose a case study">
-        {caseStudies.map((c) => (
-          <button
-            key={c.id}
-            role="tab"
-            aria-selected={active === c.id}
-            className={active === c.id ? "active" : ""}
-            onClick={() => setActive(c.id)}
-          >
-            <strong>{c.title}</strong>
-            <span>{c.subtitle}</span>
-          </button>
-        ))}
+        {caseStudies.map((c) => {
+          const stages = [...new Set(c.steps.map((step) => step.stage))].sort((a, b) => a - b);
+          return (
+            <button
+              key={c.id}
+              role="tab"
+              aria-selected={active === c.id}
+              className={active === c.id ? "active" : ""}
+              onClick={() => setActive(c.id)}
+            >
+              <strong>{c.title}</strong>
+              <span>{c.subtitle}</span>
+              <span className="case-coverage" aria-label={`Exercises stages ${stages.join(", ")}`}>
+                {modules.map((m) => (
+                  <i
+                    key={m.id}
+                    data-stage={m.number}
+                    className={stages.includes(m.number) ? "on" : ""}
+                    aria-hidden="true"
+                  />
+                ))}
+                <span className="case-coverage-label">{stages.length} stages</span>
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       <section className={`case-summary ${study.outcome}`}>
@@ -431,9 +452,24 @@ export function CaseStudies({ navigate }: { navigate: (view: View) => void }) {
           <li key={`${step.moduleId}-${index}`} data-stage={step.stage}>
             <div className="case-step-mark" aria-hidden="true">{step.stage}</div>
             <div className="case-step-body">
-              <span className="eyebrow">Stage {step.stage}</span>
+              {/* The stage mark is a link now — a case is the best possible
+                  prompt to go and read the stage it exercises. */}
+              <button className="case-stage-link" onClick={() => navigate(`module:${step.moduleId}`)}>
+                Stage {step.stage} · {modules.find((m) => m.id === step.moduleId)?.title}
+              </button>
               <h2>{step.heading}</h2>
-              <p>{step.body}</p>
+              {step.decision && (
+                <div className="case-decision">
+                  <span className="eyebrow">The decision</span>
+                  <p>{step.decision}</p>
+                  {step.tempting && (
+                    <p className="case-tempting">
+                      <strong>Why the other way is tempting:</strong> {step.tempting}
+                    </p>
+                  )}
+                </div>
+              )}
+              <LessonBody text={step.body} />
               {step.artefact && (
                 <pre className="case-artefact">{step.artefact}</pre>
               )}

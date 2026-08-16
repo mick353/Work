@@ -66,7 +66,7 @@ const bankModule = await esbuild({
   stdin: {
     contents: `
       export { practiceQuestions, modules, sources } from ${JSON.stringify(path.join(projectDir, "src/course.ts"))};
-      export { diagnosticQuestions, flashcards, toolkitTemplates, supplementaryQuestions, divergences, glossary } from ${JSON.stringify(path.join(projectDir, "src/reference.ts"))};
+      export { diagnosticQuestions, flashcards, toolkitTemplates, supplementaryQuestions, divergences, glossary, caseStudies } from ${JSON.stringify(path.join(projectDir, "src/reference.ts"))};
       export { presentOptions } from ${JSON.stringify(path.join(projectDir, "src/lib.ts"))};
       export { slides, SLIDE_COUNT } from ${JSON.stringify(path.join(projectDir, "src/slides.ts"))};
     `,
@@ -404,6 +404,23 @@ const totalMinutes = bank.modules.reduce((sum, module) => sum + module.minutes, 
     offenders.length === 0,
     offenders.join(" | "),
   );
+}
+
+{
+  const caseStages = new Set(bank.caseStudies.flatMap((c) => c.steps.map((s) => s.stage)));
+  check(
+    "The case set exercises every stage",
+    caseStages.size === 9,
+    `covers stages ${[...caseStages].sort((a, b) => a - b).join(", ")}`,
+  );
+  const shortSteps = bank.caseStudies.flatMap((c) => c.steps).filter((s) => s.body.trim().split(/\s+/).length < 40);
+  check(
+    "Case steps are substantial",
+    shortSteps.length === 0,
+    `${shortSteps.length} step(s) under 40 words`,
+  );
+  const everyStepDecides = bank.caseStudies.every((c) => c.steps.every((s) => s.decision && s.decision.trim()));
+  check("Every case step carries a decision in the data", everyStepDecides);
 }
 
 check("Stated stage count is nine", bank.modules.length === 9);
@@ -906,6 +923,73 @@ check(
   /Stage \d/.test(await page.locator(".diagnostic-result h2").innerText()),
 );
 
+/* -- typography: the prose measure --------------------------------- */
+
+/*
+ * Body copy was rendering at 117 characters per line against a published
+ * optimum of 66 (Bringhurst's 45-75). Over-long lines cause tracking fatigue
+ * on the return sweep, which hurts the longest passages most — exactly the
+ * worked-reasoning material. Measured here with real glyph metrics rather
+ * than an em heuristic, because the two disagree by ~25%.
+ */
+for (const view of ["module/lifecycle", "guide", "cases", "divergences", "fieldguide"]) {
+  await page.evaluate((h) => { window.location.hash = h; }, view);
+  await page.waitForTimeout(450);
+  const stats = await page.evaluate(() => {
+    const ctx = document.createElement("canvas").getContext("2d");
+    const rows = [];
+    document.querySelectorAll("#main-content p, #main-content li").forEach((el) => {
+      const text = el.textContent.trim();
+      if (text.length < 150 || el.children.length) return;
+      const style = getComputedStyle(el);
+      ctx.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+      rows.push(Math.round(el.getBoundingClientRect().width / (ctx.measureText(text).width / text.length)));
+    });
+    if (!rows.length) return null;
+    rows.sort((a, b) => a - b);
+    return { median: rows[Math.floor(rows.length / 2)], max: rows[rows.length - 1], n: rows.length };
+  });
+  if (!stats) continue;
+  check(
+    `Prose measure stays in the readable range (${view})`,
+    stats.median >= 45 && stats.median <= 80 && stats.max <= 90,
+    `median ${stats.median} ch, max ${stats.max} ch across ${stats.n} blocks — target 45-75, optimum 66`,
+  );
+}
+
+/* -- worked cases -------------------------------------------------- */
+
+await page.evaluate(() => { window.location.hash = "cases"; });
+await page.waitForTimeout(500);
+const caseTabs = await page.locator(".case-switch button").count();
+check("Four worked cases are available", caseTabs === 4, `${caseTabs} case(s)`);
+check(
+  "Each case shows which stages it exercises",
+  (await page.locator(".case-coverage").count()) === caseTabs,
+  "a learner should be able to pick the case covering what they are weak on",
+);
+// Every step must name the decision before narrating what happened.
+const stepCount = await page.locator(".case-steps > li").count();
+const decisionCount = await page.locator(".case-decision").count();
+check(
+  "Every case step names the decision that was on the table",
+  decisionCount === stepCount && stepCount >= 5,
+  `${decisionCount} decisions across ${stepCount} steps — narrative alone is easy to nod along to`,
+);
+check(
+  "Every case step links to the stage it exercises",
+  (await page.locator(".case-stage-link").count()) === stepCount,
+);
+// The stage link must actually go there.
+const linkLabel = (await page.locator(".case-stage-link").first().innerText()).trim();
+await page.locator(".case-stage-link").first().click();
+await page.waitForTimeout(600);
+check(
+  "A case stage link opens that stage",
+  (await page.locator(".lesson-sections").count()) === 1,
+  `clicking "${linkLabel}" should land on a stage page`,
+);
+
 /* -- stage navigation and targeted re-teaching --------------------- */
 
 await page.evaluate(() => { window.location.hash = "module/delivery"; });
@@ -1077,7 +1161,6 @@ check(
 
 await page.evaluate(() => { window.location.hash = "cases"; });
 await page.waitForTimeout(400);
-check("Two worked cases are available", (await page.locator(".case-switch button").count()) === 2);
 const caseSteps = await page.locator(".case-steps > li").count();
 check("Worked case renders its chain", caseSteps >= 5, `found ${caseSteps}`);
 await page.locator(".case-switch button").nth(1).click();
@@ -1104,7 +1187,7 @@ const guideStages = await page.locator(".guide-stage").count();
 check("Guide contains every stage", guideStages === 9, `found ${guideStages}`);
 check("Guide has a contents list", (await page.locator(".guide-contents li").count()) >= 14);
 check("Guide includes the glossary", (await page.locator(".guide-glossary > div").count()) >= 50);
-check("Guide includes both worked cases", (await page.locator(".guide-case").count()) === 2);
+check("Guide includes every worked case", (await page.locator(".guide-case").count()) === 4);
 check("Guide carries a print-only cover", (await page.locator(".guide-cover").count()) === 1);
 check(
   "Guide cover is hidden on screen",

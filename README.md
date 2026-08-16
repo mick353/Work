@@ -35,7 +35,7 @@ Because progress lives in one browser on one machine, use **Settings → Downloa
 | Per-distractor feedback | Every wrong option on all 122 questions explains why it is wrong, not just why the answer is right |
 | Flashcards | 92 — definition, application and discrimination cards |
 | Templates | 10, including epic, feature and story written to the deck's minimum detail |
-| Worked cases | 2 end-to-end, carrying the artefacts each step produces |
+| Worked cases | 4 end-to-end across all nine stages, each step naming the decision on the table before what the team did |
 | Capstone | 3 briefs, nine sections, per-section self-assessment against a five-part rubric |
 | Practice contrasts | 17 pairs of what good looks like against what usually happens, each with a tell |
 | Glossary | 59 terms, each attributed to where it comes from |
@@ -47,6 +47,8 @@ Because progress lives in one browser on one machine, use **Settings → Downloa
 Also: a printable guide that reads as one continuous document, full-text search across the course *and* the deck, light and dark themes, keyboard-driven review, results charts, JSON backup and restore, and offline use as an installable app.
 
 ## Design decisions worth knowing
+
+**Body copy is set to a measure, not to the container.** Prose was rendering at 117 characters per line against a published optimum of 66. `--measure: 54ch` is applied to running text only — tables and artefacts deliberately break out, because a table is scanned rather than read. Expressed in `ch` so it self-adjusts per font size; a fixed rem width gives smaller text more characters, which is backwards. Measures ~67 characters across every view, and the QA suite fails the build if any view drifts outside 45-80.
 
 **Stage length is computed, never typed.** The course used to advertise "about 8 hours" against 5,852 words of lesson prose — roughly 27 minutes of reading — because the per-stage `minutes` were guesses that the content had long since outgrown. `stageMinutes()` now derives them from word count at 220 wpm plus an allowance per question and scenario, rounded to five minutes. The figure moves when the content does.
 
