@@ -987,7 +987,10 @@ check(
  * worked-reasoning material. Measured here with real glyph metrics rather
  * than an em heuristic, because the two disagree by ~25%.
  */
-for (const view of ["module/lifecycle", "guide", "cases", "divergences", "fieldguide"]) {
+for (const view of [
+  "module/lifecycle", "guide", "cases", "divergences", "fieldguide",
+  "toolkit", "capstone", "sources", "glossary", "results", "settings",
+]) {
   await page.evaluate((h) => { window.location.hash = h; }, view);
   await page.waitForTimeout(450);
   const stats = await page.evaluate(() => {
@@ -1007,7 +1010,7 @@ for (const view of ["module/lifecycle", "guide", "cases", "divergences", "fieldg
   if (!stats) continue;
   check(
     `Prose measure stays in the readable range (${view})`,
-    stats.median >= 45 && stats.median <= 80 && stats.max <= 90,
+    stats.median >= 45 && stats.median <= 78 && stats.max <= 82,
     `median ${stats.median} ch, max ${stats.max} ch across ${stats.n} blocks — target 45-75, optimum 66`,
   );
 }

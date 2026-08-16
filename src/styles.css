@@ -1270,8 +1270,50 @@ p { color: var(--muted); line-height: 1.65; }
 
 
 /* ================================================================== *
- * Prose measure — applied to running text only
+ * Prose measure
+ *
+ * Narrow by DEFAULT, with explicit breakouts.
+ *
+ * The first two passes listed prose selectors one at a time and missed the
+ * toolkit, the capstone, the source cards and the glossary — measures of 108
+ * to 155 characters survived in views nobody had thought to check, and each
+ * round of chasing found more. Defaulting every paragraph in the page and
+ * naming the exceptions is the only version that cannot silently miss one.
  * ================================================================== */
+
+.page p,
+.page li,
+.page dd {
+  max-width: var(--measure);
+}
+
+/*
+ * Breakouts. These are scanned, not read line by line, or they are layout
+ * cells where a measure would create ragged columns:
+ *   - tables and pre-formatted artefacts
+ *   - chart labels, metric tiles and stat strips
+ *   - navigation, filters, tabs and card captions
+ */
+.lesson-table td, .lesson-table th,
+.guide-contrasts td, .guide-contrasts th,
+.case-artefact,
+.metric-strip p, .metric-strip span,
+.hero-facts li, .hero-facts span,
+.hero-index p, .hero-index small,
+.plan-list p, .plan-list li,
+.day-grid li, .rail-track p,
+.bar-list li, .column-chart li, .heatmap li,
+.case-switch span, .case-coverage,
+.deck-filter li, .deck-caption,
+.search-result span,
+.nav-section li,
+.path-meta, .path-meta span,
+.chart-card header p,
+.shortcut-panel dd,
+.visually-hidden {
+  max-width: none;
+}
+
 
 .lesson-section p,
 .lesson-section ul,
@@ -1413,3 +1455,27 @@ p { color: var(--muted); line-height: 1.65; }
 /* No opacity: it blends the text toward the background and quietly drops the
    contrast ratio below AA. Use a real colour so the value is what it says. */
 .source-alt { font-size: 13px; color: var(--muted); }
+
+
+/*
+ * Panels follow their content.
+ *
+ * Once the prose was constrained to a measure, the panels around it kept their
+ * old 900-920px width and ran roughly 300px past the last word — a border
+ * enclosing mostly nothing. A container should be sized by what it holds.
+ * Measure + padding + any leading icon column.
+ */
+.method-note { max-width: calc(var(--measure) + 130px); }
+.boundary-note,
+.divergence-note,
+.currency-note,
+.contrast-panel,
+.source-note,
+.module-footer { max-width: calc(var(--measure) + 90px); }
+.knowledge-check,
+.scenario-panel,
+.assignment-panel,
+.reflection-panel { max-width: calc(var(--measure) + 140px); }
+.divergence,
+.case-summary,
+.guide-core { max-width: calc(var(--measure) + 100px); }
