@@ -12,7 +12,8 @@ import {
   FileText,
   PlusCircle,
   Home,
-  Library,
+  Library as LibraryIcon,
+  Layers,
   Menu,
   Presentation,
   Moon,
@@ -25,6 +26,7 @@ import {
   X,
 } from "lucide-react";
 import { findModule, modules, type Question } from "./course";
+import { PM_FUNDAMENTALS_ID, activePackage, trainingPackages } from "./packages";
 import { bringForward, cardsToResurface } from "./recall";
 import { flashcards } from "./reference";
 import {
@@ -32,7 +34,9 @@ import {
   scrollBehavior,
   localDayKey,
   matchView,
+  migrateToPackageNamespace,
   parseView,
+  setActivePackageId,
   scheduleNext,
   viewToHash,
   type BackupParseResult,
@@ -61,6 +65,7 @@ import { Capstone, CaseStudies, FieldGuide, Glossary, Toolkit } from "./views-ap
 import { Divergences, NotFound, SearchView, Settings, Sources, StorageWarning } from "./views-meta";
 import { Results } from "./views-results";
 import { Guide } from "./views-guide";
+import { Library } from "./views-library";
 import { Deck } from "./views-deck";
 import { SlideViewerProvider } from "./slide-viewer";
 
@@ -131,7 +136,7 @@ const NAV_GROUPS: NavGroup[] = [
       { id: "deck", label: "Source deck", icon: <Presentation size={18} aria-hidden="true" /> },
       { id: "fieldguide", label: "DES field guide", icon: <BookMarked size={18} aria-hidden="true" /> },
       { id: "glossary", label: "Glossary", icon: <BookA size={18} aria-hidden="true" /> },
-      { id: "sources", label: "Sources", icon: <Library size={18} aria-hidden="true" /> },
+      { id: "sources", label: "Sources", icon: <LibraryIcon size={18} aria-hidden="true" /> },
       { id: "divergences", label: "Course additions", icon: <PlusCircle size={18} aria-hidden="true" /> },
     ],
   },
@@ -210,6 +215,31 @@ function useMediaQuery(query: string) {
 }
 
 export default function App() {
+  /*
+   * The active package is resolved BEFORE any other stored state, because
+   * storageKey() namespaces every other key by it. Reading progress first
+   * would read it from the wrong namespace.
+   *
+   * Pre-namespace data is migrated on the way past. Changing the key scheme
+   * without moving what is already there would present as a total reset.
+   */
+  const [packageId] = useState<string>(() => {
+    migrateToPackageNamespace(PM_FUNDAMENTALS_ID);
+    let stored = PM_FUNDAMENTALS_ID;
+    try {
+      const raw = window.localStorage.getItem("product-practice-v2:active-package");
+      if (raw) stored = JSON.parse(raw);
+    } catch {
+      /* falls back to the first package */
+    }
+    const resolved = trainingPackages.some((entry) => entry.manifest.id === stored)
+      ? stored
+      : PM_FUNDAMENTALS_ID;
+    setActivePackageId(resolved);
+    return resolved;
+  });
+  const pack = activePackage(packageId);
+
   const [view, setView] = useState<View>(() => parseView(window.location.hash));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [theme, setTheme] = usePreferredTheme();
@@ -319,6 +349,23 @@ export default function App() {
     const timer = window.setInterval(record, 10 * 60_000);
     return () => window.clearInterval(timer);
   }, [setStudyDays]);
+
+  const openPackage = useCallback(
+    (id: string) => {
+      setActivePackageId(id);
+      try {
+        window.localStorage.setItem("product-practice-v2:active-package", JSON.stringify(id));
+      } catch {
+        /* the switch still works for this session */
+      }
+      // A full reload is the honest way to re-read every namespaced key. The
+      // alternative is threading a package id through every stored-state hook,
+      // which buys nothing for an action taken once in a session.
+      window.location.hash = "dashboard";
+      window.location.reload();
+    },
+    [],
+  );
 
   const navigate = useCallback((next: View) => {
     window.location.hash = viewToHash(next);
@@ -495,6 +542,8 @@ export default function App() {
     content = <Glossary />;
   } else if (view === "guide") {
     content = <Guide navigate={navigate} />;
+  } else if (view === "library") {
+    content = <Library activeId={packageId} progress={progress} onOpen={openPackage} navigate={navigate} />;
   } else if (view === "deck") {
     content = <Deck />;
   } else if (view === "cases") {
@@ -555,6 +604,8 @@ export default function App() {
       storageOk={storageStatus === "ok"}
       collapsedNav={collapsedNav}
       toggleNavGroup={toggleNavGroup}
+      packageTitle={pack.manifest.title}
+      packageCount={trainingPackages.length}
     >
       {content}
     </Shell>
@@ -577,6 +628,8 @@ function Shell({
   storageOk,
   collapsedNav,
   toggleNavGroup,
+  packageTitle,
+  packageCount,
 }: {
   children: React.ReactNode;
   shortcutsOpen: boolean;
@@ -592,6 +645,8 @@ function Shell({
   storageOk: boolean;
   collapsedNav: Record<string, boolean>;
   toggleNavGroup: (id: string) => void;
+  packageTitle: string;
+  packageCount: number;
 }) {
   const isMobile = useMediaQuery(MOBILE_QUERY);
   const sidebarRef = useRef<HTMLElement>(null);
@@ -710,6 +765,21 @@ function Shell({
       </header>
 
       <aside ref={sidebarRef} className={`sidebar ${mobileOpen ? "open" : ""}`} aria-label="Course navigation">
+        {/*
+          Everything below this belongs to one package. Naming it here is what
+          stops the sidebar reading as though it were the whole product once
+          there is more than one — and gives a way back to the library that is
+          not the browser's back button.
+        */}
+        <button className="package-switch" onClick={() => navigate("library")}>
+          <Layers size={16} aria-hidden="true" />
+          <span>
+            <small>{packageCount === 1 ? "Training package" : `Training package · 1 of ${packageCount}`}</small>
+            <strong>{packageTitle}</strong>
+          </span>
+          <span className="package-switch-action">Library</span>
+        </button>
+
         {NAV_GROUPS.map((group) => (
           <NavSection
             key={group.id}

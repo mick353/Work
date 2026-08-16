@@ -978,6 +978,83 @@ check(
   `${footerWords} words — it repeats on every page, so it earns very little space`,
 );
 
+/* -- training packages --------------------------------------------- */
+
+/*
+ * Content used to be flat top-level arrays, which was right for one course and
+ * wrong the moment there would be more: a second package would have shared one
+ * progress record, one review queue and one results page with the first, so
+ * finishing one would have looked like partly finishing the other.
+ *
+ * Storage is namespaced per package now, following the shape SCORM and cmi5
+ * settled on — a course is a self-contained package and progress belongs to it.
+ */
+await page.evaluate(() => { window.location.hash = "library"; });
+await page.waitForTimeout(600);
+check("The library lists every registered package", (await page.locator(".package-card").count()) >= 1);
+check(
+  "The library states what a package contains",
+  (await page.locator(".package-stats dt").count()) >= 4,
+);
+check(
+  "The sidebar names the package it belongs to",
+  (await page.locator(".package-switch strong").innerText()).trim().length > 3,
+  "without this the navigation reads as though one course were the whole product",
+);
+
+// Namespacing, and that pre-namespace data is carried across rather than lost.
+const keys = await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith("product-practice-v2:")));
+const namespaced = keys.filter((k) => k.includes(":pm-fundamentals:"));
+check(
+  "Progress keys are namespaced by package",
+  namespaced.length > 0,
+  `${namespaced.length} namespaced of ${keys.length} keys`,
+);
+const globals = keys.filter((k) => /:(theme|salt|nav-collapsed-v2|active-package|migrated-to-packages)$/.test(k));
+check(
+  "Person-level settings stay outside any package",
+  globals.every((k) => !k.includes(":pm-fundamentals:")),
+  "re-randomising someone's option order because they opened a different course would be pointless churn",
+);
+
+/*
+ * Migration is tested in its OWN context. The first attempt seeded legacy keys
+ * and reloaded the shared page, which reset the state four later checks had
+ * spent the run building — and it could not test the real case anyway, since
+ * namespaced progress already existed and migration correctly refuses to
+ * overwrite it. A clean profile is the only place first-run behaviour is real.
+ */
+{
+  const fresh = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const freshPage = await fresh.newPage();
+  watchPage(freshPage, "migration");
+  await freshPage.goto(artifactUrl, { waitUntil: "load" });
+  await freshPage.evaluate(() => {
+    localStorage.clear();
+    localStorage.setItem(
+      "product-practice-v2:progress",
+      JSON.stringify({ outcomes: { lessonRead: true, quizScore: 88, scenariosCorrect: [], scenarioAttempts: {}, reflection: "", assignment: [], attempts: 2 } }),
+    );
+    localStorage.setItem("product-practice-v2:study-days", JSON.stringify(["2026-08-15"]));
+  });
+  await freshPage.reload({ waitUntil: "load" });
+  await freshPage.waitForTimeout(600);
+  const carried = await freshPage.evaluate(() => {
+    const moved = localStorage.getItem("product-practice-v2:pm-fundamentals:progress");
+    return {
+      oldGone: localStorage.getItem("product-practice-v2:progress") === null,
+      score: moved ? JSON.parse(moved)?.outcomes?.quizScore : null,
+      days: localStorage.getItem("product-practice-v2:pm-fundamentals:study-days") !== null,
+    };
+  });
+  check(
+    "Pre-namespace progress is migrated, not discarded",
+    carried.oldGone && carried.score === 88 && carried.days,
+    `old key removed: ${carried.oldGone}, score carried: ${carried.score}, study days carried: ${carried.days}`,
+  );
+  await fresh.close();
+}
+
 /* -- motion preference and the completion record -------------------- */
 
 /*
@@ -1161,7 +1238,7 @@ check("Self-check criteria are offered", criteriaCount >= 3, `${criteriaCount} c
 
 // Per-item outcomes must actually be recorded, or the Results panel is fiction.
 const itemsBefore = await page.evaluate(() => {
-  const raw = localStorage.getItem("product-practice-v2:item-stats");
+  const raw = localStorage.getItem("product-practice-v2:pm-fundamentals:item-stats");
   return raw ? Object.keys(JSON.parse(raw)).length : 0;
 });
 // Use a stage this suite has not already quizzed: submitting a quiz disables
@@ -1176,7 +1253,7 @@ for (let index = 0; index < statCount; index += 1) {
 await page.getByRole("button", { name: "Check my recall" }).click();
 await page.waitForTimeout(700);
 const itemsAfter = await page.evaluate(() => {
-  const raw = localStorage.getItem("product-practice-v2:item-stats");
+  const raw = localStorage.getItem("product-practice-v2:pm-fundamentals:item-stats");
   return raw ? Object.keys(JSON.parse(raw)).length : 0;
 });
 check(
@@ -1195,7 +1272,7 @@ check(
 await page.evaluate(() => { window.location.hash = "module/outcomes"; });
 await page.waitForSelector(".knowledge-check fieldset");
 const scheduledBefore = await page.evaluate(() => {
-  const raw = localStorage.getItem("product-practice-v2:reviews");
+  const raw = localStorage.getItem("product-practice-v2:pm-fundamentals:reviews");
   return raw ? Object.keys(JSON.parse(raw)).length : 0;
 });
 const recallGroups = page.locator(".knowledge-check fieldset");
@@ -1206,7 +1283,7 @@ for (let index = 0; index < recallCount; index += 1) {
 await page.getByRole("button", { name: "Check my recall" }).click();
 await page.waitForTimeout(700);
 const scheduledAfter = await page.evaluate(() => {
-  const raw = localStorage.getItem("product-practice-v2:reviews");
+  const raw = localStorage.getItem("product-practice-v2:pm-fundamentals:reviews");
   return raw ? Object.keys(JSON.parse(raw)).length : 0;
 });
 check(
@@ -1220,7 +1297,7 @@ check(
   "a queue that grows silently is indistinguishable from one that does not work",
 );
 const resurfacedDueNow = await page.evaluate(() => {
-  const raw = localStorage.getItem("product-practice-v2:reviews");
+  const raw = localStorage.getItem("product-practice-v2:pm-fundamentals:reviews");
   const map = raw ? JSON.parse(raw) : {};
   const now = Date.now();
   return Object.values(map).filter((entry) => entry.due <= now).length;
@@ -1269,7 +1346,7 @@ await page.getByRole("heading", { name: "Build the whole product-management chai
 const masteredLabels = await page.locator(".mastered-label").count();
 check("Imported backup restores mastery", masteredLabels >= 1, `found ${masteredLabels}`);
 
-const restoredToolkit = await page.evaluate(() => localStorage.getItem("product-practice-v2:toolkit"));
+const restoredToolkit = await page.evaluate(() => localStorage.getItem("product-practice-v2:pm-fundamentals:toolkit"));
 check("Imported backup restores toolkit drafts", (restoredToolkit ?? "").includes("Providers need a reliable way"));
 
 // A malformed file must be rejected rather than clearing progress.

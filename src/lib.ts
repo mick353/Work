@@ -13,6 +13,7 @@ export const MODULE_HASH_PREFIX = "module/";
 export const MODULE_VIEW_PREFIX = "module:";
 
 export const TOP_LEVEL_VIEWS = [
+  "library",
   "dashboard",
   "path",
   "diagnostic",
@@ -211,8 +212,67 @@ export function onStorageStatusChange(listener: (status: StorageStatus) => void)
   return () => storageListeners.delete(listener);
 }
 
+/*
+ * Storage is namespaced per training package.
+ *
+ * Every key used to be `product-practice-v2:progress`. With more than one
+ * package that is a collision: finishing one course would have looked like
+ * partly finishing the next, and clearing one would have cleared both.
+ * Keys are now `product-practice-v2:<packageId>:progress`.
+ *
+ * A few keys are deliberately NOT namespaced, because they belong to the
+ * person rather than to any course: the theme, the shuffle salt, and the
+ * sidebar collapse state. Re-randomising someone's option order because they
+ * opened a different course would be pointless churn.
+ */
+const GLOBAL_KEYS = new Set(["theme", "salt", "nav-collapsed-v2", "active-package"]);
+
+let activePackageId = "pm-fundamentals";
+
+export function setActivePackageId(id: string) {
+  activePackageId = id;
+}
+
+export function getActivePackageId(): string {
+  return activePackageId;
+}
+
 export function storageKey(key: string) {
-  return `${STORAGE_PREFIX}:${key}`;
+  if (GLOBAL_KEYS.has(key)) return `${STORAGE_PREFIX}:${key}`;
+  return `${STORAGE_PREFIX}:${activePackageId}:${key}`;
+}
+
+/**
+ * Move pre-namespace data into the first package's namespace.
+ *
+ * Anyone who used this before packages existed has real progress under the old
+ * flat keys. Changing the key scheme without moving it would silently present
+ * as a total reset, which is the worst possible way to ship an improvement.
+ * Runs once; the marker stops it re-running and stops it overwriting anything
+ * that has since been written under the new keys.
+ */
+export function migrateToPackageNamespace(firstPackageId: string): number {
+  const MARKER = `${STORAGE_PREFIX}:migrated-to-packages`;
+  try {
+    if (window.localStorage.getItem(MARKER)) return 0;
+    let moved = 0;
+    for (const key of Object.keys(window.localStorage)) {
+      if (!key.startsWith(`${STORAGE_PREFIX}:`)) continue;
+      const bare = key.slice(STORAGE_PREFIX.length + 1);
+      if (bare.includes(":") || GLOBAL_KEYS.has(bare)) continue;
+      const target = `${STORAGE_PREFIX}:${firstPackageId}:${bare}`;
+      if (window.localStorage.getItem(target) !== null) continue;
+      const value = window.localStorage.getItem(key);
+      if (value === null) continue;
+      window.localStorage.setItem(target, value);
+      window.localStorage.removeItem(key);
+      moved += 1;
+    }
+    window.localStorage.setItem(MARKER, "1");
+    return moved;
+  } catch {
+    return 0;
+  }
 }
 
 export function readStored<T>(key: string, fallback: T): T {

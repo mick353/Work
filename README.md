@@ -1,6 +1,6 @@
-# Product Practice — Product Management Learning System
+# Product Practice — a player for training packages
 
-An offline learning system built from the 98-slide **Product Management Fundamentals — 12AUG2026** presentation (DEWR Digital Experience and Solutions Division).
+An offline learning system that runs self-contained **training packages**. It ships with one — **Product Management Fundamentals**, built from the 98-slide DEWR Digital Experience and Solutions deck — and nothing in the player is specific to it.
 
 > Unofficial internal learning aid. **Not an official Australian Government publication**, and not a substitute for departmental guidance or the Digital Service Standard. See [NOTICE.md](NOTICE.md).
 
@@ -60,6 +60,8 @@ Also: a printable guide that reads as one continuous document, full-text search 
 **The bank reports on itself.** History recorded a score per attempt and nothing about which questions were involved, so an item everyone gets right (teaching nothing) was indistinguishable from one everyone gets wrong (ambiguous rather than hard). Per-item accuracy is now recorded and surfaced on Results, with a two-sighting minimum because a single miss is noise.
 
 **Body copy is set to a measure, not to the container.** Prose was rendering at 117 characters per line against a published optimum of 66. `--measure: 54ch` is applied to running text only — tables and artefacts deliberately break out, because a table is scanned rather than read. Expressed in `ch` so it self-adjusts per font size; a fixed rem width gives smaller text more characters, which is backwards. Measures ~67 characters across every view, and the QA suite fails the build if any view drifts outside 45-80.
+
+**A course is a package, not the whole product.** Content was flat top-level arrays, which was right for one course and wrong the moment there would be more: a second would have shared one progress record, one review queue and one results page with the first, so finishing one would have looked like partly finishing the other. Each package now carries a manifest and owns its own storage namespace — the shape SCORM and cmi5 both settled on. Adding another is authoring, not building. Person-level settings (theme, shuffle salt, sidebar state) deliberately sit outside any package, because re-randomising someone's option order for opening a different course would be pointless churn. Pre-namespace data migrates on first load rather than presenting as a reset.
 
 **Stage length is computed, never typed.** The course used to advertise "about 8 hours" against 5,852 words of lesson prose — roughly 27 minutes of reading — because the per-stage `minutes` were guesses that the content had long since outgrown. `stageMinutes()` now derives them from word count at 220 wpm plus an allowance per question and scenario, rounded to five minutes. The figure moves when the content does.
 
