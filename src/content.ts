@@ -56,7 +56,7 @@ export const {
   capstoneSteps,
   capstoneBriefs,
   capstoneRubric,
-  fieldGuide,
+  fieldGuide, exemplar,
   slides,
   slideCount,
   contentReviewed,

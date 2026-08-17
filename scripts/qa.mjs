@@ -662,6 +662,30 @@ check(
     "The diagnostic is reachable from the sidebar",
     (await page.getByRole("button", { name: "Diagnostic", exact: true }).count()) === 1,
   );
+  /*
+    Every stage needs a diagram. The second package shipped with none at all,
+    because illustrations are keyed by module id and a missing key renders
+    nothing rather than failing — so eleven stages of dense prose opened with
+    a heading and a wall of text.
+  */
+  const stageCount = await page.locator(".sidebar-modules nav button").count();
+  const noIllustration = [];
+  for (let i = 0; i < stageCount; i += 1) {
+    await page.evaluate(() => { window.location.hash = "path"; });
+    await page.waitForTimeout(80);
+    await page.locator(".sidebar-modules nav button").nth(i).click();
+    await page.waitForTimeout(180);
+    if (!(await page.locator("#main-content svg.illus").count())) {
+      noIllustration.push(await page.locator("#main-content h1").innerText());
+    }
+  }
+  check(
+    "Every stage opens with an illustration",
+    noIllustration.length === 0,
+    noIllustration.length ? noIllustration.join(", ") : `all ${stageCount} stages`,
+  );
+  await page.evaluate(() => { window.location.hash = "dashboard"; });
+  await page.waitForTimeout(150);
 }
 /*
  * The real requirement is not that the whole sidebar fits — the nine-stage

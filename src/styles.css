@@ -1619,3 +1619,42 @@ p { color: var(--muted); line-height: 1.65; }
 .library-note h2 { margin: 0 0 10px; font-size: 20px; }
 .library-note p { margin: 0 0 14px; color: var(--muted); font-size: 14.5px; line-height: 1.65; }
 @media (max-width: 620px) { .library-grid { grid-template-columns: 1fr; } .package-stats { grid-template-columns: repeat(2, 1fr); row-gap: 14px; } }
+
+/* ------------------------------------------------------------------ *
+ * Worked example — the finished document
+ *
+ * Two columns on wide screens: the report itself on the left at a normal
+ * reading measure, commentary on the right in a quieter register. The report
+ * must be readable straight through with the commentary ignored, which is why
+ * the notes are visually subordinate rather than interleaved.
+ * ------------------------------------------------------------------ */
+.exemplar-meta { display: flex; flex-wrap: wrap; gap: 26px; margin: 0 0 30px; padding: 16px 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-alt); max-width: none; }
+.exemplar-meta div { display: grid; gap: 3px; }
+.exemplar-meta dt { color: var(--muted); font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.exemplar-meta dd { margin: 0; color: var(--ink); font-size: 14px; max-width: none; }
+
+.exemplar-doc { border: 1px solid var(--line-strong); border-radius: 12px; background: var(--paper); overflow: hidden; }
+.exemplar-doc-head { padding: 30px 32px 24px; border-bottom: 2px solid var(--line-strong); background: var(--surface-alt); }
+.exemplar-doc-head h2 { margin: 6px 0 4px; }
+.exemplar-doc-head p { margin: 0; color: var(--muted); font-size: 14px; letter-spacing: 0.02em; }
+
+.exemplar-section { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 30px; padding: 26px 32px; border-bottom: 1px solid var(--line); }
+.exemplar-section:last-child { border-bottom: 0; }
+.exemplar-body h3 { margin: 0 0 12px; font-size: 17px; }
+.exemplar-body p { font-size: 15px; }
+.exemplar-body p + p { margin-top: 11px; }
+.exemplar-body .artefact { max-width: none; }
+
+.exemplar-note { align-self: start; padding: 14px 16px; border-left: 3px solid var(--stage, var(--accent)); border-radius: 0 8px 8px 0; background: var(--surface-alt); }
+.exemplar-note span { display: block; margin-bottom: 6px; color: var(--accent); font-size: 10.5px; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; }
+.exemplar-note p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; max-width: none; }
+
+.exemplar-closing { margin-top: 28px; padding: 20px 24px; border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; background: var(--accent-soft); color: var(--ink); font-size: 15.5px; max-width: none; }
+
+@media (max-width: 1100px) {
+  .exemplar-section { grid-template-columns: 1fr; gap: 16px; }
+  .exemplar-note { border-left-width: 3px; }
+}
+@media (max-width: 640px) {
+  .exemplar-doc-head, .exemplar-section { padding-left: 18px; padding-right: 18px; }
+}

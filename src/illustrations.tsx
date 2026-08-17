@@ -517,6 +517,264 @@ export function IllusEmptyResults({ className }: Props) {
   );
 }
 
+
+/* ------------------------------------------------------------------ *
+ * Closure Reports
+ *
+ * The second package shipped with none of these, so eleven stages of dense
+ * prose opened with nothing but a heading. Same visual system as above: one
+ * idea per diagram, colour inherited from the stage accent, ids namespaced.
+ * ------------------------------------------------------------------ */
+
+/** Stage 1 — the report is the bridge between a project and everything after. */
+function IllusClosurePurpose({ className }: Props) {
+  const id = useId();
+  return (
+    <Frame id={id} className={className} viewBox="0 0 370 210" label="A project ends and its obligations continue, carried across by the closure report">
+      <rect x="18" y="72" width="104" height="62" rx="10" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.45" />
+      <text x="70" y="98" textAnchor="middle" className="illus-caption-strong">Project</text>
+      <text x="70" y="116" textAnchor="middle" className="illus-caption-dim">ends here</text>
+      <rect x="146" y="58" width="78" height="90" rx="10" fill={`url(#${id}-a)`} filter={`url(#${id}-shadow)`} />
+      <text x="185" y="96" textAnchor="middle" className="illus-on-accent">Closure</text>
+      <text x="185" y="114" textAnchor="middle" className="illus-on-accent-sub">report</text>
+      <rect x="248" y="52" width="104" height="30" rx="8" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.4" />
+      <text x="300" y="72" textAnchor="middle" className="illus-caption">Benefits</text>
+      <rect x="248" y="88" width="104" height="30" rx="8" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.4" />
+      <text x="300" y="108" textAnchor="middle" className="illus-caption">Risks</text>
+      <rect x="248" y="124" width="104" height="30" rx="8" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.4" />
+      <text x="300" y="144" textAnchor="middle" className="illus-caption">Costs</text>
+      <path d="M122 103h20" stroke="var(--stage)" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M224 103h20" stroke="var(--stage)" strokeWidth="2.5" strokeLinecap="round" />
+      <text x="185" y="176" textAnchor="middle" className="illus-caption-dim">what outlives the project has to be carried</text>
+    </Frame>
+  );
+}
+
+/** Stage 2 — measured, estimated, asserted. */
+function IllusClaimStrength({ className }: Props) {
+  const id = useId();
+  const rows = [
+    { y: 52, w: 300, label: "Measured", sub: "data before and after" },
+    { y: 96, w: 210, label: "Estimated", sub: "a model, assumptions stated" },
+    { y: 140, w: 120, label: "Asserted", sub: "judgement, no measurement" },
+  ];
+  return (
+    <Frame id={id} className={className} viewBox="0 0 370 210" label="Three strengths of claim: measured, estimated and asserted">
+      {rows.map((r, i) => (
+        <g key={r.label}>
+          <rect x="20" y={r.y} width={r.w} height="30" rx="7" fill={i === 0 ? `url(#${id}-a)` : `url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity={i === 0 ? 0 : 0.45} />
+          <text x="32" y={r.y + 20} className={i === 0 ? "illus-on-accent" : "illus-caption-strong"}>{r.label}</text>
+          <text x={r.w + 30} y={r.y + 20} className="illus-caption-dim">{r.sub}</text>
+        </g>
+      ))}
+      <text x="20" y="186" className="illus-caption-dim">mark which one every sentence is</text>
+    </Frame>
+  );
+}
+
+/** Stage 3 — the money is spent by the project, the return arrives later. */
+function IllusBenefitLag({ className }: Props) {
+  const id = useId();
+  return (
+    <Frame id={id} className={className} viewBox="0 0 370 210" label="Cost falls during delivery; benefits accrue afterwards, in the business">
+      <path d="M28 150h316" className="illus-axis" />
+      <rect x="40" y="66" width="112" height="84" rx="8" fill={`url(#${id}-a)`} filter={`url(#${id}-shadow)`} />
+      <text x="96" y="104" textAnchor="middle" className="illus-on-accent">Cost</text>
+      <text x="96" y="122" textAnchor="middle" className="illus-on-accent-sub">during delivery</text>
+      <path d="M170 150c40 0 44-52 84-62s60-8 60-8" stroke="var(--stage)" strokeWidth="3" fill="none" strokeLinecap="round" strokeDasharray="1 7" />
+      <rect x="228" y="58" width="112" height="46" rx="8" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.5" />
+      <text x="284" y="78" textAnchor="middle" className="illus-caption-strong">Benefit</text>
+      <text x="284" y="94" textAnchor="middle" className="illus-caption-dim">6-12 months on</text>
+      <path d="M160 150v-14" className="illus-divider" />
+      <text x="160" y="176" textAnchor="middle" className="illus-caption-dim">project ends</text>
+      <text x="284" y="176" textAnchor="middle" className="illus-caption-dim">someone else owns it</text>
+    </Frame>
+  );
+}
+
+/** Stage 4 — a sentiment against a usable lesson. */
+function IllusLessonShape({ className }: Props) {
+  const id = useId();
+  const parts = ["Context", "What happened", "Cost", "Action"];
+  return (
+    <Frame id={id} className={className} viewBox="0 0 370 210" label="A sentiment has no parts; a usable lesson has four">
+      <rect x="20" y="44" width="150" height="44" rx="8" className="illus-warn-panel" />
+      <text x="95" y="63" textAnchor="middle" className="illus-caption-strong">&quot;Engage earlier&quot;</text>
+      <text x="95" y="79" textAnchor="middle" className="illus-caption-dim">no parts at all</text>
+      <text x="95" y="112" textAnchor="middle" className="illus-caption-dim">nobody acts differently</text>
+      {parts.map((p, i) => (
+        <g key={p}>
+          <rect x="206" y={40 + i * 33} width="144" height="26" rx="6" fill={`url(#${id}-a)`} opacity={1 - i * 0.13} />
+          <text x="278" y={57 + i * 33} textAnchor="middle" className="illus-on-accent">{p}</text>
+        </g>
+      ))}
+      <text x="278" y="188" textAnchor="middle" className="illus-caption-dim">all four, or it is a category label</text>
+    </Frame>
+  );
+}
+
+/** Stage 5 — handover succeeds only if the receiving team can work alone. */
+function IllusHandoverTest({ className }: Props) {
+  const id = useId();
+  return (
+    <Frame id={id} className={className} viewBox="0 0 370 210" label="The handover test: can the receiving team work without the people who left">
+      <circle cx="88" cy="94" r="34" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.4" strokeDasharray="4 5" />
+      <text x="88" y="92" textAnchor="middle" className="illus-caption-dim">delivery</text>
+      <text x="88" y="108" textAnchor="middle" className="illus-caption-dim">team gone</text>
+      <circle cx="266" cy="94" r="42" fill={`url(#${id}-a)`} filter={`url(#${id}-shadow)`} />
+      <text x="266" y="90" textAnchor="middle" className="illus-on-accent">Receiving</text>
+      <text x="266" y="108" textAnchor="middle" className="illus-on-accent-sub">team</text>
+      <path d="M128 94h96" stroke="var(--stage)" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="5 6" />
+      <path d="M160 78l32 32M192 78l-32 32" stroke="var(--stage)" strokeWidth="3" strokeLinecap="round" opacity="0.55" />
+      <text x="185" y="164" textAnchor="middle" className="illus-caption">run · change · diagnose</text>
+      <text x="185" y="184" textAnchor="middle" className="illus-caption-dim">without calling anyone who has left</text>
+    </Frame>
+  );
+}
+
+/** Stage 6 — what is an asset and what is not. */
+function IllusCapitalise({ className }: Props) {
+  const id = useId();
+  return (
+    <Frame id={id} className={className} viewBox="0 0 370 210" label="Some spend produces an asset; the rest is expensed">
+      <rect x="24" y="48" width="150" height="120" rx="10" fill={`url(#${id}-a)`} filter={`url(#${id}-shadow)`} />
+      <text x="99" y="76" textAnchor="middle" className="illus-on-accent">Capitalise</text>
+      <text x="99" y="102" textAnchor="middle" className="illus-on-accent-sub">the delivered build</text>
+      <text x="99" y="122" textAnchor="middle" className="illus-on-accent-sub">an asset you control</text>
+      <rect x="196" y="48" width="150" height="120" rx="10" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.45" strokeDasharray="5 5" />
+      <text x="271" y="76" textAnchor="middle" className="illus-caption-strong">Expense</text>
+      <text x="271" y="100" textAnchor="middle" className="illus-caption-dim">abandoned options</text>
+      <text x="271" y="118" textAnchor="middle" className="illus-caption-dim">training and change</text>
+      <text x="271" y="136" textAnchor="middle" className="illus-caption-dim">post-release fixes</text>
+      <text x="185" y="192" textAnchor="middle" className="illus-caption-dim">an asset is what you have, not the thinking that led to it</text>
+    </Frame>
+  );
+}
+
+/** Stage 7 — the shutdown sequence, reversible step before the irreversible one. */
+function IllusShutdown({ className }: Props) {
+  const id = useId();
+  const steps = ["Sentence", "Export", "Verify", "Revoke", "Delete"];
+  return (
+    <Frame id={id} className={className} viewBox="0 0 370 210" label="Decommissioning in order, with a reversible checkpoint before deletion">
+      <path d="M30 100h310" className="illus-track" />
+      {steps.map((s, i) => {
+        const x = 42 + i * 72;
+        const last = i === steps.length - 1;
+        return (
+          <g key={s}>
+            <circle cx={x} cy="100" r={last ? 20 : 18} fill={last ? "var(--stage)" : `url(#${id}-a)`} opacity={last ? 1 : 0.9} filter={`url(#${id}-shadow)`} />
+            <text x={x} y="105" textAnchor="middle" className="illus-on-accent">{i + 1}</text>
+            <text x={x} y="140" textAnchor="middle" className="illus-caption">{s}</text>
+          </g>
+        );
+      })}
+      <rect x="234" y="52" width="84" height="24" rx="6" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.5" />
+      <text x="276" y="68" textAnchor="middle" className="illus-caption-dim">still reversible</text>
+      <path d="M258 76v10" className="illus-divider" />
+      <text x="330" y="176" textAnchor="end" className="illus-caption-dim">only step 5 cannot be undone</text>
+    </Frame>
+  );
+}
+
+/** Stage 8 — objective, outcome and key result are three different questions. */
+function IllusThreeLevels({ className }: Props) {
+  const id = useId();
+  const rows = [
+    { label: "Objective", q: "what did we set out to do?", v: "achieved" },
+    { label: "Outcome", q: "what changed for users?", v: "18% of a 40% target" },
+    { label: "Key result", q: "how do we know?", v: "0.83 against 0.60" },
+  ];
+  return (
+    <Frame id={id} className={className} viewBox="0 0 370 210" label="Objective, business outcome and key result answer three different questions">
+      {rows.map((r, i) => (
+        <g key={r.label}>
+          <rect x="20" y={46 + i * 46} width="330" height="36" rx="8" fill={i === 0 ? `url(#${id}-a)` : `url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity={i === 0 ? 0 : 0.4} />
+          <text x="34" y={69 + i * 46} className={i === 0 ? "illus-on-accent" : "illus-caption-strong"}>{r.label}</text>
+          <text x="126" y={69 + i * 46} className="illus-caption-dim">{r.q}</text>
+          <text x="336" y={69 + i * 46} textAnchor="end" className={i === 0 ? "illus-on-accent-sub" : "illus-caption"}>{r.v}</text>
+        </g>
+      ))}
+      <text x="185" y="196" textAnchor="middle" className="illus-caption-dim">merge them and the interesting result disappears</text>
+    </Frame>
+  );
+}
+
+/** Stage 9 — every open item has exactly three destinations. */
+function IllusThreeDestinations({ className }: Props) {
+  const id = useId();
+  const outs = [
+    { x: 232, y: 44, label: "Closed" },
+    { x: 232, y: 88, label: "Accepted" },
+    { x: 232, y: 132, label: "Follow-on action" },
+  ];
+  return (
+    <Frame id={id} className={className} viewBox="0 0 370 210" label="At closure every open item is closed, formally accepted, or carried to a named owner">
+      <rect x="22" y="76" width="104" height="52" rx="10" fill={`url(#${id}-a)`} filter={`url(#${id}-shadow)`} />
+      <text x="74" y="99" textAnchor="middle" className="illus-on-accent">Open item</text>
+      <text x="74" y="116" textAnchor="middle" className="illus-on-accent-sub">at closure</text>
+      {outs.map((o) => (
+        <g key={o.label}>
+          <path d={`M126 102C168 102 176 ${o.y + 15} ${o.x - 8} ${o.y + 15}`} stroke="var(--stage)" strokeWidth="2" fill="none" opacity="0.6" strokeLinecap="round" />
+          <rect x={o.x} y={o.y} width="124" height="30" rx="7" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.45" />
+          <text x={o.x + 62} y={o.y + 20} textAnchor="middle" className="illus-caption-strong">{o.label}</text>
+        </g>
+      ))}
+      <text x="185" y="186" textAnchor="middle" className="illus-caption-dim">&quot;ongoing&quot; is not one of them</text>
+    </Frame>
+  );
+}
+
+/** Stage 10 — the first page is the report. */
+function IllusOnePage({ className }: Props) {
+  const id = useId();
+  return (
+    <Frame id={id} className={className} viewBox="0 0 370 210" label="Assume one page is read: promised, delivered, and the gap">
+      <rect x="34" y="34" width="128" height="150" rx="9" fill={`url(#${id}-a)`} filter={`url(#${id}-shadow)`} />
+      <text x="98" y="62" textAnchor="middle" className="illus-on-accent">Page 1</text>
+      <rect x="50" y="76" width="96" height="8" rx="4" className="illus-on-accent-lg" opacity="0.85" />
+      <rect x="50" y="92" width="96" height="8" rx="4" className="illus-on-accent-lg" opacity="0.7" />
+      <rect x="50" y="108" width="72" height="8" rx="4" className="illus-on-accent-lg" opacity="0.55" />
+      <text x="98" y="146" textAnchor="middle" className="illus-on-accent-sub">promised</text>
+      <text x="98" y="164" textAnchor="middle" className="illus-on-accent-sub">delivered · gap</text>
+      {[0, 1, 2].map((i) => (
+        <rect key={i} x={196 + i * 18} y={54 + i * 6} width="120" height="112" rx="8" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.28" />
+      ))}
+      <text x="292" y="120" textAnchor="middle" className="illus-caption-dim">checked, not read</text>
+      <text x="185" y="196" textAnchor="middle" className="illus-caption-dim">detail is for the reader with a specific question</text>
+    </Frame>
+  );
+}
+
+/** Stage 11 — the evidence chain, and where it breaks. */
+function IllusEvidenceLinks({ className }: Props) {
+  const id = useId();
+  const links = ["Claim", "Method", "Data", "Definition"];
+  return (
+    <Frame id={id} className={className} viewBox="0 0 370 210" label="The evidence chain: claim, method, data, definition — and where it usually breaks">
+      {links.map((l, i) => {
+        const x = 24 + i * 86;
+        const broken = i === 2;
+        return (
+          <g key={l}>
+            <rect x={x} y="72" width="72" height="52" rx="9"
+              fill={broken ? "transparent" : `url(#${id}-a)`}
+              stroke={broken ? "var(--stage)" : "none"} strokeOpacity="0.5" strokeDasharray={broken ? "5 5" : undefined}
+              filter={broken ? undefined : `url(#${id}-shadow)`} />
+            <text x={x + 36} y="103" textAnchor="middle" className={broken ? "illus-caption-strong" : "illus-on-accent"}>{l}</text>
+            {i < links.length - 1 && (
+              <path d={`M${x + 72} 98h14`} stroke="var(--stage)" strokeWidth="2.5" strokeLinecap="round" opacity={i === 1 ? 0.35 : 0.8} />
+            )}
+          </g>
+        );
+      })}
+      <text x="232" y="150" textAnchor="middle" className="illus-caption-dim">system decommissioned,</text>
+      <text x="232" y="166" textAnchor="middle" className="illus-caption-dim">no extract retained</text>
+      <text x="185" y="46" textAnchor="middle" className="illus-caption">an auditor follows it until it runs out</text>
+    </Frame>
+  );
+}
+
 /** Stage id → illustration. */
 export const stageIllustrations: Record<string, (props: Props) => React.ReactElement> = {
   thinking: IllusProductVsProject,
@@ -528,4 +786,17 @@ export const stageIllustrations: Record<string, (props: Props) => React.ReactEle
   roles: IllusLayers,
   government: IllusPhaseGates,
   integration: IllusEvidenceChain,
+
+  // Closure Reports
+  purpose: IllusClosurePurpose,
+  evidence: IllusClaimStrength,
+  benefits: IllusBenefitLag,
+  lessons: IllusLessonShape,
+  handover: IllusHandoverTest,
+  financial: IllusCapitalise,
+  records: IllusShutdown,
+  sections: IllusThreeLevels,
+  openitems: IllusThreeDestinations,
+  writing: IllusOnePage,
+  assurance: IllusEvidenceLinks,
 };

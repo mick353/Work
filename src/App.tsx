@@ -1,4 +1,4 @@
-import { divergences, findModule, flashcards, manifest, modules, slides } from "./content";
+import { divergences, exemplar, findModule, flashcards, manifest, modules, slides } from "./content";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Brain,
@@ -11,6 +11,7 @@ import {
   ClipboardCheck,
   Compass,
   FileText,
+  FileCheck2,
   PlusCircle,
   Home,
   Library as LibraryIcon,
@@ -65,6 +66,7 @@ import { Capstone, CaseStudies, FieldGuide, Glossary, Toolkit } from "./views-ap
 import { Divergences, NotFound, SearchView, Settings, Sources, StorageWarning } from "./views-meta";
 import { Results } from "./views-results";
 import { Guide } from "./views-guide";
+import { WorkedExample } from "./views-exemplar";
 import { Library } from "./views-library";
 import { Deck } from "./views-deck";
 import { SlideViewerProvider } from "./slide-viewer";
@@ -133,6 +135,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { id: "path", label: "Learning path", icon: <Compass size={18} aria-hidden="true" /> },
       { id: "guide", label: "Read the whole course", icon: <FileText size={18} aria-hidden="true" /> },
+      { id: "example", label: "A finished report", icon: <FileCheck2 size={18} aria-hidden="true" /> },
     ],
   },
   {
@@ -220,6 +223,7 @@ const NUMBER_WORDS = [
 function navItemApplies(item: { id: string }): boolean {
   if (item.id === "deck") return slides.length > 0;
   if (item.id === "divergences") return divergences.length > 0;
+  if (item.id === "example") return exemplar !== null;
   return true;
 }
 
@@ -607,6 +611,8 @@ export default function App() {
     content = <FieldGuide />;
   } else if (view === "glossary") {
     content = <Glossary />;
+  } else if (view === "example") {
+    content = <WorkedExample />;
   } else if (view === "guide") {
     content = <Guide navigate={navigate} />;
   } else if (view === "library") {

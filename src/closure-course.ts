@@ -154,8 +154,8 @@ export const closureModules: Module[] = [
         sourceIds: ["rmg106", "anao-perf"],
       },
       {
-        heading: "Gate 6 and why it exists",
-        body: "For proposals inside the Gateway thresholds, closure is not self-assessed. Gate 6 is the Benefits Realisation review: an independent check that the investment delivered what was promised, that benefits have named owners, and that the arrangements to keep harvesting them survive the project's disappearance. The gate exists precisely because self-reported closure was found not to be reliable.",
+        heading: "Why someone independent checks your closure",
+        body: "Above certain values, a Commonwealth project's closure is not self-assessed. The Department of Finance runs a series of independent checkpoints across a project's life called the Gateway Review Process, numbered Gate 0 to Gate 6. The last of them, Gate 6, is the Benefits Realisation review: an independent check that the investment delivered what was promised, that benefits have named owners, and that the arrangements to keep harvesting them survive the project's disappearance. The gate exists precisely because self-reported closure was found not to be reliable.",
         bullets: [
           "Gateway applies to non-corporate Commonwealth entities above the thresholds: $30m procurement or infrastructure, $30m with an ICT component of at least $10m, $50m for programs.",
           "Gate 6 assesses delivery of the purpose and benefits of the investment, not delivery of the scope.",
@@ -351,7 +351,7 @@ export const closureModules: Module[] = [
       "Every sentence in a closure report is one of three things: something you measured, something you estimated, or something you asserted. Reports that survive scrutiny mark which is which. Reports that do not, blur all three into the same confident past tense.",
     sections: [
       {
-        heading: "Three kinds of claim",
+        heading: "Measured, estimated, or just asserted",
         body: "The confident past tense is the enemy. 'Processing time was reduced by 40 per cent' reads identically whether it came from a measured before-and-after, a modelled projection, or a workshop where someone said it felt about right. The reader cannot tell, so the reader either believes all of it or none of it — and an auditor will assume the weakest interpretation until shown otherwise.",
         table: {
           caption: "Marking the claim",
@@ -380,7 +380,7 @@ export const closureModules: Module[] = [
         sourceIds: ["closure", "anao-gateway"],
       },
       {
-        heading: "Traceability",
+        heading: "Getting from the claim back to the data",
         body: "A claim is traceable when a reader who was not there can get from the sentence to the underlying data without asking you. In practice this means a reference to a named source, a date range, and a definition — because the same metric measured two ways produces two answers, and the difference is usually larger than the improvement being claimed.",
         bullets: [
           "Name the system or dataset, not the team that produced the figure.",
@@ -393,7 +393,7 @@ export const closureModules: Module[] = [
         sourceIds: ["anao-perf"],
       },
       {
-        heading: "Periods, samples and the cherry-pick",
+        heading: "Choosing the comparison window honestly",
         body: "Once a claim is marked and traceable, the remaining way to mislead honestly is the choice of window. Comparing a bad quarter with a good one produces a real improvement from real data and tells the reader nothing about the service. Nobody usually does this deliberately; the flattering window is simply the one that gets chosen, because it is the one that looks like success.",
         bullets: [
           "State why the comparison periods were chosen, especially if they are not adjacent or not the same length.",
@@ -566,7 +566,7 @@ export const closureModules: Module[] = [
       "Almost no benefit is realised during a project. Benefits accrue afterwards, in the operational business, over months or years — which means the entity that promised them is not the entity that delivers them, and closure is the handover point where that responsibility either transfers or evaporates.",
     sections: [
       {
-        heading: "The timing mismatch",
+        heading: "The money is spent before the benefit arrives",
         body: "The project spends the money and the business earns the return, usually long after the project has ceased to exist. This is not a flaw in how projects are run; it is what a project is. The consequence is that benefits realisation cannot be a project activity — by the time it is measurable there is no project. What closure can do is transfer ownership cleanly enough that measurement still happens.",
         bullets: [
           "Post-implementation review typically sits 6 to 12 months after closure, when effects have had time to appear.",
@@ -818,7 +818,7 @@ export const closureModules: Module[] = [
         sourceIds: ["lessons"],
       },
       {
-        heading: "Reference class data",
+        heading: "What twenty projects know that one cannot",
         body: "The most valuable thing a closure report contributes to an entity is not its narrative but its numbers, pooled with other projects' numbers. How long did the approval actually take, against the estimate? By what factor did the integration estimate miss? Enough of these and the next business case can be forecast from what comparable work actually cost, rather than from what this team hopes.",
         bullets: [
           "Record estimate versus actual for the things that were estimated, not just the final totals.",
@@ -831,7 +831,7 @@ export const closureModules: Module[] = [
         sourceIds: ["lessons", "anao-gateway"],
       },
       {
-        heading: "Capturing them while they are still true",
+        heading: "Write it down the day it surprises you",
         body: "The four-part structure fixes how a lesson is written. It does not fix when, and the when is why registers are thin: a lesson recorded on the last day is recalled through the story the team has settled on. The alternative is unglamorous and works — capture at the moment of surprise, in a sentence, and shape it later.",
         bullets: [
           "Capture when something surprises you, not when the project ends. A one-line note with a date is enough.",
@@ -1005,7 +1005,7 @@ export const closureModules: Module[] = [
       "The test of a handover is not whether a document was signed. It is whether the receiving team can run, support and change the thing without calling anyone who has left.",
     sections: [
       {
-        heading: "The reachability test",
+        heading: "Can they work without you?",
         body: "Most handovers pass on paper and fail in practice, and the failure has one signature: three months later, someone is still messaging a former team member who now works elsewhere. That informal channel is what makes an inadequate handover survivable, which is why it hides the problem instead of exposing it. The honest test is to ask what breaks if that person does not reply.",
         bullets: [
           "Can the receiving team deploy a change without the delivery team present?",
@@ -1035,7 +1035,7 @@ export const closureModules: Module[] = [
         sourceIds: ["closure", "rmg106"],
       },
       {
-        heading: "Known fragility",
+        heading: "The parts you know are weak",
         body: "Every delivered system has parts the team knows are weak — the integration that only works because of a retry loop, the batch job that fails if it runs past 2am, the config nobody fully understands. Delivery teams rarely write these down, because writing them down feels like confessing. Not writing them down means the receiving team discovers each one during an incident.",
         bullets: [
           "List the parts you would not want to change without care, and say why.",
@@ -1458,7 +1458,7 @@ export const closureModules: Module[] = [
         sourceIds: ["archives", "naa-data"],
       },
       {
-        heading: "Continuing access, not just continuing storage",
+        heading: "Keeping it readable, not just keeping it",
         body: "Keeping a database backup is not keeping a record accessible. If the only way to read the data is software the entity no longer licenses, running on an operating system it no longer supports, the obligation is not met in any practical sense — and the failure is discovered when someone asks for the data, usually under FOI or in litigation.",
         table: {
           caption: "Retention approaches at decommissioning",
@@ -1663,7 +1663,7 @@ export const closureModules: Module[] = [
       "Most closure reports are written into a departmental template with fixed headings. Knowing how to think about evidence and benefits is necessary and not sufficient — you also have to know what belongs under 'Outstanding dependencies' and why 'Project overview' is the section people waste and then need.",
     sections: [
       {
-        heading: "Front matter that earns its place",
+        heading: "The two sections everyone wastes",
         body: "Document purpose and project overview are the two sections everyone treats as padding, and they are the reason the report is usable in three years. The reader in three years has no idea what the project was, what it was called internally, or which of four similar initiatives this one is. Two hundred words of orientation is the difference between a findable record and an archived file.",
         table: {
           caption: "The two sections people waste",
@@ -2215,7 +2215,7 @@ export const closureModules: Module[] = [
         sourceIds: ["anao-perf"],
       },
       {
-        heading: "Length, and the one page that gets read",
+        heading: "Assume only the first page is read",
         body: "Assume one page is read. Not because readers are lazy — because a Deputy Secretary with forty minutes and eleven papers will read your first page and skim for anything that contradicts it. Everything else in the report exists to be checked by someone who has a specific question, which is a different job and a different reader.",
         bullets: [
           "Write the first page as though it is the whole report, then let the rest support it.",
@@ -2415,7 +2415,7 @@ export const closureModules: Module[] = [
         sourceIds: ["anao-perf", "rmg134"],
       },
       {
-        heading: "Retention as a design decision",
+        heading: "Deciding what to keep before it is deleted",
         body: "The single most common audit failure at closure is that the evidence existed and was not kept. Systems are decommissioned, licences lapse, cloud accounts are closed, and the extract that supported the headline benefit goes with them. Deciding what to retain is part of writing the report, not an afterthought for records management.",
         bullets: [
           "Retain the extract, not the dashboard — dashboards depend on systems that will be turned off.",
@@ -2428,7 +2428,7 @@ export const closureModules: Module[] = [
         sourceIds: ["closure", "rmg134"],
       },
       {
-        heading: "Assurance is not audit",
+        heading: "Assurance and audit are different readers",
         body: "They are routinely conflated, and the difference changes who you are writing for. Assurance is advice to the person accountable, given while there is still time to act — Gateway exists to help an SRO deliver. Audit is independent examination reported to others, usually after the fact, and its finding is about the entity rather than about you. A closure report is read by both, at different times, for different purposes.",
         table: {
           caption: "Two different readers",
