@@ -176,6 +176,20 @@ export const closureModules: Module[] = [
         ],
         sourceIds: ["anao-perf", "teal"],
       },
+      {
+        heading: "Closure is assembled, not written",
+        body: "The single change that most improves a closure report is starting it in month two. Almost everything it needs — the original baseline, the estimate against the actual, why an option was abandoned, what the vendor actually said — is easy to record at the time and expensive or impossible to reconstruct later. Treating closure as a document you sit down to write guarantees you will be writing it from memory, at the worst moment, about the things you remember rather than the things that mattered.",
+        bullets: [
+          "Keep the original approved baseline somewhere it cannot be edited when the plan is revised.",
+          "Record each estimate at the point it is made, so estimate-versus-actual exists without archaeology.",
+          "Note surprises when they happen, in one line with a date. Shape them into lessons at closure.",
+          "Capture the benefit measurement definition when the measure is designed, not when it is reported.",
+          "Ask at each governance point who will own each benefit after go-live. The answer changes, and the changes are informative.",
+        ],
+        example:
+          "A team that keeps a single running file — baselines, estimates, surprises, ownership answers — writes its closure report in two days from evidence. A team that does not spends two weeks producing something weaker, and will not be able to answer the auditor eighteen months later.",
+        sourceIds: ["rmg106", "lessons"],
+      },
     ],
     questions: [
       {
@@ -378,6 +392,20 @@ export const closureModules: Module[] = [
           "'Processing time' can mean lodgement to decision, lodgement to notification, or first-touch to decision. A 40 per cent improvement in one may be a 5 per cent improvement in another. Unstated, the reader assumes whichever is most flattering, and is right to.",
         sourceIds: ["anao-perf"],
       },
+      {
+        heading: "Periods, samples and the cherry-pick",
+        body: "Once a claim is marked and traceable, the remaining way to mislead honestly is the choice of window. Comparing a bad quarter with a good one produces a real improvement from real data and tells the reader nothing about the service. Nobody usually does this deliberately; the flattering window is simply the one that gets chosen, because it is the one that looks like success.",
+        bullets: [
+          "State why the comparison periods were chosen, especially if they are not adjacent or not the same length.",
+          "Use like-for-like periods where the work is seasonal — quarter against the same quarter, not against the quarter before.",
+          "Give the sample size. A 40 per cent improvement on 60 cases is a different claim from the same figure on 6,000.",
+          "Say what else changed in the window. A policy change, a staffing change or a campaign will move the same numbers.",
+          "Where the trend is noisy, show it rather than reporting two endpoints from it.",
+        ],
+        example:
+          "Processing time fell 41 per cent between Q2 and Q3. Q2 covered the annual re-registration peak; Q3 did not. Against Q3 of the previous year the improvement is 12 per cent. Both figures are real, only one is about the system, and the report that gives only the first is not lying.",
+        sourceIds: ["anao-perf", "rmg134"],
+      },
     ],
     questions: [
       {
@@ -577,6 +605,29 @@ export const closureModules: Module[] = [
         example:
           "'Reviewed at the December Service Performance Committee, using the standing contact-volume report' outlasts 'benefits review scheduled for December 2027' by roughly the length of one restructure.",
         sourceIds: ["rmg134", "teal"],
+      },
+      {
+        heading: "Kinds of benefit, and double counting",
+        body: "Not all benefits are the same kind of thing, and treating them as one list is how a business case promises savings the entity never sees. The distinction that matters most at closure is whether a benefit is cashable — whether a budget line actually falls — because a non-cashable efficiency gain is real, worth having, and will not appear in anyone's bottom line.",
+        table: {
+          caption: "Four kinds, and what each means at closure",
+          head: ["Kind", "What it is", "What closure must say"],
+          rows: [
+            ["Cashable saving", "A budget line falls", "Which line, whose budget, from when"],
+            ["Non-cashable efficiency", "Time freed, not money released", "What the time is now used for, or that it is not"],
+            ["Cost avoidance", "Spend that will not now occur", "What would have been spent, and the evidence it would have"],
+            ["Effectiveness", "Better outcomes at the same cost", "The measure, and that no saving is claimed"],
+          ],
+        },
+        bullets: [
+          "Say which kind each benefit is. A closure report claiming savings that are non-cashable will be tested and found wanting.",
+          "Non-cashable time savings need a stated destination — absorbed into existing workload is a legitimate answer, and it is not a saving.",
+          "Check for double counting: two projects touching the same process frequently claim the same efficiency.",
+          "Where a benefit was already counted in another business case, say so and halve it or drop it.",
+        ],
+        example:
+          "'Caseworkers save 12 minutes per application' is worth having and is not $2m. It becomes $2m only if positions are removed or work is absorbed that would otherwise have needed new positions — and the report should say which, or say neither.",
+        sourceIds: ["teal", "closure"],
       },
     ],
     questions: [
@@ -778,6 +829,20 @@ export const closureModules: Module[] = [
         example:
           "The Commonwealth's published Gateway lessons material exists precisely to serve this function — aggregated observations across many reviews, which is the only level at which a pattern becomes visible.",
         sourceIds: ["lessons", "anao-gateway"],
+      },
+      {
+        heading: "Capturing them while they are still true",
+        body: "The four-part structure fixes how a lesson is written. It does not fix when, and the when is why registers are thin: a lesson recorded on the last day is recalled through the story the team has settled on. The alternative is unglamorous and works — capture at the moment of surprise, in a sentence, and shape it later.",
+        bullets: [
+          "Capture when something surprises you, not when the project ends. A one-line note with a date is enough.",
+          "Record the estimate as well as the actual, at the point the estimate is made — otherwise nobody remembers what was expected.",
+          "Ask at each release retro: what would we tell a team starting this next month? That is the lesson, in the only form that matters.",
+          "Keep it blameless in wording and specific in fact. 'The vendor was slow' is neither.",
+          "Write the lesson properly at closure from the notes, rather than from memory.",
+        ],
+        example:
+          "A one-line note in week three — 'assumed state data-sharing approval was 2 weeks, told today it is 11' — is worth more than an hour of workshop in week sixteen, because by week sixteen the team remembers only that approvals were slow.",
+        sourceIds: ["lessons"],
       },
     ],
     questions: [
@@ -981,6 +1046,20 @@ export const closureModules: Module[] = [
         example:
           "'The nightly reconciliation assumes the provider feed arrives before 02:00. It has been late twice; both times the job was rerun manually by the platform team. There is no alerting on this.' That paragraph is worth more than most handover packs.",
         sourceIds: ["teal"],
+      },
+      {
+        heading: "Who is receiving, and can they",
+        body: "Handover is usually planned as a transfer of information and fails as a transfer of capability. The receiving team may be smaller, differently skilled, already at capacity, or entirely unaware they are receiving anything. None of that is visible in a document-completeness check, and all of it determines whether the service survives contact with its first incident.",
+        bullets: [
+          "Confirm the receiving team knows and has agreed — being named in a plan is not agreement.",
+          "Check capacity, not just capability: a team already at full load will absorb this by dropping something else.",
+          "Identify the skills the delivery team had that the receiving team does not, and say so plainly.",
+          "Agree the support model in terms someone can act on: hours, response expectations, escalation path, who is called at 2am.",
+          "Name the first three months' contact point on both sides, and put an end date on it so it does not become permanent informal dependency.",
+        ],
+        example:
+          "A platform built by six engineers handed to an operations team of two, neither of whom has worked with the framework. That is a legitimate arrangement if it is stated and resourced, and a failure waiting to happen if the handover pack simply lands in their inbox.",
+        sourceIds: ["rmg106", "teal"],
       },
     ],
     questions: [
@@ -1189,6 +1268,20 @@ export const closureModules: Module[] = [
         example:
           "A twelve-month warranty is worth nothing if it expires unnoticed. Name the person who holds it, put the end date somewhere they will see it, and record what to do if a defect appears in month eleven.",
         sourceIds: ["cprs", "closure"],
+      },
+      {
+        heading: "Unspent funds and the incentive to spend them",
+        body: "Money left at the end of a project is not a windfall and not a reward; depending on the funding arrangement it lapses, returns to the entity, or must be formally rephased. The problem is that everyone involved knows an underspend can look like a poorly built business case, which creates real pressure to spend it on something defensible before the year closes. Naming that pressure is more useful than pretending it does not exist.",
+        bullets: [
+          "Establish early what happens to an underspend under this funding arrangement — it is rarely the project's to keep.",
+          "Report underspend as a variance with its cause, exactly like an overspend. Both indicate the estimate was wrong.",
+          "Late scope added to consume a budget is a scope decision and must go through the same approval as any other.",
+          "Where funds are rephased into a following year, record the approval and what they are now committed to.",
+          "An underspend caused by descoping is a different fact from one caused by efficient delivery. Say which.",
+        ],
+        example:
+          "'Delivered $3.1m under budget' reads as good news and may mean the scope was cut by a third. The honest line names both: what was not built, and what was genuinely cheaper than forecast.",
+        sourceIds: ["closure", "rmg134"],
       },
     ],
     questions: [
@@ -1561,11 +1654,11 @@ export const closureModules: Module[] = [
   {
     id: "sections",
     number: 8,
-    title: "The standard sections",
-    subtitle: "Filling in the template you will actually be handed",
+    title: "Framing the report",
+    subtitle: "Purpose, overview, objectives and the numbers",
     minutes: 0,
     slides: "",
-    outcome: "Complete every standard section of a closure report, and know what each one is for and how each is usually failed.",
+    outcome: "Write the framing sections: purpose, overview, objectives, business outcomes, key results, milestones and the financial summary.",
     coreIdea:
       "Most closure reports are written into a departmental template with fixed headings. Knowing how to think about evidence and benefits is necessary and not sufficient — you also have to know what belongs under 'Outstanding dependencies' and why 'Project overview' is the section people waste and then need.",
     sections: [
@@ -1649,6 +1742,166 @@ export const closureModules: Module[] = [
           "'Risk: identity broker token lifetime may change without notice. Owner: Assistant Director, Platform Services. Rating: medium. Treatment: registered as a consuming system with Platform Identity, notification requested. Transferred to: Platform Services risk register, ref PS-R-118. Next review: December.' That item survives the project. 'Risk: integration dependencies — ongoing' does not.",
         sourceIds: ["rmg106", "teal"],
       },
+    ],
+    questions: [
+      {
+        id: "cl-x1",
+        moduleId: "sections",
+        prompt: "What is the difference between an objective and a business outcome at closure?",
+        options: [
+          "The objective is what you set out to do; the outcome is why it mattered",
+          "The objective is set by the project; the outcome is set by the entity's corporate plan",
+          "The objective is qualitative; the outcome is always expressed as a number",
+          "They are the same thing, described at different levels of governance",
+        ],
+        answer: 0,
+        rationale:
+          "Keeping them separate is what lets the report show an objective delivered while the outcome did not move — the single most informative result a closure report can contain.",
+        optionNotes: [
+          "",
+          "Both can come from either. The distinction is what each asks, not who wrote it.",
+          "Objectives are often measurable and outcomes are often estimated. Form is not the difference.",
+          "Collapsing them is exactly the failure that hides the interesting result.",
+        ],
+      },
+      {
+        id: "cl-x2",
+        moduleId: "sections",
+        prompt: "A milestone table shows every actual date equal to the planned date. What should a reader infer?",
+        options: [
+          "The plan was rebaselined until variance disappeared",
+          "The project was managed with unusual schedule discipline",
+          "Milestones were defined loosely enough to always be met",
+          "The table was completed from the delivery plan rather than actuals",
+        ],
+        answer: 0,
+        rationale:
+          "Real delivery has variance. A table with none has almost always been reported against the most recent replan, which is the schedule equivalent of reporting cost against the revised budget.",
+        optionNotes: [
+          "",
+          "Possible in principle and vanishingly rare in practice for anything substantial.",
+          "A genuine failure mode, and it usually produces vague milestones rather than exact date matches.",
+          "Would produce the same table, and is a subset of reporting against the latest plan.",
+        ],
+      },
+      {
+        id: "cl-x9",
+        moduleId: "sections",
+        prompt: "What does a financial summary give you that a table of final costs does not?",
+        options: [
+          "The variance against original approval, with each revision dated and reasoned",
+          "A breakdown of expenditure by supplier and by cost centre",
+          "Confirmation that spending stayed within delegated authority",
+          "The proportion of the budget consumed in each financial year",
+        ],
+        answer: 0,
+        rationale:
+          "Final cost answers what it cost. The decision-relevant question is how far the delivered thing moved from the approved thing, which only the variance and the revision chain show.",
+        optionNotes: [
+          "",
+          "Useful operational detail that does not address the approval question.",
+          "A compliance matter, separate from whether the investment held its shape.",
+          "Phasing, relevant to Finance rather than to the approval gap.",
+        ],
+      },
+      {
+        id: "cl-x10",
+        moduleId: "sections",
+        prompt: "Why does the project overview matter to a reader in three years?",
+        options: [
+          "They will not know what it was, what it was called, or which of several it is",
+          "It supplies the context required for the report to be formally accepted",
+          "Overviews are the section most often requested under freedom of information",
+          "It establishes the scope against which variances are later measured",
+        ],
+        answer: 0,
+        rationale:
+          "Orientation makes the record findable and usable. Internal name, codename and funding reference are how someone locates it; problem and dates are how they judge relevance.",
+        optionNotes: [
+          "",
+          "Acceptance turns on the transfers, not the overview.",
+          "Occasionally true, and not the reason to write it well.",
+          "Scope baselines live in the objectives and financial sections.",
+        ],
+      },
+    ],
+    scenarios: [
+      {
+        id: "cl-x-s2",
+        moduleId: "sections",
+        context:
+          "Your objective was 'provide self-service visibility of application status'. It was delivered and works. The business outcome was 'reduce avoidable support contact', measured at 18 per cent against a 40 per cent target. Your sponsor wants the section to lead with the delivered objective.",
+        prompt: "How should the section be written?",
+        options: [
+          "Report all three separately: objective met, outcome largely not",
+          "Lead with the objective as requested, and cover the outcome shortfall in the shortfall section",
+          "Lead with the outcome, since it is the reason the investment was funded",
+          "Combine them into a single statement describing partial achievement",
+        ],
+        answer: 0,
+        rationale:
+          "The sponsor is not wrong that the objective was met. Reporting the levels separately serves both truths and produces the useful finding: the thing was built, works, and did not change behaviour as expected — which points at take-up or at the theory, and neither is visible in a merged sentence.",
+        optionNotes: [
+          "",
+          "Splitting them across sections lets a reader take the objective as the result and stop.",
+          "Reversing the emphasis is as distorting as the sponsor's version, in the other direction.",
+          "'Partial achievement' is the phrase that hides which part.",
+        ],
+      },
+      {
+        id: "cl-x-s3",
+        moduleId: "sections",
+        context:
+          "Your milestone table shows eleven milestones, every one delivered on its planned date. The project was rebaselined twice, in March and September, and each rebaseline moved the remaining dates.",
+        prompt: "How should the table be presented?",
+        options: [
+          "Original planned dates alongside the rebaselined ones, with variance against original",
+          "As it stands, since both rebaselines were formally approved",
+          "Original dates only, so that the true slip is visible",
+          "Replaced by a narrative explaining the two rebaselines",
+        ],
+        answer: 0,
+        rationale:
+          "The same principle as cost. Both rebaselines were legitimate and disclosed; a table showing no variance against a twice-moved plan answers an easier question than the reader is asking.",
+        optionNotes: [
+          "",
+          "Approval makes the revision legitimate, not the presentation complete.",
+          "Hiding approved revisions swaps one distortion for another.",
+          "A narrative loses the per-milestone detail the table exists to carry.",
+        ],
+      },
+    ],
+    assignment: {
+      title: "Write the framing sections",
+      instruction:
+        "For a piece of work you know, draft the document purpose, a project overview a stranger could use, and the objective / business outcome / key result set reported separately.",
+      prompts: [
+        "Document purpose: the decisions this report supports, and who takes them",
+        "Project overview: problem, scope, dates, cost, internal name and funding reference",
+        "Objective as originally written, marked achieved / partial / not",
+        "Business outcome with its baseline, and the key result with target and actual",
+      ],
+      criteria: [
+        "The purpose statement would not be true of any other closure report",
+        "The overview lets someone who was not there tell whether it is relevant to them",
+        "Objective, outcome and key result are reported separately rather than merged",
+      ],
+      modelAnswer:
+        "Purpose: this report closes the Provider Status project and transfers six benefits, four residual risks and one unresolved dependency to named owners. It supports the SRO's decision to stand down programme governance, and Finance's treatment of $47.3m of capitalised and expensed cost. Overview: providers could not see where participant applications had got to, and rang support to find out. Delivered a self-service status view in the provider portal, Aug 2023 to Jun 2026, $47.3m against $38.1m approved. Known internally as Provider Status, codename PANDA in early planning papers, NPP reference 2023-DEWR-114. Delivery: internal team with an integration vendor. Objective: 'Provide providers with self-service visibility of application status' — achieved. Business outcome: reduce avoidable support contact — measured 18% reduction (Q3 2026 against a Q1 2024 baseline, source CRM-RPT-88) against a 40% target. Key result: contacts per application, target 0.6, actual 0.83. The objective was met and the outcome was not, which is the finding: providers use it, and it has not displaced the phone call.",
+    },
+  },
+
+  {
+    id: "openitems",
+    number: 9,
+    title: "Closing the open items",
+    subtitle: "Quality, feedback, and everything that outlives the project",
+    minutes: 0,
+    slides: "",
+    outcome: "Close out quality, team and stakeholder sections honestly, and leave no open item without a decision and a named owner.",
+    coreIdea:
+      "The back half of a closure report is where things either transfer or quietly evaporate. Every open item has exactly three legitimate destinations — closed, formally accepted, or carried to a named person with a date — and 'ongoing' is not one of them.",
+    sections: [
       {
         heading: "Completion criteria, quality and the team",
         body: "Three review dimensions that templates ask for and delivery people skip. Completion criteria are the conditions agreed at the start for calling the project done — reporting against them rather than against a general sense of doneness is what stops closure being a matter of opinion. Quality is not scope: a delivered feature that fails under load has been delivered and is not finished. And team performance is asked for in most templates and answered with a thank-you list, which wastes the only chance anyone gets to record what the delivery model actually cost.",
@@ -1723,48 +1976,8 @@ export const closureModules: Module[] = [
     ],
     questions: [
       {
-        id: "cl-x1",
-        moduleId: "sections",
-        prompt: "What is the difference between an objective and a business outcome at closure?",
-        options: [
-          "The objective is what you set out to do; the outcome is why it mattered",
-          "The objective is set by the project; the outcome is set by the entity's corporate plan",
-          "The objective is qualitative; the outcome is always expressed as a number",
-          "They are the same thing, described at different levels of governance",
-        ],
-        answer: 0,
-        rationale:
-          "Keeping them separate is what lets the report show an objective delivered while the outcome did not move — the single most informative result a closure report can contain.",
-        optionNotes: [
-          "",
-          "Both can come from either. The distinction is what each asks, not who wrote it.",
-          "Objectives are often measurable and outcomes are often estimated. Form is not the difference.",
-          "Collapsing them is exactly the failure that hides the interesting result.",
-        ],
-      },
-      {
-        id: "cl-x2",
-        moduleId: "sections",
-        prompt: "A milestone table shows every actual date equal to the planned date. What should a reader infer?",
-        options: [
-          "The plan was rebaselined until variance disappeared",
-          "The project was managed with unusual schedule discipline",
-          "Milestones were defined loosely enough to always be met",
-          "The table was completed from the delivery plan rather than actuals",
-        ],
-        answer: 0,
-        rationale:
-          "Real delivery has variance. A table with none has almost always been reported against the most recent replan, which is the schedule equivalent of reporting cost against the revised budget.",
-        optionNotes: [
-          "",
-          "Possible in principle and vanishingly rare in practice for anything substantial.",
-          "A genuine failure mode, and it usually produces vague milestones rather than exact date matches.",
-          "Would produce the same table, and is a subset of reporting against the latest plan.",
-        ],
-      },
-      {
         id: "cl-x3",
-        moduleId: "sections",
+        moduleId: "openitems",
         prompt: "An action in the closure report is assigned to the project team. What is wrong?",
         options: [
           "The project team is dissolving, so the action has no owner",
@@ -1784,7 +1997,7 @@ export const closureModules: Module[] = [
       },
       {
         id: "cl-x4",
-        moduleId: "sections",
+        moduleId: "openitems",
         prompt: "What should the closure agreement signature attest to?",
         options: [
           "That the transfers described were accepted by the owners named",
@@ -1804,7 +2017,7 @@ export const closureModules: Module[] = [
       },
       {
         id: "cl-x5",
-        moduleId: "sections",
+        moduleId: "openitems",
         prompt: "What is the difference between a lesson and a recommendation at closure?",
         options: [
           "A lesson is for future projects anywhere; a recommendation is for this entity's process",
@@ -1824,7 +2037,7 @@ export const closureModules: Module[] = [
       },
       {
         id: "cl-x6",
-        moduleId: "sections",
+        moduleId: "openitems",
         prompt: "An issue is still open at closure and is marked 'ongoing'. What is wrong?",
         options: [
           "'Ongoing' is not a state — the issue is closed, accepted, or a follow-on action with an owner",
@@ -1844,7 +2057,7 @@ export const closureModules: Module[] = [
       },
       {
         id: "cl-x7",
-        moduleId: "sections",
+        moduleId: "openitems",
         prompt: "Which is a quality statement rather than a scope statement?",
         options: [
           "14 known defects accepted into production, 2 at severity 3, peak load tested to 3x forecast",
@@ -1864,7 +2077,7 @@ export const closureModules: Module[] = [
       },
       {
         id: "cl-x8",
-        moduleId: "sections",
+        moduleId: "openitems",
         prompt: "Stakeholder feedback in a closure report is unanimously positive. What should a reader suspect?",
         options: [
           "The wrong people were asked, or dissent was not reported",
@@ -1886,7 +2099,7 @@ export const closureModules: Module[] = [
     scenarios: [
       {
         id: "cl-x-s1",
-        moduleId: "sections",
+        moduleId: "openitems",
         context:
           "The outstanding items section lists eleven risks. Nine name an individual and a destination register. Two read 'Risk: data quality in migrated records — ongoing, Service Delivery' with no rating, no treatment and no review date.",
         prompt: "What is the right treatment for those two?",
@@ -1907,25 +2120,25 @@ export const closureModules: Module[] = [
         ],
       },
       {
-        id: "cl-x-s2",
-        moduleId: "sections",
+        id: "cl-x-s4",
+        moduleId: "openitems",
         context:
-          "Your objective was 'provide self-service visibility of application status'. It was delivered and works. The business outcome was 'reduce avoidable support contact', measured at 18 per cent against a 40 per cent target. Your sponsor wants the section to lead with the delivered objective.",
-        prompt: "How should the section be written?",
+          "Closure is next week. Of 23 issues raised during delivery, 19 are closed. Of the rest, two have agreed fixes scheduled for the next release, one waits on a Policy decision with no date, and one nobody can now reproduce.",
+        prompt: "How should the four be treated?",
         options: [
-          "Report all three separately: objective met, outcome largely not",
-          "Lead with the objective as requested, and cover the outcome shortfall in the shortfall section",
-          "Lead with the outcome, since it is the reason the investment was funded",
-          "Combine them into a single statement describing partial achievement",
+          "Two become follow-on actions, one a dependency with a named chaser, one closed as unreproducible",
+          "All four are carried forward as open issues for the receiving team",
+          "The three actionable become follow-on actions; the unreproducible stays open in case it recurs",
+          "All four transfer to the entity risk register for ongoing monitoring",
         ],
         answer: 0,
         rationale:
-          "The sponsor is not wrong that the objective was met. Reporting the levels separately serves both truths and produces the useful finding: the thing was built, works, and did not change behaviour as expected — which points at take-up or at the theory, and neither is visible in a merged sentence.",
+          "Each has a different correct destination, and naming them individually is the work. Closing the unreproducible one with the reason recorded is a decision; leaving it open is not, and it will sit there for years.",
         optionNotes: [
           "",
-          "Splitting them across sections lets a reader take the objective as the result and stop.",
-          "Reversing the emphasis is as distorting as the sponsor's version, in the other direction.",
-          "'Partial achievement' is the phrase that hides which part.",
+          "'Carried forward' to a team is the pattern that produces orphaned issues.",
+          "Leaving one open indefinitely avoids the decision rather than making it.",
+          "Converting issues to risks turns an obligation to fix into an obligation to watch.",
         ],
       },
     ],
@@ -1949,9 +2162,10 @@ export const closureModules: Module[] = [
     },
   },
 
+
   {
     id: "writing",
-    number: 9,
+    number: 10,
     title: "Writing the report",
     subtitle: "Structure, candour and the shortfall paragraph",
     minutes: 0,
@@ -1999,6 +2213,20 @@ export const closureModules: Module[] = [
           ],
         },
         sourceIds: ["anao-perf"],
+      },
+      {
+        heading: "Length, and the one page that gets read",
+        body: "Assume one page is read. Not because readers are lazy — because a Deputy Secretary with forty minutes and eleven papers will read your first page and skim for anything that contradicts it. Everything else in the report exists to be checked by someone who has a specific question, which is a different job and a different reader.",
+        bullets: [
+          "Write the first page as though it is the whole report, then let the rest support it.",
+          "Put the gap, the unresolved transfers and the money on that page. They are what a decision turns on.",
+          "Length is not thoroughness. A 40-page report with the finding on page 27 has hidden it, whatever the intention.",
+          "Detail belongs in appendices with the body carrying the reference — reachable, not in the way.",
+          "If a section exists only because the template has the heading, say 'not applicable' and why, rather than filling it.",
+        ],
+        example:
+          "The test: hand your first page to someone who has never heard of the project and ask what they would do next. If they cannot name a decision, the page is describing the project rather than closing it.",
+        sourceIds: ["anao-perf", "rmg106"],
       },
     ],
     questions: [
@@ -2150,7 +2378,7 @@ export const closureModules: Module[] = [
 
   {
     id: "assurance",
-    number: 10,
+    number: 11,
     title: "Assurance and audit readiness",
     subtitle: "Writing for a reader who will test the claim",
     minutes: 0,
@@ -2198,6 +2426,29 @@ export const closureModules: Module[] = [
         example:
           "A benefit claim supported by 'the Power BI dashboard' is supported by nothing eighteen months after the workspace is deleted. A retained CSV, the SQL that produced it, and a paragraph defining the metric will still answer the question.",
         sourceIds: ["closure", "rmg134"],
+      },
+      {
+        heading: "Assurance is not audit",
+        body: "They are routinely conflated, and the difference changes who you are writing for. Assurance is advice to the person accountable, given while there is still time to act — Gateway exists to help an SRO deliver. Audit is independent examination reported to others, usually after the fact, and its finding is about the entity rather than about you. A closure report is read by both, at different times, for different purposes.",
+        table: {
+          caption: "Two different readers",
+          head: ["", "Assurance", "Audit"],
+          rows: [
+            ["Reports to", "The accountable officer", "The entity's audit committee, Parliament"],
+            ["Timing", "During, in time to change the outcome", "After, on a sample"],
+            ["Question", "Will this succeed, and what would help?", "Is what was reported supported?"],
+            ["Consequence", "Recommendations to the SRO", "A finding against the entity"],
+          ],
+        },
+        bullets: [
+          "Write assurance responses to be useful; write the record to be testable. They are not in tension, and they are not the same task.",
+          "An assurance recommendation not acted on is itself something a later audit will look at.",
+          "Internal audit follow-up asks whether the closure commitments were kept, not whether the report was well written.",
+          "The three-lines model is a useful check: management owns it, oversight functions monitor it, internal audit independently examines it. A closure report feeds all three.",
+        ],
+        example:
+          "A Gate 6 reviewer asks what would improve the outcome from here. An ANAO auditor asks what supports the number on page four. Answering the second well is what protects the entity; answering the first well is what protects the benefit.",
+        sourceIds: ["rmg106", "anao-gateway", "anao-perf"],
       },
     ],
     questions: [

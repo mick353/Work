@@ -92,6 +92,12 @@ export type PackageManifest = {
   status: PackageStatus;
   /** One-line description for the library card. */
   summary: string;
+  /**
+   * The curriculum arc, in four or five words — shown beside the stage count.
+   * Was hardcoded as "From need to measured value", which is true of exactly
+   * one course and was being shown on both.
+   */
+  arc: string;
 };
 
 /**
@@ -144,6 +150,7 @@ const pmFundamentals: TrainingPackage = {
     status: "available",
     summary:
       "Nine stages from user need to measured value, built from the departmental deck and turned into something you practise rather than sit through.",
+    arc: "From user need to measured value",
   },
   content: {
     modules,
@@ -212,7 +219,8 @@ const closureReports: TrainingPackage = {
     reviewed: CLOSURE_REVIEWED,
     status: "available",
     summary:
-      "Seven stages on writing a closure report that survives an audit — marked claims, transferred benefits, lessons that change behaviour, and a handover that works once the team has gone.",
+      "Writing a closure report that survives an audit — marked claims, transferred benefits, lessons that change behaviour, a settled financial and records position, and a handover that works once the team has gone.",
+    arc: "From evidence to signed handover",
   },
   content: {
     modules: closureModules,

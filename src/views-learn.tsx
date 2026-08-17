@@ -98,7 +98,7 @@ export function Dashboard({
           <ul className="hero-facts">
             <li>
               <strong>{modules.length} stages</strong>
-              <span>From need to measured value</span>
+              <span>{manifest.arc}</span>
             </li>
             <li>
               <strong>{estimateHours(totalMinutes).replace("about ", "~")}</strong>
