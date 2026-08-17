@@ -1650,6 +1650,63 @@ export const closureModules: Module[] = [
         sourceIds: ["rmg106", "teal"],
       },
       {
+        heading: "Completion criteria, quality and the team",
+        body: "Three review dimensions that templates ask for and delivery people skip. Completion criteria are the conditions agreed at the start for calling the project done — reporting against them rather than against a general sense of doneness is what stops closure being a matter of opinion. Quality is not scope: a delivered feature that fails under load has been delivered and is not finished. And team performance is asked for in most templates and answered with a thank-you list, which wastes the only chance anyone gets to record what the delivery model actually cost.",
+        table: {
+          caption: "What each dimension asks",
+          head: ["Dimension", "The question", "The usual non-answer"],
+          rows: [
+            ["Completion criteria", "Were the agreed conditions for 'done' met?", "'All deliverables were completed.'"],
+            ["Quality", "Does it work under real conditions?", "'The solution passed user acceptance testing.'"],
+            ["Team performance", "What did the delivery model cost, and what worked?", "A list of names and thanks"],
+          ],
+        },
+        bullets: [
+          "Quote the completion criteria as agreed, and mark each met, partially met or waived — with who waived it.",
+          "Quality means defect rates, performance under load, accessibility conformance and security position, not test sign-off.",
+          "Known defects accepted into production belong here, with severity and owner, not buried in the risk table.",
+          "Team performance: resourcing model, vacancy and turnover, reliance on individuals, and what you would staff differently.",
+        ],
+        example:
+          "'Delivered with 14 known defects accepted into production, 2 of them severity 3, all with owners in the platform backlog. Peak load tested to 3× forecast; accessibility audited at WCAG 2.1 AA with two outstanding AAA items.' That is a quality statement. 'Passed UAT' is a note that a meeting happened.",
+        sourceIds: ["rmg106", "anao-perf"],
+      },
+      {
+        heading: "Follow-on actions and recommendations",
+        body: "Three things get bundled together and should not be. A lesson is for someone else, on a different project. A recommendation is for this entity, about how it works. A follow-on action is unfinished work from this project that someone must now pick up. The discipline worth borrowing is that at closure every open issue is either closed or becomes a follow-on action recommendation — there is no third state where it simply stops being mentioned.",
+        table: {
+          caption: "Three different things",
+          head: ["Type", "Audience", "Example"],
+          rows: [
+            ["Lesson", "Future projects, anywhere", "Opt-in take-up should be forecast from opt-in precedents"],
+            ["Recommendation", "This entity, about its process", "Sentencing sign-off before any decommissioning date is set"],
+            ["Follow-on action", "A named person, about this work", "Rebuild the niche reporting function before the legacy register retires"],
+          ],
+        },
+        bullets: [
+          "Every open issue at closure is closed, accepted, or converted to a follow-on action with an owner and a date.",
+          "'Ongoing' is not a state. It means nobody decided.",
+          "Recommendations name who can act on them — a process owner, not the organisation in general.",
+          "Say where each recommendation was directed and whether it was accepted. An unaccepted recommendation is still worth recording.",
+        ],
+        example:
+          "The most valuable line in a closure report is often a recommendation that changes a control: 'sentencing sign-off is a precondition of setting any decommissioning date'. One sentence, accepted, and every future decommissioning in the entity is safer. That is a different kind of output from a lesson, and filing it as one loses it.",
+        sourceIds: ["lessons", "rmg106"],
+      },
+      {
+        heading: "Stakeholder feedback",
+        body: "Templates ask for it, and it usually appears as a paragraph asserting that stakeholders were satisfied. The useful version reports who was asked, what they said including the unflattering parts, and what it means for the thing now in operation. Treat it like any other claim: measured, estimated or asserted.",
+        bullets: [
+          "Name the groups consulted and how — survey, interview, workshop — and how many responded.",
+          "Report dissent, not just endorsement. Unanimous positive feedback usually means the wrong people were asked.",
+          "Separate feedback about the product from feedback about the delivery, since they transfer to different owners.",
+          "Mark it asserted where it is impressionistic, exactly as elsewhere in the report.",
+        ],
+        example:
+          "'Consulted: 4 provider organisations (interview), 61 internal caseworkers (survey, 38% response). Caseworkers rated the status screen positively; the strongest negative theme was that the notification wording still generates calls, which is a live issue transferred to Policy Branch as follow-on action A3.' Feedback that leads somewhere.",
+        sourceIds: ["anao-perf"],
+      },
+      {
         heading: "Artefacts and the agreement to close",
         body: "The artefacts section is an index, and its job is to make the project's outputs findable by someone who does not know they exist. The closure agreement is the act that ends the project, and signing it means the signatories accept that everything listed has in fact transferred — which is why it belongs last, after the sections that say what is being transferred.",
         bullets: [
@@ -1743,6 +1800,86 @@ export const closureModules: Module[] = [
           "True and trivial. Everyone can already see the project stopped.",
           "Nobody can attest to every particular, and demanding it makes the signature meaningless.",
           "Would make the agreement unsignable for any project with a shortfall, which is most of them.",
+        ],
+      },
+      {
+        id: "cl-x5",
+        moduleId: "sections",
+        prompt: "What is the difference between a lesson and a recommendation at closure?",
+        options: [
+          "A lesson is for future projects anywhere; a recommendation is for this entity's process",
+          "A lesson is retrospective; a recommendation is forward-looking",
+          "A lesson is written by the team; a recommendation comes from governance",
+          "A lesson is informal; a recommendation requires formal endorsement",
+        ],
+        answer: 0,
+        rationale:
+          "They have different audiences and different fates. A recommendation that changes a control makes every future project safer; filed as a lesson it goes into a pool nobody with authority reads.",
+        optionNotes: [
+          "",
+          "Both look forward. The difference is who acts.",
+          "Either can be written by either. Authorship is not the distinction.",
+          "Both can be formal. Endorsement is not what separates them.",
+        ],
+      },
+      {
+        id: "cl-x6",
+        moduleId: "sections",
+        prompt: "An issue is still open at closure and is marked 'ongoing'. What is wrong?",
+        options: [
+          "'Ongoing' is not a state — the issue is closed, accepted, or a follow-on action with an owner",
+          "Open issues cannot be carried past closure under most frameworks",
+          "It should have been reclassified as a risk before closure",
+          "Issues must be escalated to the Senior Responsible Officer when unresolved",
+        ],
+        answer: 0,
+        rationale:
+          "'Ongoing' records that nobody decided. Every open issue at closure has exactly three legitimate destinations, and each of them names someone.",
+        optionNotes: [
+          "",
+          "They can be carried — as follow-on actions with owners and dates.",
+          "Reclassifying an issue as a risk converts an obligation to fix into an obligation to watch.",
+          "Escalation may be appropriate and is not a resolution state.",
+        ],
+      },
+      {
+        id: "cl-x7",
+        moduleId: "sections",
+        prompt: "Which is a quality statement rather than a scope statement?",
+        options: [
+          "14 known defects accepted into production, 2 at severity 3, peak load tested to 3x forecast",
+          "All agreed deliverables were completed and accepted by the business",
+          "The solution passed user acceptance testing with no outstanding blockers",
+          "Scope was delivered in full following two approved variations",
+        ],
+        answer: 0,
+        rationale:
+          "Quality asks whether it works under real conditions. Defect counts, severities and load figures answer that; deliverable completion and test sign-off answer whether the thing exists.",
+        optionNotes: [
+          "",
+          "Completion of deliverables is scope.",
+          "A test event, reported as an outcome.",
+          "Scope again, with the variations doing the interesting work.",
+        ],
+      },
+      {
+        id: "cl-x8",
+        moduleId: "sections",
+        prompt: "Stakeholder feedback in a closure report is unanimously positive. What should a reader suspect?",
+        options: [
+          "The wrong people were asked, or dissent was not reported",
+          "The project was unusually well received",
+          "Feedback was collected too late to capture early frustration",
+          "The sample was too small to be representative",
+        ],
+        answer: 0,
+        rationale:
+          "Any change of substance produces someone who disliked it. Unanimity usually indicates a selected audience or a filtered write-up, and the dissent is the part with information in it.",
+        optionNotes: [
+          "",
+          "Possible, and it is the least likely explanation and the one to test last.",
+          "Timing affects what is captured; it rarely eliminates dissent entirely.",
+          "A small sample produces noise, not uniform approval.",
         ],
       },
     ],

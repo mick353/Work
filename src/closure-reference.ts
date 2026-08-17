@@ -92,6 +92,14 @@ export const closureFlashcards: Flashcard[] = [
   { id: "cf66", moduleId: "sections", kind: "application", front: "What belongs in the artefacts section?", back: "Each artefact with its location AND its owner — including architecture decisions, data dictionaries, test evidence, contracts and the benefits plan. Mark which are records with retention obligations." },
   { id: "cf67", moduleId: "sections", kind: "definition", front: "What should the closure signature attest to?", back: "That the transfers described have been accepted by the owners named. That makes signing consequential — an unowned benefit is a transfer the signatory is declining." },
 
+  { id: "cf68", moduleId: "sections", kind: "discrimination", front: "Lesson, recommendation, follow-on action — which is which?", back: "Lesson: for future projects anywhere. Recommendation: for this entity's process. Follow-on action: unfinished work from this project, with a named owner." },
+  { id: "cf69", moduleId: "sections", kind: "application", front: "An open issue marked 'ongoing' at closure", back: "'Ongoing' is not a state — it records that nobody decided. Closed, formally accepted, or a follow-on action with an owner and a date." },
+  { id: "cf70", moduleId: "sections", kind: "discrimination", front: "Quality or scope: 'all deliverables completed'?", back: "Scope. Quality asks whether it works under real conditions — defect counts and severities, load, accessibility conformance, security position." },
+  { id: "cf71", moduleId: "sections", kind: "application", front: "Where do known defects accepted into production belong?", back: "In the quality section, with severity and owner — not buried in the risk table where they read as things that might happen rather than things that did." },
+  { id: "cf72", moduleId: "sections", kind: "definition", front: "What are completion criteria?", back: "The conditions agreed at the start for calling the project done. Reporting against them is what stops closure being a matter of opinion. Mark each met, partial or waived — and by whom." },
+  { id: "cf73", moduleId: "sections", kind: "application", front: "What makes a team performance section useful?", back: "Resourcing model, vacancy and turnover, reliance on individuals, and what you would staff differently. Not a list of names and thanks." },
+  { id: "cf74", moduleId: "sections", kind: "discrimination", front: "Stakeholder feedback is unanimously positive. Suspect what?", back: "The wrong people were asked, or dissent was not reported. Any change of substance produces someone who disliked it, and that is the part with information in it." },
+
   { id: "cf31", moduleId: "writing", kind: "application", front: "What belongs on page one?", back: "What was promised, what was delivered, and the gap. Not governance, not acknowledgements, not the financial position against a revised budget." },
   { id: "cf32", moduleId: "writing", kind: "definition", front: "The shortfall paragraph", back: "A single direct passage: what was not achieved, by how much against the original commitment, the cause, and where the lesson is recorded." },
   { id: "cf33", moduleId: "writing", kind: "discrimination", front: "'Broadly in line with expectations' — how is it read?", back: "As a miss, by an amount the writer chose not to state. Results that meet expectations are reported with the number." },
@@ -144,6 +152,9 @@ export const closureGlossary: GlossaryEntry[] = [
   { term: "Objective", origin: "General", moduleId: "sections", definition: "What the project set out to do, quoted as originally written. Achievement of an objective is not achievement of the outcome that justified it." },
   { term: "Project artefacts", origin: "General", moduleId: "sections", definition: "The outputs a project leaves behind — architecture decisions, data dictionaries, test evidence, contracts, benefits plans. Indexed with location and owner so a stranger can find them." },
   { term: "RAID", origin: "General", moduleId: "sections", definition: "Risks, assumptions, issues and dependencies. At closure it stops being a status log and becomes a transfer table: every open item accepted by a named person or visibly abandoned." },
+  { term: "Completion criteria", origin: "General", moduleId: "sections", definition: "The conditions agreed at the outset for calling the project done. Reported at closure as met, partially met or waived — with who waived them — so that closure is a test rather than an opinion." },
+  { term: "Follow-on action recommendation", origin: "General", moduleId: "sections", definition: "Unfinished work carried out of a closing project to a named owner with a date. The discipline is that every open issue at closure is closed, formally accepted, or converted to one — there is no 'ongoing'." },
+  { term: "Recommendation", origin: "General", moduleId: "sections", definition: "A proposal directed at this entity about how it works, as distinct from a lesson aimed at future projects. A recommendation that changes a control is often the most valuable line in a closure report." },
   { term: "Records authority", origin: "Government", moduleId: "records", definition: "An instrument issued by the National Archives giving permission to destroy, retain or transfer described records, and setting minimum retention periods." },
   { term: "Sentencing", origin: "Government", moduleId: "records", definition: "Determining, against a records authority, which records must be kept, for how long, destroyed, or transferred. The first step in any decommissioning, because everything else depends on the answer." },
   { term: "System of record", origin: "General", moduleId: "records", definition: "The authoritative source for a given set of data. Must be named explicitly when a replaced system stays running, or staff cannot know which copy governs." },
@@ -1022,6 +1033,30 @@ export const closureToolkit: ToolkitTemplate[] = [
     note: "No row owned by a team, a branch or the project. If an item genuinely has no owner, write UNTRANSFERRED and put it in front of the signatory.",
   },
   {
+    id: "followon",
+    title: "Follow-on action",
+    prompt: "[Ref]: [unfinished work]. Owner: [name, role]. Due: [date]. If not done: [consequence]. Origin: issue [ref] from this project.",
+    example:
+      "A3: revise the notification wording that continues to generate avoidable calls. Owner: Director, Eligibility Policy. Due: 30 November. If not done: the contact-reduction benefit stays at 18% against a 40% target and the benefit owner cannot act, because the driver sits outside their control. Origin: issue I7, raised March, not resolved at closure.",
+    note: "Every open issue at closure is closed, formally accepted, or becomes one of these. If you cannot name an owner, say so on the page the signatory reads.",
+  },
+  {
+    id: "recommendation",
+    title: "Recommendation",
+    prompt: "[Ref]: [what this entity should change]. Directed to: [process owner]. Basis: [what happened here]. Status: [accepted / not accepted / pending].",
+    example:
+      "R1: sentencing sign-off from Information Governance should be a precondition of setting any decommissioning date, and of booking any saving arising from one. Directed to: Assistant Secretary, Delivery Assurance. Basis: the approved plan for the licensing register would have destroyed approximately 65,000 Commonwealth records; no approval step required records disposition to be resolved first. Status: accepted, effective 1 February.",
+    note: "A recommendation is about this entity's process; a lesson is about future projects anywhere. Filing a recommendation as a lesson sends it to a pool nobody with authority reads.",
+  },
+  {
+    id: "quality-stmt",
+    title: "Quality and completion",
+    prompt: "Completion criteria: [n] agreed, [n] met, [n] waived by [who]. Quality: [defects by severity accepted into production, owner], [performance], [accessibility], [security].",
+    example:
+      "Completion criteria: 7 agreed, 6 met, 1 waived (bulk export deferred) by the SRO on 3 June. Quality: 14 known defects accepted into production, 2 at severity 3, all owned in the platform backlog; peak load tested to 3x forecast; accessibility audited at WCAG 2.1 AA with two outstanding AAA items; no open security findings above low.",
+    note: "Quality is not scope. 'Passed UAT' records that a meeting happened; this records whether the thing works under real conditions.",
+  },
+  {
     id: "artefact-index",
     title: "Artefact index row",
     prompt: "[Artefact]: [what it is]. Location: [where, precisely]. Owner: [name, role]. [Record with retention obligation? period and authority.]",
@@ -1344,6 +1379,12 @@ export const closureFieldGuide: FieldGuideEntry[] = [
       { term: "Lessons learned", detail: "Context, event with magnitude, cost, action — published to a pool someone with that problem would search." },
       { term: "Handover / transition", detail: "Support, change authority, run cost, records obligations, benefits measurement, each to a named holder. Tested, not just signed." },
       { term: "Project artefacts", detail: "An index with location and owner for each, marking which are records with retention obligations." },
+      { term: "Completion criteria", detail: "The conditions agreed for calling it done, each marked met, partial or waived — and by whom. Failed by 'all deliverables completed'." },
+      { term: "Quality / product status", detail: "Defect counts and severities, performance under load, accessibility conformance, security position. Failed by 'passed UAT', which reports a meeting." },
+      { term: "Team performance", detail: "Resourcing model, vacancy and turnover, reliance on individuals, what you would staff differently. Failed by a list of names and thanks." },
+      { term: "Stakeholder feedback", detail: "Who was asked, how, response rate, and the dissent. Unanimous approval means the wrong people were asked." },
+      { term: "Follow-on actions", detail: "Every open issue closed, formally accepted, or carried to a named owner with a date. 'Ongoing' is not a state." },
+      { term: "Recommendations", detail: "Directed at this entity's process, named to someone who can act, with whether they were accepted. Distinct from lessons." },
       { term: "Agreement on closure", detail: "Signature attesting that the transfers described were accepted by the owners named, with any exceptions stated on the page." },
     ],
   },

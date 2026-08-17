@@ -526,19 +526,27 @@ if (!existsSync(docsDir)) {
     "inlining them would push a multi-megabyte page to every phone",
   );
   /*
-    Per package, not absolute.
+    Per package, not absolute — and every package ships in the bundle, by
+    design.
 
-    900 KB was the budget when there was one course, and a fixed ceiling would
-    now either fail on legitimate growth or have to be raised every time a
-    package is added — which is a budget that has stopped meaning anything.
+    An earlier version of this comment called per-package code splitting "the
+    real fix". That was wrong, and worth correcting rather than quietly
+    deleting. Text is cheap: two full courses are about 910 KB, so ten would
+    be a few megabytes, fetched once and then served from the service worker
+    cache. The standalone build is already 4.2 MB because of the slides, and
+    nobody has ever complained about that. Splitting would buy a first-load
+    saving measured in a second or two on a slow connection, and cost the
+    single-file property that is the entire reason the standalone build
+    exists, plus a loading state on every package switch.
+
+    So: ship everything, browse the whole library offline, switch instantly.
+    What this check is for is catching genuine bloat — an accidentally
+    inlined asset, a duplicated dependency, a package that dwarfs the others.
     Base covers the shell, React and the styles; the allowance covers one
     course's prose, questions and reference material.
 
-    The real fix is to ship only the active package's content and fetch the
-    others on switch, as the slides already are. That needs the bundler to
-    emit a chunk per package while the standalone build stays a single file,
-    so it is a build change rather than a content one. Until then this keeps
-    honest pressure on: a package that doubles the others will fail here.
+    Slides stay out of the Pages build, which is the split that actually
+    matters: they are megabytes of images rather than kilobytes of text.
   */
   const packageCount = (standaloneHtml.match(/"status":\s*"(available|in-development)"/g) ?? []).length || 2;
   const budgetKb = 500 + 280 * packageCount;
