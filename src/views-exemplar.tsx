@@ -55,6 +55,9 @@ export function WorkedExample() {
                 <p key={para.slice(0, 40)}>{para}</p>
               ))}
               {section.table && <LessonTableView table={section.table} />}
+              {section.body2?.map((para) => (
+                <p key={para.slice(0, 40)}>{para}</p>
+              ))}
               {section.artefact && <pre className="artefact">{section.artefact}</pre>}
             </div>
             {/*

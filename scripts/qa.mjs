@@ -679,6 +679,54 @@ check(
       noIllustration.push(await page.locator("#main-content h1").innerText());
     }
   }
+  /*
+    The worked report must satisfy each of the DTA closure reporting standard's
+    seven criteria, including the specific things the standard names and that
+    are easy to omit: the attached business case, percentage of benefits
+    realised, the benefits management plan by name, and the attached lessons
+    register. Four of these were missing when the exemplar was first written.
+
+    Runs in its own context on the package that HAS a worked document — the
+    default package has none, and the first version of this check silently
+    reported everything missing because it was reading an empty state.
+  */
+  {
+    const ex = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+    const exPage = await ex.newPage();
+    watchPage(exPage, "worked-example");
+    await exPage.addInitScript(() =>
+      localStorage.setItem("product-practice-v2:active-package", JSON.stringify("closure-reports")),
+    );
+    await exPage.goto(artifactUrl, { waitUntil: "load" });
+    await exPage.evaluate(() => { window.location.hash = "example"; });
+    await exPage.waitForSelector(".exemplar-doc");
+    const doc = (await exPage.locator(".exemplar-doc").innerText()).toLowerCase();
+    const required = [
+      ["business case attached", /business case[\s\S]{0,80}attach|attached[\s\S]{0,80}business case/],
+      ["percentage of benefits realised", /% realised|realised at closure/],
+      ["benefits management plan named", /benefits management plan/],
+      ["assurance plan", /assurance plan/],
+      ["sustainment or recurring cost", /sustainment|recurring cost/],
+      ["lessons learned register attached", /lessons learned register/],
+    ];
+    const missing = required.filter(([, re]) => !re.test(doc)).map(([label]) => label);
+    check(
+      "The worked report meets the standard's named requirements",
+      missing.length === 0,
+      missing.length ? `missing: ${missing.join(", ")}` : "all six present",
+    );
+    const sectionCount = await exPage.locator(".exemplar-section").count();
+    const refs = [...doc.matchAll(/sections? (\d+)(?: and (\d+))?/g)]
+      .flatMap((m) => [m[1], m[2]])
+      .filter(Boolean)
+      .map(Number);
+    check(
+      "Cross-references in the worked report point at sections that exist",
+      sectionCount > 0 && refs.every((n) => n >= 1 && n <= sectionCount),
+      `${sectionCount} sections, refs ${[...new Set(refs)].sort((a, b) => a - b).join(",")}`,
+    );
+    await ex.close();
+  }
   check(
     "Every stage opens with an illustration",
     noIllustration.length === 0,

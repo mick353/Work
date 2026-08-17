@@ -22,6 +22,8 @@ export type ExemplarSection = {
   /** The actual report text, as paragraphs. */
   body?: string[];
   table?: LessonTable;
+  /** Paragraphs after the table, where a section argues from its own figures. */
+  body2?: string[];
   /** Fixed-width block — a statement, register extract or list. */
   artefact?: string;
   /** Why it is written this way. Not part of the report. */
@@ -44,7 +46,7 @@ export const closureExemplar: Exemplar = {
     "One report, end to end, for a project that broadly succeeded and missed several things. The grey notes beside each section are commentary for you, not part of the document. Read the report first and ignore them; then read them and see what each section is doing.",
   meta: [
     { label: "Status", value: "Illustrative — not a real DEWR project" },
-    { label: "Length", value: "14 sections, about 2,400 words" },
+    { label: "Length", value: "14 sections, about 2,500 words" },
     { label: "Aligned to", value: "The DTA closure reporting standard — all seven criteria" },
   ],
   sections: [
@@ -52,7 +54,7 @@ export const closureExemplar: Exemplar = {
       heading: "1. Document purpose",
       body: [
         "This report closes the Provider Application Status project and transfers six benefits, four residual risks, two follow-on actions and one unresolved dependency to the owners named in sections 9 and 10.",
-        "It supports two decisions: the Senior Responsible Officer's decision to stand down project governance, and the Chief Financial Officer's treatment of $47.3m of capitalised and expensed cost. Section 13 records the acceptance of those transfers.",
+        "It supports two decisions: the Senior Responsible Officer's decision to stand down project governance, and the Chief Financial Officer's treatment of $47.3m of capitalised and expensed cost. Section 14 records the acceptance of those transfers.",
       ],
       note:
         "Names the decisions and who takes them. A purpose section that says 'this document reports on the closure of the project' has restated the title and told nobody whether the document is theirs to act on.",
@@ -120,7 +122,7 @@ export const closureExemplar: Exemplar = {
         ],
       },
       body: [
-        "The integration slip drove the schedule. A change to the whole-of-department identity broker token lifetime in September 2025 broke session handling in user acceptance testing; the rework is described at section 11.",
+        "The integration slip drove the schedule. A change to the whole-of-department identity broker token lifetime in September 2025 broke session handling in user acceptance testing; the rework is described at sections 5 and 7.",
       ],
       note:
         "Both columns shown. A milestone table where every actual equals the rebaselined date — which this one nearly is — tells a reader nothing until the original is beside it.",
@@ -147,30 +149,31 @@ export const closureExemplar: Exemplar = {
     {
       heading: "9. Benefits and their owners",
       table: {
-        caption: "Benefit transfer",
-        head: ["Benefit", "Value", "Owner", "Agreed", "Measurement"],
+        caption: "Benefits against the benefits management plan (BMP v3, Nov 2025)",
+        head: ["Benefit", "Planned value", "% realised at closure", "Full realisation expected", "Owner (accepted)"],
         rows: [
-          ["Reduced avoidable contact", "$1.2m p.a.", "Director, Provider Support", "14 Jul 2026", "Monthly contact volumes, Service Performance pack"],
-          ["Reduced manual reconciliation", "$6.2m p.a.", "Director, Payments Operations", "22 Jul 2026", "Reconciliation effort sample, half-yearly"],
-          ["Faster provider action", "Non-cashable", "Director, Provider Support", "14 Jul 2026", "Median days to action, standing report"],
-          ["Reduced rework from status errors", "$0.4m p.a.", "Director, Case Management", "14 Jul 2026", "Rework tickets, monthly"],
-          ["Provider satisfaction", "Non-cashable", "Director, Provider Support", "14 Jul 2026", "Portal survey, quarterly"],
-          ["Support staffing avoidance", "Cost avoidance $0.9m", "Director, Provider Support", "Not agreed", "See section 10, item R4"],
+          ["Reduced avoidable contact", "$3.1m p.a.", "39%", "Not expected to reach plan — see s.5", "Director, Provider Support (14 Jul 2026)"],
+          ["Reduced manual reconciliation", "$6.2m p.a.", "0% — starts FY2027-28", "Jun 2028", "Director, Payments Operations (22 Jul 2026)"],
+          ["Faster provider action", "Non-cashable", "Partly — 4.2 days against 4.0", "Dec 2026", "Director, Provider Support (14 Jul 2026)"],
+          ["Reduced rework from status errors", "$0.4m p.a.", "62%", "Jun 2027", "Director, Case Management (14 Jul 2026)"],
+          ["Provider satisfaction", "Non-cashable", "Achieved, +11 pts", "Realised", "Director, Provider Support (14 Jul 2026)"],
+          ["Support staffing avoidance", "Cost avoidance $0.9m", "0%", "Unknown", "NOT ACCEPTED — see s.10 R4"],
         ],
       },
       body: [
-        "Five of six benefits have a named owner who has seen the figure and accepted it. The sixth is unresolved and is recorded at section 10.",
-        "Two benefits are non-cashable. No budget line falls as a result of either, and neither is claimed as a saving.",
+        "Measured against benefits management plan version 3 (November 2025). One formal change was made to the plan during delivery: the participant-facing benefit was removed in November 2025 when that scope was withdrawn, and no replacement benefit was substituted.",
+        "Five of six benefits have a named owner who has seen the figure and accepted it, with the acceptance date shown. The sixth is unresolved and is recorded at section 10.",
+        "Two benefits are non-cashable. No budget line falls as a result of either, and neither is claimed as a saving. Ongoing measurement and its governance transfer to the benefit owners named above, reporting to the Service Performance Committee half-yearly until June 2028; the project's own benefits governance ceases at closure.",
       ],
       note:
-        "Individuals in roles, with the date they agreed and a measurement that already exists. Marking the two non-cashable benefits explicitly is what stops the report claiming $8.7m of savings it cannot deliver.",
+        "Criterion 3 measures the report against the benefits management plan, not the business case narrative — so name the plan and its version, give the percentage realised and the expected date for each, and say what happens to benefit governance after closure. Marking the two non-cashable benefits explicitly is what stops the report claiming $8.7m of savings it cannot deliver.",
     },
     {
       heading: "10. Outstanding risks, issues, dependencies and actions",
       artefact:
         "RISK R1  Identity broker token lifetime may change again without notice.\n           Owner: AD Platform Services · Medium · Registered as a consuming\n           system with Platform Identity; notification requested.\n           → Platform Services register PS-R-118 · Review Dec 2026\n\n  RISK R4  Support staffing avoidance benefit ($0.9m) has no agreed owner.\n           UNTRANSFERRED. Provider Support has been approached twice and has\n           not accepted it, on the grounds that staffing levels are set\n           centrally. Referred to the SRO for allocation before signature.\n\n  ISSUE I7 Notification wording continues to generate calls that the status\n           screen was expected to prevent.\n           Owner: Director, Eligibility Policy → follow-on action A3.\n\n  DEP  D1  Bulk export (waived criterion, s.8) depends on the provider\n           gateway roadmap. Owed by: Provider Systems (external vendor).\n           Chased by: AD Platform Services. No committed date.\n\n  ACT  A3  Revise notification wording. Owner: Director, Eligibility Policy.\n           Due 30 Nov 2026. If not done: contact reduction stays near 0.83\n           and the benefit owner cannot act, the driver being outside their\n           control.\n\n  ACT  A7  Move the duplicate-exclusion script from the analyst's personal\n           repository into the branch analytics repository, with the\n           measurement note. Owner: AD Performance Reporting. Due 30 Sep 2026.\n           If not done: the baseline figures cannot be reproduced.",
       note:
-        "A transfer table, not a filtered status log. Every row has a person, a destination and a date — and R4 says UNTRANSFERRED in plain sight rather than being assigned to a branch that never agreed. That single line is what makes the signature at section 13 mean something.",
+        "A transfer table, not a filtered status log. Every row has a person, a destination and a date — and R4 says UNTRANSFERRED in plain sight rather than being assigned to a branch that never agreed. That single line is what makes the signature at section 14 mean something.",
     },
     {
       heading: "11. Assurance activities",
@@ -187,17 +190,12 @@ export const closureExemplar: Exemplar = {
           ["Gate 6 — benefits realisation", "Jun 2026", "Benefit B6 had no owner", "Not resolved; carried as R4 at section 10"],
         ],
       },
-      note:
-        "This is criterion 5 of the closure reporting standard, and it is the one most often answered with a list of dates. Findings and what was done about them make it Emerging; the paragraph below — whether the assurance was worth its cost — is what makes it Strong.",
-    },
-    {
-      heading: "11a. Was the assurance worth it?",
-      body: [
-        "The Gate 4 recommendation to split the release is the clearest value: the second release absorbed the identity broker change without a further slip, against a plausible counterfactual of a further 6 to 8 weeks. Gate 2's finding on integration scope was correct and acted on, though the revised estimate still proved 3.4 times short.",
+      body2: [
+        "Was it worth it? The Gate 4 recommendation to split the release is the clearest value: the second release absorbed the identity broker change without a further slip, against a plausible counterfactual of a further six to eight weeks. Gate 2's finding on integration scope was correct and acted on, though the revised estimate still proved 3.4 times short.",
         "Gate 6 identified the unowned benefit that remains unresolved at closure. The finding was right and the project could not act on it, because allocation sits above the Project Board. That is recorded here rather than presented as an assurance failure.",
       ],
       note:
-        "Naming a recommendation that was correct and still not acted on is uncomfortable and is the point. An assurance section where every finding was adopted and everything went well is not describing assurance, it is describing a formality.",
+        "Criterion 5 of the closure reporting standard, and the one most often answered with a list of dates. Findings and what was done about them make it Emerging. The closing paragraphs — whether the assurance was worth its cost, including a recommendation that was correct and still not acted on — are what make it Strong.",
     },
     {
       heading: "12. Lessons and recommendations",
@@ -215,10 +213,16 @@ export const closureExemplar: Exemplar = {
         "Operational support transferred to Platform Services on 12 June 2026. Before transfer, the receiving team completed two routine changes and one diagnostic task with the delivery team unavailable; the eleven questions raised became the handover backlog and were closed by 30 June.",
         "Known fragility disclosed at handover: the nightly reconciliation fails if the provider feed arrives after 02:00 (twice observed, recovered by manual rerun, no alerting); the eligibility rules engine is compiled rather than configured, so an urgent policy change cannot be applied in under five working days.",
       ],
+      body2: [
+        "Attached to this report, as required by the closure reporting standard: the original business case as agreed by Government (August 2023), and the full lessons learned register. Both are attachments rather than references, so a reader can check the report against its own source without requesting anything.",
+      ],
       table: {
         caption: "Artefacts",
         head: ["Artefact", "Location", "Owner", "Retention"],
         rows: [
+          ["Original business case (Aug 2023)", "ATTACHED to this report", "SRO", "Per schedule"],
+          ["Lessons learned register (full)", "ATTACHED to this report", "AD Delivery Assurance", "Per schedule"],
+          ["Benefits management plan v3", "Governance library", "Director, Provider Support", "Business"],
           ["Architecture decision records", "Platform wiki / ADR", "AD Platform Services", "Business"],
           ["Data dictionary and export schema", "Records store REC-2026-0881", "AD Information Governance", "7 years"],
           ["Baseline measurement extracts", "Records store REC-2026-0881", "AD Performance Reporting", "7 years"],
@@ -228,7 +232,7 @@ export const closureExemplar: Exemplar = {
         ],
       },
       note:
-        "The handover was tested rather than signed, and the fragility is written down — the two things delivery teams most often skip, because one costs time and the other feels like confessing. Every artefact carries a location and an owner; a list of names is not an index.",
+        "Two of these are attachments the standard requires rather than merely lists: the original business case (criterion 1) and the lessons learned register (criterion 7). The handover was tested rather than signed, and the fragility is written down — the two things delivery teams most often skip, because one costs time and the other feels like confessing. Every artefact carries a location and an owner; a list of names is not an index.",
     },
     {
       heading: "14. Agreement on closure",
