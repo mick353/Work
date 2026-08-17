@@ -81,6 +81,17 @@ export const closureFlashcards: Flashcard[] = [
   { id: "cf56", moduleId: "records", kind: "discrimination", front: "The legacy system is still running. Closure report?", back: "State it: owner, cost, when it stops, and which system is the system of record. Two writable copies of the same data is a data-integrity failure." },
   { id: "cf57", moduleId: "records", kind: "application", front: "Does migrating to a new system discharge the retention obligation?", back: "No. The obligation attaches to the information, not the system, and access must be maintained for the prescribed period across however many platforms." },
 
+  { id: "cf58", moduleId: "sections", kind: "discrimination", front: "Objective, business outcome, key result — what is the difference?", back: "Objective: what you set out to do. Outcome: the change that justified doing it. Key result: the measure telling you whether it happened. Report all three separately." },
+  { id: "cf59", moduleId: "sections", kind: "application", front: "Objective delivered, outcome did not move. Report it how?", back: "Separately, and prominently — it is the most informative result a closure report can carry, and it disappears the moment the three levels are merged into one sentence." },
+  { id: "cf60", moduleId: "sections", kind: "definition", front: "What is the document purpose section for?", back: "Naming the decisions this report supports and who must take them. Not 'this document reports on closure', which the title already said." },
+  { id: "cf61", moduleId: "sections", kind: "application", front: "Why does the project overview matter in three years?", back: "The reader will not know what the project was, what it was called internally, or which of four similar initiatives it is. Orientation is what makes the record findable." },
+  { id: "cf62", moduleId: "sections", kind: "discrimination", front: "Every milestone actual equals its planned date. Infer what?", back: "The plan was rebaselined until variance disappeared. Real delivery has variance; report against original dates as well as revised ones." },
+  { id: "cf63", moduleId: "sections", kind: "definition", front: "What is the outstanding items section actually for?", back: "It is a transfer document, not a status report. Every remaining risk, issue, dependency and action is accepted by someone named, or visibly abandoned." },
+  { id: "cf64", moduleId: "sections", kind: "application", front: "What must every outstanding item carry?", back: "A named individual, a destination register, and a review date. An item owned by a team or by the project is owned by nobody." },
+  { id: "cf65", moduleId: "sections", kind: "discrimination", front: "An action assigned to the project team — what is wrong?", back: "The team is dissolving. An entity that will not exist cannot be chased. Reassign to an individual who remains, or close it." },
+  { id: "cf66", moduleId: "sections", kind: "application", front: "What belongs in the artefacts section?", back: "Each artefact with its location AND its owner — including architecture decisions, data dictionaries, test evidence, contracts and the benefits plan. Mark which are records with retention obligations." },
+  { id: "cf67", moduleId: "sections", kind: "definition", front: "What should the closure signature attest to?", back: "That the transfers described have been accepted by the owners named. That makes signing consequential — an unowned benefit is a transfer the signatory is declining." },
+
   { id: "cf31", moduleId: "writing", kind: "application", front: "What belongs on page one?", back: "What was promised, what was delivered, and the gap. Not governance, not acknowledgements, not the financial position against a revised budget." },
   { id: "cf32", moduleId: "writing", kind: "definition", front: "The shortfall paragraph", back: "A single direct passage: what was not achieved, by how much against the original commitment, the cause, and where the lesson is recorded." },
   { id: "cf33", moduleId: "writing", kind: "discrimination", front: "'Broadly in line with expectations' — how is it read?", back: "As a miss, by an amount the writer chose not to state. Results that meet expectations are reported with the number." },
@@ -127,6 +138,12 @@ export const closureGlossary: GlossaryEntry[] = [
   { term: "Continuing access", origin: "Government", moduleId: "records", definition: "The obligation to keep retained records readable for the prescribed period — not merely stored. A backup requiring software the entity no longer licenses does not satisfy it." },
   { term: "Defects liability period", origin: "General", moduleId: "financial", definition: "The window after final acceptance during which the supplier must remedy defects at their cost. Worthless without a named holder and a recorded end date." },
   { term: "Final acceptance", origin: "General", moduleId: "financial", definition: "The formal act confirming contracted deliverables were received and met the contract. Starts warranty periods, releases retentions and closes the defects window." },
+  { term: "Business outcome", origin: "Government", moduleId: "sections", definition: "The change in the world that justified the investment, as distinct from what the project set out to build. Reported with its baseline, and often the place where a delivered objective turns out not to have moved anything." },
+  { term: "Closure agreement", origin: "General", moduleId: "sections", definition: "The signed act ending the project. Meaningful only when it attests that the transfers described in the report were accepted by the owners named — not merely that the project stopped." },
+  { term: "Key result", origin: "General", moduleId: "sections", definition: "The measure that shows whether a business outcome occurred. Carries a target and an actual; without a target it was a metric, not a key result." },
+  { term: "Objective", origin: "General", moduleId: "sections", definition: "What the project set out to do, quoted as originally written. Achievement of an objective is not achievement of the outcome that justified it." },
+  { term: "Project artefacts", origin: "General", moduleId: "sections", definition: "The outputs a project leaves behind — architecture decisions, data dictionaries, test evidence, contracts, benefits plans. Indexed with location and owner so a stranger can find them." },
+  { term: "RAID", origin: "General", moduleId: "sections", definition: "Risks, assumptions, issues and dependencies. At closure it stops being a status log and becomes a transfer table: every open item accepted by a named person or visibly abandoned." },
   { term: "Records authority", origin: "Government", moduleId: "records", definition: "An instrument issued by the National Archives giving permission to destroy, retain or transfer described records, and setting minimum retention periods." },
   { term: "Sentencing", origin: "Government", moduleId: "records", definition: "Determining, against a records authority, which records must be kept, for how long, destroyed, or transferred. The first step in any decommissioning, because everything else depends on the answer." },
   { term: "System of record", origin: "General", moduleId: "records", definition: "The authoritative source for a given set of data. Must be named explicitly when a replaced system stays running, or staff cannot know which copy governs." },
@@ -189,6 +206,12 @@ export const closureContrasts: Contrast[] = [
     good: "Records were sentenced against an authority, exported with their schema and dictionary, and verified before anything was deleted.",
     usual: "The data was backed up, the subscription was cancelled, and the retention question was never asked.",
     tell: "Ask what happens if someone requests this data in five years. If the answer needs software you no longer license, you have storage, not access.",
+  },
+  {
+    moduleId: "sections",
+    good: "Every outstanding risk, issue, dependency and action names an individual, a destination register and a review date.",
+    usual: "The RAID log is pasted in with closed items filtered out, and the survivors are owned by branches.",
+    tell: "Pick the third item in the list and ask who will be asked about it in March. If the answer is a team name, it has not transferred.",
   },
   {
     moduleId: "writing",
@@ -325,6 +348,19 @@ export const closureDiagnostic: Question[] = [
     ],
     answer: 0,
     rationale: "It is a substantive act with timing consequences. Before acceptance an open defect is the supplier's obligation; after it, a request.",
+  },
+  {
+    id: "cd11",
+    moduleId: "sections",
+    prompt: "What is the outstanding risks, issues and dependencies section for at closure?",
+    options: [
+      "Transferring each open item to a named owner, or abandoning it",
+      "Reporting the current status of the project risk register",
+      "Demonstrating that risk management was performed throughout delivery",
+      "Listing items for the successor project to consider",
+    ],
+    answer: 0,
+    rationale: "It is a transfer document, not a status report. An item with no named owner has not transferred, and saying so is the point of the section.",
   },
   {
     id: "cd8",
@@ -611,6 +647,48 @@ export const closureSupplementary: Question[] = [
     answer: 0,
     rationale: "Access must be maintained for the prescribed period across however many platforms the information passes through. Migration moves the record; it does not reset the clock.",
     optionNotes: ["", "Verification matters and does not end the obligation.", "Authorities describe records and functions, not systems.", "Migration does not require specific permission; the retention period continues either way."],
+  },
+  {
+    id: "cs21",
+    moduleId: "sections",
+    prompt: "Which is a usable document purpose statement?",
+    options: [
+      "It names the decisions the report supports and who must take them",
+      "It states that the document reports on the closure of the project",
+      "It summarises the project background and delivery approach",
+      "It confirms the report was prepared per the departmental template",
+    ],
+    answer: 0,
+    rationale: "Purpose tells a reader whether this document is theirs to act on. The other three restate the title, duplicate the overview, or describe compliance.",
+    optionNotes: ["", "The title already said that.", "That is the project overview, one section later.", "Compliance with a template is not a purpose."],
+  },
+  {
+    id: "cs22",
+    moduleId: "sections",
+    prompt: "An issue is reclassified as a risk shortly before closure. What is the likely motive?",
+    options: [
+      "A risk can be transferred and watched; an issue demands fixing",
+      "Risks receive more senior governance attention than issues",
+      "Issues cannot be carried past project closure under most frameworks",
+      "The distinction was corrected as the impact had not yet occurred",
+    ],
+    answer: 0,
+    rationale: "An issue is already happening. Reclassifying it converts an obligation to fix something into an obligation to watch it, which is why the move is worth noticing at closure.",
+    optionNotes: ["", "Usually the reverse — issues escalate faster.", "No such prohibition exists.", "A legitimate correction sometimes, and worth checking the impact really has not occurred."],
+  },
+  {
+    id: "cs23",
+    moduleId: "sections",
+    prompt: "What most improves an artefacts section?",
+    options: [
+      "An owner and a location for each item, not just a name",
+      "Listing every document produced during delivery",
+      "Grouping artefacts by the phase that produced them",
+      "Attaching the artefacts to the closure report itself",
+    ],
+    answer: 0,
+    rationale: "The section exists to make things findable by someone who does not know they exist. A name alone tells them what to look for and not where or whom to ask.",
+    optionNotes: ["", "Completeness without location produces an unusable inventory.", "Phase grouping suits the author, not the reader.", "Impractical, and it does not survive the report being extracted."],
   },
   {
     id: "cs15",
@@ -920,6 +998,46 @@ export const closureToolkit: ToolkitTemplate[] = [
     note: "Run the four conditions. Any that fails is written as a gap with an action, not smoothed into the prose.",
   },
   {
+    id: "purpose-stmt",
+    title: "Document purpose",
+    prompt: "This report closes [project] and transfers [what] to named owners. It supports [whose decision] and [whose decision].",
+    example:
+      "This report closes the Provider Status project and transfers six benefits, four residual risks and one unresolved dependency to named owners. It supports the SRO's decision to stand down programme governance, and Finance's treatment of $47.3m of capitalised and expensed cost.",
+    note: "If the sentence would be true of any closure report, it is not a purpose statement. Name this project's decisions and this project's readers.",
+  },
+  {
+    id: "okr-close",
+    title: "Objective, outcome and key result",
+    prompt: "Objective (as originally written): [text] — [achieved / partially / not]. Business outcome: [change], [measured or estimated] at [figure] against baseline [figure]. Key result: [metric], target [x], actual [y].",
+    example:
+      "Objective: 'Provide providers with self-service visibility of application status.' Achieved. Business outcome: reduce avoidable support contact — measured 18% reduction against a 40% target. Key result: contacts per application, target 0.6, actual 0.83.",
+    note: "Report all three separately. An objective delivered while its outcome did not move is the most useful finding you have, and merging the levels destroys it.",
+  },
+  {
+    id: "raid-transfer",
+    title: "Outstanding item transfer row",
+    prompt: "[Risk / Issue / Dependency / Action] [ref]: [description]. Owner: [name, role]. [Rating or impact]. [Treatment or path]. Destination: [register, ref]. Review: [when].",
+    example:
+      "Risk R1: identity broker token lifetime may change without notice, breaking session handling. Owner: Assistant Director, Platform Services. Rating: medium. Treatment: registered as a consuming system with Platform Identity, notification requested. Destination: Platform Services risk register PS-R-118. Review: December committee.",
+    note: "No row owned by a team, a branch or the project. If an item genuinely has no owner, write UNTRANSFERRED and put it in front of the signatory.",
+  },
+  {
+    id: "artefact-index",
+    title: "Artefact index row",
+    prompt: "[Artefact]: [what it is]. Location: [where, precisely]. Owner: [name, role]. [Record with retention obligation? period and authority.]",
+    example:
+      "Data dictionary and export schema: column definitions, units and exclusions for the retained case export. Location: records store REC-2026-0881. Owner: Assistant Director, Information Governance. Commonwealth record, retained 7 years under the programme administration authority.",
+    note: "Include what people forget: architecture decisions, test evidence, contracts, the benefits plan. A name with no location is not an index.",
+  },
+  {
+    id: "closure-agreement",
+    title: "Closure agreement",
+    prompt: "Signed by [name, role], confirming that the [benefits / risks / obligations] recorded in sections [x] to [y] have been accepted by the owners named there. Date: [date]. [Exceptions, if any.]",
+    example:
+      "Signed by the Senior Responsible Officer, confirming that the benefits, risks and obligations recorded in sections 6 to 9 have been accepted by the owners named there. Exception: Risk R4 (data quality in migrated records) remains untransferred and is referred to the Deputy Secretary for allocation.",
+    note: "Tie the signature to the transfers. 'Signed to confirm project closure' attests to something everyone could already see.",
+  },
+  {
     id: "lesson",
     title: "Four-part lesson",
     prompt: "Context: [class of work this applies to]. Event: [what happened, with magnitude]. Cost: [schedule, dollars, or ratio]. Action: [what to do differently, concretely].",
@@ -1012,6 +1130,17 @@ export const closureCapstoneSteps: CapstoneStep[] = [
       "The access approach would still be readable without the original software",
       "The sequence puts a reversible step before anything irreversible",
       "If the replaced system is still running, the system of record is named",
+    ],
+  },
+  {
+    id: "cc3d",
+    title: "Outstanding items",
+    prompt:
+      "Write the outstanding risks, issues, dependencies and actions as a transfer table. Each row names an individual, a destination register and a review date — or is marked untransferred.",
+    checks: [
+      "No row is owned by a team, a branch or the project",
+      "Anything genuinely unowned is marked untransferred rather than assigned to nobody",
+      "Every dependency names a person to chase, not only a system",
     ],
   },
   {
@@ -1194,6 +1323,28 @@ export const closureFieldGuide: FieldGuideEntry[] = [
       { term: "7. Revoke access and integrations", detail: "The reversible checkpoint. Leave the system running but unreachable for a fortnight and see what breaks." },
       { term: "8. Release infrastructure", detail: "Only now: delete data, close accounts, cancel subscriptions. The first irreversible step in the sequence." },
       { term: "9. State the disposition of what it replaced", detail: "Still running? Name the owner, the cost, the stop date, and which system is the system of record." },
+    ],
+  },
+  {
+    id: "sections",
+    title: "Standard closure report sections",
+    summary:
+      "The headings most departmental templates use, what each is actually for, and how each is usually failed. Templates vary; the questions behind the headings do not.",
+    sourceIds: ["rmg106", "closure", "anao-perf"],
+    items: [
+      { term: "Document purpose", detail: "The decisions this report supports and who must take them. Failed by restating the title." },
+      { term: "Project overview", detail: "Orientation for a reader who was not there — problem, scope, dates, cost, internal name and funding reference. Failed by pasting the 2023 business case." },
+      { term: "Objectives", detail: "What the project set out to do, quoted as originally written, marked achieved / partial / not. Failed by quoting the revised wording." },
+      { term: "Business outcomes", detail: "The change that justified the spend, with its baseline and whether measured or estimated. Failed by restating the objective." },
+      { term: "Key results", detail: "The measures, each with target and actual. Failed by listing metrics that never had targets." },
+      { term: "Project milestones", detail: "Planned date, actual date, variance, reason. Failed when every actual equals plan — that is a rebaselined table." },
+      { term: "Financial summary", detail: "Original approved, revisions dated and reasoned, final actual, variance against original; capital and operating split; recurring cost and its new budget line. Failed by reporting against the revision." },
+      { term: "Benefits realisation", detail: "Each benefit with a named owner who agreed, can influence the driver, and has a measurement that already exists." },
+      { term: "Outstanding risks, issues, dependencies, actions", detail: "A transfer table, not a status log. Each row: individual, destination register, review date — or the word UNTRANSFERRED." },
+      { term: "Lessons learned", detail: "Context, event with magnitude, cost, action — published to a pool someone with that problem would search." },
+      { term: "Handover / transition", detail: "Support, change authority, run cost, records obligations, benefits measurement, each to a named holder. Tested, not just signed." },
+      { term: "Project artefacts", detail: "An index with location and owner for each, marking which are records with retention obligations." },
+      { term: "Agreement on closure", detail: "Signature attesting that the transfers described were accepted by the owners named, with any exceptions stated on the page." },
     ],
   },
   {

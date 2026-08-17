@@ -525,8 +525,29 @@ if (!existsSync(docsDir)) {
     !pagesHtml.includes("data:image/webp;base64,"),
     "inlining them would push a multi-megabyte page to every phone",
   );
-  check("Pages build stays small", Buffer.byteLength(pagesHtml, "utf8") < 900 * 1024,
-    `${(Buffer.byteLength(pagesHtml, "utf8") / 1024).toFixed(0)} KB`);
+  /*
+    Per package, not absolute.
+
+    900 KB was the budget when there was one course, and a fixed ceiling would
+    now either fail on legitimate growth or have to be raised every time a
+    package is added — which is a budget that has stopped meaning anything.
+    Base covers the shell, React and the styles; the allowance covers one
+    course's prose, questions and reference material.
+
+    The real fix is to ship only the active package's content and fetch the
+    others on switch, as the slides already are. That needs the bundler to
+    emit a chunk per package while the standalone build stays a single file,
+    so it is a build change rather than a content one. Until then this keeps
+    honest pressure on: a package that doubles the others will fail here.
+  */
+  const packageCount = (standaloneHtml.match(/"status":\s*"(available|in-development)"/g) ?? []).length || 2;
+  const budgetKb = 500 + 280 * packageCount;
+  const pagesKb = Buffer.byteLength(pagesHtml, "utf8") / 1024;
+  check(
+    "Pages build stays small for the number of packages",
+    pagesKb < budgetKb,
+    `${pagesKb.toFixed(0)} KB against a ${budgetKb} KB budget for ${packageCount} package(s)`,
+  );
   check(
     "All 98 slide images ship with the Pages build",
     Array.from({ length: 98 }, (_, i) => `slide-${String(i + 1).padStart(2, "0")}.webp`)

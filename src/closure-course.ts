@@ -1559,8 +1559,262 @@ export const closureModules: Module[] = [
   },
 
   {
-    id: "writing",
+    id: "sections",
     number: 8,
+    title: "The standard sections",
+    subtitle: "Filling in the template you will actually be handed",
+    minutes: 0,
+    slides: "",
+    outcome: "Complete every standard section of a closure report, and know what each one is for and how each is usually failed.",
+    coreIdea:
+      "Most closure reports are written into a departmental template with fixed headings. Knowing how to think about evidence and benefits is necessary and not sufficient — you also have to know what belongs under 'Outstanding dependencies' and why 'Project overview' is the section people waste and then need.",
+    sections: [
+      {
+        heading: "Front matter that earns its place",
+        body: "Document purpose and project overview are the two sections everyone treats as padding, and they are the reason the report is usable in three years. The reader in three years has no idea what the project was, what it was called internally, or which of four similar initiatives this one is. Two hundred words of orientation is the difference between a findable record and an archived file.",
+        table: {
+          caption: "The two sections people waste",
+          head: ["Section", "What it is for", "How it is usually failed"],
+          rows: [
+            ["Document purpose", "Says what this document decides and who must act on it", "'This document reports on the closure of the project.'"],
+            ["Project overview", "Orients a reader who was not there — problem, scope, dates, cost, who", "A paragraph lifted from the business case, unchanged since 2023"],
+          ],
+        },
+        bullets: [
+          "Purpose names the decisions the report supports and who takes them.",
+          "Overview states the problem the project addressed, in the words a stranger would use.",
+          "Include the internal name, any codename, and the funding or investment reference — this is how it gets found.",
+          "Give start and end dates, total cost, and the delivery model in two lines, not two pages.",
+        ],
+        example:
+          "'This report closes the Provider Status project and transfers six benefits, four residual risks and one unresolved dependency to named owners. It supports the SRO's decision to stand down programme governance, and Finance's treatment of $47.3m of capitalised and expensed cost.' That is a purpose statement. It tells you who has to read it.",
+        sourceIds: ["rmg106", "closure"],
+      },
+      {
+        heading: "Objectives, business outcomes and key results",
+        body: "These three get used interchangeably and are not the same thing, which is why the section so often restates the same sentence at three levels of abstraction. An objective is what the project set out to do. A business outcome is the change in the world that justified the spending. A key result is the measure that tells you whether the outcome happened. Closure reports against all three, and the interesting content is where they disagree.",
+        table: {
+          caption: "Three different questions",
+          head: ["Term", "The question", "At closure, report"],
+          rows: [
+            ["Objective", "What did we set out to do?", "Achieved, partially achieved, or not — against the original wording"],
+            ["Business outcome", "What changed for the business or users?", "The measured or estimated change, with its baseline"],
+            ["Key result", "How do we know?", "The metric, its target, and its actual"],
+          ],
+        },
+        bullets: [
+          "Quote the objective as originally written, not as it came to be described.",
+          "An objective delivered while its outcome did not move is the most informative result in the report — say so.",
+          "Key results carry a target and an actual. A key result with no target was a metric, not a key result.",
+          "Where an objective was dropped or changed, record when and on whose decision.",
+        ],
+        example:
+          "Objective: 'Provide providers with self-service visibility of application status.' Achieved. Business outcome: 'Reduce avoidable support contact.' Measured at 18 per cent against a target of 40. Key result: contacts per application, target 0.6, actual 0.83. The objective was met and the outcome largely was not — which is the finding, and it is invisible if all three are reported as one sentence.",
+        sourceIds: ["anao-perf", "rmg134"],
+      },
+      {
+        heading: "Milestones and the financial summary",
+        body: "Both sections are usually presented as a table of what happened, which is the least useful form. The value is in the variance: planned against actual, with the reason. A milestone table showing everything delivered on the revised date tells the reader nothing they could not have assumed.",
+        bullets: [
+          "Milestones: planned date, actual date, variance, and the reason for any material slip.",
+          "Show the original planned dates alongside any rebaselined ones, as with cost.",
+          "Financial summary: original approved, revisions with dates and reasons, final actual, variance against the original.",
+          "Split capital and operating, and state what was capitalised and on what basis.",
+          "Name the recurring cost transferring to business as usual, and the budget line receiving it.",
+        ],
+        example:
+          "A milestone table where every actual equals the planned date is a table that was written backwards from the outcome. Real delivery has variance; a report showing none has usually rebaselined until there was none.",
+        sourceIds: ["closure", "anao-gateway"],
+      },
+      {
+        heading: "Outstanding risks, issues, dependencies and actions",
+        body: "This is the section that determines whether the report does anything, and it is routinely a copy of the RAID log with the closed items filtered out. A closure RAID section is not a status report — it is a transfer document. Every remaining item is either being accepted by someone named, or it is being abandoned, and abandonment is a decision that should be visible rather than implied by silence.",
+        table: {
+          caption: "What each column has to carry",
+          head: ["Item", "Must state", "Failure"],
+          rows: [
+            ["Risk", "Owner, current rating, treatment, where it now lives", "Transferred to a register nobody reviews"],
+            ["Issue", "Owner, impact if unresolved, resolution path or acceptance", "Reclassified as a risk to avoid resolving it"],
+            ["Dependency", "The other party, what is owed, by when, who chases", "Named as a system rather than a person"],
+            ["Action", "Owner, due date, and what happens if it is not done", "Assigned to the disbanding project team"],
+          ],
+        },
+        bullets: [
+          "Every item names an individual, a destination register, and a review date.",
+          "An issue that will not be fixed is closed as accepted, with who accepted it — not carried indefinitely.",
+          "Actions assigned to the project team are actions assigned to nobody. Reassign or close them.",
+          "State explicitly if an item has no owner. That is a live problem, and burying it does not make it less true.",
+        ],
+        example:
+          "'Risk: identity broker token lifetime may change without notice. Owner: Assistant Director, Platform Services. Rating: medium. Treatment: registered as a consuming system with Platform Identity, notification requested. Transferred to: Platform Services risk register, ref PS-R-118. Next review: December.' That item survives the project. 'Risk: integration dependencies — ongoing' does not.",
+        sourceIds: ["rmg106", "teal"],
+      },
+      {
+        heading: "Artefacts and the agreement to close",
+        body: "The artefacts section is an index, and its job is to make the project's outputs findable by someone who does not know they exist. The closure agreement is the act that ends the project, and signing it means the signatories accept that everything listed has in fact transferred — which is why it belongs last, after the sections that say what is being transferred.",
+        bullets: [
+          "List each artefact with its location and its owner, not just its name.",
+          "Include the things people forget: architecture decisions, data dictionaries, test evidence, contracts, the benefits plan.",
+          "Say which artefacts are records with a retention obligation, and where they are held.",
+          "The agreement names who signs, what they are attesting to, and the date.",
+          "A signature is an acceptance of the transfers described. If a benefit has no owner, that is on the page above the signature, not hidden.",
+        ],
+        example:
+          "'Signed by the Senior Responsible Officer, confirming that the benefits, risks and obligations recorded in sections 6 to 9 have been accepted by the owners named there.' That sentence makes signing mean something. 'Signed to confirm project closure' means the project has stopped, which everybody already knew.",
+        sourceIds: ["rmg106", "archives"],
+      },
+    ],
+    questions: [
+      {
+        id: "cl-x1",
+        moduleId: "sections",
+        prompt: "What is the difference between an objective and a business outcome at closure?",
+        options: [
+          "The objective is what you set out to do; the outcome is why it mattered",
+          "The objective is set by the project; the outcome is set by the entity's corporate plan",
+          "The objective is qualitative; the outcome is always expressed as a number",
+          "They are the same thing, described at different levels of governance",
+        ],
+        answer: 0,
+        rationale:
+          "Keeping them separate is what lets the report show an objective delivered while the outcome did not move — the single most informative result a closure report can contain.",
+        optionNotes: [
+          "",
+          "Both can come from either. The distinction is what each asks, not who wrote it.",
+          "Objectives are often measurable and outcomes are often estimated. Form is not the difference.",
+          "Collapsing them is exactly the failure that hides the interesting result.",
+        ],
+      },
+      {
+        id: "cl-x2",
+        moduleId: "sections",
+        prompt: "A milestone table shows every actual date equal to the planned date. What should a reader infer?",
+        options: [
+          "The plan was rebaselined until variance disappeared",
+          "The project was managed with unusual schedule discipline",
+          "Milestones were defined loosely enough to always be met",
+          "The table was completed from the delivery plan rather than actuals",
+        ],
+        answer: 0,
+        rationale:
+          "Real delivery has variance. A table with none has almost always been reported against the most recent replan, which is the schedule equivalent of reporting cost against the revised budget.",
+        optionNotes: [
+          "",
+          "Possible in principle and vanishingly rare in practice for anything substantial.",
+          "A genuine failure mode, and it usually produces vague milestones rather than exact date matches.",
+          "Would produce the same table, and is a subset of reporting against the latest plan.",
+        ],
+      },
+      {
+        id: "cl-x3",
+        moduleId: "sections",
+        prompt: "An action in the closure report is assigned to the project team. What is wrong?",
+        options: [
+          "The project team is dissolving, so the action has no owner",
+          "Actions should always be assigned to the Senior Responsible Officer",
+          "Actions cannot be carried past closure under the assurance framework",
+          "Project teams lack authority to complete post-closure actions",
+        ],
+        answer: 0,
+        rationale:
+          "It is the same defect as a benefit owned by a branch: an entity that will not exist cannot be chased, and nobody's work depends on it. Reassign to an individual who remains, or close it.",
+        optionNotes: [
+          "",
+          "The SRO holds overall accountability; individual actions need individual owners.",
+          "Actions are routinely carried past closure — they just need real owners.",
+          "Authority is not the problem. Existence is.",
+        ],
+      },
+      {
+        id: "cl-x4",
+        moduleId: "sections",
+        prompt: "What should the closure agreement signature attest to?",
+        options: [
+          "That the transfers described were accepted by the owners named",
+          "That the project has ceased activity and released its resources",
+          "That the report is factually accurate in every particular",
+          "That all objectives and benefits were achieved as planned",
+        ],
+        answer: 0,
+        rationale:
+          "Tying the signature to the transfers is what makes signing consequential. If a benefit has no owner, the signatory is declining to sign that transfer — which forces the gap into the open rather than letting closure proceed around it.",
+        optionNotes: [
+          "",
+          "True and trivial. Everyone can already see the project stopped.",
+          "Nobody can attest to every particular, and demanding it makes the signature meaningless.",
+          "Would make the agreement unsignable for any project with a shortfall, which is most of them.",
+        ],
+      },
+    ],
+    scenarios: [
+      {
+        id: "cl-x-s1",
+        moduleId: "sections",
+        context:
+          "The outstanding items section lists eleven risks. Nine name an individual and a destination register. Two read 'Risk: data quality in migrated records — ongoing, Service Delivery' with no rating, no treatment and no review date.",
+        prompt: "What is the right treatment for those two?",
+        options: [
+          "Record them as untransferred, and put that in front of the signatory",
+          "Assign them to the Service Delivery branch head to match the other nine",
+          "Remove them, since items without treatment plans cannot be meaningfully transferred",
+          "Carry them in the project's own register until an owner can be found",
+        ],
+        answer: 0,
+        rationale:
+          "The closure agreement attests that transfers were accepted. Two that were not accepted are exactly what the signatory needs to see, because they are the only items where signing changes anything. Assigning a name nobody agreed to is how the record becomes untrue.",
+        optionNotes: [
+          "",
+          "Matching the format without matching the substance is the defect, not the fix.",
+          "Deleting a live risk because it is inconvenient to transfer is the worst option available.",
+          "There will be no project register to carry them in.",
+        ],
+      },
+      {
+        id: "cl-x-s2",
+        moduleId: "sections",
+        context:
+          "Your objective was 'provide self-service visibility of application status'. It was delivered and works. The business outcome was 'reduce avoidable support contact', measured at 18 per cent against a 40 per cent target. Your sponsor wants the section to lead with the delivered objective.",
+        prompt: "How should the section be written?",
+        options: [
+          "Report all three separately: objective met, outcome largely not",
+          "Lead with the objective as requested, and cover the outcome shortfall in the shortfall section",
+          "Lead with the outcome, since it is the reason the investment was funded",
+          "Combine them into a single statement describing partial achievement",
+        ],
+        answer: 0,
+        rationale:
+          "The sponsor is not wrong that the objective was met. Reporting the levels separately serves both truths and produces the useful finding: the thing was built, works, and did not change behaviour as expected — which points at take-up or at the theory, and neither is visible in a merged sentence.",
+        optionNotes: [
+          "",
+          "Splitting them across sections lets a reader take the objective as the result and stop.",
+          "Reversing the emphasis is as distorting as the sponsor's version, in the other direction.",
+          "'Partial achievement' is the phrase that hides which part.",
+        ],
+      },
+    ],
+    assignment: {
+      title: "Draft the outstanding items section",
+      instruction:
+        "For a piece of work you know, write the outstanding risks, issues, dependencies and actions as a transfer table. Every row names an individual, a destination and a review date — or states plainly that it has none.",
+      prompts: [
+        "Risks: owner, rating, treatment, destination register, review date",
+        "Issues: owner, impact if unresolved, resolution path or formal acceptance",
+        "Dependencies: the other party, what is owed, by when, who chases it",
+        "Actions: owner, due date, and the consequence of it not being done",
+      ],
+      criteria: [
+        "No row is owned by a team, a branch or the project",
+        "At least one item is recorded as untransferred if that is the truth",
+        "Every dependency names a person to chase, not only a system",
+      ],
+      modelAnswer:
+        "Risk R1: identity broker token lifetime may change without notice, breaking session handling. Owner: Assistant Director, Platform Services. Rating: medium. Treatment: registered as a consuming system with Platform Identity and notification requested; note there is no automatic notification list. Destination: Platform Services risk register PS-R-118. Review: December committee. Issue I1: 312 appeal records migrated with a null status code, currently unreadable in the new system. Owner: Director, Case Management. Impact if unresolved: those applicants cannot be served without manual lookup against the retained export. Path: remediation scheduled for the November release; if it slips, accepted as a manual workaround with the export as source. Dependency D1: Policy Branch must confirm the revised eligibility wording before the rules engine can be finalised. Owed by: Director, Eligibility Policy. Due: 30 September. Chased by: Assistant Director, Platform Services — named because 'Policy Branch' is not someone you can email a reminder to. Action A1: transfer the benefits measurement definition into the Service Performance pack. Owner: Assistant Director, Performance Reporting. Due: before the December review. If not done: the $2.4m benefit has no measurement and cannot be reported. UNTRANSFERRED: Risk R4 (data quality in migrated records) has no agreed owner. Service Delivery has been approached twice and has not accepted it. This is recorded here rather than assigned, and needs the SRO to resolve before the agreement is signed.",
+    },
+  },
+
+  {
+    id: "writing",
+    number: 9,
     title: "Writing the report",
     subtitle: "Structure, candour and the shortfall paragraph",
     minutes: 0,
@@ -1759,7 +2013,7 @@ export const closureModules: Module[] = [
 
   {
     id: "assurance",
-    number: 9,
+    number: 10,
     title: "Assurance and audit readiness",
     subtitle: "Writing for a reader who will test the claim",
     minutes: 0,
