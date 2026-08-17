@@ -44,8 +44,8 @@ export const closureExemplar: Exemplar = {
     "One report, end to end, for a project that broadly succeeded and missed several things. The grey notes beside each section are commentary for you, not part of the document. Read the report first and ignore them; then read them and see what each section is doing.",
   meta: [
     { label: "Status", value: "Illustrative — not a real DEWR project" },
-    { label: "Length", value: "13 sections, about 1,400 words" },
-    { label: "Use it for", value: "Structure, tone, and how to say the difficult parts" },
+    { label: "Length", value: "14 sections, about 2,400 words" },
+    { label: "Aligned to", value: "The DTA closure reporting standard — all seven criteria" },
   ],
   sections: [
     {
@@ -173,7 +173,34 @@ export const closureExemplar: Exemplar = {
         "A transfer table, not a filtered status log. Every row has a person, a destination and a date — and R4 says UNTRANSFERRED in plain sight rather than being assigned to a branch that never agreed. That single line is what makes the signature at section 13 mean something.",
     },
     {
-      heading: "11. Lessons and recommendations",
+      heading: "11. Assurance activities",
+      body: [
+        "All assurance activities in the Assurance Plan agreed with the Digital Transformation Agency were completed. One was substituted: the planned Gate 5 operational review was replaced by an internal readiness assessment in February 2026, on the Project Board's decision, because public release had moved to March and a Gate 5 before release would have assessed nothing.",
+      ],
+      table: {
+        caption: "Assurance completed",
+        head: ["Activity", "Date", "Key finding", "What we did"],
+        rows: [
+          ["Gate 2 — procurement strategy", "Nov 2023", "Integration scope understated", "Accepted; scope and estimate revised before market approach"],
+          ["Gate 4 — readiness for service", "Mar 2025", "Release too large to absorb change", "Adopted; split into two releases"],
+          ["Internal readiness assessment", "Feb 2026", "Support model undersized", "Partly adopted; two roles added, third deferred"],
+          ["Gate 6 — benefits realisation", "Jun 2026", "Benefit B6 had no owner", "Not resolved; carried as R4 at section 10"],
+        ],
+      },
+      note:
+        "This is criterion 5 of the closure reporting standard, and it is the one most often answered with a list of dates. Findings and what was done about them make it Emerging; the paragraph below — whether the assurance was worth its cost — is what makes it Strong.",
+    },
+    {
+      heading: "11a. Was the assurance worth it?",
+      body: [
+        "The Gate 4 recommendation to split the release is the clearest value: the second release absorbed the identity broker change without a further slip, against a plausible counterfactual of a further 6 to 8 weeks. Gate 2's finding on integration scope was correct and acted on, though the revised estimate still proved 3.4 times short.",
+        "Gate 6 identified the unowned benefit that remains unresolved at closure. The finding was right and the project could not act on it, because allocation sits above the Project Board. That is recorded here rather than presented as an assurance failure.",
+      ],
+      note:
+        "Naming a recommendation that was correct and still not acted on is uncomfortable and is the point. An assurance section where every finding was adopted and everything went well is not describing assurance, it is describing a formality.",
+    },
+    {
+      heading: "12. Lessons and recommendations",
       body: [
         "LP-2026-118 — Forecasting take-up for opt-in services. Context: any business case forecasting behaviour change from an opt-in digital channel. Event: contact reduction forecast at 40 per cent using the 2023 online lodgement rollout as comparator; that was a mandatory channel change and this is opt-in. Actual reduction 18 per cent. Cost: $1.9m of forecast annual benefit not realised. Action: forecast opt-in take-up from opt-in precedents only, and state the comparator in the business case so it can be challenged.",
         "LP-2026-204 — Consuming shared identity services. Context: any build depending on the whole-of-department identity broker. Event: token lifetime changed September 2025 with no notification to consuming programs; session handling broke in user acceptance testing. Cost: integration rework at 3.4 times the original estimate, $3.8m, 11 weeks. Action: register as a consuming system with Platform Identity at design and request change notification — there is no automatic list, you must ask.",
@@ -183,7 +210,7 @@ export const closureExemplar: Exemplar = {
         "Lessons carry context, event, cost and action, and go to a pool a stranger would search. The recommendation is a different kind of thing — it is aimed at this entity's process, and filing it as a lesson would have sent it somewhere nobody with authority to act would read it.",
     },
     {
-      heading: "12. Handover, artefacts and records",
+      heading: "13. Handover, artefacts and records",
       body: [
         "Operational support transferred to Platform Services on 12 June 2026. Before transfer, the receiving team completed two routine changes and one diagnostic task with the delivery team unavailable; the eleven questions raised became the handover backlog and were closed by 30 June.",
         "Known fragility disclosed at handover: the nightly reconciliation fails if the provider feed arrives after 02:00 (twice observed, recovered by manual rerun, no alerting); the eligibility rules engine is compiled rather than configured, so an urgent policy change cannot be applied in under five working days.",
@@ -204,7 +231,7 @@ export const closureExemplar: Exemplar = {
         "The handover was tested rather than signed, and the fragility is written down — the two things delivery teams most often skip, because one costs time and the other feels like confessing. Every artefact carries a location and an owner; a list of names is not an index.",
     },
     {
-      heading: "13. Agreement on closure",
+      heading: "14. Agreement on closure",
       body: [
         "Signed by the Senior Responsible Officer, confirming that the benefits, risks, dependencies and actions recorded at sections 9 and 10 have been accepted by the owners named there.",
         "Exception: risk R4 (support staffing avoidance benefit, $0.9m) remains untransferred and is referred to the Deputy Secretary for allocation. Signature is given on the basis that this exception is recorded and pursued, not resolved.",

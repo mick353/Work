@@ -20,6 +20,22 @@ export const CLOSURE_REVIEWED = "16 August 2026";
 
 export const closureSources: Source[] = [
   {
+    id: "aga-standard",
+    title: "Project closure reporting standard for digital and ICT-enabled projects",
+    publisher: "Australian Government Architecture / Digital Transformation Agency",
+    url: "https://architecture.digital.gov.au/standard/project-closure-reporting-standard-digital-and-ict-enabled-projects",
+    note: "The standard an Australian Government digital or ICT-enabled project closure report is actually assessed against. Seven criteria, each rated Strong, Emerging or Nil, self-assessed by the agency before the report is finalised. This is the spine of this course.",
+    checked: CLOSURE_REVIEWED,
+  },
+  {
+    id: "aga-templates",
+    title: "Digital project closure report templates",
+    publisher: "Australian Government Architecture / Digital Transformation Agency",
+    url: "https://architecture.digital.gov.au/design/digital-project-closure-report-templates",
+    note: "Templates built by the DTA with the ATO to meet the standard. One for Tier 1 and Tier 2 projects, one for Tier 3 and smaller work. Agencies may use their own template provided it meets the criteria.",
+    checked: CLOSURE_REVIEWED,
+  },
+  {
     id: "rmg106",
     title: "Guidance on the Assurance Reviews Process (RMG 106)",
     publisher: "Australian Government / Department of Finance",
@@ -152,6 +168,32 @@ export const closureModules: Module[] = [
           ],
         },
         sourceIds: ["rmg106", "anao-perf"],
+      },
+      {
+        heading: "The standard you are actually assessed against",
+        body: "For Australian Government digital and ICT-enabled projects there is a published standard for this document, and it is short enough to hold in your head. The Digital Transformation Agency's closure reporting standard sets seven criteria, and asks the agency to self-assess its draft against each one as Strong, Emerging or Nil before finalising it. Everything else in this course is depth behind one of those seven.",
+        table: {
+          caption: "The seven criteria",
+          head: ["#", "The report records...", "Covered here in"],
+          rows: [
+            ["1", "Performance against the scope agreed in the business case, with the rationale and impact of any change", "Stage 8"],
+            ["2", "Performance against the agreed schedule, with the rationale and impact of any slippage", "Stage 8"],
+            ["3", "Outcomes achieved and benefits realised against the benefits management plan", "Stage 3"],
+            ["4", "Performance against the agreed budget, with the rationale and impact of any change", "Stages 6 and 8"],
+            ["5", "Completion of assurance activities under the Assurance Plan agreed with the DTA", "Stage 11"],
+            ["6", "Fit-for-purpose transition arrangements into business as usual", "Stages 5 and 9"],
+            ["7", "Lessons learned, and how they will be applied to other projects", "Stage 4"],
+          ],
+        },
+        bullets: [
+          "Self-assessed by the agency, so the honest rating is the useful one — a report rated Strong on everything by its own author tells the reader nothing.",
+          "Strong almost always means the same extra thing: not just what changed, but why, and what it cost.",
+          "Several criteria require artefacts attached, not merely referenced — the original business case, the lessons learned register.",
+          "Agencies may use their own template. The criteria apply either way.",
+        ],
+        example:
+          "The pattern repeats across all seven. Emerging records what happened; Strong explains why it happened and what followed from it. A schedule table showing an eight-week slip is Emerging. The same table plus 'the identity broker token lifetime changed without notice, costing 11 weeks and $3.8m of rework' is Strong.",
+        sourceIds: ["aga-standard", "aga-templates"],
       },
       {
         heading: "Why someone independent checks your closure",
@@ -2426,6 +2468,20 @@ export const closureModules: Module[] = [
         example:
           "A benefit claim supported by 'the Power BI dashboard' is supported by nothing eighteen months after the workspace is deleted. A retained CSV, the SQL that produced it, and a paragraph defining the metric will still answer the question.",
         sourceIds: ["closure", "rmg134"],
+      },
+      {
+        heading: "Recording what assurance actually did",
+        body: "One of the seven criteria is about assurance itself: the report must record that the activities in the Assurance Plan agreed with the Digital Transformation Agency were completed, note any material change to what was planned, and capture what those activities found. It is the criterion most often answered with a list of review dates, which records that assurance occurred and not what it was worth.",
+        bullets: [
+          "List the planned assurance activities, internal and external, and whether each happened.",
+          "Where an activity was dropped, deferred or substituted, give the reason — a changed plan is fine, an unexplained one is not.",
+          "Record the key findings and what was done about them, not just that a review took place.",
+          "For a Strong rating, assess whether the assurance was any use: which recommendations changed the delivery, and which were noted and left.",
+          "Assurance findings are also a source of lessons, and the standard expects the lessons section to draw on them.",
+        ],
+        example:
+          "'Gate 4 review conducted 12 March; Gate 6 review conducted 4 June' is a record of attendance. 'Gate 4 recommended splitting the integration release; adopted, and the second release absorbed the identity broker change without a further slip. Gate 6 recommended a benefits owner for B6; not resolved at closure and carried as R4' tells a reader whether the money spent on assurance bought anything.",
+        sourceIds: ["aga-standard", "rmg106", "anao-gateway"],
       },
       {
         heading: "Assurance and audit are different readers",

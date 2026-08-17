@@ -36,6 +36,13 @@ export const closureFlashcards: Flashcard[] = [
   { id: "cf5", moduleId: "purpose", kind: "application", front: "Which closure-report reader has no alternative source of information?", back: "The next delivery team. The SRO can ask, Finance has the ledger, audit can test — only the next team depends entirely on what was written down." },
   { id: "cf6", moduleId: "purpose", kind: "discrimination", front: "Why is a structural conflict, not carelessness, the reason closure reports are weak?", back: "The author's own record is the subject, written at the point of least time and least incentive to be candid, for readers who cannot verify." },
 
+  { id: "cf75", moduleId: "purpose", kind: "definition", front: "What standard governs Australian Government digital project closure reports?", back: "The DTA's closure reporting standard: seven criteria — scope, schedule, outcomes and benefits, budget, assurance, transition to BAU, lessons — each self-assessed as Strong, Emerging or Nil." },
+  { id: "cf76", moduleId: "purpose", kind: "discrimination", front: "Strong or Emerging?", back: "Emerging records what happened. Strong explains why it happened and what it cost. That single move separates the two on all seven criteria." },
+  { id: "cf77", moduleId: "purpose", kind: "application", front: "Which criteria require an artefact attached, not referenced?", back: "Scope requires the original business case as agreed by Government; lessons requires the lessons learned register." },
+  { id: "cf78", moduleId: "assurance", kind: "definition", front: "What does criterion 5 require?", back: "That internal and external assurance activities in the Assurance Plan agreed with the DTA were completed, with the reason for any material change and the key outcomes. Strong adds whether the assurance was worth its cost." },
+  { id: "cf79", moduleId: "financial", kind: "definition", front: "Movement of Funds", back: "A request to shift approved funding between financial years. A Strong budget rating gives the rationale for it and its impact, including on the wider agency." },
+  { id: "cf80", moduleId: "handover", kind: "definition", front: "What does a Strong transition rating add?", back: "Sustainment funding plans, and the impact of transferring incomplete or outstanding deliverables into business as usual." },
+
   { id: "cf7", moduleId: "evidence", kind: "definition", front: "The three kinds of claim", back: "Measured (data before and after, same definition), estimated (a model with stated assumptions), asserted (informed judgement, no measurement). Mark which is which." },
   { id: "cf8", moduleId: "evidence", kind: "application", front: "What makes a claim traceable?", back: "A reader who was not there can reach the underlying data without asking you: named source, date range, sample size, and the metric definition." },
   { id: "cf9", moduleId: "evidence", kind: "discrimination", front: "Original baseline or revised baseline?", back: "Both. State the original approved baseline first, show each revision dated and reasoned, and report against both so the reader sees the gap." },
@@ -155,6 +162,13 @@ export const closureGlossary: GlossaryEntry[] = [
   { term: "Completion criteria", origin: "General", moduleId: "openitems", definition: "The conditions agreed at the outset for calling the project done. Reported at closure as met, partially met or waived — with who waived them — so that closure is a test rather than an opinion." },
   { term: "Follow-on action recommendation", origin: "General", moduleId: "openitems", definition: "Unfinished work carried out of a closing project to a named owner with a date. The discipline is that every open issue at closure is closed, formally accepted, or converted to one — there is no 'ongoing'." },
   { term: "Recommendation", origin: "General", moduleId: "openitems", definition: "A proposal directed at this entity about how it works, as distinct from a lesson aimed at future projects. A recommendation that changes a control is often the most valuable line in a closure report." },
+  { term: "Assurance Plan", origin: "Government", moduleId: "assurance", definition: "The plan agreed with the Digital Transformation Agency setting out the internal and external assurance activities a digital or ICT-enabled project will undergo. The closure report must record their completion — this is criterion 5 of the closure reporting standard." },
+  { term: "Benefits management plan", origin: "Government", moduleId: "benefits", definition: "The artefact recording each benefit, its owner, how and when it will be measured. Criterion 3 of the closure reporting standard measures the report against this plan, not against the business case narrative." },
+  { term: "Closure reporting standard", origin: "Government", moduleId: "purpose", definition: "The DTA standard for closure reports on Australian Government digital and ICT-enabled projects. Seven criteria, each self-assessed by the agency as Strong, Emerging or Nil before the report is finalised." },
+  { term: "Investment Oversight Framework", origin: "Government", moduleId: "purpose", definition: "The framework tiering Australian Government digital and ICT investments by size and complexity. The tier determines which closure report template applies — Tier 1 and 2 use the fuller template, Tier 3 a lighter one." },
+  { term: "Movement of Funds", origin: "Government", moduleId: "financial", definition: "A request to move approved funding between financial years. Named explicitly in the closure reporting standard: a Strong budget criterion gives the rationale for each such change and its impact, including on the wider agency." },
+  { term: "Strong, Emerging, Nil", origin: "Government", moduleId: "purpose", definition: "The three ratings in the closure reporting standard's self-assessment. Nil means the criterion is not addressed; Emerging records what happened; Strong explains why it happened and what followed from it." },
+  { term: "Sustainment funding", origin: "Government", moduleId: "handover", definition: "The ongoing funding to operate and support what was delivered, after project funding ends. Required for a Strong rating on the transition criterion, alongside the impact of handing incomplete work to business as usual." },
   { term: "Records authority", origin: "Government", moduleId: "records", definition: "An instrument issued by the National Archives giving permission to destroy, retain or transfer described records, and setting minimum retention periods." },
   { term: "Sentencing", origin: "Government", moduleId: "records", definition: "Determining, against a records authority, which records must be kept, for how long, destroyed, or transferred. The first step in any decommissioning, because everything else depends on the answer." },
   { term: "System of record", origin: "General", moduleId: "records", definition: "The authoritative source for a given set of data. Must be named explicitly when a replaced system stays running, or staff cannot know which copy governs." },
@@ -708,6 +722,48 @@ export const closureSupplementary: Question[] = [
     optionNotes: ["", "Completeness without location produces an unusable inventory.", "Phase grouping suits the author, not the reader.", "Impractical, and it does not survive the report being extracted."],
   },
   {
+    id: "cs24",
+    moduleId: "purpose",
+    prompt: "Under the DTA closure reporting standard, what separates an Emerging rating from a Strong one?",
+    options: [
+      "Strong explains why something changed and what it cost, not just that it changed",
+      "Strong requires the report to be endorsed by the Digital Transformation Agency",
+      "Strong applies only to Tier 1 and Tier 2 projects under the IOF",
+      "Strong requires every criterion to be supported by an attached artefact",
+    ],
+    answer: 0,
+    rationale: "The same move recurs across all seven criteria: rationale and impact. A report full of facts without causes is Emerging by definition.",
+    optionNotes: ["", "The assessment is done by the agency itself.", "The criteria apply regardless of tier; only the template differs.", "Some criteria require attachments; that is not what separates the ratings."],
+  },
+  {
+    id: "cs25",
+    moduleId: "assurance",
+    prompt: "A closure report lists the dates of the Gate 4 and Gate 6 reviews and nothing further. How does that rate on the assurance criterion?",
+    options: [
+      "Nil — completion is recorded but no findings or outcomes are captured",
+      "Emerging — the activities in the Assurance Plan are recorded as complete",
+      "Strong — external assurance is evidenced by the review dates",
+      "It cannot be rated without the DTA's own assessment",
+    ],
+    answer: 0,
+    rationale: "The criterion asks for key outcomes from the activities, not attendance. Dates alone record that assurance happened while saying nothing about what it found or changed.",
+    optionNotes: ["", "Emerging needs the outcomes and the rationale for any change to the plan.", "Strong additionally assesses whether the assurance was worth its cost.", "The rating is a self-assessment by the agency."],
+  },
+  {
+    id: "cs26",
+    moduleId: "benefits",
+    prompt: "Criterion 3 measures the closure report against which artefact?",
+    options: [
+      "The benefits management plan",
+      "The business case narrative",
+      "The entity's corporate plan",
+      "The Assurance Plan agreed with the DTA",
+    ],
+    answer: 0,
+    rationale: "Benefits are assessed against the plan that named them, their owners and their measurement — including percentage realised, expected date of realisation and transition of owners.",
+    optionNotes: ["", "The business case is the reference for scope and budget, criteria 1 and 4.", "Corporate plans carry entity purposes, not project benefits.", "That is criterion 5."],
+  },
+  {
     id: "cs15",
     moduleId: "evidence",
     prompt: "What is the risk of a metric definition that could reasonably be read two ways?",
@@ -1013,6 +1069,15 @@ export const closureToolkit: ToolkitTemplate[] = [
     example:
       "Benefit: $2.4m p.a. reduced avoidable contact, from FY2027-28. Owner: Director, Provider Support Branch. Agreed: 14 July governance meeting, minuted. Influence: controls triage and support staffing; note contact volume is partly driven by notification policy owned by Policy Branch — joint dependency recorded. Measurement: monthly contact volumes, standing Service Performance pack, reviewed each December.",
     note: "Run the four conditions. Any that fails is written as a gap with an action, not smoothed into the prose.",
+  },
+  {
+    id: "self-assess",
+    title: "Self-assessment against the seven criteria",
+    prompt: "For each criterion: rating (Strong / Emerging / Nil) · what the report currently says · what it would take to move up a level.",
+    example:
+      "C2 Schedule — EMERGING. The report has a milestone table with planned, rebaselined and actual dates. It does not say why integration slipped 35 weeks or what it cost. To reach Strong: add the identity broker token change as the cause, with the 11-week and $3.8m impact, and note the knock-on to public release.\n\nC5 Assurance — NIL. Gate 4 and Gate 6 dates are listed and nothing else. To reach Emerging: record the findings of each and what was done about them. To reach Strong: say which recommendations changed delivery and which were noted and left.",
+    note:
+      "Do this on the draft, before it goes to the SRO. Rating yourself Strong on all seven is not an outcome, it is a tell — and the reviewer reads the same standard you do.",
   },
   {
     id: "purpose-stmt",
@@ -1364,6 +1429,24 @@ export const closureFieldGuide: FieldGuideEntry[] = [
       { term: "7. Revoke access and integrations", detail: "The reversible checkpoint. Leave the system running but unreachable for a fortnight and see what breaks." },
       { term: "8. Release infrastructure", detail: "Only now: delete data, close accounts, cancel subscriptions. The first irreversible step in the sequence." },
       { term: "9. State the disposition of what it replaced", detail: "Still running? Name the owner, the cost, the stop date, and which system is the system of record." },
+    ],
+  },
+  {
+    id: "criteria",
+    title: "The seven criteria, and what Strong means",
+    summary:
+      "The DTA standard for digital and ICT-enabled project closure reports. Agencies self-assess each criterion as Strong, Emerging or Nil before finalising. Emerging records what happened; Strong explains why, and what followed. Read the right-hand column as the only thing standing between the two.",
+    sourceIds: ["aga-standard", "aga-templates"],
+    items: [
+      { term: "1. Scope", detail: "Emerging: overview, objectives and scope as agreed in the business case, performance against it, any adjustments recorded, and the original business case attached. Strong adds the rationale for each adjustment and its impact." },
+      { term: "2. Schedule", detail: "Emerging: performance against the agreed schedule including key milestones. Strong adds the rationale for and impact of every slip, milestone movement and change request." },
+      { term: "3. Outcomes and benefits", detail: "Emerging: achievement of outcomes against the benefits management plan, with the percentage of benefits realised, expected date of realisation and transition of benefit owners, plus any formal changes to benefits. Strong adds an agreed plan for transferring ongoing benefit management and its governance to the owners after closure." },
+      { term: "4. Budget", detail: "Emerging: final budget position against the agreed budget, a breakdown of performance against it, and any changes recorded. Strong adds the rationale for each change — including Movement of Funds requests and additional funding — and its impact, including on the wider agency." },
+      { term: "5. Assurance", detail: "Emerging: completion of internal and external assurance activities per the Assurance Plan agreed with the DTA, the rationale for any material change, and key outcomes. Strong adds an assessment of whether the assurance was effective and worth its cost." },
+      { term: "6. Transition to BAU", detail: "Emerging: transition arrangements, the owners of any deliverable or scope component left incomplete, and a register of ongoing risks and issues transferring to BAU. Strong adds sustainment funding plans and the impact of handing incomplete work over." },
+      { term: "7. Lessons learned", detail: "Emerging: key lessons including those from assurance, how they were identified, how they will be applied to in-flight and future projects, and the lessons learned register attached. Strong links each lesson to the delivery challenge that produced it and addresses the source of the issue." },
+      { term: "The pattern", detail: "Across all seven, Strong is the same move: not only what changed, but why it changed and what it cost. If your draft states facts without causes, it is Emerging." },
+      { term: "Which template", detail: "DTA templates exist for Tier 1 and Tier 2 projects under the Investment Oversight Framework, and a lighter one for Tier 3 and smaller work. Agencies may use their own template provided it meets the criteria." },
     ],
   },
   {
