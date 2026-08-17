@@ -1,5 +1,5 @@
 import { caseStudies, contrasts, diagnosticQuestions, manifest, modules, quizPoolFor, supplementaryQuestions, totalMinutes } from "./content";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   Check,
@@ -35,6 +35,35 @@ const QUESTION_COUNT =
   modules.reduce((total, module) => total + module.questions.length + module.scenarios.length, 0) +
   supplementaryQuestions.length +
   diagnosticQuestions.length;
+
+/**
+ * Which lesson section is currently on screen, for the sticky contents rail.
+ *
+ * Reading position, not scroll position: the topmost section intersecting the
+ * upper part of the viewport wins, so the rail marks what you are reading
+ * rather than whatever happens to be at the top edge.
+ */
+function useActiveSection(ids: string[]): string {
+  const [active, setActive] = useState("");
+  useEffect(() => {
+    if (!ids.length || typeof IntersectionObserver === "undefined") return;
+    const seen = new Map<string, boolean>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) seen.set(entry.target.id, entry.isIntersecting);
+        const first = ids.find((id) => seen.get(id));
+        if (first) setActive(first);
+      },
+      { rootMargin: "-72px 0px -60% 0px", threshold: 0 },
+    );
+    for (const id of ids) {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    }
+    return () => observer.disconnect();
+  }, [ids.join("|")]);
+  return active;
+}
 
 /** Stable per-section anchor, so the contents list and the re-teach panel agree. */
 const sectionId = (moduleId: string, index: number) => `s-${moduleId}-${index + 1}`;
@@ -414,6 +443,7 @@ export function ModuleView({
     : null;
 
   const StageIllustration = stageIllustrations[module.id];
+  const activeSection = useActiveSection(module.sections.map((_, index) => sectionId(module.id, index)));
   // Stages that appear in a worked case get a direct pointer to it, so the
   // abstraction and the worked instance are one click apart.
   const workedIn = caseStudies.filter((c) => c.steps.some((step) => step.moduleId === module.id));
@@ -463,20 +493,33 @@ export function ModuleView({
       </section>
 
       {/*
-        In-page contents. A stage is now eight or nine sections including a
-        300-word worked-reasoning passage, which is a long scroll with no way
-        to see the shape of it or come back to one part.
+        In-page contents, and on a wide screen the sticky rail beside the
+        lesson.
+
+        A stage runs to about 13,000px. Prose is held at a 68-character
+        measure, which is right for reading and left a 649px empty gutter
+        beside every paragraph — wider than the text column itself. The
+        contents used to sit inline at the top and scroll away, so the reader
+        had a very long page, no sense of shape, and half the content area
+        doing nothing. Putting one in the other solves both.
       */}
-      <nav className="stage-contents" aria-label="Sections in this stage">
-        <span className="eyebrow">In this stage</span>
-        <ol>
-          {module.sections.map((section, index) => (
-            <li key={section.heading}>
-              <button onClick={() => scrollToSection(sectionId(module.id, index))}>{section.heading}</button>
-            </li>
-          ))}
-        </ol>
-      </nav>
+      <div className="lesson-layout">
+        <nav className="stage-contents" aria-label="Sections in this stage">
+          <span className="eyebrow">In this stage</span>
+          <ol>
+            {module.sections.map((section, index) => (
+              <li key={section.heading}>
+                <button
+                  className={activeSection === sectionId(module.id, index) ? "active" : ""}
+                  aria-current={activeSection === sectionId(module.id, index) ? "true" : undefined}
+                  onClick={() => scrollToSection(sectionId(module.id, index))}
+                >
+                  {section.heading}
+                </button>
+              </li>
+            ))}
+          </ol>
+        </nav>
 
       <div className="lesson-sections">
         {module.sections.map((section, index) => (
@@ -510,6 +553,7 @@ export function ModuleView({
             </div>
           </section>
         ))}
+      </div>
       </div>
 
       {stageContrasts.length > 0 && (

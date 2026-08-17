@@ -727,6 +727,55 @@ check(
     );
     await ex.close();
   }
+  /*
+    Measure and overflow across the responsive range, not just the test
+    viewport. The container now grows on wide screens, and the two bands where
+    multi-column layouts collapse (roughly 700-1100px) are exactly where a
+    capped column stops capping. Both faults found here were invisible at
+    1440px: commentary running to 117 characters a line, and a fixed-width
+    <pre> forcing a grid track to 712px inside a 356px phone.
+  */
+  {
+    const resp = await browser.newContext({ viewport: { width: 1100, height: 900 } });
+    const rp = await resp.newPage();
+    watchPage(rp, "responsive");
+    await rp.addInitScript(() =>
+      localStorage.setItem("product-practice-v2:active-package", JSON.stringify("closure-reports")),
+    );
+    await rp.goto(artifactUrl, { waitUntil: "load" });
+    const views = ["dashboard", "cases", "toolkit", "guide", "example", "module/purpose"];
+    let worst = 0;
+    const overflowed = [];
+    for (const width of [390, 768, 1100, 1440, 1920]) {
+      await rp.setViewportSize({ width, height: 900 });
+      for (const v of views) {
+        await rp.evaluate((h) => { window.location.hash = h; }, v);
+        await rp.waitForTimeout(140);
+        const r = await rp.evaluate(() => {
+          const ctx = document.createElement("canvas").getContext("2d");
+          let m = 0;
+          document.querySelectorAll("#main-content p, #main-content li").forEach((el) => {
+            const text = el.textContent.trim();
+            if (text.length < 150 || el.children.length) return;
+            const s = getComputedStyle(el);
+            ctx.font = `${s.fontStyle} ${s.fontWeight} ${s.fontSize} ${s.fontFamily}`;
+            m = Math.max(m, Math.round(el.getBoundingClientRect().width / (ctx.measureText(text).width / text.length)));
+          });
+          const d = document.documentElement;
+          return { m, ov: d.scrollWidth > d.clientWidth + 1 };
+        });
+        worst = Math.max(worst, r.m);
+        if (r.ov) overflowed.push(`${width}/${v}`);
+      }
+    }
+    check("Line length stays under 80 characters at every width", worst <= 80, `worst ${worst}ch`);
+    check(
+      "No horizontal overflow at any width",
+      overflowed.length === 0,
+      overflowed.length ? overflowed.join(", ") : "390 to 1920",
+    );
+    await resp.close();
+  }
   check(
     "Every stage opens with an illustration",
     noIllustration.length === 0,

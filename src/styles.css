@@ -289,7 +289,17 @@ kbd { display: inline-block; border: 1px solid var(--line-strong); border-bottom
 .privacy-note { margin: 20px 10px 0; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
 
 .main-content { min-height: 100vh; padding: 66px 0 0 268px; }
-.page { width: min(1160px, calc(100% - 64px)); margin: 0 auto; padding: 52px 0 78px; }
+.page { width: min(var(--page-max, 1160px), calc(100% - 64px)); margin: 0 auto; padding: 52px 0 78px; }
+/*
+  The container grows on wide screens. It was pinned at 1160px, so at 1920 the
+  content sat 514px from the left edge with 246px of dead margin either side,
+  while tables were squeezed. Prose does not widen — it is capped by --measure
+  and stays at its 68-character line however wide the container gets. Only the
+  full-width elements (tables, artefacts, card grids) and the contents rail use
+  the extra room.
+*/
+@media (min-width: 1600px) { :root { --page-max: 1300px; } }
+@media (min-width: 1900px) { :root { --page-max: 1400px; } }
 .narrow-page { width: min(820px, calc(100% - 64px)); }
 
 h1, h2, h3, p { margin-top: 0; }
@@ -1638,23 +1648,79 @@ p { color: var(--muted); line-height: 1.65; }
 .exemplar-doc-head h2 { margin: 6px 0 4px; }
 .exemplar-doc-head p { margin: 0; color: var(--muted); font-size: 14px; letter-spacing: 0.02em; }
 
-.exemplar-section { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 30px; padding: 26px 32px; border-bottom: 1px solid var(--line); }
+.exemplar-section { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 260px); gap: 30px; padding: 26px 32px; border-bottom: 1px solid var(--line); }
 .exemplar-section:last-child { border-bottom: 0; }
 .exemplar-body h3 { margin: 0 0 12px; font-size: 17px; }
-.exemplar-body p { font-size: 15px; }
+/* Hold the measure even when the commentary column collapses. Between about
+   700 and 1100px the section becomes one column and the report text was
+   running to 118 characters a line. */
+.exemplar-body p { font-size: 15px; max-width: var(--measure); }
 .exemplar-body p + p { margin-top: 11px; }
-.exemplar-body .artefact { max-width: none; }
+/* The register extracts are fixed-width <pre>. Without a cap they force the
+   whole grid wider than the viewport, and .exemplar-doc's overflow:hidden then
+   clips the text instead of revealing the problem — on a 390px phone the
+   commentary was rendering 677px wide and being cut off. Scroll the block, not
+   the page. */
+.exemplar-body .artefact { max-width: 100%; overflow-x: auto; }
 
 .exemplar-note { align-self: start; padding: 14px 16px; border-left: 3px solid var(--stage, var(--accent)); border-radius: 0 8px 8px 0; background: var(--surface-alt); }
 .exemplar-note span { display: block; margin-bottom: 6px; color: var(--accent); font-size: 10.5px; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; }
-.exemplar-note p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; max-width: none; }
+/* Measure applies to the commentary too. An earlier fix for a mobile overflow
+   set max-width:100% here, which removed the cap — so between 700 and 1100px,
+   where the column collapses to full width, the notes ran to 117 characters. */
+.exemplar-note p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; max-width: var(--measure); overflow-wrap: anywhere; }
 
 .exemplar-closing { margin-top: 28px; padding: 20px 24px; border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; background: var(--accent-soft); color: var(--ink); font-size: 15.5px; max-width: none; }
 
 @media (max-width: 1100px) {
-  .exemplar-section { grid-template-columns: 1fr; gap: 16px; }
+  /* minmax(0,1fr), not 1fr. A bare 1fr track is minmax(auto, 1fr), and `auto`
+     will not shrink below its content — so the fixed-width <pre> register
+     extracts pushed the single column to 712px inside a 356px article, and
+     overflow:hidden clipped the text rather than showing it. */
+  .exemplar-section { grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .exemplar-note { border-left-width: 3px; }
 }
 @media (max-width: 640px) {
   .exemplar-doc-head, .exemplar-section { padding-left: 18px; padding-right: 18px; }
+}
+
+/* ------------------------------------------------------------------ *
+ * Lesson layout — using the gutter
+ *
+ * Prose sits at a 68-character measure, which is correct for reading and on a
+ * 1440px screen left a 649px empty column beside every paragraph, wider than
+ * the text itself, while tables ran to 828px. Half the content area did
+ * nothing and a stage ran to 13,000px of scroll.
+ *
+ * The contents rail moves into that gutter and sticks, so the space is doing
+ * work and the reader can jump rather than scroll. The measure is untouched —
+ * it was not the problem.
+ * ------------------------------------------------------------------ */
+@media (min-width: 1180px) {
+  .lesson-layout { display: grid; grid-template-columns: minmax(0, 1fr) 232px; column-gap: 44px; align-items: start; }
+  .lesson-layout .lesson-sections { grid-column: 1; grid-row: 1; min-width: 0; }
+  .lesson-layout .stage-contents {
+    grid-column: 2; grid-row: 1;
+    position: sticky; top: 88px;
+    max-height: calc(100vh - 120px); overflow-y: auto; overscroll-behavior: contain;
+    margin: 0; padding: 16px 4px 16px 18px;
+    border: 0; border-left: 2px solid var(--line); border-radius: 0; background: transparent;
+  }
+  /* Single column in the rail — the inline version sets columns:2, which is
+     right for a wide banner and produces a broken-looking split in a 232px
+     column. */
+  .lesson-layout .stage-contents ol { columns: 1; padding-left: 0; list-style: none; }
+  .lesson-layout .stage-contents li { margin: 0; }
+  .lesson-layout .stage-contents li { counter-increment: toc; }
+  .lesson-layout .stage-contents ol { counter-reset: toc; }
+  .lesson-layout .stage-contents button::before { content: counter(toc) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .lesson-layout .stage-contents button.active::before { color: var(--accent); }
+  .lesson-layout .stage-contents button {
+    display: block; width: 100%; padding: 7px 8px; border: 0; border-radius: 6px;
+    background: transparent; color: var(--muted); text-align: left;
+    font: inherit; font-size: 12.5px; line-height: 1.4; cursor: pointer;
+    transition: background 130ms ease, color 130ms ease;
+  }
+  .lesson-layout .stage-contents button:hover { background: var(--surface-alt); color: var(--ink); }
+  .lesson-layout .stage-contents button.active { color: var(--accent); font-weight: 650; background: var(--accent-soft); }
 }
