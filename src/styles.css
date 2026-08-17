@@ -245,7 +245,34 @@ kbd { display: inline-block; border: 1px solid var(--line-strong); border-bottom
 .sidebar { position: fixed; z-index: 90; inset: 66px auto 0 0; width: 268px; overflow-y: auto; border-right: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(14px); padding: 20px 14px 26px; }
 .sidebar nav { display: grid; gap: 2px; }
 /* Groups now carry the rhythm; the single divider under a flat list is gone. */
-.sidebar-modules { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 10px; }
+/* Overview sits above the groups, so it needs the nav button treatment
+   without a NavSection wrapper around it. */
+.nav-standalone { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 40px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); padding: 10px; margin-bottom: 4px; text-align: left; cursor: pointer; font: inherit; transition: background 140ms ease, color 140ms ease; }
+.nav-standalone svg { color: var(--muted); transition: color 140ms ease; }
+.nav-standalone:hover { background: var(--surface-alt); color: var(--ink); }
+.nav-standalone.active { background: var(--accent-soft); color: var(--accent); font-weight: 650; }
+.nav-standalone.active svg { color: var(--accent); }
+/* The stage list belongs to Study now rather than sitting at the foot of the
+   nav, so the separating rule above it would read as a peer group. Indent and
+   tuck it under instead: it is the contents of the group before it. */
+.sidebar-modules { margin-top: -2px; padding-left: 10px; border-left: 2px solid var(--line); margin-left: 9px; }
+/*
+  The stage list scrolls inside itself.
+
+  Moving it up under Study is right — it is the course, and it was sitting
+  below four groups of activities. But eleven stages at 40px each pushed
+  Practise, Apply and Reference off the bottom of every laptop, which is the
+  exact fault the grouping was introduced to fix. A long sub-list gets its own
+  overflow so the headers below it stay reachable; the active stage is
+  scrolled into view on load so you are never looking at the wrong part of it.
+
+  The cap is measured, not guessed. At 1440x1000 every group header is in
+  view; at 900 and 800 one is not, which is the same count as the previous
+  layout — except the header pushed below the fold used to be the stage list
+  itself. If something has to go under, Reference is the right thing and the
+  course is not.
+*/
+.sidebar-modules nav { max-height: min(20vh, 200px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
 .sidebar nav button { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 40px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); padding: 10px; text-align: left; cursor: pointer; transition: background 140ms ease, color 140ms ease; }
 .sidebar nav button svg { color: var(--muted); transition: color 140ms ease; }
 .sidebar nav button:hover { background: var(--surface-alt); color: var(--ink); }

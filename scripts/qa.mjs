@@ -614,7 +614,7 @@ const groupLabels = await page.locator(".nav-section-header span").allInnerTexts
 const normalisedGroups = groupLabels.map((label) => label.toLowerCase());
 check(
   "Sidebar is grouped by activity",
-  ["learn", "practise", "apply", "reference"].every((label) => normalisedGroups.includes(label)),
+  ["study", "practise", "apply", "reference"].every((label) => normalisedGroups.includes(label)),
   groupLabels.join(" | "),
 );
 /*
@@ -634,8 +634,35 @@ check(
 );
 check(
   "The complete guide is reachable from the sidebar without opening anything",
-  (await page.getByRole("button", { name: "Complete guide", exact: true }).count()) === 1,
+  (await page.getByRole("button", { name: "Read the whole course", exact: true }).count()) === 1,
 );
+/*
+  The reading material must come before the assessment of it. The sidebar used
+  to run Learn / Practise / Apply / Reference with the stages last, so the
+  substance sat below four groups of activities. Assert the order rather than
+  trusting it: Study, then the stages, then everything that tests or supports
+  them.
+*/
+{
+  const order = await page.evaluate(() =>
+    [...document.querySelectorAll(".sidebar .nav-section")].map(
+      (el) => el.querySelector(".nav-section-header span")?.textContent?.trim() ?? "",
+    ),
+  );
+  check(
+    "Study and the stages come before Practise in the sidebar",
+    order[0] === "Study" && /^The .+ stages$/.test(order[1] ?? "") && order[2] === "Practise",
+    order.join(" / "),
+  );
+  check(
+    "Overview is a standalone item above the groups",
+    (await page.locator(".sidebar .nav-standalone").count()) === 1,
+  );
+  check(
+    "The diagnostic is reachable from the sidebar",
+    (await page.getByRole("button", { name: "Diagnostic", exact: true }).count()) === 1,
+  );
+}
 /*
  * The real requirement is not that the whole sidebar fits — the nine-stage
  * list is a long list and long lists scroll. It is that every way into the
@@ -650,6 +677,33 @@ const headersInView = await page.locator(".sidebar").evaluate((el) => {
   });
 });
 check("Every navigation group is reachable without scrolling", headersInView);
+/*
+  And at a realistic laptop height, not just the generous test viewport. The
+  full nav genuinely cannot fit 14 destinations, 5 headers and 11 stages on a
+  800px screen, so the requirement here is bounded: at most one group header
+  below the fold, and it must not be the stage list — the course itself is the
+  one thing that must never be the part you have to scroll to find.
+*/
+{
+  const short = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  const shortPage = await short.newPage();
+  watchPage(shortPage, "short-viewport");
+  await shortPage.goto(artifactUrl, { waitUntil: "load" });
+  await shortPage.waitForSelector(".sidebar");
+  const below = await shortPage.evaluate(() => {
+    const sb = document.querySelector(".sidebar");
+    const box = sb.getBoundingClientRect();
+    return [...sb.querySelectorAll(".nav-section-header")]
+      .filter((h) => h.getBoundingClientRect().bottom > box.bottom + 1)
+      .map((h) => h.textContent.trim());
+  });
+  await check(
+    "At 1280x800 at most one group is below the fold, and it is not the stages",
+    below.length <= 1 && !below.some((label) => /stages/i.test(label)),
+    below.length ? below.join(", ") : "none below the fold",
+  );
+  await short.close();
+}
 check(
   "Every group header reports its state to assistive tech",
   await page.locator(".nav-section-header").evaluateAll((els) =>
@@ -669,7 +723,7 @@ await page.waitForTimeout(300);
 /* -- structure ---------------------------------------------------- */
 
 const stageButtons = await page.locator(".sidebar-modules nav button").count();
-check("Nine curriculum stages in the sidebar", stageButtons === 9, `found ${stageButtons}`);
+check("Nine stages listed in the sidebar", stageButtons === 9, `found ${stageButtons}`);
 
 await page.getByRole("button", { name: "Learning path", exact: true }).click();
 await page.getByRole("heading", { name: "Build the whole product-management chain" }).waitFor();
@@ -879,7 +933,7 @@ check(
 );
 
 await openNavGroup("Reference");
-await page.getByRole("button", { name: "DES field guide", exact: true }).click();
+await page.getByRole("button", { name: "Field guide", exact: true }).click();
 await page.getByRole("heading", { name: "The reference half of the course" }).waitFor();
 const guideText = await page.locator(".field-guide").innerText();
 for (const term of ["Pre-Approval", "Program Increment", "Iteration path", "Senior Responsible Officer", "Learn continuously"]) {

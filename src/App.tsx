@@ -84,6 +84,10 @@ const MOBILE_QUERY = "(max-width: 820px)";
  * sits with practice because you look at it after drilling, not with the
  * reference material it superficially resembles.
  *
+ * Grouping was necessary and not sufficient: the groups were still ordered as
+ * a taxonomy of the software, which left the course itself last. See the note
+ * above NAV_GROUPS for what changed and why.
+ *
  * Everything starts EXPANDED. An earlier version started Apply and Reference
  * collapsed to win back vertical space, on the reasoning that their labels
  * stayed visible so nothing was really hidden. That reasoning failed its first
@@ -98,22 +102,46 @@ const MOBILE_QUERY = "(max-width: 820px)";
 type NavGroup = {
   id: string;
   label: string;
+  /** Render the stage list immediately after this group. */
+  curriculumAfter?: boolean;
   items: { id: View; label: string; icon: React.ReactNode }[];
 };
 
+/*
+ * The order is the learner's journey, not a taxonomy of the software.
+ *
+ * It used to be Learn / Practise / Apply / Reference, with the stages — the
+ * actual course, where nearly all the reading is — rendered last, below four
+ * groups of activities. Three things were wrong with that at once:
+ *
+ *   - the substance came after the assessment of it;
+ *   - the group called "Learn" contained no lesson, only a dashboard and an
+ *     index, because the lessons were in the list at the bottom;
+ *   - the complete guide, which is the whole course in continuous reading
+ *     form, sat under "Reference" beside the glossary and the source list.
+ *
+ * Study now comes first and carries the stages inside it. Everything that
+ * tests, applies or supports the material follows it, which is also the order
+ * a learner actually needs them in.
+ */
 const NAV_GROUPS: NavGroup[] = [
   {
-    id: "learn",
-    label: "Learn",
+    id: "study",
+    label: "Study",
+    /** The stage list renders directly beneath this group — it belongs to it. */
+    curriculumAfter: true,
     items: [
-      { id: "dashboard", label: "Overview", icon: <Home size={18} aria-hidden="true" /> },
       { id: "path", label: "Learning path", icon: <Compass size={18} aria-hidden="true" /> },
+      { id: "guide", label: "Read the whole course", icon: <FileText size={18} aria-hidden="true" /> },
     ],
   },
   {
     id: "practise",
     label: "Practise",
     items: [
+      // Was reachable only from a button on the dashboard, which made the
+      // "where should I start" entry point invisible to anyone who navigated.
+      { id: "diagnostic", label: "Diagnostic", icon: <Compass size={18} aria-hidden="true" /> },
       { id: "review", label: "Review", icon: <Brain size={18} aria-hidden="true" /> },
       { id: "practice", label: "Mixed practice", icon: <ClipboardCheck size={18} aria-hidden="true" /> },
       { id: "results", label: "Results", icon: <BarChart3 size={18} aria-hidden="true" /> },
@@ -132,11 +160,10 @@ const NAV_GROUPS: NavGroup[] = [
     id: "reference",
     label: "Reference",
     items: [
-      { id: "guide", label: "Complete guide", icon: <FileText size={18} aria-hidden="true" /> },
-      { id: "deck", label: "Source deck", icon: <Presentation size={18} aria-hidden="true" /> },
-      { id: "fieldguide", label: "DES field guide", icon: <BookMarked size={18} aria-hidden="true" /> },
+      { id: "fieldguide", label: "Field guide", icon: <BookMarked size={18} aria-hidden="true" /> },
       { id: "glossary", label: "Glossary", icon: <BookA size={18} aria-hidden="true" /> },
       { id: "sources", label: "Sources", icon: <LibraryIcon size={18} aria-hidden="true" /> },
+      { id: "deck", label: "Source deck", icon: <Presentation size={18} aria-hidden="true" /> },
       { id: "divergences", label: "Course additions", icon: <PlusCircle size={18} aria-hidden="true" /> },
     ],
   },
@@ -153,25 +180,35 @@ const DEFAULT_COLLAPSED: Record<string, boolean> = {};
  */
 const NAV_STATE_KEY = "nav-collapsed-v2";
 
+/**
+ * Keep the active stage visible inside the stage list's own scroll area.
+ * Without this, opening Stage 9 of 11 leaves the sidebar showing stages 1-5.
+ */
+function useScrollActiveStageIntoView(view: View) {
+  useEffect(() => {
+    if (!view.startsWith("module:")) return;
+    document
+      .querySelector<HTMLElement>(".sidebar-modules nav button.active")
+      ?.scrollIntoView({ block: "nearest", behavior: "auto" });
+  }, [view]);
+}
+
 /** Which group owns a view, so navigating into a collapsed one opens it. */
 function groupForView(view: View): string {
   if (view.startsWith("module:")) return "curriculum";
+  if (view === "dashboard") return "";
   return NAV_GROUPS.find((group) => group.items.some((item) => item.id === view))?.id ?? "";
 }
 
 /**
- * "Nine-stage curriculum" was hardcoded, which was true of exactly one package.
- * Spelled out to twelve, then numeric — a sidebar heading reading "13-stage" is
- * fine; one reading "Nine" for a seven-stage course is not.
+ * Stage count, spelled out. Hardcoded as "Nine" once, which was true of exactly
+ * one package. Falls through to the numeral past twelve — "The 13 stages" is
+ * fine; "Nine" on an eleven-stage course is not.
  */
 const NUMBER_WORDS = [
   "", "One", "Two", "Three", "Four", "Five", "Six",
   "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve",
 ];
-
-function stageWord(count: number): string {
-  return `${NUMBER_WORDS[count] ?? count}-stage`;
-}
 
 /**
  * Whether a nav item has anything to show in this package.
@@ -376,6 +413,9 @@ export default function App() {
     const timer = window.setInterval(record, 10 * 60_000);
     return () => window.clearInterval(timer);
   }, [setStudyDays]);
+
+  useScrollActiveStageIntoView(view);
+
 
   const openPackage = useCallback(
     (id: string) => {
@@ -807,7 +847,21 @@ function Shell({
           <span className="package-switch-action">Library</span>
         </button>
 
-        {NAV_GROUPS.map((group) => (
+        {/*
+          Overview is a destination, not a category. It sat inside a group
+          called "Learn" that contained no lesson; on its own at the top it
+          reads as what it is — where you are, and what to do next.
+        */}
+        <button
+          className={`nav-standalone ${view === "dashboard" ? "active" : ""}`}
+          aria-current={view === "dashboard" ? "page" : undefined}
+          onClick={() => navigate("dashboard")}
+        >
+          <Home size={18} aria-hidden="true" />
+          <span>Overview</span>
+        </button>
+
+        {NAV_GROUPS.map((group) => [
           <NavSection
             key={group.id}
             id={group.id}
@@ -826,52 +880,55 @@ function Shell({
                 <span>{item.label}</span>
               </button>
             ))}
+          </NavSection>,
+          group.curriculumAfter ? (
+          <NavSection
+            key="curriculum"
+            id="curriculum"
+            label={`The ${NUMBER_WORDS[modules.length]?.toLowerCase() ?? modules.length} stages`}
+            expanded={!collapsedNav.curriculum}
+            onToggle={() => toggleNavGroup("curriculum")}
+            className="sidebar-modules"
+          >
+            {modules.map((module) => {
+              /*
+                Three states, not two. The list previously showed "mastered" or
+                nothing, so a stage you had read and half-answered looked
+                identical to one you had never opened — the sidebar is the
+                learner's map of where they are, and it was hiding the most
+                useful thing on it.
+              */
+              const item = progress[module.id];
+              const done = masteryState(item, module.scenarios.length).mastered;
+              const started =
+                !done &&
+                Boolean(item) &&
+                (item.lessonRead || item.quizScore > 0 || item.scenariosCorrect.length > 0);
+              const state = done ? "done" : started ? "started" : "new";
+              const label = done ? " (mastered)" : started ? " (in progress)" : "";
+              return (
+                <button
+                  key={module.id}
+                  className={view === `module:${module.id}` ? "active" : ""}
+                  data-stage={module.number}
+                  data-state={state}
+                  aria-current={view === `module:${module.id}` ? "page" : undefined}
+                  onClick={() => navigate(`module:${module.id}`)}
+                >
+                  <span className={`module-dot ${state}`} aria-hidden="true">
+                    {done ? <Check size={12} /> : module.number}
+                  </span>
+                  <span>
+                    {module.title}
+                    {label && <span className="visually-hidden">{label}</span>}
+                  </span>
+                </button>
+              );
+            })}
           </NavSection>
-        ))}
+          ) : null,
+        ]).flat()}
 
-        <NavSection
-          id="curriculum"
-          label={`${stageWord(modules.length)} curriculum`}
-          expanded={!collapsedNav.curriculum}
-          onToggle={() => toggleNavGroup("curriculum")}
-          className="sidebar-modules"
-        >
-          {modules.map((module) => {
-            /*
-              Three states, not two. The list previously showed "mastered" or
-              nothing, so a stage you had read and half-answered looked
-              identical to one you had never opened — the sidebar is the
-              learner's map of where they are, and it was hiding the most
-              useful thing on it.
-            */
-            const item = progress[module.id];
-            const done = masteryState(item, module.scenarios.length).mastered;
-            const started =
-              !done &&
-              Boolean(item) &&
-              (item.lessonRead || item.quizScore > 0 || item.scenariosCorrect.length > 0);
-            const state = done ? "done" : started ? "started" : "new";
-            const label = done ? " (mastered)" : started ? " (in progress)" : "";
-            return (
-              <button
-                key={module.id}
-                className={view === `module:${module.id}` ? "active" : ""}
-                data-stage={module.number}
-                data-state={state}
-                aria-current={view === `module:${module.id}` ? "page" : undefined}
-                onClick={() => navigate(`module:${module.id}`)}
-              >
-                <span className={`module-dot ${state}`} aria-hidden="true">
-                  {done ? <Check size={12} /> : module.number}
-                </span>
-                <span>
-                  {module.title}
-                  {label && <span className="visually-hidden">{label}</span>}
-                </span>
-              </button>
-            );
-          })}
-        </NavSection>
 
         <p className="privacy-note">
           Progress stays in this browser. Nothing is uploaded.
