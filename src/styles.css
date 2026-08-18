@@ -219,7 +219,15 @@ html { scroll-behavior: smooth; }
  * width and is not read linearly. That is the standard prose-column-with-
  * breakout pattern, and it is why the wide container still exists.
  */
-:root { --measure: 54ch; }
+/*
+  Line length. 54ch rendered as about 70 characters a line, which is correct
+  and read as narrow beside a 742px column. 58ch takes it to roughly 75 — the
+  top of the range Bringhurst gives for a comfortable single-column measure,
+  and as far as this can go before the eye starts losing its place on the
+  return sweep. Lesson body type also goes 17px -> 17.5px, which widens the
+  line again at the same character count and is easier to read besides.
+*/
+:root { --measure: 58ch; }
 
 body {
   margin: 0; min-width: 320px; min-height: 100vh;
@@ -1435,8 +1443,8 @@ p { color: var(--muted); line-height: 1.65; }
 }
 
 /* Body copy up from 16px: it improves the measure and the legibility together. */
-.lesson-section p { font-size: 17px; }
-.lesson-section ul { font-size: 16.5px; }
+.lesson-section p { font-size: 17.5px; }
+.lesson-section ul { font-size: 17px; }
 
 .case-step-body p,
 .case-insight,
