@@ -1,0 +1,476 @@
+{
+  "courseTitle": "Product Management Fundamentals",
+  "packageId": "pm-fundamentals",
+  "findings": [],
+  "ledger": {
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Stage 1: Product thinking and strategy",
+        "firstScore": 0,
+        "secondScore": 100,
+        "issues": [],
+        "attempts": [
+          {
+            "mode": "learn",
+            "reported": 0,
+            "expected": 0,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 20,
+            "expected": 20,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 20,
+            "expected": 20,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 40,
+            "expected": 40,
+            "of": 5
+          },
+          {
+            "mode": "all-wrong",
+            "reported": 0,
+            "expected": 0,
+            "of": 5
+          },
+          {
+            "mode": "all-right",
+            "reported": 100,
+            "expected": 100,
+            "of": 5
+          }
+        ],
+        "poolLearned": 8,
+        "mastered": true,
+        "footer": "Stage status Mastered — lesson, recall and application complete. Quiz best 100% over 6 attempts; scenarios solved in 6 attempts. Next: Discovery and problem fra"
+      },
+      {
+        "stage": 2,
+        "name": "Stage 2: Discovery and problem framing",
+        "firstScore": 0,
+        "secondScore": 100,
+        "issues": [],
+        "attempts": [
+          {
+            "mode": "learn",
+            "reported": 20,
+            "expected": 20,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 20,
+            "expected": 20,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 40,
+            "expected": 40,
+            "of": 5
+          },
+          {
+            "mode": "all-wrong",
+            "reported": 0,
+            "expected": 0,
+            "of": 5
+          },
+          {
+            "mode": "all-right",
+            "reported": 100,
+            "expected": 100,
+            "of": 5
+          }
+        ],
+        "poolLearned": 8,
+        "mastered": true,
+        "footer": "Stage status Mastered — lesson, recall and application complete. Quiz best 100% over 5 attempts; scenarios solved in 6 attempts. Next: Outcomes, measures and OK"
+      },
+      {
+        "stage": 3,
+        "name": "Stage 3: Outcomes, measures and OKRs",
+        "firstScore": 0,
+        "secondScore": 100,
+        "issues": [],
+        "attempts": [
+          {
+            "mode": "learn",
+            "reported": 0,
+            "expected": 0,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 20,
+            "expected": 20,
+            "of": 5
+          },
+          {
+            "mode": "all-wrong",
+            "reported": 0,
+            "expected": 0,
+            "of": 5
+          },
+          {
+            "mode": "all-right",
+            "reported": 100,
+            "expected": 100,
+            "of": 5
+          }
+        ],
+        "poolLearned": 7,
+        "mastered": true,
+        "footer": "Stage status Mastered — lesson, recall and application complete. Quiz best 100% over 4 attempts; scenarios solved in 6 attempts. Next: Solution exploration and "
+      },
+      {
+        "stage": 4,
+        "name": "Stage 4: Solution exploration and validation",
+        "firstScore": 0,
+        "secondScore": 100,
+        "issues": [],
+        "attempts": [
+          {
+            "mode": "learn",
+            "reported": 40,
+            "expected": 40,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 40,
+            "expected": 40,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 80,
+            "expected": 80,
+            "of": 5
+          },
+          {
+            "mode": "all-wrong",
+            "reported": 0,
+            "expected": 0,
+            "of": 5
+          },
+          {
+            "mode": "all-right",
+            "reported": 100,
+            "expected": 100,
+            "of": 5
+          }
+        ],
+        "poolLearned": 8,
+        "mastered": true,
+        "footer": "Stage status Mastered — lesson, recall and application complete. Quiz best 100% over 5 attempts; scenarios solved in 6 attempts. Next: Delivery, backlogs and ro"
+      },
+      {
+        "stage": 5,
+        "name": "Stage 5: Delivery, backlogs and roadmaps",
+        "firstScore": 0,
+        "secondScore": 100,
+        "issues": [],
+        "attempts": [
+          {
+            "mode": "learn",
+            "reported": 40,
+            "expected": 40,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 20,
+            "expected": 20,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 20,
+            "expected": 20,
+            "of": 5
+          },
+          {
+            "mode": "all-wrong",
+            "reported": 0,
+            "expected": 0,
+            "of": 5
+          },
+          {
+            "mode": "all-right",
+            "reported": 100,
+            "expected": 100,
+            "of": 5
+          }
+        ],
+        "poolLearned": 9,
+        "mastered": true,
+        "footer": "Stage status Mastered — lesson, recall and application complete. Quiz best 100% over 5 attempts; scenarios solved in 6 attempts. Next: Lifecycle and continuous "
+      },
+      {
+        "stage": 6,
+        "name": "Stage 6: Lifecycle and continuous learning",
+        "firstScore": 0,
+        "secondScore": 100,
+        "issues": [],
+        "attempts": [
+          {
+            "mode": "learn",
+            "reported": 0,
+            "expected": 0,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 20,
+            "expected": 20,
+            "of": 5
+          },
+          {
+            "mode": "all-wrong",
+            "reported": 0,
+            "expected": 0,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 0,
+            "expected": 0,
+            "of": 5
+          },
+          {
+            "mode": "all-right",
+            "reported": 100,
+            "expected": 100,
+            "of": 5
+          }
+        ],
+        "poolLearned": 8,
+        "mastered": true,
+        "footer": "Stage status Mastered — lesson, recall and application complete. Quiz best 100% over 5 attempts; scenarios solved in 6 attempts. Next: Roles, teams and decision"
+      },
+      {
+        "stage": 7,
+        "name": "Stage 7: Roles, teams and decision rights",
+        "firstScore": 0,
+        "secondScore": 100,
+        "issues": [],
+        "attempts": [
+          {
+            "mode": "learn",
+            "reported": 0,
+            "expected": 0,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 20,
+            "expected": 20,
+            "of": 5
+          },
+          {
+            "mode": "all-wrong",
+            "reported": 0,
+            "expected": 0,
+            "of": 5
+          },
+          {
+            "mode": "all-right",
+            "reported": 100,
+            "expected": 100,
+            "of": 5
+          }
+        ],
+        "poolLearned": 8,
+        "mastered": true,
+        "footer": "Stage status Mastered — lesson, recall and application complete. Quiz best 100% over 4 attempts; scenarios solved in 6 attempts. Next: Product practice in gover"
+      },
+      {
+        "stage": 8,
+        "name": "Stage 8: Product practice in government",
+        "firstScore": 0,
+        "secondScore": 100,
+        "issues": [],
+        "attempts": [
+          {
+            "mode": "learn",
+            "reported": 20,
+            "expected": 20,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 20,
+            "expected": 20,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 40,
+            "expected": 40,
+            "of": 5
+          },
+          {
+            "mode": "all-wrong",
+            "reported": 0,
+            "expected": 0,
+            "of": 5
+          },
+          {
+            "mode": "all-right",
+            "reported": 100,
+            "expected": 100,
+            "of": 5
+          }
+        ],
+        "poolLearned": 9,
+        "mastered": true,
+        "footer": "Stage status Mastered — lesson, recall and application complete. Quiz best 100% over 5 attempts; scenarios solved in 6 attempts. Next: Integration and capstone"
+      },
+      {
+        "stage": 9,
+        "name": "Stage 9: Integration and capstone",
+        "firstScore": 0,
+        "secondScore": 100,
+        "issues": [],
+        "attempts": [
+          {
+            "mode": "learn",
+            "reported": 0,
+            "expected": 0,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 60,
+            "expected": 60,
+            "of": 5
+          },
+          {
+            "mode": "learn",
+            "reported": 60,
+            "expected": 60,
+            "of": 5
+          },
+          {
+            "mode": "all-wrong",
+            "reported": 0,
+            "expected": 0,
+            "of": 5
+          },
+          {
+            "mode": "all-right",
+            "reported": 100,
+            "expected": 100,
+            "of": 5
+          }
+        ],
+        "poolLearned": 8,
+        "mastered": true,
+        "footer": "Stage status Mastered — lesson, recall and application complete. Quiz best 100% over 5 attempts; scenarios solved in 6 attempts. Open the capstone"
+      }
+    ],
+    "practice": {
+      "asked": 10,
+      "gotRight": 0
+    },
+    "review": [
+      {
+        "front": "Product strategy",
+        "rating": "Again"
+      },
+      {
+        "front": "Vision or strategy: 'Reduce administrative effort,",
+        "rating": "Hard"
+      },
+      {
+        "front": "Discovery",
+        "rating": "Good"
+      },
+      {
+        "front": "Lagging indicator",
+        "rating": "Easy"
+      },
+      {
+        "front": "OKR grading scale",
+        "rating": "Again"
+      },
+      {
+        "front": "When is an A/B test the right method?",
+        "rating": "Hard"
+      },
+      {
+        "front": "Product Goal",
+        "rating": "Good"
+      },
+      {
+        "front": "Product Backlog",
+        "rating": "Easy"
+      }
+    ],
+    "diagnostic": {
+      "asked": 9
+    }
+  },
+  "notes": [
+    {
+      "area": "Diagnostic recommendation",
+      "detail": "0/9 RECOMMENDED STARTING POINT Stage 1: Product thinking and strategy Explain what makes something a product, "
+    },
+    {
+      "area": "Mixed practice",
+      "detail": "10 answered, 0 correct, feedback on 10"
+    },
+    {
+      "area": "Review",
+      "detail": "8 cards rated across all four buttons"
+    },
+    {
+      "area": "Capstone",
+      "detail": "4 sections written, 6 rubric boxes ticked"
+    },
+    {
+      "area": "Results mastery count",
+      "detail": "9 of 9, agrees with the walkthrough"
+    },
+    {
+      "area": "Lifetime accuracy",
+      "detail": "81 of 230 = 35%, internally consistent"
+    },
+    {
+      "area": "Item statistics",
+      "detail": "5 items reported"
+    },
+    {
+      "area": "Record of completion",
+      "detail": "9 stage rows"
+    },
+    {
+      "area": "Print — printable guide",
+      "detail": "67 pages, 436 KB, nothing clipped"
+    },
+    {
+      "area": "Print — record of completion",
+      "detail": "2 pages, 69 KB, nothing clipped"
+    },
+    {
+      "area": "Backup contents",
+      "detail": "20.4 KB, includes progress, drafts and scheduling"
+    },
+    {
+      "area": "Backup filename",
+      "detail": "pp-pm-fundamentals-2026-08-19-0937.json"
+    },
+    {
+      "area": "Console",
+      "detail": "no page or console errors across the whole walkthrough"
+    }
+  ]
+}

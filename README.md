@@ -95,7 +95,7 @@ npx playwright install chromium   # once, before the first QA run
 npm run build      # writes both builds
 npm run dev        # rebuild on change
 npm run typecheck  # tsc --noEmit
-npm run qa         # 272-check verification suite
+npm run qa         # 273-check verification suite
 npm run verify     # typecheck + build + qa
 ```
 
@@ -134,7 +134,7 @@ The script reads the stage-to-slide mapping out of `course.ts`, so the two canno
 
 ### QA
 
-`scripts/qa.mjs` runs **272 checks** against the real built artefact in a real browser, and writes `qa-report.json`. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` runs **273 checks** against the real built artefact in a real browser, and writes `qa-report.json`. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
 
 It covers question-bank integrity, scoring arithmetic, mastery gating, backup round-trip including rejection of malformed files, package switching **through the control a learner clicks**, contrast on all 40 stage-page/theme combinations, axe-core WCAG 2.1 A/AA across every view in both packages and both themes, line measure and horizontal overflow from 320 px to 2560 px, target sizes, keyboard and focus behaviour, reduced motion, and console hygiene.
 
@@ -151,7 +151,7 @@ public/                Assets copied into docs/ at build time
 docs/                  GENERATED — the GitHub Pages build. Do not edit by hand.
 scripts/
   build.mjs            esbuild bundle; emits both builds
-  qa.mjs               The 272-check verification suite
+  qa.mjs               The 273-check verification suite
   import-slides.py     Deck → slides.ts + public/slides (see above)
   add-notes.py         One-off content migrations, already applied and kept
   add-reasoning.py     only for provenance. NOT part of the build, and not

@@ -1830,6 +1830,56 @@ check(
 }
 
 /*
+  "1 days".
+
+  Found by completing a course rather than by any check: after a single
+  session the results page read "1 days in the last 12 weeks" and "1 study
+  days recorded overall". The codebase already had the guard idiom in six
+  other places; these two just missed it, and no check looked at rendered
+  text with a count of exactly one in it.
+
+  Seeds a single study day and one attempt — the state a first-time learner
+  is in for their whole first session, so this is the common case, not an
+  edge one — and reads every view for a singular count followed by a plural.
+*/
+{
+  const one = await browser.newContext({ viewport: { width: 1440, height: 1200 } });
+  const op = await one.newPage();
+  watchPage(op, "singular");
+  await op.addInitScript(() => {
+    const p = "product-practice-v2:pm-fundamentals:";
+    localStorage.setItem(`${p}study-days`, JSON.stringify(["2026-08-19"]));
+    localStorage.setItem(`${p}progress`, JSON.stringify({
+      thinking: {
+        lessonRead: true, quizScore: 100, scenariosCorrect: ["thinking-s1", "thinking-s2"],
+        scenarioAttempts: { "thinking-s1": 1, "thinking-s2": 1 },
+        reflection: "", assignment: [], assignmentChecks: {}, attempts: 1,
+      },
+    }));
+  });
+  await op.goto(artifactUrl, { waitUntil: "load" });
+  await op.waitForSelector(".sidebar");
+
+  const NOUNS = "day|days|attempt|attempts|question|questions|card|cards|stage|stages|slide|slides|"
+    + "week|weeks|item|items|section|sections|answer|answers|time|times|point|points|word|words";
+  const bad = [];
+  for (const view of ["dashboard", "results", "path", "review", "module/thinking"]) {
+    await op.evaluate((v) => { window.location.hash = v; }, view);
+    await op.waitForTimeout(600);
+    const text = (await op.innerText("#main-content")).replace(/\s+/g, " ");
+    const hits = text.match(new RegExp(`\\b1 (?:${NOUNS})s\\b`, "g")) ?? [];
+    /* "1 days" is wrong; "1 day" is right. Only flag a plural after exactly 1. */
+    for (const h of new Set(hits)) bad.push(`${view}: "${h}"`);
+  }
+  check(
+    "A count of one is not followed by a plural noun",
+    bad.length === 0,
+    bad.length ? bad.join(" | ") : "dashboard, results, path, review and a stage page all read correctly",
+  );
+  await one.close();
+}
+
+/*
   The package author is not named, anywhere.
 
   This is a deliberate choice, not an oversight, and it is easy to undo by

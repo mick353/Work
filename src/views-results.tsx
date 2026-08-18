@@ -278,7 +278,7 @@ export function Results({
               <div>
                 <strong>{currentStreak}</strong>
                 <span>Day streak</span>
-                <small>{studyDays.length} study days recorded overall</small>
+                <small>{studyDays.length} study day{studyDays.length === 1 ? "" : "s"} recorded overall</small>
               </div>
               <div>
                 <strong>{practiceBest || "—"}{practiceBest ? "%" : ""}</strong>

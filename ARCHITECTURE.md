@@ -117,7 +117,7 @@ Each of these has cost real time. They are here so they cost it once.
 
 ## 6. Verification
 
-`scripts/qa.mjs` — **272 checks** against the real built artefact in a real Chromium, writing `qa-report.json`. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` — **273 checks** against the real built artefact in a real Chromium, writing `qa-report.json`. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
 
 Coverage: question-bank integrity and item-writing statistics, scoring arithmetic, mastery gating, backup round-trip including malformed-file rejection, package switching *through the button*, contrast across all 40 stage-page/theme combinations, axe-core WCAG 2.1 A/AA on every view in both packages and both themes, line measure and horizontal overflow from 320 px to 2560 px, target sizes, keyboard and focus, reduced motion, and console hygiene.
 

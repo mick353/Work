@@ -303,7 +303,7 @@ export function Heatmap({
   const activeDays = weeks.flat().filter((day) => day.active).length;
   return (
     <>
-      <div className="heatmap" role="img" aria-label={`${ariaLabel}. ${activeDays} days studied.`}>
+      <div className="heatmap" role="img" aria-label={`${ariaLabel}. ${activeDays} day${activeDays === 1 ? "" : "s"} studied.`}>
         {weeks.map((week, index) => (
           <div className="heatmap-week" key={index}>
             {week.map((day) => (
@@ -315,7 +315,7 @@ export function Heatmap({
       <p className="heatmap-legend">
         <span className="swatch off" aria-hidden="true" /> no session
         <span className="swatch on" aria-hidden="true" /> studied
-        <strong>{activeDays} days in the last 12 weeks</strong>
+        <strong>{activeDays} day{activeDays === 1 ? "" : "s"} in the last 12 weeks</strong>
       </p>
     </>
   );
