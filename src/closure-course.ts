@@ -143,7 +143,7 @@ export const closureModules: Module[] = [
     sections: [
       {
         heading: "Why this document is hard to write well",
-        body: "Writing one of these well is harder than it looks, and the difficulty is structural rather than personal. They are produced at the point where the delivery team is being disbanded, the funding has stopped, the sponsor has moved to the next thing, and nobody who will live with the result is in the room. The person holding the pen is usually the project manager, whose professional reputation is the subject of the document. That is a structural conflict, not a personal failing, and no template solves it.",
+        body: "Writing one of these well is harder than it looks, and the difficulty is structural rather than personal. Closure reports are produced at the point where the delivery team is dispersing, the funding has stopped, the sponsor has moved to the next thing, and nobody who will live with the result is in the room. The person holding the pen is usually the project manager, whose professional reputation is the subject of the document. No template solves that on its own, which is why the rest of this course is about the habits that do.",
         bullets: [
           "Written last, by the people with the least time and the most exposure.",
           "Read — if at all — by people who were not there and cannot check the claims.",
@@ -2218,7 +2218,7 @@ export const closureModules: Module[] = [
     sections: [
       {
         heading: "Structure for a reader in a hurry",
-        body: "Assume your reader arrives with one question and about ninety seconds. They arrive with a question and scan for it, and if they cannot find it in about ninety seconds they either ask you directly or give up and assume the answer. Structure is therefore not presentation — it is the difference between the document being used and being filed.",
+        body: "Assume your reader arrives with one question and about ninety seconds. They will scan for their answer, and if it is not findable in that time they either ask you directly or decide for themselves what it probably was. Structure is therefore doing real work here: it is the difference between a document that gets used and one that gets filed.",
         bullets: [
           "Lead with what was promised, what was delivered, and the gap. One page, no preamble.",
           "Put the benefits table where it can be found without reading the narrative.",
