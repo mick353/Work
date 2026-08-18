@@ -431,12 +431,12 @@ export function CaseStudies({ navigate }: { navigate: (view: View) => void }) {
     <div className="page">
       <PageIntro
         eyebrow="Worked cases"
-        title="The whole chain, four times, on real decisions"
-        body="Knowing what a good problem statement contains is not the same as having seen one derived. Four cases run the method on real departmental decisions: one worked cleanly, one where the method caught a mistake already shipped, one against a policy constraint that would not move, and one where a service quietly decayed because nobody owned it. Each step names the decision that was on the table before it says what the team did — so you can answer it first."
+        title="The whole method, worked on real decisions"
+        body={`Knowing what good looks like is not the same as having seen one derived. ${caseStudies.length} cases run the method on real departmental decisions, step by step, across ${caseStudies.reduce((set, study) => { study.steps.forEach((s) => set.add(s.moduleId)); return set; }, new Set()).size} stages of the course. Each step names the decision that was on the table before it says what the team did — so you can answer it first.`}
       />
 
       {/*
-        The tab strip now carries a stage-coverage map. Four cases exercise
+        The tab strip now carries a stage-coverage map. The cases exercise
         different parts of the curriculum, and a learner who knows they are
         weak on lifecycle should be able to see which case will make them
         practise it without opening all four.

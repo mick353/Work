@@ -954,6 +954,53 @@ check(
     );
     await hues.close();
   }
+  /*
+    Panels fill their column; only running text is capped.
+    A block of measure rules had been capping whole PANELS — knowledge check,
+    scenario, assignment, reflection, contrast, source note, case summary — at
+    roughly 620px inside a 794px column, so they read as narrow and misaligned.
+    Nothing in the suite noticed, because line length was still correct.
+  */
+  {
+    const wide = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
+    const wp = await wide.newPage();
+    watchPage(wp, "panel-width");
+    await wp.addInitScript(() =>
+      localStorage.setItem("product-practice-v2:active-package", JSON.stringify("closure-reports")),
+    );
+    await wp.goto(artifactUrl, { waitUntil: "load" });
+    const narrow = [];
+    for (const v of ["cases", "sources", "module/purpose", "capstone"]) {
+      await wp.evaluate((h) => { window.location.hash = h; }, v);
+      await wp.waitForTimeout(280);
+      const r = await wp.evaluate(() => {
+        const page = document.querySelector("#main-content .page");
+        if (!page) return [];
+        const column =
+          document.querySelector(".lesson-sections")?.getBoundingClientRect().width ??
+          page.getBoundingClientRect().width;
+        const classes = [
+          "knowledge-check", "scenario-panel", "assignment-panel", "reflection-panel",
+          "contrast-panel", "source-note", "method-note", "boundary-note", "case-summary",
+        ];
+        return classes
+          .map((cls) => {
+            const el = document.querySelector(`.${cls}`);
+            if (!el) return null;
+            const w = el.getBoundingClientRect().width;
+            return w < column * 0.85 ? `${cls} ${Math.round(w)}/${Math.round(column)}` : null;
+          })
+          .filter(Boolean);
+      });
+      r.forEach((x) => narrow.push(`${v}: ${x}`));
+    }
+    check(
+      "Panels fill their column rather than being capped to the text measure",
+      narrow.length === 0,
+      narrow.length ? narrow.join(", ") : "checked across 4 views",
+    );
+    await wide.close();
+  }
   check(
     "Every stage opens with an illustration",
     noIllustration.length === 0,

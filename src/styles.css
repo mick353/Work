@@ -1421,7 +1421,6 @@ p { color: var(--muted); line-height: 1.65; }
 .page > .divergence-note,
 .case-step p,
 .case-closing p,
-.case-summary,
 .contrast-tell,
 .method-note p,
 .boundary-note p,
@@ -1564,9 +1563,12 @@ p { color: var(--muted); line-height: 1.65; }
 .scenario-panel,
 .assignment-panel,
 .reflection-panel { max-width: calc(var(--measure) + 140px); }
+/* .case-summary is a panel with an icon beside its text, not a text block.
+   Capping the panel squeezed it to 580px next to 1268px cards and read as
+   broken; the paragraph inside carries the measure instead. */
 .divergence,
-.case-summary,
 .guide-core { max-width: calc(var(--measure) + 100px); }
+.case-summary { max-width: none; }
 
 /* ================================================================== *
  * Record of completion
@@ -2017,3 +2019,27 @@ p { color: var(--muted); line-height: 1.65; }
 :root[data-theme="dark"] .guide-stage-num,
 :root[data-theme="dark"] .case-step-mark,
 :root[data-theme="dark"] .module-dot.done { color: #0d1117; }
+
+/* ------------------------------------------------------------------ *
+ * Panels take the column; their text takes the measure
+ *
+ * A block of measure rules was capping whole PANELS — the knowledge check,
+ * the scenario, the assignment, the reflection, the contrast table, the
+ * source note — at about 620px inside a 794px lesson column. They read as
+ * narrow and misaligned against everything around them, which is exactly
+ * what a reader notices.
+ *
+ * The measure belongs to the running text, and the base rule
+ * (.page p, .page li, .page dd) already applies it. A panel is a container:
+ * it should fill its column, and the paragraphs inside it stay readable
+ * because they are still paragraphs.
+ * ------------------------------------------------------------------ */
+.knowledge-check,
+.scenario-panel,
+.assignment-panel,
+.reflection-panel,
+.contrast-panel,
+.source-note,
+.module-footer,
+.method-note,
+.boundary-note { max-width: none; }
