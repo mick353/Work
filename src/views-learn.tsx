@@ -343,7 +343,7 @@ export function LearningPath({ progress, navigate }: { progress: ProgressMap; na
   return (
     <div className="page">
       <PageIntro
-        eyebrow="Nine-stage curriculum"
+        eyebrow={`${modules.length}-stage curriculum`}
         title="Build the whole product-management chain"
         body={`Each stage names a capability, not just a topic. Mastery requires reading the lesson, scoring at least ${MASTERY_QUIZ_THRESHOLD}% on the knowledge check, and answering both decision scenarios correctly.`}
       />

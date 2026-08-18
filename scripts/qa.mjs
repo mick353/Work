@@ -2119,25 +2119,50 @@ check(
 );
 check("Dark theme is applied", (await page.locator("html").getAttribute("data-theme")) === "dark");
 
-// axe skips contrast checks on gradient backgrounds and reports "incomplete",
-// so light-on-gradient text can ship unreadable. Assert the computed colour.
+/*
+  axe skips contrast on gradient backgrounds and reports "incomplete", so text
+  over one can ship unreadable. Assert the real ratio rather than raw lightness:
+  the first version of this check required luminance >= 170, which encoded the
+  assumption that the hero is dark. It is light in the light theme, so the check
+  failed the moment the palette gained colour — and it would have passed happily
+  on dark text over a dark wash.
+*/
 await page.evaluate(() => { window.location.hash = "dashboard"; });
 await page.waitForTimeout(300);
-const gradientText = await page.evaluate(() => {
+const gradientContrast = await page.evaluate(() => {
+  const lum = (c) => {
+    const [r, g, b] = c.match(/\d+/g).slice(0, 3).map(Number);
+    const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+  };
+  const behind = (el) => {
+    let node = el;
+    while (node) {
+      const bg = getComputedStyle(node).backgroundColor;
+      if (bg && !bg.includes("rgba(0, 0, 0, 0)")) return bg;
+      node = node.parentElement;
+    }
+    return getComputedStyle(document.body).backgroundColor;
+  };
   const out = [];
   document.querySelectorAll(".metric-strip span, .metric-strip strong, .hero h1, .hero p").forEach((el) => {
-    const c = getComputedStyle(el).color.match(/\d+/g).map(Number);
-    out.push({ text: (el.textContent || "").slice(0, 24), luminance: (c[0] + c[1] + c[2]) / 3 });
+    const a = lum(getComputedStyle(el).color);
+    const b = lum(behind(el));
+    out.push({
+      text: (el.textContent || "").slice(0, 24),
+      ratio: +(((Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)).toFixed(2)),
+    });
   });
   return out;
 });
-const tooDark = gradientText.filter((item) => item.luminance < 170);
+const lowContrast = gradientContrast.filter((item) => item.ratio < 4.5);
 check(
-  "Text on gradient panels is light enough to read",
-  tooDark.length === 0,
-  tooDark.map((item) => `"${item.text}" avg ${Math.round(item.luminance)}`).join("; "),
+  "Text over gradient panels meets AA against its own background",
+  lowContrast.length === 0,
+  lowContrast.length
+    ? lowContrast.map((i) => `"${i.text}" ${i.ratio}:1`).join(", ")
+    : `${gradientContrast.length} elements, worst ${Math.min(...gradientContrast.map((i) => i.ratio))}:1`,
 );
-
 await page.screenshot({ path: path.join(projectDir, "qa-desktop.png"), fullPage: false });
 
 /* ---------------------------------------------------------------- *

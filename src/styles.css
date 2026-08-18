@@ -1,18 +1,25 @@
 /* ==================================================================
    Design tokens
 
-   ONE brand colour. A disciplined neutral scale does the work. Colour is
-   spent only where it carries meaning:
+   Colour is used, not rationed. An earlier version of this file opened by
+   declaring "ONE brand colour... never a page wash", and the result was a
+   site that read as competent and joyless next to anything else people
+   learn from. Duolingo, Kahoot and Codecademy all carry bright, saturated,
+   mid-lightness colour across large areas; ours sat in the 700-800 range
+   and appeared only in 3px slivers.
 
-     --brand      primary actions, links, focus, active nav
+   The rules that replace it:
+
+     --brand           primary actions, links, focus, active nav
+     --stage-N         each stage's own hue, used at page scale — hero wash,
+                       rail, numeral, illustration, section marks
+     --stage-N-ink     the same hue darkened enough for text on light
+                       surfaces, so vibrancy never costs contrast
      --success / --warning / --danger   status, and nothing else
-     --stage-N    a small identifying mark per stage (numeral chip, rail
-                  node) and categorical chart series — never a page wash
 
-   What this deliberately does NOT do: repaint each stage's page in its own
-   hue. Nine full-page colour themes reads as decoration, not hierarchy, and
-   no serious product design system works that way. Stage identity is carried
-   by the numeral, the typography and the position in the path.
+   Every stage colour is checked two ways: as a fill behind white text, and
+   as text on the page background. Bright is not the same as low contrast —
+   the ink variants exist precisely so both can be true.
    ================================================================== */
 
 :root {
@@ -45,10 +52,10 @@
   --line-strong: var(--n-300);
 
   /* Brand — one colour, three weights */
-  --brand: #4338ca;
-  --brand-strong: #3730a3;
-  --brand-bright: #4f46e5;
-  --brand-soft: #eef0fd;
+  --brand: #4f46e5;
+  --brand-strong: #4338ca;
+  --brand-bright: #6366f1;
+  --brand-soft: #eef0ff;
   --brand-ink: #ffffff;
 
   /* Status */
@@ -59,16 +66,22 @@
   --warning: #a15c07;
   --warning-soft: #fdf3e4;
 
-  /* Stage marks and chart series — categorical, used small */
-  --stage-1: #4338ca;
-  --stage-2: #0f766e;
-  --stage-3: #047857;
-  --stage-4: #7e22ce;
-  --stage-5: #1d4ed8;
-  --stage-6: #0369a1;
-  --stage-7: #be185d;
-  --stage-8: #b45309;
-  --stage-9: #475569;
+  /* Stage hues — vivid, used at page scale. Each has an -ink variant that is
+     dark enough for text on the light canvas; the base is bright enough to
+     carry white text as a fill. Twelve, because a package may have more than
+     nine stages and the tenth was rendering with no colour at all. */
+  --stage-1: #4f46e5;  --stage-1-ink: #4338ca;
+  --stage-2: #0d9488;  --stage-2-ink: #0f766e;
+  --stage-3: #059669;  --stage-3-ink: #047857;
+  --stage-4: #9333ea;  --stage-4-ink: #7e22ce;
+  --stage-5: #2563eb;  --stage-5-ink: #1d4ed8;
+  --stage-6: #0284c7;  --stage-6-ink: #0369a1;
+  --stage-7: #e11d48;  --stage-7-ink: #be123c;
+  --stage-8: #d97706;  --stage-8-ink: #b45309;
+  --stage-9: #0891b2;  --stage-9-ink: #0e7490;
+  --stage-10: #c026d3; --stage-10-ink: #a21caf;
+  --stage-11: #16a34a; --stage-11-ink: #15803d;
+  --stage-12: #7c3aed; --stage-12-ink: #6d28d9;
 
   /* Legacy aliases so existing rules keep resolving to the brand. */
   --accent: var(--brand);
@@ -78,9 +91,12 @@
   --on-deep: #ffffff;
   --stage: var(--brand);
 
-  --accent-1: var(--stage-1); --accent-2: var(--stage-2); --accent-3: var(--stage-3);
-  --accent-4: var(--stage-4); --accent-5: var(--stage-5); --accent-6: var(--stage-6);
-  --accent-7: var(--stage-7); --accent-8: var(--stage-8); --accent-9: var(--stage-9);
+  /* --accent-N is used as TEXT throughout. It resolves to the ink variant, not
+     the bright fill: brightening --stage-N without this put 340 text elements
+     below AA at once. --stage-N stays vivid for fills, rails and washes. */
+  --accent-1: var(--stage-1-ink); --accent-2: var(--stage-2-ink); --accent-3: var(--stage-3-ink);
+  --accent-4: var(--stage-4-ink); --accent-5: var(--stage-5-ink); --accent-6: var(--stage-6-ink);
+  --accent-7: var(--stage-7-ink); --accent-8: var(--stage-8-ink); --accent-9: var(--stage-9-ink);
   --vivid-1: #6366f1; --vivid-2: #14b8a6; --vivid-3: #10b981;
   --vivid-4: #a855f7; --vivid-5: #3b82f6; --vivid-6: #0ea5e9;
   --vivid-7: #ec4899; --vivid-8: #f59e0b; --vivid-9: #64748b;
@@ -135,7 +151,13 @@
 
   --stage-1: #a5b4fc; --stage-2: #5eead4; --stage-3: #6ee7a7;
   --stage-4: #d8b4fe; --stage-5: #93c5fd; --stage-6: #7dd3fc;
-  --stage-7: #f9a8d4; --stage-8: #fcd34d; --stage-9: #cbd5e1;
+  --stage-7: #f9a8d4; --stage-8: #fcd34d; --stage-9: #67e8f9;
+  --stage-10: #f0abfc; --stage-11: #86efac; --stage-12: #c4b5fd;
+  /* On dark, the bright hue IS the readable one — ink aliases to it. */
+  --stage-1-ink: var(--stage-1); --stage-2-ink: var(--stage-2); --stage-3-ink: var(--stage-3);
+  --stage-4-ink: var(--stage-4); --stage-5-ink: var(--stage-5); --stage-6-ink: var(--stage-6);
+  --stage-7-ink: var(--stage-7); --stage-8-ink: var(--stage-8); --stage-9-ink: var(--stage-9);
+  --stage-10-ink: var(--stage-10); --stage-11-ink: var(--stage-11); --stage-12-ink: var(--stage-12);
 
   --accent: var(--brand);
   --accent-soft: var(--brand-soft);
@@ -144,9 +166,12 @@
   --on-deep: #12161d;
   --stage: var(--brand);
 
-  --accent-1: var(--stage-1); --accent-2: var(--stage-2); --accent-3: var(--stage-3);
-  --accent-4: var(--stage-4); --accent-5: var(--stage-5); --accent-6: var(--stage-6);
-  --accent-7: var(--stage-7); --accent-8: var(--stage-8); --accent-9: var(--stage-9);
+  /* --accent-N is used as TEXT throughout. It resolves to the ink variant, not
+     the bright fill: brightening --stage-N without this put 340 text elements
+     below AA at once. --stage-N stays vivid for fills, rails and washes. */
+  --accent-1: var(--stage-1-ink); --accent-2: var(--stage-2-ink); --accent-3: var(--stage-3-ink);
+  --accent-4: var(--stage-4-ink); --accent-5: var(--stage-5-ink); --accent-6: var(--stage-6-ink);
+  --accent-7: var(--stage-7-ink); --accent-8: var(--stage-8-ink); --accent-9: var(--stage-9-ink);
   --vivid-1: #818cf8; --vivid-2: #2dd4bf; --vivid-3: #34d399;
   --vivid-4: #c084fc; --vivid-5: #60a5fa; --vivid-6: #38bdf8;
   --vivid-7: #f472b6; --vivid-8: #fbbf24; --vivid-9: #94a3b8;
@@ -162,15 +187,18 @@
 
 /* --stage is the ONLY thing a stage recolours: its numeral, its rail node,
    its chart series. The page chrome stays on brand. */
-[data-stage="1"] { --stage: var(--stage-1); }
-[data-stage="2"] { --stage: var(--stage-2); }
-[data-stage="3"] { --stage: var(--stage-3); }
-[data-stage="4"] { --stage: var(--stage-4); }
-[data-stage="5"] { --stage: var(--stage-5); }
-[data-stage="6"] { --stage: var(--stage-6); }
-[data-stage="7"] { --stage: var(--stage-7); }
-[data-stage="8"] { --stage: var(--stage-8); }
-[data-stage="9"] { --stage: var(--stage-9); }
+[data-stage="1"] { --stage: var(--stage-1); --stage-ink: var(--stage-1-ink); }
+[data-stage="2"] { --stage: var(--stage-2); --stage-ink: var(--stage-2-ink); }
+[data-stage="3"] { --stage: var(--stage-3); --stage-ink: var(--stage-3-ink); }
+[data-stage="4"] { --stage: var(--stage-4); --stage-ink: var(--stage-4-ink); }
+[data-stage="5"] { --stage: var(--stage-5); --stage-ink: var(--stage-5-ink); }
+[data-stage="6"] { --stage: var(--stage-6); --stage-ink: var(--stage-6-ink); }
+[data-stage="7"] { --stage: var(--stage-7); --stage-ink: var(--stage-7-ink); }
+[data-stage="8"] { --stage: var(--stage-8); --stage-ink: var(--stage-8-ink); }
+[data-stage="9"] { --stage: var(--stage-9); --stage-ink: var(--stage-9-ink); }
+[data-stage="10"] { --stage: var(--stage-10); --stage-ink: var(--stage-10-ink); }
+[data-stage="11"] { --stage: var(--stage-11); --stage-ink: var(--stage-11-ink); }
+[data-stage="12"] { --stage: var(--stage-12); --stage-ink: var(--stage-12-ink); }
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -284,7 +312,7 @@ kbd { display: inline-block; border: 1px solid var(--line-strong); border-bottom
    without reading as finished, which a filled dot would. */
 .module-dot.started { border-width: 2px; border-color: var(--stage); background: var(--accent-soft); color: var(--ink); font-weight: 700; }
 .sidebar-modules button[data-state="started"] { color: var(--ink); }
-.module-dot.done { background: var(--stage); border-color: transparent; color: #fff; }
+.module-dot.done { background: var(--stage-ink, var(--stage)); border-color: transparent; color: #fff; }
 :root[data-theme="dark"] .module-dot.done { color: #0d1117; }
 .privacy-note { margin: 20px 10px 0; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
 
@@ -404,7 +432,7 @@ p { color: var(--muted); line-height: 1.65; }
 
 .path-list { display: grid; }
 .path-item { display: grid; grid-template-columns: 72px 1fr auto; align-items: center; gap: 24px; padding: 22px 24px; margin-bottom: 12px; border: 1px solid var(--line); border-left: 4px solid var(--stage); border-radius: 14px; background: var(--paper); }
-.path-number { display: grid; place-items: center; width: 54px; height: 54px; border: 0; border-radius: 16px; font-family: Georgia, serif; font-size: 18px; color: #fff; background: var(--stage); }
+.path-number { display: grid; place-items: center; width: 54px; height: 54px; border: 0; border-radius: 16px; font-family: Georgia, serif; font-size: 18px; color: #fff; background: var(--stage-ink, var(--stage)); }
 :root[data-theme="dark"] .path-number { color: #0d1117; }
 .path-number.done { background: var(--success); color: #fff; }
 :root[data-theme="dark"] .path-number.done { color: #0d1117; }
@@ -422,7 +450,7 @@ p { color: var(--muted); line-height: 1.65; }
   background: var(--paper); box-shadow: var(--shadow); }
 /* Numeral only. The string 'Stage 06' could not fit a 56px square at 22px and
    wrapped to two cramped lines; the heading beside it already says the word. */
-.module-index { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 16px; background: var(--stage); color: #fff; font-family: Georgia, serif; font-size: 26px; font-weight: 600; line-height: 1; }
+.module-index { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 16px; background: var(--stage-ink, var(--stage)); color: #fff; font-family: Georgia, serif; font-size: 26px; font-weight: 600; line-height: 1; }
 :root[data-theme="dark"] .module-index { color: var(--n-0); }
 .module-hero h1 { margin: 14px 0 10px; }
 .module-subtitle { font-size: 19px; }
@@ -933,7 +961,7 @@ p { color: var(--muted); line-height: 1.65; }
 .case-summary p { margin: 0; color: var(--ink); font-size: 15.5px; }
 .case-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
 .case-steps > li { display: grid; grid-template-columns: 52px 1fr; gap: 22px; padding: 26px 28px; border: 1px solid var(--line); border-left: 4px solid var(--stage); border-radius: 16px; background: var(--paper); box-shadow: var(--shadow-sm); }
-.case-step-mark { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: var(--stage); color: #fff; font-family: Georgia, serif; font-size: 19px; }
+.case-step-mark { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: var(--stage-ink, var(--stage)); color: #fff; font-family: Georgia, serif; font-size: 19px; }
 :root[data-theme="dark"] .case-step-mark { color: var(--n-0); }
 .case-step-body h2 { margin: 6px 0 12px; font-size: 24px; }
 .case-step-body > p { font-size: 15.5px; }
@@ -1051,7 +1079,7 @@ p { color: var(--muted); line-height: 1.65; }
 @media print { .guide-contents button { color: inherit; text-decoration: none; } }
 .guide-section, .guide-stage { padding: 32px 0; border-top: 1px solid var(--line); scroll-margin-top: 90px; }
 .guide-stage header { margin-bottom: 20px; }
-.guide-stage-num { display: inline-block; padding: 4px 12px; border-radius: 99px; background: var(--stage); color: #fff; font-size: 12px; font-weight: 750; letter-spacing: 0.06em; }
+.guide-stage-num { display: inline-block; padding: 4px 12px; border-radius: 99px; background: var(--stage-ink, var(--stage)); color: #fff; font-size: 12px; font-weight: 750; letter-spacing: 0.06em; }
 :root[data-theme="dark"] .guide-stage-num { color: var(--n-0); }
 .guide-stage h2 { margin: 12px 0 6px; }
 .guide-stage-sub { font-size: 17px; margin: 0 0 6px; }
@@ -1199,7 +1227,7 @@ p { color: var(--muted); line-height: 1.65; }
 .deck-filter button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .deck-filter-num {
   display: grid; place-items: center; width: 20px; height: 20px; border-radius: 6px;
-  background: var(--stage, var(--brand)); color: #fff; font-size: 11.5px; font-weight: 800;
+  background: var(--stage-ink, var(--stage, var(--brand))); color: #fff; font-size: 11.5px; font-weight: 800;
 }
 .deck-count { margin: 16px 0 0; color: var(--muted); font-size: 13.5px; }
 
@@ -1224,7 +1252,7 @@ p { color: var(--muted); line-height: 1.65; }
 }
 .deck-number {
   flex: none; display: grid; place-items: center; min-width: 26px; height: 22px; padding: 0 6px;
-  border-radius: 6px; background: var(--stage, var(--brand)); color: #fff; font-size: 11.5px; font-weight: 800;
+  border-radius: 6px; background: var(--stage-ink, var(--stage, var(--brand))); color: #fff; font-size: 11.5px; font-weight: 800;
 }
 
 @media (max-width: 560px) { .deck-grid { grid-template-columns: 1fr; } }
@@ -1451,7 +1479,7 @@ p { color: var(--muted); line-height: 1.65; }
   width: 14px; height: 6px; border-radius: 3px;
   background: var(--line-strong); opacity: 0.45;
 }
-.case-coverage i.on { background: var(--stage, var(--brand)); opacity: 1; }
+.case-coverage i.on { background: var(--stage-ink, var(--stage, var(--brand))); opacity: 1; }
 .case-coverage-label { margin-left: 6px; color: var(--muted); font-size: 11.5px; font-weight: 650; letter-spacing: 0.04em; }
 
 .case-stage-link {
@@ -1844,7 +1872,7 @@ p { color: var(--muted); line-height: 1.65; }
 .path-item { position: relative; overflow: hidden; }
 .path-item::before {
   content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
-  background: var(--stage, var(--accent)); opacity: 0.55;
+  background: var(--stage-ink, var(--stage, var(--accent))); opacity: 0.55;
   transition: opacity 180ms ease, width 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .path-item:hover::before { opacity: 1; width: 5px; }
@@ -1913,3 +1941,69 @@ p { color: var(--muted); line-height: 1.65; }
   .metric-strip > div::after { transition: none; }
 }
 @media (max-width: 900px) { .mastery-ring svg { width: 140px; height: 140px; } }
+
+/* ==================================================================== *
+ * Colour at page scale
+ *
+ * The palette existed and was rationed to slivers. This spends it: each
+ * stage washes its own hero, marks its own sections and tints its own
+ * cards. Text keeps the -ink variant on light surfaces, so none of this
+ * costs contrast.
+ * ==================================================================== */
+
+/* Stage pages wear their colour. */
+.module-page .module-hero {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--stage, var(--accent)) 16%, transparent), transparent 62%),
+    var(--paper);
+  border-left: 5px solid var(--stage, var(--accent));
+}
+.module-page .module-hero h1 { color: var(--ink); }
+.module-page .path-meta span,
+.module-page .module-hero .eyebrow { color: var(--stage-ink, var(--accent)); }
+.module-page .core-idea {
+  background: linear-gradient(120deg, color-mix(in srgb, var(--stage, var(--accent)) 13%, transparent), transparent 70%), var(--paper);
+  border-left: 4px solid var(--stage, var(--accent));
+}
+.module-page .lesson-section .section-count { color: var(--stage-ink, var(--accent)); opacity: 0.9; }
+.module-page .outcome-box { border-color: color-mix(in srgb, var(--stage, var(--accent)) 32%, var(--line)); }
+.module-page .outcome-box strong { color: var(--stage-ink, var(--accent)); }
+.stage-shape li.is-done { border-color: var(--stage, var(--accent)); color: var(--stage-ink, var(--accent)); background: color-mix(in srgb, var(--stage, var(--accent)) 12%, transparent); }
+.stage-shape li svg { color: var(--stage-ink, var(--accent)); }
+
+/* Learning path: a coloured journey. Each row is its own stage. */
+.path-item {
+  border-left: 4px solid var(--stage, var(--accent));
+  background: linear-gradient(100deg, color-mix(in srgb, var(--stage, var(--accent)) 11%, transparent), transparent 46%), var(--paper);
+}
+.path-item::before { display: none; }
+/* The numeral chip is a fill: white text on the stage hue, not tinted text.
+   An earlier rule here recoloured it and washed it out. */
+.path-item .path-number { color: #fff; background: var(--stage-ink, var(--stage)); }
+:root[data-theme="dark"] .path-item .path-number { color: #0d1117; }
+.path-item .path-number.done { background: var(--stage-ink, var(--stage)); }
+.path-item .path-meta span { color: var(--stage-ink, var(--muted)); }
+
+/* Sidebar stage dots pick up the real hue rather than one accent. */
+.sidebar-modules button[data-stage] .module-dot.done { background: var(--stage-ink, var(--stage)); border-color: var(--stage-ink, var(--stage)); }
+.sidebar-modules button[data-stage] .module-dot.started { border-color: var(--stage); color: var(--stage-ink, var(--accent)); }
+
+/* Worked cases and toolkit cards get a hue so a long list is scannable. */
+.case-card { border-top: 4px solid var(--stage, var(--accent)); }
+.case-card:nth-child(3n+1) { --stage: var(--stage-5); --stage-ink: var(--stage-5-ink); }
+.case-card:nth-child(3n+2) { --stage: var(--stage-3); --stage-ink: var(--stage-3-ink); }
+.case-card:nth-child(3n+3) { --stage: var(--stage-7); --stage-ink: var(--stage-7-ink); }
+
+/* Metric tiles: the number takes the tile's own hue. */
+.metric-strip > div:nth-child(1) { --tile: var(--stage-1); --tile-ink: var(--stage-1-ink); }
+.metric-strip > div:nth-child(2) { --tile: var(--stage-3); --tile-ink: var(--stage-3-ink); }
+.metric-strip > div:nth-child(3) { --tile: var(--stage-5); --tile-ink: var(--stage-5-ink); }
+.metric-strip > div:nth-child(4) { --tile: var(--stage-8); --tile-ink: var(--stage-8-ink); }
+.metric-strip > div strong { color: var(--tile-ink, var(--accent)); }
+.metric-strip > div { background: linear-gradient(165deg, color-mix(in srgb, var(--tile, var(--accent)) 10%, transparent), transparent 62%), var(--paper); }
+.metric-strip > div::after { background: var(--tile, var(--accent)); }
+
+/* The hero of the dashboard, and the library cards. */
+.hero { background: linear-gradient(150deg, color-mix(in srgb, var(--brand) 12%, transparent), color-mix(in srgb, var(--stage-6) 8%, transparent) 45%, transparent 72%), var(--paper); }
+.package-card { border-top: 4px solid var(--brand); }
+.package-card:nth-child(2n) { border-top-color: var(--stage-3); }
