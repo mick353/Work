@@ -2043,3 +2043,14 @@ p { color: var(--muted); line-height: 1.65; }
 .module-footer,
 .method-note,
 .boundary-note { max-width: none; }
+
+/* A list item that CONTAINS blocks is structure, not running text.
+   The base `.page li` measure rule was capping the worked-case steps at 481px
+   inside a 1268px page — which is what made that view look broken — and the
+   library cards with it. The measure still applies to the paragraphs inside
+   them, because those are still paragraphs. */
+.case-steps > li,
+.library-grid > li,
+.stage-shape > li,
+.deck-grid > li,
+.package-stats > div { max-width: none; }

@@ -970,7 +970,7 @@ check(
     );
     await wp.goto(artifactUrl, { waitUntil: "load" });
     const narrow = [];
-    for (const v of ["cases", "sources", "module/purpose", "capstone"]) {
+    for (const v of ["cases", "sources", "module/purpose", "capstone", "library", "deck"]) {
       await wp.evaluate((h) => { window.location.hash = h; }, v);
       await wp.waitForTimeout(280);
       const r = await wp.evaluate(() => {
@@ -983,7 +983,7 @@ check(
           "knowledge-check", "scenario-panel", "assignment-panel", "reflection-panel",
           "contrast-panel", "source-note", "method-note", "boundary-note", "case-summary",
         ];
-        return classes
+        const narrowPanels = classes
           .map((cls) => {
             const el = document.querySelector(`.${cls}`);
             if (!el) return null;
@@ -991,11 +991,30 @@ check(
             return w < column * 0.85 ? `${cls} ${Math.round(w)}/${Math.round(column)}` : null;
           })
           .filter(Boolean);
+        /*
+          And structural list items. A <li> that contains block children is
+          layout, not running text, but the base `.page li` measure rule caught
+          them anyway — the worked-case steps rendered at 481px inside a 1268px
+          page, which is what made that view look broken.
+        */
+        const pageWidth = page.getBoundingClientRect().width;
+        document.querySelectorAll("li, dd").forEach((el) => {
+          const hasBlocks = [...el.children].some((ch) =>
+            ["DIV", "SECTION", "ARTICLE", "HEADER", "H2", "H3", "H4", "P", "UL", "OL", "TABLE", "PRE", "FIGURE"].includes(ch.tagName),
+          );
+          if (!hasBlocks) return;
+          const w = el.getBoundingClientRect().width;
+          if (getComputedStyle(el).maxWidth !== "none" && w < pageWidth * 0.85) {
+            const parent = (el.parentElement.className || "").toString().split(" ")[0] || el.parentElement.tagName;
+            narrowPanels.push(`${parent} > li ${Math.round(w)}/${Math.round(pageWidth)}`);
+          }
+        });
+        return narrowPanels;
       });
       r.forEach((x) => narrow.push(`${v}: ${x}`));
     }
     check(
-      "Panels fill their column rather than being capped to the text measure",
+      "Panels and structural list items fill their column, not the text measure",
       narrow.length === 0,
       narrow.length ? narrow.join(", ") : "checked across 4 views",
     );
