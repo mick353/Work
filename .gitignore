@@ -21,3 +21,6 @@ shot-*.png
 .DS_Store
 Thumbs.db
 *.tsbuildinfo
+
+# Walkthrough artefacts — generated PDFs, screenshots and findings
+.walkthrough/
