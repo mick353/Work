@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { type Module, type Question } from "./course";
 import { SlideRangeLink } from "./slide-viewer";
-import { daysAgoKey, estimateHours, scrollBehavior, scrollToSection, shuffle, type View } from "./lib";
+import { daysAgoKey, estimateHours, prefersReducedMotion, scrollBehavior, scrollToSection, shuffle, type View } from "./lib";
 import { sectionsToRevisit } from "./recall";
 import {
   emptyModuleProgress,
@@ -35,6 +35,63 @@ const QUESTION_COUNT =
   modules.reduce((total, module) => total + module.questions.length + module.scenarios.length, 0) +
   supplementaryQuestions.length +
   diagnosticQuestions.length;
+
+/**
+ * Count a number up to its value once, on mount.
+ *
+ * The dashboard already held the interesting data and stated it flatly. A
+ * number that arrives rather than simply being there is the cheapest possible
+ * acknowledgement that the figure is yours and it moved.
+ */
+function useCountUp(value: number, ms = 620): number {
+  const [shown, setShown] = useState(() => (prefersReducedMotion() ? value : 0));
+  useEffect(() => {
+    if (prefersReducedMotion()) { setShown(value); return; }
+    if (value <= 0) { setShown(0); return; }
+    let frame = 0;
+    const start = performance.now();
+    const step = (now: number) => {
+      const k = Math.min(1, (now - start) / ms);
+      // ease-out cubic, so it settles rather than stopping dead
+      setShown(Math.round(value * (1 - Math.pow(1 - k, 3))));
+      if (k < 1) frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [value, ms]);
+  return shown;
+}
+
+/**
+ * How far through the page the reader is, 0 to 1.
+ *
+ * A stage runs to about 13,000px. Knowing how much is left is the most useful
+ * feedback available on a page that long, and it costs one scroll listener.
+ */
+function useReadingProgress(): number {
+  const [ratio, setRatio] = useState(0);
+  useEffect(() => {
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      const doc = document.documentElement;
+      const scrollable = doc.scrollHeight - doc.clientHeight;
+      setRatio(scrollable > 40 ? Math.min(1, Math.max(0, doc.scrollTop / scrollable)) : 0);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(measure);
+    };
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+  return ratio;
+}
 
 /**
  * Which lesson section is currently on screen, for the sticky contents rail.
@@ -107,6 +164,8 @@ export function Dashboard({
   );
 
   const started = Object.keys(progress).length > 0 || studyDays.length > 1;
+  const shownCompletion = useCountUp(completion);
+  const shownMastered = useCountUp(mastered, 520);
 
   return (
     <div className="page dashboard-page">
@@ -158,7 +217,7 @@ export function Dashboard({
         </div>
         <div className="hero-index">
           <span>Mastery</span>
-          <strong>{completion}%</strong>
+          <strong>{shownCompletion}%</strong>
           <ProgressBar value={completion} label="Overall course mastery" />
           <small>
             {mastered} of {modules.length} stages demonstrated
@@ -169,7 +228,7 @@ export function Dashboard({
       <section className="metric-strip" aria-label="Learning statistics">
         <div>
           <strong>
-            {mastered}/{modules.length}
+            {shownMastered}/{modules.length}
           </strong>
           <span>Stages mastered</span>
         </div>
@@ -444,6 +503,8 @@ export function ModuleView({
 
   const StageIllustration = stageIllustrations[module.id];
   const activeSection = useActiveSection(module.sections.map((_, index) => sectionId(module.id, index)));
+  const readingProgress = useReadingProgress();
+  const stageState = masteryState(progress, module.scenarios.length);
   // Stages that appear in a worked case get a direct pointer to it, so the
   // abstraction and the worked instance are one click apart.
   const workedIn = caseStudies.filter((c) => c.steps.some((step) => step.moduleId === module.id));
@@ -454,6 +515,12 @@ export function ModuleView({
   return (
     // data-stage drives the accent colour for everything inside this page.
     <div className="page module-page" data-stage={module.number}>
+      {/* Reading progress. Purely informational, so hidden from the a11y tree —
+          the contents rail already announces position semantically. */}
+      <div className="reading-progress" aria-hidden="true" style={{ ["--read" as string]: readingProgress }}>
+        <i />
+      </div>
+
       <button className="back-button" onClick={() => navigate("path")}>
         <ArrowLeft size={17} aria-hidden="true" /> Learning path
       </button>
@@ -478,6 +545,42 @@ export function ModuleView({
             <strong>Capability outcome</strong>
             <span>{module.outcome}</span>
           </div>
+
+          {/*
+            The shape of the stage, before you start it. Microlearning works
+            largely by making the size of the commitment visible — a stage that
+            announces "4 sections, 10 minutes, 6 questions" is a different
+            proposition from an unmarked 13,000px page. Each part marks itself
+            done as you complete it.
+          */}
+          <ul className="stage-shape">
+            <li className={progress.lessonRead ? "is-done" : ""}>
+              {progress.lessonRead && <Check size={14} aria-hidden="true" />}
+              <strong>{module.sections.length}</strong> sections
+            </li>
+            <li>
+              <Clock3 size={14} aria-hidden="true" />
+              <strong>{module.minutes}</strong> min read
+            </li>
+            <li className={stageState.recall ? "is-done" : ""}>
+              {stageState.recall && <Check size={14} aria-hidden="true" />}
+              <strong>{quizPoolFor(module.id).length}</strong> questions
+            </li>
+            <li className={stageState.apply ? "is-done" : ""}>
+              {stageState.apply && <Check size={14} aria-hidden="true" />}
+              <strong>{module.scenarios.length}</strong> scenarios
+            </li>
+          </ul>
+
+          {stageState.mastered && (
+            <p className="stage-mastered-note">
+              <Check size={18} aria-hidden="true" />
+              <span>
+                Stage {module.number} demonstrated — read, recalled and applied. It stays in your review queue so
+                it does not fade.
+              </span>
+            </p>
+          )}
         </div>
       </header>
 

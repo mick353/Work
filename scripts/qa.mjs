@@ -776,6 +776,109 @@ check(
     );
     await resp.close();
   }
+  /*
+    Motion, and its off switch. The stylesheet had no animation at all, which
+    is why the site read flat beside anything else in the category. Adding it
+    creates an obligation: anyone who asks their OS for reduced motion must get
+    none of it, and progress feedback must not become the only way to know
+    where you are.
+  */
+  {
+    const still = await browser.newContext({ viewport: { width: 1600, height: 1000 }, reducedMotion: "reduce" });
+    const sp = await still.newPage();
+    watchPage(sp, "reduced-motion");
+    await sp.addInitScript(() =>
+      localStorage.setItem("product-practice-v2:active-package", JSON.stringify("closure-reports")),
+    );
+    await sp.goto(artifactUrl, { waitUntil: "load" });
+    await sp.evaluate(() => { window.location.hash = "module/purpose"; });
+    await sp.waitForSelector(".lesson-section");
+    await sp.waitForTimeout(200);
+    const animating = await sp.evaluate(() =>
+      [".page", ".lesson-section", ".module-index"]
+        .map((sel) => {
+          const el = document.querySelector(sel);
+          return el && getComputedStyle(el).animationName !== "none" ? sel : null;
+        })
+        .filter(Boolean),
+    );
+    check(
+      "Reduced motion switches every animation off",
+      animating.length === 0,
+      animating.length ? `still animating: ${animating.join(", ")}` : "page, sections and stage index all still",
+    );
+    await still.close();
+
+    const moving = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
+    const mp = await moving.newPage();
+    watchPage(mp, "motion");
+    await mp.addInitScript(() =>
+      localStorage.setItem("product-practice-v2:active-package", JSON.stringify("closure-reports")),
+    );
+    await mp.goto(artifactUrl, { waitUntil: "load" });
+    await mp.evaluate(() => { window.location.hash = "module/purpose"; });
+    await mp.waitForSelector(".lesson-section");
+    const named = await mp.evaluate(
+      () => getComputedStyle(document.querySelector(".lesson-section")).animationName,
+    );
+    check("Lesson sections animate in by default", named !== "none", named);
+    check(
+      "The stage states its shape before you start it",
+      (await mp.locator(".stage-shape li").count()) >= 3,
+      `${await mp.locator(".stage-shape li").count()} facts`,
+    );
+    check(
+      "A long stage shows reading progress",
+      (await mp.locator(".reading-progress").count()) === 1,
+    );
+    await moving.close();
+  }
+  /*
+    Target size, across views rather than on one screen. WCAG 2.2 SC 2.5.8 sets
+    24x24 as the minimum. Three separate lists were shipping at 16-18px tall —
+    the in-stage contents, the guide contents, and the "open primary source"
+    links — all wide enough to look fine and all too short. None showed up
+    until the check walked more than one view.
+
+    Own context, and both packages. The first version of this ran on the shared
+    page, which by this point has been clicked through dozens of checks, and it
+    reported a phantom failure from leftover state. Native inputs are excluded
+    deliberately: the answer options use a visually-hidden radio behind a large
+    styled label, and the label is the target.
+  */
+  {
+    const tapViews = ["dashboard", "path", "cases", "toolkit", "guide", "glossary", "sources", "capstone", "results"];
+    const small = [];
+    for (const pkg of ["pm-fundamentals", "closure-reports"]) {
+      for (const width of [390, 1440]) {
+        const tap = await browser.newContext({ viewport: { width, height: 900 } });
+        const tp = await tap.newPage();
+        watchPage(tp, `targets-${pkg}-${width}`);
+        await tp.addInitScript(
+          (k) => localStorage.setItem("product-practice-v2:active-package", JSON.stringify(k)),
+          pkg,
+        );
+        await tp.goto(artifactUrl, { waitUntil: "load" });
+        for (const v of tapViews) {
+          await tp.evaluate((h) => { window.location.hash = h; }, v);
+          await tp.waitForTimeout(130);
+          const n = await tp.evaluate(() =>
+            [...document.querySelectorAll("button, a[href]")].filter((el) => {
+              const r = el.getBoundingClientRect();
+              return r.width && (r.height < 24 || r.width < 24);
+            }).length,
+          );
+          if (n) small.push(`${pkg}@${width}/${v}:${n}`);
+        }
+        await tap.close();
+      }
+    }
+    check(
+      "No interactive target under 24px, at phone and desktop width",
+      small.length === 0,
+      small.length ? small.join(", ") : `${tapViews.length} views, 2 packages, 2 widths`,
+    );
+  }
   check(
     "Every stage opens with an illustration",
     noIllustration.length === 0,

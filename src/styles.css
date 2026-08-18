@@ -1044,8 +1044,7 @@ p { color: var(--muted); line-height: 1.65; }
 .guide-contents li { margin-bottom: 6px; font-size: 14.5px; break-inside: avoid; }
 .guide-contents button {
   padding: 0; border: 0; background: none; color: var(--accent);
-  font: inherit; text-align: left; cursor: pointer;
-}
+  font: inherit; text-align: left; cursor: pointer; display: block; min-height: 24px; padding: 4px 0; }
 .guide-contents button:hover { text-decoration: underline; }
 .guide-contents button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
 /* On paper a contents entry is a label, not a control. */
@@ -1311,7 +1310,10 @@ p { color: var(--muted); line-height: 1.65; }
 .stage-contents .eyebrow { display: block; margin-bottom: 10px; }
 .stage-contents ol { margin: 0; padding-left: 20px; columns: 2; column-gap: 28px; }
 .stage-contents li { margin-bottom: 5px; break-inside: avoid; font-size: 14px; }
-.stage-contents button { padding: 0; border: 0; background: none; color: var(--accent); font: inherit; text-align: left; cursor: pointer; }
+/* 24px minimum target (WCAG 2.2 SC 2.5.8). These were 16px tall — wide enough,
+   but too short — everywhere the contents renders inline rather than in the
+   sticky rail, which is every screen under 1180px including all phones. */
+.stage-contents button { display: block; min-height: 24px; padding: 4px 0; border: 0; background: none; color: var(--accent); font: inherit; text-align: left; cursor: pointer; }
 .stage-contents button:hover { text-decoration: underline; }
 .stage-contents button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
 @media (max-width: 820px) { .stage-contents { margin-left: 0; } .stage-contents ol { columns: 1; } }
@@ -1724,3 +1726,136 @@ p { color: var(--muted); line-height: 1.65; }
   .lesson-layout .stage-contents button:hover { background: var(--surface-alt); color: var(--ink); }
   .lesson-layout .stage-contents button.active { color: var(--accent); font-weight: 650; background: var(--accent-soft); }
 }
+
+/* ==================================================================== *
+ * Motion and state feedback
+ *
+ * The stylesheet had zero keyframes, which is the honest reason the site
+ * read as flat next to anything else in the category. The answer is not
+ * gamification — streaks and badges are built to drive daily habit in
+ * consumer apps and tend to patronise professionals doing this in work
+ * hours. It is that nothing acknowledged progress, nothing moved when
+ * state changed, and a 13,000px stage gave no sense of how far through
+ * you were.
+ *
+ * Everything here is fast (140-420ms), purposeful, and switched off
+ * entirely under prefers-reduced-motion.
+ * ==================================================================== */
+
+@keyframes pp-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes pp-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pp-pop { 0% { transform: scale(0.82); opacity: 0; } 60% { transform: scale(1.06); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes pp-sweep { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes pp-ring { from { stroke-dashoffset: var(--ring-full, 100); } }
+
+/* Page entrance. Short and once — this is orientation, not decoration. */
+.page { animation: pp-rise 260ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Lesson sections arrive in sequence so a long stage reads as a sequence
+   rather than a wall. Capped at eight so nothing waits meaningfully. */
+.lesson-sections > .lesson-section { animation: pp-rise 300ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.lesson-sections > .lesson-section:nth-child(1) { animation-delay: 20ms; }
+.lesson-sections > .lesson-section:nth-child(2) { animation-delay: 55ms; }
+.lesson-sections > .lesson-section:nth-child(3) { animation-delay: 90ms; }
+.lesson-sections > .lesson-section:nth-child(4) { animation-delay: 125ms; }
+.lesson-sections > .lesson-section:nth-child(n+5) { animation-delay: 160ms; }
+
+/* Reading progress. On a stage that runs to 13,000px, knowing how much is
+   left is the single most useful piece of feedback available. */
+.reading-progress { position: fixed; top: 66px; left: 268px; right: 0; height: 3px; z-index: 40; background: transparent; pointer-events: none; }
+.reading-progress i {
+  display: block; height: 100%; width: 100%;
+  transform: scaleX(var(--read, 0)); transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--stage, var(--accent)), var(--accent));
+  transition: transform 90ms linear;
+}
+@media (max-width: 820px) { .reading-progress { left: 0; top: 58px; } }
+
+/* Stage framing. Microlearning works by telling people the shape of the
+   thing before they start it: sections, minutes, questions. */
+.stage-shape { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; max-width: none; }
+.stage-shape li {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 13px; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface-alt); color: var(--muted); font-size: 12.5px; font-weight: 600;
+}
+.stage-shape li strong { color: var(--ink); font-weight: 700; }
+.stage-shape li.is-done { border-color: var(--stage, var(--accent)); background: var(--accent-soft); color: var(--accent); }
+.stage-shape li svg { color: var(--stage, var(--accent)); }
+
+/* Stage identity. The numeral chip is already a solid stage-coloured block
+   with white text; an earlier attempt here clipped a gradient to the text and
+   made the whole chip vanish. Add depth to it instead of replacing it. */
+.module-page .module-index {
+  background-image: linear-gradient(140deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0));
+  box-shadow: 0 8px 20px -12px var(--stage, var(--accent));
+  animation: pp-pop 380ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@media (prefers-reduced-motion: reduce) { .module-page .module-index { animation: none; } }
+.module-page .lesson-section .section-count { transition: color 200ms ease; }
+.module-page .lesson-section:hover .section-count { color: var(--stage, var(--accent)); }
+
+/* Completion. One quiet moment when a stage is demonstrated — no confetti,
+   no badge, just an acknowledgement that state changed. */
+.mastery-flash { animation: pp-pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.stage-mastered-note {
+  display: flex; align-items: center; gap: 10px; margin-top: 20px;
+  padding: 14px 18px; border-left: 3px solid var(--stage, var(--accent)); border-radius: 0 10px 10px 0;
+  background: var(--accent-soft); color: var(--ink); font-size: 14.5px;
+  animation: pp-rise 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.stage-mastered-note svg { color: var(--stage, var(--accent)); flex: 0 0 auto; }
+
+/* Progress bars fill rather than appear. */
+.progress-bar > i, .package-progress div > i { transform-origin: 0 50%; animation: pp-sweep 620ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Cards lift slightly, so the page responds to the pointer. */
+.path-item, .case-card, .package-card, .toolkit-card { transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms ease, border-color 180ms ease; }
+.path-item:hover, .case-card:hover, .package-card:hover, .toolkit-card:hover { transform: translateY(-2px); box-shadow: 0 10px 26px -18px rgba(0, 0, 0, 0.45); }
+
+/* Answer feedback should register as an event. */
+.answer-option { transition: border-color 160ms ease, background 160ms ease, transform 160ms ease; }
+.feedback { animation: pp-rise 240ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* The whole system off, for anyone who asks for it. */
+@media (prefers-reduced-motion: reduce) {
+  .page,
+  .lesson-sections > .lesson-section,
+  .mastery-flash,
+  .stage-mastered-note,
+  .feedback,
+  .progress-bar > i,
+  .package-progress div > i { animation: none !important; }
+  .path-item, .case-card, .package-card, .toolkit-card { transition: none; }
+  .path-item:hover, .case-card:hover, .package-card:hover, .toolkit-card:hover { transform: none; }
+  .reading-progress i { transition: none; }
+}
+@media print { .reading-progress { display: none; } }
+
+/* Metric tiles and the mastery figure. The data was already here and stated
+   flatly; give it presence and let it arrive. */
+.metric-strip > div { transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms ease; }
+.metric-strip > div:hover { transform: translateY(-2px); border-color: var(--accent); }
+.metric-strip > div strong { font-variant-numeric: tabular-nums; }
+.hero-index strong { font-variant-numeric: tabular-nums; animation: pp-fade 420ms ease both; }
+
+/* Stage rows on the learning path carry their own colour, so the path reads
+   as a sequence of distinct stages rather than a list of identical cards. */
+.path-item { position: relative; overflow: hidden; }
+.path-item::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
+  background: var(--stage, var(--accent)); opacity: 0.55;
+  transition: opacity 180ms ease, width 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.path-item:hover::before { opacity: 1; width: 5px; }
+@media (prefers-reduced-motion: reduce) {
+  .metric-strip > div { transition: none; }
+  .metric-strip > div:hover { transform: none; }
+  .hero-index strong { animation: none; }
+  .path-item::before { transition: none; }
+}
+
+/* 24px minimum target (WCAG 2.2 SC 2.5.8). Inline text links inside prose are
+   exempt, but these are standalone actions in a list — they read as buttons
+   and should be sized like them. Same fault as the two contents lists. */
+.source-card a, .source-links a { display: inline-flex; align-items: center; gap: 6px; min-height: 24px; padding: 3px 0; }
