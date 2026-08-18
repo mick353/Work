@@ -12,7 +12,7 @@ The short version: it is a React app with no backend, no accounts and no network
 
 `src/packages.ts` defines two types and holds the registry:
 
-- `PackageManifest` — identity and provenance. Id, title, subtitle, publisher, optional author, source artefact, review date, status, summary, curriculum arc.
+- `PackageManifest` — identity and provenance. Id, title, subtitle, publisher, source artefact, `sourceAuthor` (optional — whoever wrote that artefact), `builtBy` (required — whoever built the package), review date, status, summary, curriculum arc.
 - `PackageContent` — everything a course owns: modules, sources, questions in four separate pools, flashcards, glossary, case studies, contrasts, divergences, toolkit templates, capstone steps and briefs, field guide, an optional worked-example document, slides.
 
 `trainingPackages` is the registry. Adding a course means authoring the arrays, writing a manifest and appending to that array. It does not mean touching a view.
@@ -103,7 +103,9 @@ Each of these has cost real time. They are here so they cost it once.
 
 **Anything keyed by module id silently renders nothing on a miss.** `illustrations.tsx` is `Record<moduleId, Component>`. The second package shipped eleven stages with no diagrams and no error.
 
-**Optional manifest and content fields must be handled at every render site.** `author` is absent on one package, `exemplar` on the other, `slides` on the other again. A missing optional field should produce no output, not a stranded label.
+**Optional manifest and content fields must be handled at every render site.** `sourceAuthor` is absent on one package, `exemplar` on the other, `slides` on the other again. A missing optional field should produce no output, not a stranded label.
+
+**Credit the source and the package separately.** `sourceAuthor` wrote the deck or standard a package was built from. `builtBy` wrote the stages, the questions, the cards, the cases and the capstone — which is the overwhelming majority of what a learner touches. A single "author" field, or a byline under the title naming only the source author, hands one person credit for the other's work. There are QA checks asserting both names appear and that the source credit is not rendered as a byline.
 
 **`opacity` composites an element *and* its background toward the page.** A disabled button at `opacity: 0.45` computed to 1.04:1 in dark mode. Use real colour tokens for disabled states.
 
@@ -113,7 +115,7 @@ Each of these has cost real time. They are here so they cost it once.
 
 ## 6. Verification
 
-`scripts/qa.mjs` — **267 checks** against the real built artefact in a real Chromium, writing `qa-report.json`. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` — **268 checks** against the real built artefact in a real Chromium, writing `qa-report.json`. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
 
 Coverage: question-bank integrity and item-writing statistics, scoring arithmetic, mastery gating, backup round-trip including malformed-file rejection, package switching *through the button*, contrast across all 40 stage-page/theme combinations, axe-core WCAG 2.1 A/AA on every view in both packages and both themes, line measure and horizontal overflow from 320 px to 2560 px, target sizes, keyboard and focus, reduced motion, and console hygiene.
 

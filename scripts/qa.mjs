@@ -1694,24 +1694,28 @@ check(
 }
 
 /*
-  Crediting the person who wrote the course.
+  Provenance: two contributions, credited separately and proportionately.
 
-  The package was built from someone's deck and named only the branch that
-  published it, so the author's own course could be read end to end without
-  his name on it anywhere. `author` is optional on the manifest, because a
-  package assembled from published frameworks has sources but no single
-  author — which makes this exactly the shape that fails silently: absent on
-  one package is correct, absent on the other is the bug.
+  The source deck was written by one person; the package around it — stages,
+  122 questions, 92 practice items, cards, cases, capstone, templates — was
+  built by another. A first attempt at this rendered "Course written by
+  <source author>" directly under the title, which handed one person credit
+  for the other's work. Both names now appear, each against what they did,
+  and the source credit sits at the foot of the hero as provenance rather
+  than at the top as a byline.
 
-  So both directions are asserted. The credited package must show the name on
-  every view that already carries provenance, and the uncredited one must show
-  no orphaned label with nothing after it.
+  `sourceAuthor` is optional (a package built from published frameworks has
+  none); `builtBy` is required. So the checks run in both directions: the
+  package with a source author names both, the one without names only the
+  builder, and neither leaves a stranded label.
 */
 {
-  const AUTHOR = "Simon Morris";
+  const SOURCE_AUTHOR = "Simon Morris";
+  const BUILDER = "Mick Gobbo";
   /* A label left stranded when the optional field is missing. */
   const DANGLING = [
-    /Course by\s*(?:$|[.,·|])/m,
+    /Source deck by\s*(?:$|[.,·|])/m,
+    /Package by\s*(?:$|[.,·|])/m,
     /,\s*by\s*[.,]/,
     /written by\s*,/,
     /Source:[^.]*,\s*by\s*\./,
@@ -1735,22 +1739,48 @@ check(
   const closureCard = cards.find((c) => c.title.includes("Closure"));
 
   check(
-    "The library card credits the course author",
-    pmCard?.credit === `Course by ${AUTHOR}`,
+    "The library card credits the source author and the package builder separately",
+    pmCard?.credit === `Source deck by ${SOURCE_AUTHOR} · Package by ${BUILDER}`,
     pmCard?.credit || "(nothing rendered)",
   );
   check(
-    "A package with no named author shows no credit line",
-    closureCard !== undefined && closureCard.credit === "",
+    "A package with no source author credits only its builder",
+    closureCard?.credit === `Package by ${BUILDER}`,
     closureCard ? `"${closureCard.credit}"` : "(card not found)",
   );
 
-  /* Every view that already states where the material came from. */
-  for (const view of ["dashboard", "deck", "guide"]) {
+  /*
+    The home page must name both, and must not imply the source author wrote
+    the package. "written by <source author>" as a byline under the title was
+    the exact wording that did imply it.
+  */
+  await cp.evaluate(() => { window.location.hash = "dashboard"; });
+  await cp.waitForTimeout(450);
+  const heroText = (await cp.innerText(".hero")).replace(/\s+/g, " ");
+  check("The home page names both contributors", heroText.includes(SOURCE_AUTHOR) && heroText.includes(BUILDER));
+  check(
+    "The home page does not present the source author as the course author",
+    !/(Course|Training|Package)\s+(written\s+)?by\s+Simon/i.test(heroText),
+    heroText.slice(0, 120),
+  );
+  check(
+    "The source credit sits below the title, not as a byline",
+    await cp.evaluate(() => {
+      const h1 = document.querySelector(".hero h1");
+      const credits = document.querySelector(".hero-credits");
+      if (!h1 || !credits) return false;
+      /* Anything after the h1 in document order is not a byline. */
+      return !!(h1.compareDocumentPosition(credits) & Node.DOCUMENT_POSITION_FOLLOWING)
+        && credits.getBoundingClientRect().top > h1.getBoundingClientRect().bottom + 100;
+    }),
+  );
+
+  /* The views that state where the material came from. */
+  for (const view of ["deck", "guide"]) {
     await cp.evaluate((v) => { window.location.hash = v; }, view);
     await cp.waitForTimeout(450);
     const text = await cp.innerText("#main-content");
-    check(`The ${view} view names the course author`, text.includes(AUTHOR));
+    check(`The ${view} view names the source author`, text.includes(SOURCE_AUTHOR));
   }
 
   /* The slide caption, on a slide opened the way a learner opens one. */
@@ -1759,11 +1789,11 @@ check(
   await cp.locator(".deck-grid button").first().click();
   await cp.waitForSelector(".slide-foot");
   const foot = (await cp.innerText(".slide-foot")).replace(/\s+/g, " ");
-  check("The slide caption credits the course author", foot.includes(AUTHOR), foot.slice(0, 90));
+  check("The slide caption credits the source author", foot.includes(SOURCE_AUTHOR), foot.slice(0, 90));
   await cp.keyboard.press("Escape");
   await cp.waitForTimeout(250);
 
-  /* Now the package with no author, through the control a learner clicks. */
+  /* Now the package with no source author, through the control a learner clicks. */
   await cp.click(".package-switch");
   await cp.waitForTimeout(400);
   const closureIndex = (
@@ -1778,14 +1808,14 @@ check(
     await cp.evaluate((v) => { window.location.hash = v; }, view);
     await cp.waitForTimeout(450);
     const text = await cp.innerText("#main-content");
-    if (text.includes(AUTHOR)) stranded.push(`${view}: credits the other package's author`);
+    if (text.includes(SOURCE_AUTHOR)) stranded.push(`${view}: credits the other package's source author`);
     for (const pattern of DANGLING) {
       const hit = text.match(pattern);
       if (hit) stranded.push(`${view}: "${hit[0].trim()}"`);
     }
   }
   check(
-    "A package with no author leaves no stranded attribution",
+    "A package with no source author leaves no stranded attribution",
     stranded.length === 0,
     stranded.length ? stranded.join(" | ") : "dashboard, guide, sources all clean",
   );

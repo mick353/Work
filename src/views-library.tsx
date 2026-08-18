@@ -95,13 +95,15 @@ function PackageCard({
         <h2>{entry.manifest.title}</h2>
         <p className="package-sub">{entry.manifest.subtitle}</p>
         {/*
-          Credit to whoever wrote the course, on the card that chooses it.
-          Absent for packages assembled from published frameworks, which have
-          a publisher and sources but no single author.
+          Two different contributions, named separately. The source author
+          wrote the artefact the package was built from; builtBy wrote the
+          package. Collapsing them into one credit misattributes one of them.
         */}
-        {entry.manifest.author && (
-          <p className="package-author">Course by {entry.manifest.author}</p>
-        )}
+        <p className="package-author">
+          {entry.manifest.sourceAuthor
+            ? `Source deck by ${entry.manifest.sourceAuthor} · Package by ${entry.manifest.builtBy}`
+            : `Package by ${entry.manifest.builtBy}`}
+        </p>
       </header>
 
       <p className="package-summary">{entry.manifest.summary}</p>

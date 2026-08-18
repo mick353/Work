@@ -179,16 +179,6 @@ export function Dashboard({
         <div>
           <span className="eyebrow">Internal training · {manifest.publisher}</span>
           <h1>{manifest.title}</h1>
-          {/*
-            The credit sits below the title in sentence case rather than inside
-            the eyebrow, which is uppercased — a person's name shouted in 11px
-            caps at the end of a long strapline is not a credit.
-          */}
-          {manifest.author && (
-            <p className="hero-author">
-              Course written by <strong>{manifest.author}</strong>
-            </p>
-          )}
           <p className="hero-lead">
             {manifest.summary} Four moves, in order: understand the idea, retrieve it from memory, apply it to a
             real service decision, then review it later.
@@ -223,6 +213,20 @@ export function Dashboard({
           <p className="commitment">
             Built for an hour here and there. Nothing needs finishing in a sitting, and the review queue picks up
             wherever you left off.
+          </p>
+          {/*
+            Provenance, not a headline. It sits at the foot of the hero because
+            that is what it is worth: the source author wrote the material this
+            was built from, and the package author wrote everything around it.
+            Naming only one of them at the top of the page misattributes the
+            other's work.
+          */}
+          <p className="hero-credits">
+            {manifest.sourceAuthor
+              ? <>Built from the source deck by <strong>{manifest.sourceAuthor}</strong>. Course structure,
+                  questions and practice by <strong>{manifest.builtBy}</strong>.</>
+              : <>Built from {manifest.source}. Course structure, questions and practice
+                  by <strong>{manifest.builtBy}</strong>.</>}
           </p>
         </div>
         <div className="hero-index">

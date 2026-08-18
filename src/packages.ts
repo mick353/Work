@@ -87,12 +87,18 @@ export type PackageManifest = {
   /** Who owns the material, not who built the player. */
   publisher: string;
   /**
-   * The person who wrote the course this package was built from, where there
-   * is one. Optional: a package assembled from published frameworks has a
-   * publisher and sources but no single author, and every render site must
-   * cope with that rather than emitting a dangling "by".
+   * Who wrote the SOURCE ARTEFACT — the deck, standard or document this
+   * package was built from. Not the author of the package.
+   *
+   * The distinction is the point. An earlier version of this field was called
+   * `author` and rendered as "Course written by X" under the title, which
+   * credited the person who wrote the source deck with the questions, cards,
+   * cases, capstone and everything else in the package. Optional, because a
+   * package built from published frameworks has no single source author.
    */
-  author?: string;
+  sourceAuthor?: string;
+  /** Who assembled the package: the questions, practice and everything round the source. */
+  builtBy: string;
   /** The artefact the package was built from, for provenance. */
   source: string;
   /** When the content was last checked against its sources. */
@@ -155,7 +161,8 @@ const pmFundamentals: TrainingPackage = {
     title: "Product Management Fundamentals",
     subtitle: "Product management for Australian Government service delivery",
     publisher: "DEWR Digital Experience and Solutions",
-    author: "Simon Morris",
+    sourceAuthor: "Simon Morris",
+    builtBy: "Mick Gobbo",
     source: "Product Management Fundamentals — 12AUG2026",
     reviewed: CONTENT_REVIEWED,
     status: "available",
@@ -227,6 +234,7 @@ const closureReports: TrainingPackage = {
     title: "Closure Reports",
     subtitle: "Evidence, benefits and handover at the end of delivery",
     publisher: "DEWR Digital Experience and Solutions",
+    builtBy: "Mick Gobbo",
     source: "Commonwealth assurance and performance frameworks",
     reviewed: CLOSURE_REVIEWED,
     status: "available",

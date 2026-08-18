@@ -486,7 +486,7 @@ export function Results({
               )}
               <p className="record-foot">
                 Content reviewed {CONTENT_REVIEWED}. Source: <em>{manifest.source}</em>
-                {manifest.author ? `, by ${manifest.author}` : ""}.
+                {manifest.sourceAuthor ? `, by ${manifest.sourceAuthor}` : ""}. Package by {manifest.builtBy}.
                 Not an official Australian Government publication.
               </p>
             </div>

@@ -44,7 +44,7 @@ export function Deck({ initial }: { initial?: number }) {
       <PageIntro
         eyebrow="Source deck"
         title={`All ${SLIDE_COUNT} slides the course was built from`}
-        body={`${manifest.source}${manifest.author ? `, written by ${manifest.author}` : ""}, from ${manifest.publisher}. Every slide citation in the course opens the slide it names, so you can check the course against its source rather than take it on trust.`}
+        body={`${manifest.source}${manifest.sourceAuthor ? `, written by ${manifest.sourceAuthor}` : ""}, from ${manifest.publisher}. These slides are the source material; the course built around them is separate. Every slide citation in the course opens the slide it names, so you can check the course against its source rather than take it on trust.`}
       />
 
       <div className="deck-filter" role="group" aria-label="Filter slides by stage">
