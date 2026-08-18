@@ -1859,3 +1859,57 @@ p { color: var(--muted); line-height: 1.65; }
    exempt, but these are standalone actions in a list — they read as buttons
    and should be sized like them. Same fault as the two contents lists. */
 .source-card a, .source-links a { display: inline-flex; align-items: center; gap: 6px; min-height: 24px; padding: 3px 0; }
+
+/* ==================================================================== *
+ * Making it look like something
+ *
+ * The motion pass improved how the site feels in use and did almost
+ * nothing to how it looks in a screenshot — the dashboard was still flat
+ * grey cards, one accent, no imagery, nothing for the eye to land on.
+ * This pass is the visible half: a ring instead of a number, colour that
+ * belongs to each stage, and enough depth that surfaces read as surfaces.
+ * ==================================================================== */
+
+/* The mastery ring. The one unmistakable picture of your own progress. */
+.hero-index { display: grid; place-items: center; padding: 26px 24px; background: linear-gradient(160deg, var(--accent-soft), transparent 70%), var(--paper); }
+.mastery-ring { position: relative; display: grid; place-items: center; width: 100%; }
+.mastery-ring svg { width: 168px; height: 168px; transform: rotate(-90deg); }
+.mastery-ring .ring-track { fill: none; stroke: var(--line); stroke-width: 10; }
+.mastery-ring .ring-value {
+  fill: none; stroke-width: 10; stroke-linecap: round;
+  transition: stroke-dashoffset 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mastery-ring .ring-centre { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -58%); text-align: center; pointer-events: none; }
+.mastery-ring .ring-centre strong { display: block; font-family: Georgia, serif; font-size: 40px; font-weight: 400; letter-spacing: -0.04em; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
+.mastery-ring .ring-centre span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; }
+.mastery-ring small { margin-top: 12px; color: var(--muted); font-size: 12.5px; text-align: center; }
+
+/* Depth. Flat panels on a flat background is why everything read the same. */
+.hero { background: linear-gradient(155deg, color-mix(in srgb, var(--accent) 7%, transparent), transparent 55%), var(--paper); }
+.metric-strip > div { background: linear-gradient(165deg, color-mix(in srgb, var(--accent) 5%, transparent), transparent 60%), var(--paper); }
+.metric-strip > div strong { color: var(--accent); }
+
+/* Stage colour on the dashboard and path. Eleven colours were defined and
+   the landing page used none of them. */
+.metric-strip > div:nth-child(1) { --tile: var(--stage-1); }
+.metric-strip > div:nth-child(2) { --tile: var(--stage-3); }
+.metric-strip > div:nth-child(3) { --tile: var(--stage-5); }
+.metric-strip > div:nth-child(4) { --tile: var(--stage-7); }
+.metric-strip > div { position: relative; overflow: hidden; }
+.metric-strip > div::after {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 3px;
+  background: var(--tile, var(--accent)); opacity: 0.85;
+  transform: scaleX(0.35); transform-origin: 0 50%;
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.metric-strip > div:hover::after { transform: scaleX(1); }
+
+/* The learning path as a coloured journey rather than a stack of grey cards. */
+.path-item::before { width: 4px; opacity: 0.75; }
+.path-item { background: linear-gradient(100deg, color-mix(in srgb, var(--stage, var(--accent)) 6%, transparent), transparent 42%), var(--paper); }
+
+@media (prefers-reduced-motion: reduce) {
+  .mastery-ring .ring-value { transition: none; }
+  .metric-strip > div::after { transition: none; }
+}
+@media (max-width: 900px) { .mastery-ring svg { width: 140px; height: 140px; } }

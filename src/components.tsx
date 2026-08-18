@@ -249,3 +249,54 @@ export function EmptyState({
     </div>
   );
 }
+
+/**
+ * Mastery as a ring rather than a number and a bar.
+ *
+ * The dashboard held the most interesting figure in the app and stated it as
+ * flat text above a 4px line. A ring is the one element on the page that is
+ * unmistakably a picture of your own progress — it is what the eye lands on,
+ * and it costs no colour discipline because it inherits the accent.
+ */
+export function MasteryRing({
+  value,
+  label,
+  sub,
+}: {
+  value: number;
+  label: string;
+  sub?: string;
+}) {
+  const clamped = Math.max(0, Math.min(100, Math.round(value)));
+  const r = 52;
+  const circumference = 2 * Math.PI * r;
+  const offset = circumference * (1 - clamped / 100);
+  return (
+    <div className="mastery-ring">
+      <svg viewBox="0 0 128 128" role="img" aria-label={`${label}: ${clamped} per cent`}>
+        <defs>
+          <linearGradient id="ring-grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="var(--accent)" />
+            <stop offset="100%" stopColor="var(--accent-4, var(--accent))" />
+          </linearGradient>
+        </defs>
+        <circle className="ring-track" cx="64" cy="64" r={r} />
+        <circle
+          className="ring-value"
+          cx="64"
+          cy="64"
+          r={r}
+          stroke="url(#ring-grad)"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          style={{ ["--ring-full" as string]: circumference }}
+        />
+      </svg>
+      <div className="ring-centre">
+        <strong>{clamped}%</strong>
+        <span>{label}</span>
+      </div>
+      {sub && <small>{sub}</small>}
+    </div>
+  );
+}

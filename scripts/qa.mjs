@@ -861,7 +861,21 @@ check(
         await tp.goto(artifactUrl, { waitUntil: "load" });
         for (const v of tapViews) {
           await tp.evaluate((h) => { window.location.hash = h; }, v);
-          await tp.waitForTimeout(130);
+          /*
+            Wait for the entrance animations to settle before measuring.
+            getBoundingClientRect returns the VISUAL box, so an element part way
+            through pp-pop (which scales from 0.82) measures ~82% of its resting
+            size — enough to put a 24px control under the threshold and produce
+            a failure that vanishes the moment you look for it by hand.
+          */
+          await tp.evaluate(
+            () =>
+              Promise.race([
+                Promise.allSettled(document.getAnimations().map((a) => a.finished)),
+                new Promise((r) => setTimeout(r, 1200)),
+              ]),
+          );
+          await tp.waitForTimeout(60);
           const n = await tp.evaluate(() =>
             [...document.querySelectorAll("button, a[href]")].filter((el) => {
               const r = el.getBoundingClientRect();

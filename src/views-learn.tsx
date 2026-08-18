@@ -20,7 +20,7 @@ import {
   type ModuleProgress,
   type ProgressMap,
 } from "./state";
-import { LessonBody, Feedback, LessonTableView, PageIntro, ProgressBar, QuestionCard, SourceChips } from "./components";
+import { LessonBody, Feedback, LessonTableView, MasteryRing, PageIntro, QuestionCard, SourceChips } from "./components";
 import { stageIllustrations } from "./illustrations";
 
 /** Questions per stage attempt, sampled from that stage's pool of 8-9. */
@@ -216,12 +216,11 @@ export function Dashboard({
           </p>
         </div>
         <div className="hero-index">
-          <span>Mastery</span>
-          <strong>{shownCompletion}%</strong>
-          <ProgressBar value={completion} label="Overall course mastery" />
-          <small>
-            {mastered} of {modules.length} stages demonstrated
-          </small>
+          <MasteryRing
+            value={shownCompletion}
+            label="Mastered"
+            sub={`${mastered} of ${modules.length} stages demonstrated`}
+          />
         </div>
       </section>
 
