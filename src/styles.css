@@ -71,16 +71,16 @@
      carry white text as a fill. Twelve, because a package may have more than
      nine stages and the tenth was rendering with no colour at all. */
   --stage-1: #4f46e5;  --stage-1-ink: #4338ca;
-  --stage-2: #0d9488;  --stage-2-ink: #0f766e;
-  --stage-3: #059669;  --stage-3-ink: #047857;
+  --stage-2: #0d9488;  --stage-2-ink: #115e59;
+  --stage-3: #059669;  --stage-3-ink: #065f46;
   --stage-4: #9333ea;  --stage-4-ink: #7e22ce;
   --stage-5: #2563eb;  --stage-5-ink: #1d4ed8;
-  --stage-6: #0284c7;  --stage-6-ink: #0369a1;
+  --stage-6: #0284c7;  --stage-6-ink: #075985;
   --stage-7: #e11d48;  --stage-7-ink: #be123c;
-  --stage-8: #d97706;  --stage-8-ink: #b45309;
-  --stage-9: #0891b2;  --stage-9-ink: #0e7490;
+  --stage-8: #d97706;  --stage-8-ink: #92400e;
+  --stage-9: #0891b2;  --stage-9-ink: #155e75;
   --stage-10: #c026d3; --stage-10-ink: #a21caf;
-  --stage-11: #16a34a; --stage-11-ink: #15803d;
+  --stage-11: #16a34a; --stage-11-ink: #166534;
   --stage-12: #7c3aed; --stage-12-ink: #6d28d9;
 
   /* Legacy aliases so existing rules keep resolving to the brand. */
@@ -1965,7 +1965,9 @@ p { color: var(--muted); line-height: 1.65; }
   background: linear-gradient(120deg, color-mix(in srgb, var(--stage, var(--accent)) 13%, transparent), transparent 70%), var(--paper);
   border-left: 4px solid var(--stage, var(--accent));
 }
-.module-page .lesson-section .section-count { color: var(--stage-ink, var(--accent)); opacity: 0.9; }
+/* No opacity: it composites toward the page and cost about 0.4 of the
+   contrast ratio, which is exactly the margin these hues had. */
+.module-page .lesson-section .section-count { color: var(--stage-ink, var(--accent)); }
 .module-page .outcome-box { border-color: color-mix(in srgb, var(--stage, var(--accent)) 32%, var(--line)); }
 .module-page .outcome-box strong { color: var(--stage-ink, var(--accent)); }
 .stage-shape li.is-done { border-color: var(--stage, var(--accent)); color: var(--stage-ink, var(--accent)); background: color-mix(in srgb, var(--stage, var(--accent)) 12%, transparent); }
@@ -2007,3 +2009,11 @@ p { color: var(--muted); line-height: 1.65; }
 .hero { background: linear-gradient(150deg, color-mix(in srgb, var(--brand) 12%, transparent), color-mix(in srgb, var(--stage-6) 8%, transparent) 45%, transparent 72%), var(--paper); }
 .package-card { border-top: 4px solid var(--brand); }
 .package-card:nth-child(2n) { border-top-color: var(--stage-3); }
+
+/* In dark mode every --stage value is a pastel, so a chip filled with one needs
+   dark text. .path-number and .module-index already did this; .deck-number and
+   the guide chip did not, and shipped white-on-pastel at 1.4:1. */
+:root[data-theme="dark"] .deck-number,
+:root[data-theme="dark"] .guide-stage-num,
+:root[data-theme="dark"] .case-step-mark,
+:root[data-theme="dark"] .module-dot.done { color: #0d1117; }

@@ -893,6 +893,67 @@ check(
       small.length ? small.join(", ") : `${tapViews.length} views, 2 packages, 2 widths`,
     );
   }
+  /*
+    Contrast across EVERY stage page, not one sample. Brightening the palette
+    put 388 elements below AA at once and a later pass left 137 more, because
+    each stage carries its own hue and the suite only ever opened one of them.
+    A palette with twelve hues needs twelve checks.
+  */
+  {
+    const hues = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+    const hp = await hues.newPage();
+    watchPage(hp, "stage-hues");
+    await hp.addInitScript(() =>
+      localStorage.setItem("product-practice-v2:active-package", JSON.stringify("closure-reports")),
+    );
+    await hp.goto(artifactUrl, { waitUntil: "load" });
+    await hp.waitForSelector(".sidebar-modules nav button");
+    const stageTotal = await hp.locator(".sidebar-modules nav button").count();
+    let worstRatio = 21;
+    let worstWhere = "";
+    for (let i = 0; i < stageTotal; i += 1) {
+      await hp.evaluate(() => { window.location.hash = "path"; });
+      await hp.waitForTimeout(80);
+      await hp.locator(".sidebar-modules nav button").nth(i).click();
+      await hp.waitForTimeout(260);
+      const r = await hp.evaluate(() => {
+        const lum = (c) => {
+          const m = c.match(/\d+/g);
+          if (!m) return null;
+          const [r, g, b] = m.slice(0, 3).map(Number);
+          const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+          return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+        };
+        const behind = (el) => {
+          let n = el;
+          while (n) {
+            const bg = getComputedStyle(n).backgroundColor;
+            if (bg && !bg.includes("rgba(0, 0, 0, 0)")) return bg;
+            n = n.parentElement;
+          }
+          return getComputedStyle(document.body).backgroundColor;
+        };
+        let worst = 21;
+        document
+          .querySelectorAll(".section-count, .outcome-box strong, .module-index, .stage-shape li, .path-meta span")
+          .forEach((el) => {
+            const a = lum(getComputedStyle(el).color);
+            const b = lum(behind(el));
+            if (a === null || b === null) return;
+            const ratio = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+            if (ratio < worst) worst = ratio;
+          });
+        return { worst: +worst.toFixed(2), title: document.querySelector("#main-content h1")?.innerText ?? "" };
+      });
+      if (r.worst < worstRatio) { worstRatio = r.worst; worstWhere = r.title; }
+    }
+    check(
+      "Every stage hue keeps its own page above AA",
+      worstRatio >= 4.5,
+      `${stageTotal} stages, worst ${worstRatio}:1${worstRatio < 4.5 ? ` on ${worstWhere}` : ""}`,
+    );
+    await hues.close();
+  }
   check(
     "Every stage opens with an illustration",
     noIllustration.length === 0,
