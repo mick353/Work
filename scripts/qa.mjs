@@ -846,6 +846,34 @@ await page.waitForTimeout(300);
 const stageButtons = await page.locator(".sidebar-modules nav button").count();
 check("Nine stages listed in the sidebar", stageButtons === 9, `found ${stageButtons}`);
 
+/*
+  Tone. This is training, and the closure package was written in a deficit
+  frame: 23 of 47 section openers led with what goes wrong before saying what
+  good looks like. Cumulatively that reads as a catalogue of failure rather
+  than a course, and it teaches less well — people build a skill faster from
+  what a practice achieves than from what it avoids.
+
+  Deliberately loose. Contrastive definitions ("an ownership model, not merely
+  software") state the positive first and are good teaching, so some of this
+  is right. The threshold catches drift back toward half, not the occasional
+  contrast.
+*/
+{
+  const source = await readFile(path.join(projectDir, "src", "closure-course.ts"), "utf8");
+  const openers = [...source.matchAll(/body:\s*\n?\s*"((?:[^"\\]|\\.)*)"/g)]
+    .map((m) => m[1].split(". ")[0])
+    .filter((s) => s.length > 30);
+  const negative = openers.filter((s) =>
+    /\b(fail|fails|failed|failure|wrong|worse|worst|bad|badly|useless|weak|poor|mistake|meaningless)\b/i.test(s),
+  );
+  const share = openers.length ? negative.length / openers.length : 0;
+  check(
+    "Most lesson sections open on what good looks like, not on failure",
+    share <= 0.2,
+    `${negative.length} of ${openers.length} openers lead with failure (${Math.round(share * 100)}%)`,
+  );
+}
+
 await page.getByRole("button", { name: "Learning path", exact: true }).click();
 await page.getByRole("heading", { name: "Build the whole product-management chain" }).waitFor();
 const pathItems = await page.locator(".path-item").count();

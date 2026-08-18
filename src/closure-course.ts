@@ -139,11 +139,11 @@ export const closureModules: Module[] = [
     slides: "",
     outcome: "Explain who reads a closure report, what decision it informs, and why most are written to be filed rather than read.",
     coreIdea:
-      "A closure report is not the last piece of project admin. It is the first piece of evidence about whether the investment was worth making — and it is written by the people least able to answer that question at the moment they have the least incentive to try.",
+      "A closure report is the first piece of evidence about whether an investment was worth making. Writing it well means working against the moment: the people who know most are dispersing, and the document is due when time is shortest.",
     sections: [
       {
-        heading: "The structural problem",
-        body: "Closure reports are unusually bad documents, and not because the people writing them are careless. They are produced at the point where the delivery team is being disbanded, the funding has stopped, the sponsor has moved to the next thing, and nobody who will live with the result is in the room. The person holding the pen is usually the project manager, whose professional reputation is the subject of the document. That is a structural conflict, not a personal failing, and no template solves it.",
+        heading: "Why this document is hard to write well",
+        body: "Writing one of these well is harder than it looks, and the difficulty is structural rather than personal. They are produced at the point where the delivery team is being disbanded, the funding has stopped, the sponsor has moved to the next thing, and nobody who will live with the result is in the room. The person holding the pen is usually the project manager, whose professional reputation is the subject of the document. That is a structural conflict, not a personal failing, and no template solves it.",
         bullets: [
           "Written last, by the people with the least time and the most exposure.",
           "Read — if at all — by people who were not there and cannot check the claims.",
@@ -197,7 +197,7 @@ export const closureModules: Module[] = [
       },
       {
         heading: "Why someone independent checks your closure",
-        body: "Above certain values, a Commonwealth project's closure is not self-assessed. The Department of Finance runs a series of independent checkpoints across a project's life called the Gateway Review Process, numbered Gate 0 to Gate 6. The last of them, Gate 6, is the Benefits Realisation review: an independent check that the investment delivered what was promised, that benefits have named owners, and that the arrangements to keep harvesting them survive the project's disappearance. The gate exists precisely because self-reported closure was found not to be reliable.",
+        body: "Above certain values, a Commonwealth project's closure is independently reviewed. The Department of Finance runs a series of independent checkpoints across a project's life called the Gateway Review Process, numbered Gate 0 to Gate 6. The last of them, Gate 6, is the Benefits Realisation review: an independent check that the investment delivered what was promised, that benefits have named owners, and that the arrangements to keep harvesting them survive the project's disappearance. The gate exists precisely because self-reported closure was found not to be reliable.",
         bullets: [
           "Gateway applies to non-corporate Commonwealth entities above the thresholds: $30m procurement or infrastructure, $30m with an ICT component of at least $10m, $50m for programs.",
           "Gate 6 assesses delivery of the purpose and benefits of the investment, not delivery of the scope.",
@@ -210,7 +210,7 @@ export const closureModules: Module[] = [
       },
       {
         heading: "What good looks like",
-        body: "A closure report worth writing does three things a filed one does not: it states what was promised in the original terms rather than the revised ones, it separates what is now known from what is still assumed, and it names a person for every commitment that outlives the project. Everything else in this course is machinery for those three.",
+        body: "A closure report worth writing does three things: it states what was promised in the original terms, it separates what is now known from what is still assumed, and it names a person for every commitment that outlives the project. Everything else in this course is machinery for those three.",
         bullets: [
           "Baseline stated as originally approved, with every revision shown as a revision.",
           "Claims marked as measured, estimated or asserted — and the difference visible.",
@@ -409,7 +409,7 @@ export const closureModules: Module[] = [
         sourceIds: ["anao-perf", "rmg134"],
       },
       {
-        heading: "Baselines, and the revision trap",
+        heading: "Baselines, and reporting against the right one",
         body: "A baseline is only useful if it is the one that was approved when the decision was made. Reporting against the most recent revision is the single most common way a closure report is technically accurate and substantively misleading. The fix is not to hide revisions but to show the chain: original, each revision with its date and reason, and current.",
         bullets: [
           "State the original approved baseline first, always.",
@@ -637,7 +637,7 @@ export const closureModules: Module[] = [
       },
       {
         heading: "Scheduling measurement that survives",
-        body: "The most common cause of unmeasured benefits is not disagreement but decay: the measurement was scheduled into a forward plan that was superseded, in a system that was decommissioned, by a team that was restructured. Durable measurement is boring by design — it uses data already being collected for another reason, and it lands in a cycle that exists anyway.",
+        body: "Measurement lasts when it rides on something that already exists for another reason. What usually ends it is decay rather than disagreement: the measurement was scheduled into a forward plan that was superseded, in a system that was decommissioned, by a team that was restructured. Durable measurement is boring by design — it uses data already being collected for another reason, and it lands in a cycle that exists anyway.",
         bullets: [
           "Prefer measures that ride on existing operational reporting over anything bespoke.",
           "Anchor the review date to an existing governance cycle, not to a standalone calendar entry.",
@@ -650,7 +650,7 @@ export const closureModules: Module[] = [
       },
       {
         heading: "Kinds of benefit, and double counting",
-        body: "Not all benefits are the same kind of thing, and treating them as one list is how a business case promises savings the entity never sees. The distinction that matters most at closure is whether a benefit is cashable — whether a budget line actually falls — because a non-cashable efficiency gain is real, worth having, and will not appear in anyone's bottom line.",
+        body: "Benefits come in distinct kinds, and naming which kind each one is keeps the savings a business case promises within reach of the entity. The distinction that matters most at closure is whether a benefit is cashable — whether a budget line actually falls — because a non-cashable efficiency gain is real, worth having, and will not appear in anyone's bottom line.",
         table: {
           caption: "Four kinds, and what each means at closure",
           head: ["Kind", "What it is", "What closure must say"],
@@ -832,7 +832,7 @@ export const closureModules: Module[] = [
       "Every entity has a lessons learned register and almost none of them change what the next project does. The failure is not that lessons are not captured — it is that they are captured as sentiments rather than as decisions, and stored where nobody looking for a decision would search.",
     sections: [
       {
-        heading: "Why registers fail",
+        heading: "Making a register worth reading",
         body: "Read any lessons register and the entries look like this: 'engage stakeholders earlier', 'ensure requirements are well defined', 'improve communication between teams'. These are not lessons. They are the categories under which lessons would sit, if any had been written. Nobody has ever read 'engage stakeholders earlier' and changed a decision, because it contains no information about which stakeholders, how early, or what happened when you did not.",
         bullets: [
           "Written as sentiment, not as a decision that could have gone another way.",
@@ -860,8 +860,8 @@ export const closureModules: Module[] = [
         sourceIds: ["lessons"],
       },
       {
-        heading: "What twenty projects know that one cannot",
-        body: "The most valuable thing a closure report contributes to an entity is not its narrative but its numbers, pooled with other projects' numbers. How long did the approval actually take, against the estimate? By what factor did the integration estimate miss? Enough of these and the next business case can be forecast from what comparable work actually cost, rather than from what this team hopes.",
+        heading: "Why pooled numbers beat any single account",
+        body: "The most valuable thing a closure report contributes to an entity is its numbers, pooled with other projects' numbers. How long did the approval actually take, against the estimate? By what factor did the integration estimate miss? Enough of these and the next business case can be forecast from what comparable work actually cost, rather than from what this team hopes.",
         bullets: [
           "Record estimate versus actual for the things that were estimated, not just the final totals.",
           "Capture the ratio, not only the absolute — a 3× miss on integration transfers; $400k does not.",
@@ -1044,11 +1044,11 @@ export const closureModules: Module[] = [
     slides: "",
     outcome: "Specify an operational handover that does not depend on the delivery team remaining reachable.",
     coreIdea:
-      "The test of a handover is not whether a document was signed. It is whether the receiving team can run, support and change the thing without calling anyone who has left.",
+      "A handover is complete when the receiving team can run, support and change the thing without calling anyone who has left. That is the test worth setting, and it is a higher bar than a signed document.",
     sections: [
       {
         heading: "Can they work without you?",
-        body: "Most handovers pass on paper and fail in practice, and the failure has one signature: three months later, someone is still messaging a former team member who now works elsewhere. That informal channel is what makes an inadequate handover survivable, which is why it hides the problem instead of exposing it. The honest test is to ask what breaks if that person does not reply.",
+        body: "A handover has worked when the receiving team can act on its own. There is one reliable sign that it has not landed yet: three months later, someone is still messaging a former team member who now works elsewhere. That informal channel is what makes an inadequate handover survivable, which is why it hides the problem instead of exposing it. The honest test is to ask what breaks if that person does not reply.",
         bullets: [
           "Can the receiving team deploy a change without the delivery team present?",
           "Can they diagnose the three most likely failures from documentation alone?",
@@ -1061,7 +1061,7 @@ export const closureModules: Module[] = [
       },
       {
         heading: "What transfers, and to whom",
-        body: "Handover is not one transfer but several, often to different places, and the closure report should say which went where. Bundling them into 'handed over to operations' is how run costs end up unfunded and licences lapse.",
+        body: "Handover is several transfers, often to different places, and the closure report should say which went where. Bundling them into 'handed over to operations' is how run costs end up unfunded and licences lapse.",
         table: {
           caption: "The transfers",
           head: ["What", "Typically to", "Failure if unassigned"],
@@ -1077,8 +1077,8 @@ export const closureModules: Module[] = [
         sourceIds: ["closure", "rmg106"],
       },
       {
-        heading: "The parts you know are weak",
-        body: "Every delivered system has parts the team knows are weak — the integration that only works because of a retry loop, the batch job that fails if it runs past 2am, the config nobody fully understands. Delivery teams rarely write these down, because writing them down feels like confessing. Not writing them down means the receiving team discovers each one during an incident.",
+        heading: "Passing on what you know about the system",
+        body: "Every delivered system has parts the team understands better than anyone else ever will — the integration that depends on a retry loop, the batch job with a timing window, the configuration with history behind it. Delivery teams rarely write these down, because writing them down feels like confessing. Not writing them down means the receiving team discovers each one during an incident.",
         bullets: [
           "List the parts you would not want to change without care, and say why.",
           "Name the failure modes you have already seen, and what fixed them.",
@@ -1091,7 +1091,7 @@ export const closureModules: Module[] = [
       },
       {
         heading: "Who is receiving, and can they",
-        body: "Handover is usually planned as a transfer of information and fails as a transfer of capability. The receiving team may be smaller, differently skilled, already at capacity, or entirely unaware they are receiving anything. None of that is visible in a document-completeness check, and all of it determines whether the service survives contact with its first incident.",
+        body: "Handover succeeds as a transfer of capability, and it is usually planned as a transfer of information. The receiving team may be smaller, differently skilled, already at capacity, or entirely unaware they are receiving anything. None of that is visible in a document-completeness check, and all of it determines whether the service survives contact with its first incident.",
         bullets: [
           "Confirm the receiving team knows and has agreed — being named in a plan is not agreement.",
           "Check capacity, not just capability: a team already at full load will absorb this by dropping something else.",
@@ -1261,11 +1261,11 @@ export const closureModules: Module[] = [
     slides: "",
     outcome: "Close the financial and contractual position: costs finalised, assets recognised, obligations either discharged or transferred with an owner.",
     coreIdea:
-      "The financial close is the one part of closure with a hard deadline and a statutory audience, and it is routinely left to a finance officer who was not there. Commitments that are neither settled nor transferred do not disappear — they surface as an unexplained accrual, a lapsed warranty, or a payment nobody can approve.",
+      "The financial close is the one part of closure with a hard deadline and a statutory audience, so it repays doing while the team is still together. Every commitment either settles now or transfers to a named owner; anything left in between resurfaces later as an unexplained accrual, a lapsed warranty, or a payment nobody can approve.",
     sections: [
       {
         heading: "What must be true before the ledger closes",
-        body: "Financial closure is not 'we stopped spending'. It is a set of positive assertions: every cost incurred is recorded in the right period, every commitment is either paid or accrued, everything capitalised is an asset that exists and works, and everything that will keep costing money has a budget holder who knows.",
+        body: "Financial closure is a set of positive assertions: every cost incurred is recorded in the right period, every commitment is either paid or accrued, everything capitalised is an asset that exists and works, and everything that will keep costing money has a budget holder who knows.",
         bullets: [
           "All invoices received, matched and either paid or accrued in the correct period.",
           "Purchase orders and commitments closed, or carried with a documented reason.",
@@ -1298,7 +1298,7 @@ export const closureModules: Module[] = [
       },
       {
         heading: "Contract closeout",
-        body: "A contract does not end when the work stops. Final acceptance is a formal act with consequences: it starts warranty periods, releases retentions, and closes the window in which defects are the supplier's problem rather than yours. Signing it because the project is over — rather than because the obligations were met — transfers risk quietly and permanently.",
+        body: "A contract runs on past the point where the work stops. Final acceptance is a formal act with consequences: it starts warranty periods, releases retentions, and closes the window in which defects are the supplier's problem rather than yours. Signing it because the project is over — rather than because the obligations were met — transfers risk quietly and permanently.",
         bullets: [
           "Confirm every deliverable was received and accepted against the contract, not against the current expectation.",
           "Record the warranty or defects-liability period, when it ends, and who will act on it.",
@@ -1313,7 +1313,7 @@ export const closureModules: Module[] = [
       },
       {
         heading: "Unspent funds and the incentive to spend them",
-        body: "Money left at the end of a project is not a windfall and not a reward; depending on the funding arrangement it lapses, returns to the entity, or must be formally rephased. The problem is that everyone involved knows an underspend can look like a poorly built business case, which creates real pressure to spend it on something defensible before the year closes. Naming that pressure is more useful than pretending it does not exist.",
+        body: "Money left at the end of a project belongs somewhere specific: depending on the funding arrangement it lapses, returns to the entity, or must be formally rephased. The problem is that everyone involved knows an underspend can look like a poorly built business case, which creates real pressure to spend it on something defensible before the year closes. Naming that pressure is more useful than pretending it does not exist.",
         bullets: [
           "Establish early what happens to an underspend under this funding arrangement — it is rarely the project's to keep.",
           "Report underspend as a variance with its cause, exactly like an overspend. Both indicate the estimate was wrong.",
@@ -1483,7 +1483,7 @@ export const closureModules: Module[] = [
     slides: "",
     outcome: "Decommission a system without destroying Commonwealth records or losing access the entity is obliged to maintain.",
     coreIdea:
-      "Data held in a government business system is a Commonwealth record, and the obligation to keep it accessible does not end when the system holding it is switched off. Decommissioning is therefore a records decision before it is a technical one.",
+      "Data held in a government business system is a Commonwealth record, and the obligation to keep it accessible outlives the system holding it. Decommissioning is therefore a records decision before it is a technical one.",
     sections: [
       {
         heading: "Data in a business system is a record",
@@ -1500,8 +1500,8 @@ export const closureModules: Module[] = [
         sourceIds: ["archives", "naa-data"],
       },
       {
-        heading: "Keeping it readable, not just keeping it",
-        body: "Keeping a database backup is not keeping a record accessible. If the only way to read the data is software the entity no longer licenses, running on an operating system it no longer supports, the obligation is not met in any practical sense — and the failure is discovered when someone asks for the data, usually under FOI or in litigation.",
+        heading: "Keeping it readable, years from now",
+        body: "Accessibility is the obligation, and it asks more than storage does. If the only way to read the data is software the entity no longer licenses, running on an operating system it no longer supports, the obligation is not met in any practical sense — and the failure is discovered when someone asks for the data, usually under FOI or in litigation.",
         table: {
           caption: "Retention approaches at decommissioning",
           head: ["Approach", "Access in five years", "When it is appropriate"],
@@ -1520,7 +1520,7 @@ export const closureModules: Module[] = [
       },
       {
         heading: "Sequencing the shutdown",
-        body: "Decommissioning done in the wrong order destroys the evidence the closure report depends on and the records the entity is obliged to keep. The ordering is not complicated; it is simply never planned, because switching things off is treated as an operational task rather than part of closure.",
+        body: "Decommissioning in the right order protects both the evidence the closure report depends on and the records the entity is obliged to keep. The ordering is not complicated; it is simply never planned, because switching things off is treated as an operational task rather than part of closure.",
         bullets: [
           "Sentence the records first: what must be kept, for how long, under which authority.",
           "Export and verify — read the export back and confirm it is complete before anything is deleted.",
@@ -1534,8 +1534,8 @@ export const closureModules: Module[] = [
         sourceIds: ["naa-data", "closure"],
       },
       {
-        heading: "The legacy system nobody switched off",
-        body: "The mirror-image failure: the new service goes live, the closure report describes it, and the thing it replaced keeps running — costing money, holding duplicate data, and quietly accepting transactions. Closure should state the disposition of what was replaced, or say plainly that it remains in service and why.",
+        heading: "What became of the system you replaced",
+        body: "Closure should also say what became of the thing being replaced. The common gap is the mirror image of the last section: the new service goes live, the report describes it, and the old system keeps running — costing money, holding duplicate data, and still accepting transactions. Closure should state the disposition of what was replaced, or say plainly that it remains in service and why.",
         bullets: [
           "Name the system or process replaced, and its current status.",
           "If it is still running, say who owns it, what it costs, and when it will stop.",
@@ -1727,7 +1727,7 @@ export const closureModules: Module[] = [
       },
       {
         heading: "Objectives, business outcomes and key results",
-        body: "These three get used interchangeably and are not the same thing, which is why the section so often restates the same sentence at three levels of abstraction. An objective is what the project set out to do. A business outcome is the change in the world that justified the spending. A key result is the measure that tells you whether the outcome happened. Closure reports against all three, and the interesting content is where they disagree.",
+        body: "These three answer different questions, and keeping them apart is what makes the section worth reading. An objective is what the project set out to do. A business outcome is the change in the world that justified the spending. A key result is the measure that tells you whether the outcome happened. Closure reports against all three, and the interesting content is where they disagree.",
         table: {
           caption: "Three different questions",
           head: ["Term", "The question", "At closure, report"],
@@ -1968,7 +1968,7 @@ export const closureModules: Module[] = [
       },
       {
         heading: "Follow-on actions and recommendations",
-        body: "Three things get bundled together and should not be. A lesson is for someone else, on a different project. A recommendation is for this entity, about how it works. A follow-on action is unfinished work from this project that someone must now pick up. The discipline worth borrowing is that at closure every open issue is either closed or becomes a follow-on action recommendation — there is no third state where it simply stops being mentioned.",
+        body: "Three distinct things belong here, and separating them is what makes each one land. A lesson is for someone else, on a different project. A recommendation is for this entity, about how it works. A follow-on action is unfinished work from this project that someone must now pick up. The discipline worth borrowing is that at closure every open issue is either closed or becomes a follow-on action recommendation — there is no third state where it simply stops being mentioned.",
         table: {
           caption: "Three different things",
           head: ["Type", "Audience", "Example"],
@@ -2218,7 +2218,7 @@ export const closureModules: Module[] = [
     sections: [
       {
         heading: "Structure for a reader in a hurry",
-        body: "Nobody reads a closure report front to back. They arrive with a question and scan for it, and if they cannot find it in about ninety seconds they either ask you directly or give up and assume the answer. Structure is therefore not presentation — it is the difference between the document being used and being filed.",
+        body: "Assume your reader arrives with one question and about ninety seconds. They arrive with a question and scan for it, and if they cannot find it in about ninety seconds they either ask you directly or give up and assume the answer. Structure is therefore not presentation — it is the difference between the document being used and being filed.",
         bullets: [
           "Lead with what was promised, what was delivered, and the gap. One page, no preamble.",
           "Put the benefits table where it can be found without reading the narrative.",
@@ -2427,7 +2427,7 @@ export const closureModules: Module[] = [
     slides: "",
     outcome: "Anticipate how a closure claim will be tested, and hold the evidence that makes it stand.",
     coreIdea:
-      "A closure report is not the end of the accountability chain. Its claims can reappear in annual performance statements, which are audited, and in ANAO performance audits years later. Write as though the claim will be tested, because it may be.",
+      "A closure report's claims travel. They can reappear in annual performance statements, which are audited, and in ANAO performance audits years later. Write as though each claim will be tested, because it may be.",
     sections: [
       {
         heading: "Where closure claims resurface",
@@ -2442,7 +2442,7 @@ export const closureModules: Module[] = [
       },
       {
         heading: "What a tester actually does",
-        body: "Audit does not read for tone. It selects a claim, asks what supports it, and follows the chain until it either reaches primary data or runs out. Most claims fail not because they were false but because the chain breaks — the analyst left, the extract was not retained, the definition was not written down.",
+        body: "Audit reads for evidence. It selects a claim, asks what supports it, and follows the chain until it either reaches primary data or runs out. Most claims fail not because they were false but because the chain breaks — the analyst left, the extract was not retained, the definition was not written down.",
         table: {
           caption: "The chain",
           head: ["Step", "What must exist", "Where it usually breaks"],
@@ -2458,7 +2458,7 @@ export const closureModules: Module[] = [
       },
       {
         heading: "Deciding what to keep before it is deleted",
-        body: "The single most common audit failure at closure is that the evidence existed and was not kept. Systems are decommissioned, licences lapse, cloud accounts are closed, and the extract that supported the headline benefit goes with them. Deciding what to retain is part of writing the report, not an afterthought for records management.",
+        body: "Evidence has to outlive the systems that produced it, and that is a decision somebody makes at closure. Systems are decommissioned, licences lapse, cloud accounts are closed, and the extract that supported the headline benefit goes with them. Deciding what to retain is part of writing the report, not an afterthought for records management.",
         bullets: [
           "Retain the extract, not the dashboard — dashboards depend on systems that will be turned off.",
           "Keep the query or method alongside the data, so the figure can be reproduced rather than merely cited.",
