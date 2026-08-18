@@ -94,6 +94,14 @@ function PackageCard({
         <span className="eyebrow">{entry.manifest.publisher}</span>
         <h2>{entry.manifest.title}</h2>
         <p className="package-sub">{entry.manifest.subtitle}</p>
+        {/*
+          Credit to whoever wrote the course, on the card that chooses it.
+          Absent for packages assembled from published frameworks, which have
+          a publisher and sources but no single author.
+        */}
+        {entry.manifest.author && (
+          <p className="package-author">Course by {entry.manifest.author}</p>
+        )}
       </header>
 
       <p className="package-summary">{entry.manifest.summary}</p>

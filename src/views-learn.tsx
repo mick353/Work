@@ -179,6 +179,16 @@ export function Dashboard({
         <div>
           <span className="eyebrow">Internal training · {manifest.publisher}</span>
           <h1>{manifest.title}</h1>
+          {/*
+            The credit sits below the title in sentence case rather than inside
+            the eyebrow, which is uppercased — a person's name shouted in 11px
+            caps at the end of a long strapline is not a credit.
+          */}
+          {manifest.author && (
+            <p className="hero-author">
+              Course written by <strong>{manifest.author}</strong>
+            </p>
+          )}
           <p className="hero-lead">
             {manifest.summary} Four moves, in order: understand the idea, retrieve it from memory, apply it to a
             real service decision, then review it later.

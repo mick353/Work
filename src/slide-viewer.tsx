@@ -230,7 +230,8 @@ function Lightbox({
           </div>
         )}
         <p className="slide-foot">
-          From <em>{manifest.source}</em>.
+          From <em>{manifest.source}</em>
+          {manifest.author ? `, by ${manifest.author}` : ""}.
           <span className="slide-foot-keys">
             {" "}Use <kbd>←</kbd> <kbd>→</kbd> to move between slides, <kbd>Esc</kbd> to close.
           </span>

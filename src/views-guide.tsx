@@ -55,6 +55,7 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
         <h1>{manifest.title}</h1>
         <p className="guide-cover-sub">{manifest.subtitle}</p>
         <dl>
+          {manifest.author && <div><dt>Course by</dt><dd>{manifest.author}</dd></div>}
           <div><dt>Source</dt><dd>{manifest.source}, {manifest.publisher}</dd></div>
           <div><dt>Reading time</dt><dd>{estimateHours(totalMinutes)}</dd></div>
           <div><dt>Content reviewed</dt><dd>{CONTENT_REVIEWED}</dd></div>
@@ -265,7 +266,8 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
       </section>
 
       <footer className="guide-end">
-        {manifest.title} — unofficial internal learning aid. Source: {manifest.source}.
+        {manifest.title} — unofficial internal learning aid. Source: {manifest.source}
+        {manifest.author ? `, by ${manifest.author}` : ""}.
         Content reviewed {CONTENT_REVIEWED}. Not an official Australian Government publication.
       </footer>
     </div>

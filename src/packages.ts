@@ -86,6 +86,13 @@ export type PackageManifest = {
   subtitle: string;
   /** Who owns the material, not who built the player. */
   publisher: string;
+  /**
+   * The person who wrote the course this package was built from, where there
+   * is one. Optional: a package assembled from published frameworks has a
+   * publisher and sources but no single author, and every render site must
+   * cope with that rather than emitting a dangling "by".
+   */
+  author?: string;
   /** The artefact the package was built from, for provenance. */
   source: string;
   /** When the content was last checked against its sources. */
@@ -148,6 +155,7 @@ const pmFundamentals: TrainingPackage = {
     title: "Product Management Fundamentals",
     subtitle: "Product management for Australian Government service delivery",
     publisher: "DEWR Digital Experience and Solutions",
+    author: "Simon Morris",
     source: "Product Management Fundamentals — 12AUG2026",
     reviewed: CONTENT_REVIEWED,
     status: "available",

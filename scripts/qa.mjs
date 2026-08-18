@@ -1693,6 +1693,185 @@ check(
   await swap.close();
 }
 
+/*
+  Crediting the person who wrote the course.
+
+  The package was built from someone's deck and named only the branch that
+  published it, so the author's own course could be read end to end without
+  his name on it anywhere. `author` is optional on the manifest, because a
+  package assembled from published frameworks has sources but no single
+  author — which makes this exactly the shape that fails silently: absent on
+  one package is correct, absent on the other is the bug.
+
+  So both directions are asserted. The credited package must show the name on
+  every view that already carries provenance, and the uncredited one must show
+  no orphaned label with nothing after it.
+*/
+{
+  const AUTHOR = "Simon Morris";
+  /* A label left stranded when the optional field is missing. */
+  const DANGLING = [
+    /Course by\s*(?:$|[.,·|])/m,
+    /,\s*by\s*[.,]/,
+    /written by\s*,/,
+    /Source:[^.]*,\s*by\s*\./,
+  ];
+
+  const cred = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const cp = await cred.newPage();
+  watchPage(cp, "credit");
+  await cp.goto(artifactUrl, { waitUntil: "load" });
+  await cp.waitForSelector(".sidebar");
+
+  await cp.evaluate(() => { window.location.hash = "library"; });
+  await cp.waitForSelector(".package-card");
+  const cards = await cp.$$eval(".package-card", (els) =>
+    els.map((c) => ({
+      title: c.querySelector("h2")?.textContent?.trim() ?? "",
+      credit: c.querySelector(".package-author")?.textContent?.trim() ?? "",
+    })),
+  );
+  const pmCard = cards.find((c) => c.title.includes("Product Management"));
+  const closureCard = cards.find((c) => c.title.includes("Closure"));
+
+  check(
+    "The library card credits the course author",
+    pmCard?.credit === `Course by ${AUTHOR}`,
+    pmCard?.credit || "(nothing rendered)",
+  );
+  check(
+    "A package with no named author shows no credit line",
+    closureCard !== undefined && closureCard.credit === "",
+    closureCard ? `"${closureCard.credit}"` : "(card not found)",
+  );
+
+  /* Every view that already states where the material came from. */
+  for (const view of ["dashboard", "deck", "guide"]) {
+    await cp.evaluate((v) => { window.location.hash = v; }, view);
+    await cp.waitForTimeout(450);
+    const text = await cp.innerText("#main-content");
+    check(`The ${view} view names the course author`, text.includes(AUTHOR));
+  }
+
+  /* The slide caption, on a slide opened the way a learner opens one. */
+  await cp.evaluate(() => { window.location.hash = "deck"; });
+  await cp.waitForTimeout(400);
+  await cp.locator(".deck-grid button").first().click();
+  await cp.waitForSelector(".slide-foot");
+  const foot = (await cp.innerText(".slide-foot")).replace(/\s+/g, " ");
+  check("The slide caption credits the course author", foot.includes(AUTHOR), foot.slice(0, 90));
+  await cp.keyboard.press("Escape");
+  await cp.waitForTimeout(250);
+
+  /* Now the package with no author, through the control a learner clicks. */
+  await cp.click(".package-switch");
+  await cp.waitForTimeout(400);
+  const closureIndex = (
+    await cp.$$eval(".package-card h2", (els) => els.map((e) => e.textContent ?? ""))
+  ).findIndex((t) => t.includes("Closure"));
+  const allCards = await cp.$$(".package-card");
+  await allCards[closureIndex].$eval("footer button", (b) => b.click());
+  await cp.waitForTimeout(1600);
+
+  const stranded = [];
+  for (const view of ["dashboard", "guide", "sources"]) {
+    await cp.evaluate((v) => { window.location.hash = v; }, view);
+    await cp.waitForTimeout(450);
+    const text = await cp.innerText("#main-content");
+    if (text.includes(AUTHOR)) stranded.push(`${view}: credits the other package's author`);
+    for (const pattern of DANGLING) {
+      const hit = text.match(pattern);
+      if (hit) stranded.push(`${view}: "${hit[0].trim()}"`);
+    }
+  }
+  check(
+    "A package with no author leaves no stranded attribution",
+    stranded.length === 0,
+    stranded.length ? stranded.join(" | ") : "dashboard, guide, sources all clean",
+  );
+  await cred.close();
+}
+
+/*
+  Contrast on every stage page, in both packages and both themes.
+
+  There was already a contrast check, and it passed while twenty stage pages
+  rendered white text on a near-white panel — because it only ever looked at
+  the dashboard. The stage hue is bound per stage via [data-stage], so a rule
+  can be correct on stage 1 and unreadable on stage 8, and nothing that opens
+  one page can see it.
+
+  This walks the lot. It is the slowest block in the suite and it earns it.
+*/
+{
+  const offenders = [];
+  for (const theme of ["light", "dark"]) {
+    for (const pkg of ["pm-fundamentals", "closure-reports"]) {
+      const ctx = await browser.newContext({ viewport: { width: 1440, height: 1200 } });
+      const cpage = await ctx.newPage();
+      watchPage(cpage, `contrast-${theme}-${pkg}`);
+      await cpage.addInitScript(([t, p]) => {
+        localStorage.setItem("product-practice-v2:active-package", JSON.stringify(p));
+        localStorage.setItem("product-practice-v2:theme", JSON.stringify(t));
+      }, [theme, pkg]);
+      await cpage.goto(artifactUrl, { waitUntil: "load" });
+      await cpage.waitForSelector(".sidebar-modules nav button");
+
+      const stages = await cpage.locator(".sidebar-modules nav button").count();
+      for (let i = 0; i < stages; i += 1) {
+        await cpage.evaluate(() => { window.location.hash = "dashboard"; });
+        await cpage.waitForTimeout(110);
+        await cpage.locator(".sidebar-modules nav button").nth(i).click();
+        await cpage.waitForTimeout(400);
+
+        const bad = await cpage.evaluate(() => {
+          const chan = (s) => (s.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+          const lum = (c) => {
+            const s = c.map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
+            return 0.2126 * s[0] + 0.7152 * s[1] + 0.0722 * s[2];
+          };
+          const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return (x + 0.05) / (y + 0.05); };
+          /* First ancestor with an opaque background is what the text sits on. */
+          const behind = (el) => {
+            let n = el;
+            while (n && n !== document.documentElement) {
+              const bg = getComputedStyle(n).backgroundColor;
+              if (bg && !bg.includes("rgba(0, 0, 0, 0)")) { const c = chan(bg); if (c.length === 3) return c; }
+              n = n.parentElement;
+            }
+            return [255, 255, 255];
+          };
+          const out = [];
+          document.querySelectorAll(
+            ".core-idea, .core-idea blockquote, .core-idea .eyebrow, .outcome-box, .outcome-box strong," +
+            " .lesson-example, .worked-example, .module-hero h1, .module-hero .eyebrow, .path-item",
+          ).forEach((el) => {
+            if (!(el.textContent ?? "").trim()) return;
+            const cs = getComputedStyle(el);
+            const fg = chan(cs.color);
+            if (fg.length !== 3) return;
+            const size = parseFloat(cs.fontSize);
+            const large = size >= 24 || (size >= 18.66 && parseInt(cs.fontWeight, 10) >= 700);
+            const need = large ? 3 : 4.5;
+            const r = ratio(fg, behind(el));
+            if (r < need) {
+              out.push(`${(el.className || el.tagName).toString().split(" ")[0]} ${r.toFixed(2)}:1 (need ${need})`);
+            }
+          });
+          return out;
+        });
+        for (const b of bad) offenders.push(`${theme}/${pkg} stage ${i + 1}: ${b}`);
+      }
+      await ctx.close();
+    }
+  }
+  check(
+    "Every stage page meets AA on its own hue, both packages, both themes",
+    offenders.length === 0,
+    offenders.length ? `${offenders.length} failures — ${offenders.slice(0, 4).join(" | ")}` : "40 stage pages clean",
+  );
+}
+
   const fresh = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
   const freshPage = await fresh.newPage();
   watchPage(freshPage, "migration");
