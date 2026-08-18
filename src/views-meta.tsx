@@ -2,7 +2,7 @@ import { caseStudies, CONTENT_REVIEWED, contrasts, divergences, fieldGuide, flas
 import { useMemo, useRef, useState } from "react";
 import { AlertTriangle, Brain, ChevronRight, Download, ExternalLink, RotateCcw, Search, Upload } from "lucide-react";
 import { SlideRangeLink } from "./slide-viewer";
-import { BACKUP_VERSION, downloadFile, parseBackup, type View } from "./lib";
+import { BACKUP_VERSION, backupFilename, downloadFile, parseBackup, type View } from "./lib";
 import type { HistoryEntry, ItemStatMap, ProgressMap, ReviewMap, RubricMap, TextMap } from "./state";
 import { EmptyState, PageIntro } from "./components";
 
@@ -392,6 +392,7 @@ export function Settings({
 }) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
+  const [backupBeforeReset, setBackupBeforeReset] = useState(true);
 
   const buildBackup = () =>
     JSON.stringify(
@@ -414,12 +415,9 @@ export function Settings({
     );
 
   const exportData = () => {
-    downloadFile(
-      `product-practice-backup-${new Date().toISOString().slice(0, 10)}.json`,
-      buildBackup(),
-      "application/json",
-    );
-    setMessage({ tone: "ok", text: "Backup downloaded." });
+    const name = backupFilename(manifest.id);
+    downloadFile(name, buildBackup(), "application/json");
+    setMessage({ tone: "ok", text: `Backup downloaded as ${name}` });
   };
 
   const handleFile = async (file: File) => {
@@ -438,18 +436,28 @@ export function Settings({
     });
   };
 
-  const resetWithBackup = () => {
+  /*
+    Backing up before a reset is a default, not a rule. It was forced, which is
+    the wrong shape for someone who has just decided the data is not worth
+    keeping — and for testing, where it produces a folder full of files nobody
+    wants. Default on, because the safe thing should take no effort; toggleable,
+    because deciding otherwise is legitimate.
+  */
+  const resetProgress = () => {
+    const warning = backupBeforeReset
+      ? `A backup will download first.`
+      : `NO backup will be taken. This cannot be undone.`;
     const confirmed = window.confirm(
-      `This clears all ${manifest.title} progress from this browser, including capstone answers.\n\nOther training packages are not affected.\n\nA backup will download first. Continue?`,
+      `This clears all ${manifest.title} progress from this browser, including capstone answers.\n\nOther training packages are not affected.\n\n${warning}\n\nContinue?`,
     );
     if (!confirmed) return;
-    downloadFile(
-      `product-practice-backup-before-reset-${new Date().toISOString().slice(0, 10)}.json`,
-      buildBackup(),
-      "application/json",
-    );
-    // Give the download a moment to start before the page reloads.
-    setTimeout(onReset, 600);
+    if (backupBeforeReset) {
+      downloadFile(backupFilename(manifest.id, "before-reset"), buildBackup(), "application/json");
+      // Give the download a moment to start before the page reloads.
+      setTimeout(onReset, 600);
+      return;
+    }
+    onReset();
   };
 
   return (
@@ -471,6 +479,10 @@ export function Settings({
         <div>
           <h2>Download a backup</h2>
           <p>Save progress, review intervals, attempt history, toolkit drafts, capstone answers and self-assessment as JSON.</p>
+          <p className="backup-name">
+            Saves as <code>{backupFilename(manifest.id)}</code> — package, then date and time, so a folder of
+            these groups by course and sorts by when you took them.
+          </p>
           <button className="secondary" onClick={exportData}>
             Download backup
           </button>
@@ -508,11 +520,22 @@ export function Settings({
         <div>
           <h2>Reset the learning system</h2>
           <p>
-            This permanently clears course progress from this browser. A backup file downloads automatically before
-            anything is deleted.
+            This permanently clears your progress in {manifest.title} from this browser. Other training packages are
+            not affected.
           </p>
-          <button className="danger-button" onClick={resetWithBackup}>
-            Back up and reset all local data
+          <label className="reset-option">
+            <input
+              type="checkbox"
+              checked={backupBeforeReset}
+              onChange={(event) => setBackupBeforeReset(event.target.checked)}
+            />
+            <span>
+              Download a backup first
+              <small>{backupFilename(manifest.id, "before-reset")}</small>
+            </span>
+          </label>
+          <button className="danger-button" onClick={resetProgress}>
+            {backupBeforeReset ? "Back up and reset" : "Reset without a backup"}
           </button>
         </div>
       </section>

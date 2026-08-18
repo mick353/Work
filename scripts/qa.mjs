@@ -1037,6 +1037,71 @@ check(
     );
     await fit.close();
   }
+  /*
+    Backup filenames and the reset choice.
+
+    Every backup was `product-practice-backup-<date>.json` regardless of which
+    course it came from, so two taken on the same day became "(1)" and "(2)" in
+    the downloads folder with nothing to tell them apart. And a backup before
+    reset was compulsory, which is the wrong default for someone who has just
+    decided the data is not worth keeping.
+  */
+  {
+    const back = await browser.newContext({ viewport: { width: 1200, height: 1000 }, acceptDownloads: true });
+    const bp = await back.newPage();
+    watchPage(bp, "backup");
+    await bp.addInitScript(() =>
+      localStorage.setItem("product-practice-v2:active-package", JSON.stringify("closure-reports")),
+    );
+    await bp.goto(artifactUrl, { waitUntil: "load" });
+    await bp.evaluate(() => { window.location.hash = "settings"; });
+    await bp.waitForSelector(".reset-option input");
+
+    const [manual] = await Promise.all([
+      bp.waitForEvent("download"),
+      bp.getByRole("button", { name: "Download backup" }).click(),
+    ]);
+    const name = manual.suggestedFilename();
+    check(
+      "Backup filename carries the package, date and time",
+      /^pp-closure-reports-\d{4}-\d{2}-\d{2}-\d{4}\.json$/.test(name),
+      name,
+    );
+
+    check(
+      "Backing up before a reset is on by default",
+      await bp.locator(".reset-option input").isChecked(),
+    );
+
+    bp.once("dialog", (d) => d.accept());
+    const [onReset] = await Promise.all([
+      bp.waitForEvent("download"),
+      bp.locator(".danger-button").click(),
+    ]);
+    check(
+      "A reset with the box ticked downloads a before-reset backup",
+      /-before-reset\.json$/.test(onReset.suggestedFilename()),
+      onReset.suggestedFilename(),
+    );
+
+    await bp.waitForTimeout(900);
+    await bp.evaluate(() => { window.location.hash = "settings"; });
+    await bp.waitForSelector(".reset-option input");
+    await bp.locator(".reset-option input").uncheck();
+    let downloaded = false;
+    bp.once("download", () => { downloaded = true; });
+    let warned = "";
+    bp.once("dialog", (d) => { warned = d.message(); d.accept(); });
+    await bp.locator(".danger-button").click();
+    await bp.waitForTimeout(1100);
+    check("A reset with the box cleared downloads nothing", downloaded === false);
+    check(
+      "Clearing the box warns that nothing will be saved",
+      /NO backup/i.test(warned),
+      warned.split("\n").filter(Boolean).slice(-2)[0] ?? "",
+    );
+    await back.close();
+  }
   check(
     "Every stage opens with an illustration",
     noIllustration.length === 0,

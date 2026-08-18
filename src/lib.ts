@@ -543,6 +543,32 @@ export function parseBackup(raw: string): BackupParseResult {
   };
 }
 
+/**
+ * A filename you can still make sense of after ten courses and a year.
+ *
+ * Was `product-practice-backup-2026-08-18.json` for every package, so two
+ * backups taken the same day silently became `(1)` and `(2)` in the downloads
+ * folder with nothing to tell them apart.
+ *
+ * Package first so a directory listing groups by course; then date and time so
+ * it sorts chronologically within each; then the reason, because a file taken
+ * before a reset is the one you go looking for in a hurry.
+ *
+ *   pp-closure-reports-2026-08-18-1432.json
+ *   pp-closure-reports-2026-08-18-1432-before-reset.json
+ */
+export function backupFilename(packageId: string, reason?: "before-reset"): string {
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  // Local time, not UTC — the date in the name should match the day the person
+  // was actually working, which toISOString gets wrong for half the world.
+  const stamp =
+    `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}` +
+    `-${pad(now.getHours())}${pad(now.getMinutes())}`;
+  const slug = packageId.replace(/[^a-z0-9-]+/gi, "-").toLowerCase();
+  return `pp-${slug}-${stamp}${reason ? `-${reason}` : ""}.json`;
+}
+
 export function downloadFile(filename: string, contents: string, mime: string) {
   const blob = new Blob([contents], { type: mime });
   const url = URL.createObjectURL(blob);
