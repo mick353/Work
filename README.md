@@ -9,7 +9,7 @@ Two packages ship today.
 | **Product Management Fundamentals** | 9 | 122 | 92 | The 98-slide *Product Management Fundamentals* deck by Simon Morris, DEWR Digital Experience and Solutions |
 | **Closure Reports** | 11 | 105 | 80 | Commonwealth assurance and performance frameworks, spined on the DTA project closure reporting standard |
 
-Both packages were built by Mick Gobbo. A source artefact supplies the subject matter; everything the learner interacts with — the staged lessons, the questions and their per-option feedback, the flashcards, the cases, the capstone, the templates and the player itself — is package work, and the two are credited separately throughout.
+A source artefact supplies the subject matter and nothing else. Everything the learner interacts with — the staged lessons, the questions and their per-option feedback, the flashcards, the cases, the capstone, the templates and the player itself — was built around that source, and the app says "built from" rather than "by" throughout so the two are never conflated.
 
 > Unofficial internal learning aid. **Not an official Australian Government publication**, and not a substitute for departmental guidance or the Digital Service Standard. See [NOTICE.md](NOTICE.md).
 
@@ -95,7 +95,7 @@ npx playwright install chromium   # once, before the first QA run
 npm run build      # writes both builds
 npm run dev        # rebuild on change
 npm run typecheck  # tsc --noEmit
-npm run qa         # 268-check verification suite
+npm run qa         # 272-check verification suite
 npm run verify     # typecheck + build + qa
 ```
 
@@ -134,7 +134,7 @@ The script reads the stage-to-slide mapping out of `course.ts`, so the two canno
 
 ### QA
 
-`scripts/qa.mjs` runs **268 checks** against the real built artefact in a real browser, and writes `qa-report.json`. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` runs **272 checks** against the real built artefact in a real browser, and writes `qa-report.json`. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
 
 It covers question-bank integrity, scoring arithmetic, mastery gating, backup round-trip including rejection of malformed files, package switching **through the control a learner clicks**, contrast on all 40 stage-page/theme combinations, axe-core WCAG 2.1 A/AA across every view in both packages and both themes, line measure and horizontal overflow from 320 px to 2560 px, target sizes, keyboard and focus behaviour, reduced motion, and console hygiene.
 
@@ -151,7 +151,7 @@ public/                Assets copied into docs/ at build time
 docs/                  GENERATED — the GitHub Pages build. Do not edit by hand.
 scripts/
   build.mjs            esbuild bundle; emits both builds
-  qa.mjs               The 268-check verification suite
+  qa.mjs               The 272-check verification suite
   import-slides.py     Deck → slides.ts + public/slides (see above)
   add-notes.py         One-off content migrations, already applied and kept
   add-reasoning.py     only for provenance. NOT part of the build, and not
@@ -199,8 +199,8 @@ src/
 
 ## Provenance
 
-Product Management Fundamentals is built from Simon Morris's deck, which supplies the subject matter and the nine-part structure. Closure Reports is built on the DTA project closure reporting standard and the Commonwealth assurance and performance frameworks. In both cases the source is the spine; the assessment, practice, worked material and player around it are package work by Mick Gobbo.
+Product Management Fundamentals is built from Simon Morris's deck, which supplies the subject matter and the nine-part structure. Closure Reports is built on the DTA project closure reporting standard and the Commonwealth assurance and performance frameworks. In both cases the source is the spine; the assessment, practice, worked material and player around it are separate work.
 
-`PackageManifest` keeps these apart deliberately — `sourceAuthor` for whoever wrote the artefact a package was built from, `builtBy` for whoever built the package. Collapsing them into a single "author" credits one person with the other's work.
+`PackageManifest` carries `sourceAuthor` for whoever wrote the artefact a package was built from. There is deliberately no matching field for whoever built the package: the separation is carried by the wording "built from", and a QA check fails the build if a personal name appears as a package credit.
 
 Scrum definitions, SAFe prioritisation guidance and Australian Government standards are cited separately and are **not interchangeable** — epics, features and Program Increments are not Scrum terms, and the DES delivery phases (Pre-Approval, Pre-Delivery, Delivery, Closure) are not the DTA service phases (Discovery, Alpha, Beta, Live). Each package's Sources page makes these boundaries explicit and carries a review date.

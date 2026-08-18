@@ -1694,31 +1694,33 @@ check(
 }
 
 /*
-  Provenance: two contributions, credited separately and proportionately.
+  Provenance: the source author is credited for the source, and for nothing
+  else.
 
-  The source deck was written by one person; the package around it — stages,
-  122 questions, 92 practice items, cards, cases, capstone, templates — was
-  built by another. A first attempt at this rendered "Course written by
-  <source author>" directly under the title, which handed one person credit
-  for the other's work. Both names now appear, each against what they did,
-  and the source credit sits at the foot of the hero as provenance rather
-  than at the top as a byline.
+  The source deck was written by one person. The package around it — stages,
+  122 assessed questions, 92 practice items, cards, cases, capstone, templates
+  and the player — is separate work. A first attempt rendered "Course written
+  by <source author>" directly under the title, which handed him credit for
+  all of it.
 
-  `sourceAuthor` is optional (a package built from published frameworks has
-  none); `builtBy` is required. So the checks run in both directions: the
-  package with a source author names both, the one without names only the
-  builder, and neither leaves a stranded label.
+  The fix is wording, not a second name: everything says "built from". The
+  package author is deliberately not named anywhere, so there is also a check
+  that no personal name has crept back in as a builder credit.
+
+  `sourceAuthor` is optional — a package built from published frameworks has
+  none — so the checks run in both directions.
 */
 {
   const SOURCE_AUTHOR = "Simon Morris";
-  const BUILDER = "Mick Gobbo";
+  /* Wording that would credit the source author with the package. */
+  const OVERCLAIM = /(Course|Training|Package|Content)\s+(written\s+|built\s+|created\s+)?by\s+Simon/i;
   /* A label left stranded when the optional field is missing. */
   const DANGLING = [
     /Source deck by\s*(?:$|[.,·|])/m,
-    /Package by\s*(?:$|[.,·|])/m,
+    /Built from\s*(?:$|[.,·|])/m,
     /,\s*by\s*[.,]/,
     /written by\s*,/,
-    /Source:[^.]*,\s*by\s*\./,
+    /Built from[^.]*,\s*by\s*\./,
   ];
 
   const cred = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
@@ -1739,29 +1741,34 @@ check(
   const closureCard = cards.find((c) => c.title.includes("Closure"));
 
   check(
-    "The library card credits the source author and the package builder separately",
-    pmCard?.credit === `Source deck by ${SOURCE_AUTHOR} · Package by ${BUILDER}`,
+    "The library card attributes the source deck, not the package",
+    pmCard?.credit === `Built from a source deck by ${SOURCE_AUTHOR}`,
     pmCard?.credit || "(nothing rendered)",
   );
   check(
-    "A package with no source author credits only its builder",
-    closureCard?.credit === `Package by ${BUILDER}`,
+    "A package with no source author shows no attribution line",
+    closureCard?.credit === "",
     closureCard ? `"${closureCard.credit}"` : "(card not found)",
   );
 
   /*
-    The home page must name both, and must not imply the source author wrote
-    the package. "written by <source author>" as a byline under the title was
-    the exact wording that did imply it.
+    The home page must name the source author against the source, and must not
+    imply he wrote the package. "written by <source author>" as a byline under
+    the title was the exact wording that did imply it.
   */
   await cp.evaluate(() => { window.location.hash = "dashboard"; });
   await cp.waitForTimeout(450);
   const heroText = (await cp.innerText(".hero")).replace(/\s+/g, " ");
-  check("The home page names both contributors", heroText.includes(SOURCE_AUTHOR) && heroText.includes(BUILDER));
+  check("The home page attributes the source material", heroText.includes(SOURCE_AUTHOR));
   check(
     "The home page does not present the source author as the course author",
-    !/(Course|Training|Package)\s+(written\s+)?by\s+Simon/i.test(heroText),
-    heroText.slice(0, 120),
+    !OVERCLAIM.test(heroText),
+    heroText.slice(0, 140),
+  );
+  check(
+    "The home page states the package was built around the source",
+    /built around it/i.test(heroText),
+    heroText.slice(-120),
   );
   check(
     "The source credit sits below the title, not as a byline",
@@ -1820,6 +1827,32 @@ check(
     stranded.length ? stranded.join(" | ") : "dashboard, guide, sources all clean",
   );
   await cred.close();
+}
+
+/*
+  The package author is not named, anywhere.
+
+  This is a deliberate choice, not an oversight, and it is easy to undo by
+  accident — the obvious way to express "this person wrote the source and that
+  person wrote the package" is to name both, and that is exactly what an
+  earlier version did. Assert it against the shipped artefact rather than the
+  source, because a name reaching the build is what matters.
+*/
+{
+  const html = await readFile(artifactPath, "utf8");
+  const claimed = [
+    /\bPackage by\b/i,
+    /\bbuilt by\s+[A-Z][a-z]+\s+[A-Z][a-z]+/,
+    /\bCourse (structure|material)[^.]{0,40}\bby\s+[A-Z][a-z]+\s+[A-Z][a-z]+/,
+  ]
+    .map((re) => html.match(re))
+    .filter(Boolean)
+    .map((m) => m[0]);
+  check(
+    "No personal name is credited as the package author",
+    claimed.length === 0,
+    claimed.length ? claimed.join(" | ") : "none in the built artefact",
+  );
 }
 
 /*

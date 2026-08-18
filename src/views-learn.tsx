@@ -216,17 +216,17 @@ export function Dashboard({
           </p>
           {/*
             Provenance, not a headline. It sits at the foot of the hero because
-            that is what it is worth: the source author wrote the material this
-            was built from, and the package author wrote everything around it.
-            Naming only one of them at the top of the page misattributes the
-            other's work.
+            that is what it is worth, and it names the source author only for
+            the source — the stages, questions, practice and worked material
+            are separate work, and an earlier byline under the title credited
+            them to him.
           */}
           <p className="hero-credits">
             {manifest.sourceAuthor
-              ? <>Built from the source deck by <strong>{manifest.sourceAuthor}</strong>. Course structure,
-                  questions and practice by <strong>{manifest.builtBy}</strong>.</>
-              : <>Built from {manifest.source}. Course structure, questions and practice
-                  by <strong>{manifest.builtBy}</strong>.</>}
+              ? <>Source material: the <em>{manifest.source}</em> deck by <strong>{manifest.sourceAuthor}</strong>.
+                  The stages, questions, practice and worked material in this package were built around it.</>
+              : <>Source material: {manifest.source}. The stages, questions, practice and worked material in this
+                  package were built around them.</>}
           </p>
         </div>
         <div className="hero-index">

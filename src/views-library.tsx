@@ -95,15 +95,12 @@ function PackageCard({
         <h2>{entry.manifest.title}</h2>
         <p className="package-sub">{entry.manifest.subtitle}</p>
         {/*
-          Two different contributions, named separately. The source author
-          wrote the artefact the package was built from; builtBy wrote the
-          package. Collapsing them into one credit misattributes one of them.
+          "Built from" rather than "by": the source author wrote the artefact,
+          not the package. Omitted where a package has no single source author.
         */}
-        <p className="package-author">
-          {entry.manifest.sourceAuthor
-            ? `Source deck by ${entry.manifest.sourceAuthor} · Package by ${entry.manifest.builtBy}`
-            : `Package by ${entry.manifest.builtBy}`}
-        </p>
+        {entry.manifest.sourceAuthor && (
+          <p className="package-author">Built from a source deck by {entry.manifest.sourceAuthor}</p>
+        )}
       </header>
 
       <p className="package-summary">{entry.manifest.summary}</p>

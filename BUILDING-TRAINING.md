@@ -1,7 +1,7 @@
 # Building training in this system — what I got wrong, and the rules that came out of it
 
-Written after the session that built Closure Reports. Mick corrected me eighteen
-times. Almost none of those corrections needed specialist knowledge — they
+Written after the session that built Closure Reports. The project owner
+corrected me eighteen times. Almost none of those corrections needed specialist knowledge — they
 needed me to check something I had assumed. This is the checklist that would
 have caught them.
 
@@ -16,7 +16,7 @@ is finished.
 frameworks properly — Gateway, RMG 106, RMG 134, ANAO, NAA, the Procurement
 Rules — and never once looked at an actual closure report template. I wrote the
 section structure from PRINCE2 and two US state templates because that is what a
-generic search returns. Mick then listed fourteen sections his department
+generic search returns. He then listed fourteen sections his department
 actually uses and I was missing ten of them. Later I found the DTA had published
 a **Project closure reporting standard for digital and ICT-enabled projects** —
 seven criteria, self-assessed Strong / Emerging / Nil — which is the exact thing
@@ -30,7 +30,7 @@ before writing a word of the course:
 2. Search `finance.gov.au` for an RMG, and `anao.gov.au` for the audit view.
 3. Search `site:.gov.au "<artefact name>" template` — state governments publish
    what the Commonwealth sometimes does not.
-4. Ask Mick whether his area has a template. His answer outranks all of the
+4. Ask the project owner whether his area has a template. His answer outranks all of the
    above; it is the document people will actually open.
 5. Only then reach for PRINCE2, PMBOK, IPA or overseas material — as
    *comparators*, clearly labelled, never as the spine.
@@ -53,7 +53,7 @@ Either the source travels with the package or the citation goes.
 A course about producing a document must contain **one complete worked example
 of that document**, not fragments in templates. I taught all fourteen sections,
 wrote three case studies and a template for each part, and never showed a whole
-report until Mick asked where it was.
+report until he asked where it was.
 
 Make the example uncomfortable: a cost overrun against original approval, a
 benefit that missed, an owner who would not accept a transfer. A worked example
@@ -68,7 +68,7 @@ of the easy case teaches nothing, and everyone can already write that one.
 layer resolved. It could not possibly have caught the actual bug, because
 nineteen views had the first package's name written in as literal text — the
 sidebar changed, the content changed, and the page still said "Product
-Management Fundamentals" at the top. Mick clicked the button and saw nothing
+Management Fundamentals" at the top. He clicked the button and saw nothing
 happen.
 
 **The rule.** Every user-facing behaviour gets tested through the control the
@@ -285,7 +285,7 @@ filenames, `curl` the `.deb`s and `dpkg-deb -x` them into a directory on
 
 ## The pattern underneath all of it
 
-Every correction Mick made was something I could have checked and did not,
+Every correction he made was something I could have checked and did not,
 because I had a reason to believe it was fine. The container was "done" because
 storage was namespaced. The review was "professional" because I had read the
 frameworks. The switch "worked" because the content layer resolved.

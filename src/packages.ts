@@ -95,10 +95,12 @@ export type PackageManifest = {
    * credited the person who wrote the source deck with the questions, cards,
    * cases, capstone and everything else in the package. Optional, because a
    * package built from published frameworks has no single source author.
+   *
+   * There is deliberately no matching field for whoever built the package.
+   * The separation is carried by wording — "built from" — rather than by a
+   * second name, because the package author does not want to be named.
    */
   sourceAuthor?: string;
-  /** Who assembled the package: the questions, practice and everything round the source. */
-  builtBy: string;
   /** The artefact the package was built from, for provenance. */
   source: string;
   /** When the content was last checked against its sources. */
@@ -162,7 +164,6 @@ const pmFundamentals: TrainingPackage = {
     subtitle: "Product management for Australian Government service delivery",
     publisher: "DEWR Digital Experience and Solutions",
     sourceAuthor: "Simon Morris",
-    builtBy: "Mick Gobbo",
     source: "Product Management Fundamentals — 12AUG2026",
     reviewed: CONTENT_REVIEWED,
     status: "available",
@@ -234,7 +235,6 @@ const closureReports: TrainingPackage = {
     title: "Closure Reports",
     subtitle: "Evidence, benefits and handover at the end of delivery",
     publisher: "DEWR Digital Experience and Solutions",
-    builtBy: "Mick Gobbo",
     source: "Commonwealth assurance and performance frameworks",
     reviewed: CLOSURE_REVIEWED,
     status: "available",
