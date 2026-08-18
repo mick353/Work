@@ -955,70 +955,87 @@ check(
     await hues.close();
   }
   /*
-    Panels fill their column; only running text is capped.
-    A block of measure rules had been capping whole PANELS — knowledge check,
-    scenario, assignment, reflection, contrast, source note, case summary — at
-    roughly 620px inside a 794px column, so they read as narrow and misaligned.
-    Nothing in the suite noticed, because line length was still correct.
+    Boxes proportionate to what they hold.
+
+    This has been wrong in both directions in one session. First a block of
+    measure rules capped whole PANELS at ~620px inside a 794px column, so they
+    read as narrow. Releasing them produced the opposite fault: a 1268px box
+    around a 500px column of text, which looks worse than the narrow version.
+
+    The invariant is neither "narrow" nor "full width". It is:
+      - a container that holds structure (a case step, a library card) fills
+        its column;
+      - a callout that holds only prose is close to the width of that prose.
+    Both are asserted here.
   */
   {
-    const wide = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
-    const wp = await wide.newPage();
-    watchPage(wp, "panel-width");
-    await wp.addInitScript(() =>
+    const fit = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
+    const fp = await fit.newPage();
+    watchPage(fp, "panel-fit");
+    await fp.addInitScript(() =>
       localStorage.setItem("product-practice-v2:active-package", JSON.stringify("closure-reports")),
     );
-    await wp.goto(artifactUrl, { waitUntil: "load" });
-    const narrow = [];
-    for (const v of ["cases", "sources", "module/purpose", "capstone", "library", "deck"]) {
-      await wp.evaluate((h) => { window.location.hash = h; }, v);
-      await wp.waitForTimeout(280);
-      const r = await wp.evaluate(() => {
+    await fp.goto(artifactUrl, { waitUntil: "load" });
+    const problems = [];
+    for (const v of ["cases", "sources", "module/purpose", "capstone", "library", "example", "guide"]) {
+      await fp.evaluate((h) => { window.location.hash = h; }, v);
+      await fp.waitForTimeout(260);
+      const r = await fp.evaluate(() => {
         const page = document.querySelector("#main-content .page");
         if (!page) return [];
         const column =
           document.querySelector(".lesson-sections")?.getBoundingClientRect().width ??
           page.getBoundingClientRect().width;
-        const classes = [
-          "knowledge-check", "scenario-panel", "assignment-panel", "reflection-panel",
-          "contrast-panel", "source-note", "method-note", "boundary-note", "case-summary",
-        ];
-        const narrowPanels = classes
-          .map((cls) => {
-            const el = document.querySelector(`.${cls}`);
-            if (!el) return null;
-            const w = el.getBoundingClientRect().width;
-            return w < column * 0.85 ? `${cls} ${Math.round(w)}/${Math.round(column)}` : null;
-          })
-          .filter(Boolean);
+        const out = [];
+
         /*
-          And structural list items. A <li> that contains block children is
-          layout, not running text, but the base `.page li` measure rule caught
-          them anyway — the worked-case steps rendered at 481px inside a 1268px
-          page, which is what made that view look broken.
+          Structural containers should fill the track they sit in — the track,
+          not the page. The library cards are a two-column grid, so 509px of
+          1268px is correct and the first version of this check called it a
+          fault.
         */
-        const pageWidth = page.getBoundingClientRect().width;
-        document.querySelectorAll("li, dd").forEach((el) => {
-          const hasBlocks = [...el.children].some((ch) =>
-            ["DIV", "SECTION", "ARTICLE", "HEADER", "H2", "H3", "H4", "P", "UL", "OL", "TABLE", "PRE", "FIGURE"].includes(ch.tagName),
-          );
-          if (!hasBlocks) return;
+        ["case-steps", "library-grid"].forEach((parentClass) => {
+          const parent = document.querySelector(`.${parentClass}`);
+          const el = parent?.firstElementChild;
+          if (!parent || !el) return;
+          const cols = getComputedStyle(parent).gridTemplateColumns.split(" ").filter(Boolean).length || 1;
+          const track = parent.getBoundingClientRect().width / cols;
           const w = el.getBoundingClientRect().width;
-          if (getComputedStyle(el).maxWidth !== "none" && w < pageWidth * 0.85) {
-            const parent = (el.parentElement.className || "").toString().split(" ")[0] || el.parentElement.tagName;
-            narrowPanels.push(`${parent} > li ${Math.round(w)}/${Math.round(pageWidth)}`);
+          if (w < track * 0.85) {
+            out.push(`${parentClass} item squeezed ${Math.round(w)} in a ${Math.round(track)} track`);
           }
         });
-        return narrowPanels;
+
+        // Prose-only callouts should be close to the width of their prose.
+        document.querySelectorAll("#main-content div, #main-content aside, #main-content blockquote").forEach((el) => {
+          const s = getComputedStyle(el);
+          const surface =
+            (s.backgroundColor && !s.backgroundColor.includes("rgba(0, 0, 0, 0)")) ||
+            parseFloat(s.borderLeftWidth) > 0;
+          if (!surface) return;
+          const box = el.getBoundingClientRect();
+          if (box.width < 300) return;
+          let text = 0;
+          let structural = false;
+          el.querySelectorAll("table, .lesson-table-wrap, pre, img, svg, button").forEach(() => { structural = true; });
+          el.querySelectorAll("p, li, label").forEach((n) => {
+            if (n.textContent.trim().length > 60) text = Math.max(text, n.getBoundingClientRect().width);
+          });
+          if (!text || structural) return;
+          if (box.width / text > 1.45) {
+            out.push(`${(el.className || "").toString().split(" ")[0]} box ${Math.round(box.width)} around ${Math.round(text)} of text`);
+          }
+        });
+        return [...new Set(out)];
       });
-      r.forEach((x) => narrow.push(`${v}: ${x}`));
+      r.forEach((x) => problems.push(`${v}: ${x}`));
     }
     check(
-      "Panels and structural list items fill their column, not the text measure",
-      narrow.length === 0,
-      narrow.length ? narrow.join(", ") : "checked across 4 views",
+      "Boxes are proportionate to what they hold",
+      problems.length === 0,
+      problems.length ? problems.slice(0, 4).join(", ") : "7 views, containers and callouts",
     );
-    await wide.close();
+    await fit.close();
   }
   check(
     "Every stage opens with an illustration",

@@ -403,7 +403,7 @@ p { color: var(--muted); line-height: 1.65; }
 .section-heading h2 { margin: 7px 0 0; }
 .section-heading > svg { color: var(--accent); flex: 0 0 auto; }
 .plan-list { list-style: none; padding: 0; margin: 20px 0 0; }
-.plan-list li { display: grid; grid-template-columns: 34px 1fr auto; gap: 15px; align-items: center; padding: 15px 16px; margin-bottom: 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper-strong); transition: border-color 140ms ease; }
+.plan-list li { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 15px; align-items: center; padding: 15px 16px; margin-bottom: 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper-strong); transition: border-color 140ms ease; }
 .plan-list li:hover { border-color: var(--line-strong); }
 .plan-list li > span { color: var(--muted); }
 .plan-list li > span { font-family: Georgia, serif; font-size: 16px; }
@@ -439,7 +439,7 @@ p { color: var(--muted); line-height: 1.65; }
 .path-total { margin: -22px 0 30px; color: var(--muted); font-size: 14px; }
 
 .path-list { display: grid; }
-.path-item { display: grid; grid-template-columns: 72px 1fr auto; align-items: center; gap: 24px; padding: 22px 24px; margin-bottom: 12px; border: 1px solid var(--line); border-left: 4px solid var(--stage); border-radius: 14px; background: var(--paper); }
+.path-item { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; align-items: center; gap: 24px; padding: 22px 24px; margin-bottom: 12px; border: 1px solid var(--line); border-left: 4px solid var(--stage); border-radius: 14px; background: var(--paper); }
 .path-number { display: grid; place-items: center; width: 54px; height: 54px; border: 0; border-radius: 16px; font-family: Georgia, serif; font-size: 18px; color: #fff; background: var(--stage-ink, var(--stage)); }
 :root[data-theme="dark"] .path-number { color: #0d1117; }
 .path-number.done { background: var(--success); color: #fff; }
@@ -453,7 +453,7 @@ p { color: var(--muted); line-height: 1.65; }
 .mini-progress li { border: 1px solid var(--line); border-radius: 99px; color: var(--muted); padding: 3px 11px; font-size: 11.5px; }
 .mini-progress li.done { border-color: var(--success); background: var(--success-soft); color: var(--success); font-weight: 650; }
 
-.module-hero { display: grid; grid-template-columns: 72px 1fr; gap: 28px; padding: 34px 36px; margin-bottom: 10px;
+.module-hero { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 28px; padding: 34px 36px; margin-bottom: 10px;
   border: 1px solid var(--line); border-left: 4px solid var(--stage); border-radius: 18px;
   background: var(--paper); box-shadow: var(--shadow); }
 /* Numeral only. The string 'Stage 06' could not fit a 56px square at 22px and
@@ -462,7 +462,7 @@ p { color: var(--muted); line-height: 1.65; }
 :root[data-theme="dark"] .module-index { color: var(--n-0); }
 .module-hero h1 { margin: 14px 0 10px; }
 .module-subtitle { font-size: 19px; }
-.outcome-box { display: grid; grid-template-columns: 150px 1fr; gap: 18px; max-width: 820px; margin-top: 24px; padding: 18px 20px; background: var(--accent-soft); border-radius: 8px; }
+.outcome-box { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 18px; max-width: 820px; margin-top: 24px; padding: 18px 20px; background: var(--accent-soft); border-radius: 8px; }
 .outcome-box strong { color: var(--accent); font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; }
 .outcome-box span { line-height: 1.55; color: var(--ink); }
 .core-idea { margin: 38px 0 18px 90px; padding: 32px 36px; background: var(--n-900); color: var(--n-0); border-radius: 18px; }
@@ -513,7 +513,7 @@ p { color: var(--muted); line-height: 1.65; }
 .question-number { color: var(--accent); flex: 0 0 auto; }
 .question-context { color: var(--muted); }
 .answer-options { display: grid; gap: 9px; margin: 18px 0; }
-.answer-option { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 12px; width: 100%; border: 1.5px solid var(--line); border-radius: 12px; background: var(--paper-strong); padding: 12px 14px; text-align: left; cursor: pointer; line-height: 1.5; transition: border-color 120ms ease, background 120ms ease; }
+.answer-option { display: grid; grid-template-columns: 30px minmax(0, 1fr); align-items: center; gap: 12px; width: 100%; border: 1.5px solid var(--line); border-radius: 12px; background: var(--paper-strong); padding: 12px 14px; text-align: left; cursor: pointer; line-height: 1.5; transition: border-color 120ms ease, background 120ms ease; }
 .answer-option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .answer-key { display: grid; place-items: center; width: 27px; height: 27px; border-radius: 50%; border: 1.5px solid var(--line-strong); font-size: 11.5px; font-weight: 700; color: var(--muted); }
 .answer-option:hover:not(:has(input:disabled)) { border-color: var(--accent); background: var(--accent-soft); }
@@ -546,7 +546,7 @@ p { color: var(--muted); line-height: 1.65; }
 .module-footer span { color: var(--muted); font-size: 13.5px; }
 
 .diagnostic-list .question-block { margin-top: 0; padding: 24px 0; }
-.diagnostic-result { display: grid; grid-template-columns: 180px 1fr; gap: 35px; align-items: center; padding: 34px; background: var(--paper); border: 1px solid var(--line); border-top: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
+.diagnostic-result { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 35px; align-items: center; padding: 34px; background: var(--paper); border: 1px solid var(--line); border-top: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
 .result-score { font-family: Georgia, serif; font-size: 56px; text-align: center; color: var(--accent-5); }
 .diagnostic-result h2 { margin: 8px 0 12px; }
 .diagnostic-review { margin-top: 46px; }
@@ -554,7 +554,7 @@ p { color: var(--muted); line-height: 1.65; }
 .diagnostic-review-item { padding: 20px 0; border-top: 1px solid var(--line); }
 .diagnostic-review-item h3 { margin-bottom: 12px; }
 
-.review-status { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; color: var(--muted); font-size: 12.5px; }
+.review-status { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; color: var(--muted); font-size: 12.5px; }
 .flashcard { position: relative; min-height: 350px; margin: 22px 0 15px; padding: 24px 30px; border: 1px solid var(--line); border-top: 1px solid var(--line); border-radius: 10px; background: var(--paper); box-shadow: var(--shadow); }
 .flashcard-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 11.5px; }
 .card-kind { border: 1px solid var(--line-strong); border-radius: 99px; padding: 3px 12px; color: var(--muted); background: var(--surface-alt); font-weight: 650; }
@@ -665,7 +665,7 @@ p { color: var(--muted); line-height: 1.65; }
 .divergence h2 { margin: 0; font-size: 24px; }
 .divergence header span { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
 .divergence dl { display: grid; gap: 14px; margin: 0; }
-.divergence dl > div { display: grid; grid-template-columns: 150px 1fr; gap: 18px; }
+.divergence dl > div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 18px; }
 .divergence dt { color: var(--brand); font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.06em; padding-top: 3px; }
 .divergence dd { margin: 0; color: var(--muted); line-height: 1.6; }
 
@@ -839,7 +839,7 @@ p { color: var(--muted); line-height: 1.65; }
   .hero p, .page-intro p { font-size: 16px; }
   .metric-strip { grid-template-columns: 1fr 1fr; }
   .metric-strip > div { padding: 18px 12px; }
-  .plan-list li { grid-template-columns: 30px 1fr; }
+  .plan-list li { grid-template-columns: 30px minmax(0, 1fr); }
   .plan-list button { grid-column: 2; justify-self: start; padding: 6px 0; }
   .day-grid { gap: 4px; }
   .day-grid i { height: 36px; }
@@ -851,7 +851,11 @@ p { color: var(--muted); line-height: 1.65; }
   .path-item h2 { font-size: 22px; }
   .outcome-box { grid-template-columns: 1fr; }
   .core-idea { padding: 22px 20px; }
-  .lesson-section { grid-template-columns: 28px 1fr; gap: 12px; }
+  /* minmax(0, 1fr), not 1fr — the third time this exact trap has bitten in
+     this file. A bare 1fr is minmax(auto, 1fr) and will not shrink below its
+     content, so on a 390px phone the track resolved to 344px against 302px of
+     room and the whole stage page scrolled sideways. */
+  .lesson-section { grid-template-columns: 28px minmax(0, 1fr); gap: 12px; }
   .lesson-table { font-size: 13.5px; }
   .lesson-table th, .lesson-table td { padding: 9px 10px; }
   .reflection-panel, .knowledge-check, .scenario-panel, .assignment-panel { padding: 20px 16px; }
@@ -1147,7 +1151,7 @@ p { color: var(--muted); line-height: 1.65; }
   .guide-page p, .guide-page li, .guide-page dd { font-size: 10.5pt; line-height: 1.5; }
   .guide-core { font-size: 13pt; }
   .guide-contrasts table { font-size: 8.5pt; }
-  .guide-glossary > div { grid-template-columns: 150px 1fr; }
+  .guide-glossary > div { grid-template-columns: 150px minmax(0, 1fr); }
 }
 
 /* ================================================================== *
@@ -1187,7 +1191,7 @@ p { color: var(--muted); line-height: 1.65; }
 .slide-lightbox h2 { margin: 4px 0 0; font-size: 22px; line-height: 1.25; }
 .slide-lightbox .eyebrow { font-size: 11.5px; }
 
-.slide-stage { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; }
+.slide-stage { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; }
 .slide-stage img {
   width: 100%; height: auto; display: block;
   border: 1px solid var(--line); border-radius: 10px; background: #fff; box-shadow: var(--shadow);
@@ -1709,6 +1713,10 @@ p { color: var(--muted); line-height: 1.65; }
    set max-width:100% here, which removed the cap — so between 700 and 1100px,
    where the column collapses to full width, the notes ran to 117 characters. */
 .exemplar-note p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; max-width: var(--measure); overflow-wrap: anywhere; }
+/* Between roughly 700 and 1180px the commentary column collapses to full
+   width, leaving a 702px box around 419px of 13px text. It is a callout: hug
+   it. */
+@media (max-width: 1180px) { .exemplar-note { max-width: calc(var(--measure) + 60px); } }
 
 .exemplar-closing { margin-top: 28px; padding: 20px 24px; border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; background: var(--accent-soft); color: var(--ink); font-size: 15.5px; max-width: none; }
 
@@ -2062,3 +2070,60 @@ p { color: var(--muted); line-height: 1.65; }
 .stage-shape > li,
 .deck-grid > li,
 .package-stats > div { max-width: none; }
+
+/* ==================================================================== *
+ * Panels sized to what they hold
+ *
+ * Releasing the panels from the text measure fixed one fault and created
+ * another: a 1268px box holding a 500px column of text looks worse than
+ * the narrow box did. Two different things were being treated as one.
+ *
+ *   A CALLOUT holds only prose. It should hug that prose, so the box is
+ *   proportionate to its content.
+ *
+ *   An INTERACTIVE PANEL holds options, fields and headings as well. It
+ *   takes the column, and its contents get a wider internal measure so
+ *   they fill it rather than hiding in the left third.
+ * ==================================================================== */
+
+/* Callouts hug their text. */
+.case-summary,
+.case-decision,
+.case-brief,
+.case-insight,
+.worked-example,
+.guide-case-step,
+.divergence-note,
+.method-note,
+.boundary-note,
+.source-note { max-width: calc(var(--measure) + 120px); }
+
+/* Interactive panels keep the column, and their content grows to suit. */
+.scenario-panel,
+.reflection-panel,
+.knowledge-check,
+.assignment-panel,
+.contrast-panel,
+/* 62ch, not 76ch. The first attempt at this pushed lines to 98 characters,
+   which is well past the point where the eye loses the return sweep — a panel
+   filling its box is worth nothing if the text inside it is unreadable. */
+.capstone-step { --measure: 62ch; }
+.scenario-panel .answer-option,
+.knowledge-check .answer-option { max-width: none; }
+
+/* A contrast panel with a table is structural; without one it is a callout. */
+.contrast-panel:not(:has(table)) { max-width: calc(var(--measure) + 120px); }
+
+/* Tables in the printed guide are rendered without the scrolling wrapper the
+   app views use, so on a 320px screen they pushed the page sideways. Let them
+   scroll within their own block instead of taking the document with them. */
+.guide-stage .lesson-table-wrap,
+.guide-contrasts { overflow-x: auto; max-width: 100%; }
+.guide-contrasts table,
+.guide-stage table { min-width: 0; }
+@media (max-width: 560px) {
+  .guide-contrasts table, .guide-stage table { font-size: 13px; }
+  .guide-contrasts th, .guide-contrasts td { padding: 8px 10px; }
+}
+@media print { .guide-stage .lesson-table-wrap, .guide-contrasts { overflow: visible; } }
+
