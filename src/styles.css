@@ -2127,3 +2127,97 @@ p { color: var(--muted); line-height: 1.65; }
 }
 @media print { .guide-stage .lesson-table-wrap, .guide-contrasts { overflow: visible; } }
 
+
+/* ==================================================================== *
+ * Worked cases: use the width, and look designed doing it
+ *
+ * A 1560px card with everything stacked in the left 750px is the fault
+ * behind "not using the width". Hugging the callouts fixed the boxes and
+ * left the card half empty, which is worse.
+ *
+ * Narrative left, apparatus right. Each column flows independently, so a
+ * long decision panel no longer pushes the heading down the page.
+ * ==================================================================== */
+@media (min-width: 1200px) {
+  .case-step-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+    column-gap: 44px;
+    align-items: start;
+  }
+  .case-main { min-width: 0; }
+  .case-aside { display: grid; gap: 18px; align-content: start; min-width: 0; }
+  .case-aside > * { max-width: none; margin: 0; }
+  .case-aside .case-artefact { font-size: 12.5px; }
+}
+@media (max-width: 1199px) {
+  .case-aside { display: grid; gap: 16px; margin-top: 20px; }
+  .case-aside > * { margin: 0; }
+}
+
+/* ==================================================================== *
+ * Colour, properly this time
+ *
+ * The palette got brighter and the page still read as navy, because the
+ * tints were set at 5-12% — invisible on a dark surface. Real products
+ * carry their colour: a tinted card reads as coloured, a 6% wash reads as
+ * grey. Everything below is measured for contrast afterwards.
+ * ==================================================================== */
+
+/* Cards wear their stage. */
+.case-steps > li {
+  background:
+    linear-gradient(150deg, color-mix(in srgb, var(--stage) 14%, transparent), transparent 58%),
+    var(--paper);
+  border-left: 5px solid var(--stage);
+}
+.case-steps > li h2 { color: var(--ink); }
+/* The stage link is text, so it takes the ink variant. Using the bright fill
+   put five of them between 2.9 and 3.7:1 in light mode. */
+.case-stage-link { color: var(--stage-ink, var(--stage)); border-color: color-mix(in srgb, var(--stage) 42%, transparent); }
+
+.case-decision {
+  background: linear-gradient(140deg, color-mix(in srgb, var(--stage) 22%, transparent), color-mix(in srgb, var(--stage) 8%, transparent)), var(--surface-alt);
+  border-left: 4px solid var(--stage);
+}
+.case-decision .eyebrow { color: var(--stage-ink, var(--accent)); }
+.case-insight {
+  background: color-mix(in srgb, var(--stage) 16%, transparent);
+  border-left: 4px solid var(--stage);
+}
+.case-summary {
+  background: linear-gradient(140deg, color-mix(in srgb, var(--brand) 18%, transparent), transparent 70%), var(--surface-alt);
+  border-left: 4px solid var(--brand);
+}
+
+/* Stage pages carry more of their hue. */
+.module-page .module-hero {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--stage) 26%, transparent), transparent 66%), var(--paper);
+}
+.module-page .core-idea {
+  background: linear-gradient(120deg, color-mix(in srgb, var(--stage) 22%, transparent), transparent 72%), var(--paper);
+}
+.module-page .outcome-box {
+  background: linear-gradient(130deg, color-mix(in srgb, var(--stage) 20%, transparent), transparent 78%), var(--surface-alt);
+}
+.lesson-example, .worked-example {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--stage, var(--accent)) 20%, transparent), transparent 74%), var(--surface-alt);
+  border-left: 4px solid var(--stage, var(--accent));
+}
+
+/* The learning path reads as a spectrum. */
+.path-item {
+  background: linear-gradient(100deg, color-mix(in srgb, var(--stage) 20%, transparent), transparent 52%), var(--paper);
+  border-left: 5px solid var(--stage);
+}
+
+/* Dashboard and library. */
+.hero { background: linear-gradient(150deg, color-mix(in srgb, var(--brand) 22%, transparent), color-mix(in srgb, var(--stage-6) 14%, transparent) 48%, transparent 76%), var(--paper); }
+.metric-strip > div { background: linear-gradient(160deg, color-mix(in srgb, var(--tile) 18%, transparent), transparent 66%), var(--paper); }
+.metric-strip > div::after { height: 4px; }
+.package-card { background: linear-gradient(150deg, color-mix(in srgb, var(--brand) 14%, transparent), transparent 62%), var(--paper); }
+.case-card, .toolkit-card { background: linear-gradient(150deg, color-mix(in srgb, var(--stage, var(--accent)) 16%, transparent), transparent 62%), var(--paper); }
+
+/* Section numerals and headings pick up the stage. */
+.module-page .lesson-section .section-count { color: var(--stage-ink, var(--accent)); opacity: 1; font-weight: 700; }
+.knowledge-check .eyebrow, .scenario-panel .eyebrow, .assignment-panel .eyebrow { color: var(--stage-ink, var(--accent)); }

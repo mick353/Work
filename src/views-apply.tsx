@@ -479,29 +479,44 @@ export function CaseStudies({ navigate }: { navigate: (view: View) => void }) {
         {study.steps.map((step, index) => (
           <li key={`${step.moduleId}-${index}`} data-stage={step.stage}>
             <div className="case-step-mark" aria-hidden="true">{step.stage}</div>
+            {/*
+              Two columns on a wide screen: the narrative you read straight
+              through on the left, and the apparatus beside it on the right —
+              the decision that was on the table, the artefact it produced, the
+              thing to notice.
+
+              They are wrapped rather than placed with grid-template-areas
+              because a shared grid sizes its rows to the tallest item in each,
+              so a long decision panel pushed the heading half a screen down.
+              Two columns, each flowing on its own. Below 1200px it stacks in
+              source order, exactly as it did.
+            */}
             <div className="case-step-body">
-              {/* The stage mark is a link now — a case is the best possible
-                  prompt to go and read the stage it exercises. */}
-              <button className="case-stage-link" onClick={() => navigate(`module:${step.moduleId}`)}>
-                Stage {step.stage} · {modules.find((m) => m.id === step.moduleId)?.title}
-              </button>
-              <h2>{step.heading}</h2>
-              {step.decision && (
-                <div className="case-decision">
-                  <span className="eyebrow">The decision</span>
-                  <p>{step.decision}</p>
-                  {step.tempting && (
-                    <p className="case-tempting">
-                      <strong>Why the other way is tempting:</strong> {step.tempting}
-                    </p>
-                  )}
-                </div>
-              )}
-              <LessonBody text={step.body} />
-              {step.artefact && (
-                <pre className="case-artefact">{step.artefact}</pre>
-              )}
-              <p className="case-insight"><strong>Notice:</strong> {step.insight}</p>
+              <div className="case-main">
+                {/* The stage mark is a link — a case is the best possible
+                    prompt to go and read the stage it exercises. */}
+                <button className="case-stage-link" onClick={() => navigate(`module:${step.moduleId}`)}>
+                  Stage {step.stage} · {modules.find((m) => m.id === step.moduleId)?.title}
+                </button>
+                <h2>{step.heading}</h2>
+                <LessonBody text={step.body} />
+              </div>
+
+              <div className="case-aside">
+                {step.decision && (
+                  <div className="case-decision">
+                    <span className="eyebrow">The decision</span>
+                    <p>{step.decision}</p>
+                    {step.tempting && (
+                      <p className="case-tempting">
+                        <strong>Why the other way is tempting:</strong> {step.tempting}
+                      </p>
+                    )}
+                  </div>
+                )}
+                {step.artefact && <pre className="case-artefact">{step.artefact}</pre>}
+                <p className="case-insight"><strong>Notice:</strong> {step.insight}</p>
+              </div>
             </div>
           </li>
         ))}
