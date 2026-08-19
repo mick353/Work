@@ -902,6 +902,25 @@ p { color: var(--muted); line-height: 1.65; }
 
 @media print {
   .topbar, .sidebar, .scrim, .button-row, button, .privacy-note, .field-guide-nav, .storage-warning { display: none !important; }
+  /*
+    The blanket `button` rule above is right for controls and wrong for the
+    two places a button carries the content itself. It emptied the guide's
+    entire table of contents — each entry is a <button>, so the <ol> printed
+    fifteen numbers with no titles beside them — and it swallowed the footer's
+    provenance link, leaving a stranded "·". Neither was visible on screen.
+
+    Contents entries print as plain text; the footer link and its separator
+    go entirely, because a link is meaningless on paper.
+  */
+  .guide-contents button {
+    display: inline !important;
+    border: 0; padding: 0; background: none;
+    font: inherit; color: inherit; text-align: left;
+  }
+  .app-footer .footer-link { display: none !important; }
+  /* A skip link is a keyboard affordance. On screen it is parked off-canvas
+     at top: -80px; in print that offset means nothing and it renders. */
+  .skip-link { display: none !important; }
   .main-content { padding: 0; }
   .page, .narrow-page { width: 100%; padding: 0; }
   body { background: #fff; color: #000; }
@@ -1089,7 +1108,13 @@ p { color: var(--muted); line-height: 1.65; }
 .guide-cover { display: none; }
 .guide-contents { margin: 8px 0 40px; padding: 24px 28px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); }
 .guide-contents h2 { font-size: 20px; margin-bottom: 12px; }
-.guide-contents ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+/*
+  No list marker. Stage entries already carry their own number in the label
+  ("1. Product thinking and strategy"), so an ordered-list marker on top of it
+  rendered "2. 1. Product thinking and strategy" — the guide's own numbering
+  fighting the curriculum's. The non-stage entries never wanted a number.
+*/
+.guide-contents ol { margin: 0; padding-left: 0; list-style: none; columns: 2; column-gap: 32px; }
 .guide-contents li { margin-bottom: 6px; font-size: 14.5px; break-inside: avoid; }
 .guide-contents button {
   padding: 0; border: 0; background: none; color: var(--accent);

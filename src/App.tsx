@@ -962,10 +962,14 @@ function Shell({
         <footer className="app-footer">
           <p>
             Internal learning aid
-            {view !== "sources" && " · not an official Australian Government publication"} ·{" "}
-            <button className="text-button" onClick={() => navigate("sources")}>
-              provenance and sources
-            </button>
+            {view !== "sources" && " · not an official Australian Government publication"}
+            {/* Separator travels with the link, so print does not strand a "·". */}
+            <span className="footer-link">
+              {" · "}
+              <button className="text-button" onClick={() => navigate("sources")}>
+                provenance and sources
+              </button>
+            </span>
           </p>
         </footer>
       </main>

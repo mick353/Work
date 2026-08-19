@@ -1830,6 +1830,137 @@ check(
 }
 
 /*
+  What the printed page actually says.
+
+  The print path had a check for overflow — is anything wider than the page —
+  and none for content. So a blanket `button { display: none }` in the print
+  stylesheet emptied the guide's whole table of contents (each entry is a
+  button, so fifteen numbers printed with no titles), hid the footer's
+  provenance link leaving a stranded separator, and let a keyboard skip link
+  onto the paper. Nothing was wrong on screen, nothing overflowed, and every
+  check passed.
+
+  This reads the rendered text under print media and asserts the content is
+  there — which is what a reader gets, and what measuring never sees.
+*/
+{
+  const pr = await browser.newContext({ viewport: { width: 1200, height: 1400 } });
+  const pp = await pr.newPage();
+  watchPage(pp, "print-content");
+  await pp.goto(artifactUrl, { waitUntil: "load" });
+  await pp.waitForSelector(".sidebar");
+  await pp.evaluate(() => { window.location.hash = "guide"; });
+  await pp.waitForSelector(".guide-contents");
+  await pp.emulateMedia({ media: "print" });
+  await pp.waitForTimeout(400);
+
+  const toc = await pp.$$eval(".guide-contents li", (lis) =>
+    lis.map((li) => (li.innerText ?? "").replace(/\s+/g, " ").trim()));
+  const empty = toc.filter((t) => !t).length;
+  check(
+    "The printed contents lists section titles, not just numbers",
+    toc.length > 0 && empty === 0,
+    empty ? `${empty} of ${toc.length} entries print with no title` : `${toc.length} entries, all titled`,
+  );
+  await pp.emulateMedia({ media: "screen" });
+  await pr.close();
+}
+
+/*
+  Numbering applied twice.
+
+  Stage labels already carry their number — "1. Product thinking and strategy"
+  — so any list marker or CSS counter placed beside one renders "2. 1. Product
+  thinking and strategy": the guide's numbering fighting the curriculum's. It
+  was in the guide contents on screen as well as in print, and no check saw it
+  because a list marker is not in `innerText` and a `::before` counter is not
+  in the DOM.
+
+  Three ways it can appear, all checked, across every view of both packages:
+  literal text, a list-style marker, and a generated counter.
+*/
+{
+  const dbl = [];
+  for (const pkg of ["pm-fundamentals", "closure-reports"]) {
+    const nc = await browser.newContext({ viewport: { width: 1600, height: 1200 } });
+    const np = await nc.newPage();
+    watchPage(np, `numbering-${pkg}`);
+    await np.addInitScript((id) =>
+      localStorage.setItem("product-practice-v2:active-package", JSON.stringify(id)), pkg);
+    await np.goto(artifactUrl, { waitUntil: "load" });
+    await np.waitForSelector(".sidebar");
+
+    const scan = () => np.evaluate(() => {
+      const out = [];
+      const numbered = (t) => /^\d{1,2}[.)]\s/.test(t);
+      const text = (document.querySelector("#main-content")?.innerText ?? "").replace(/\s+/g, " ");
+      (text.match(/\b\d{1,2}\.\s+\d{1,2}\.\s+\S+/g) ?? []).forEach((m) => out.push(`literal "${m.slice(0, 46)}"`));
+      document.querySelectorAll("#main-content ol, #main-content ul").forEach((l) => {
+        if (getComputedStyle(l).listStyleType === "none") return;
+        [...l.children].forEach((li) => {
+          const t = (li.innerText ?? "").trim();
+          if (numbered(t)) out.push(`marker+number "${t.slice(0, 42)}"`);
+        });
+      });
+      document.querySelectorAll("#main-content li, #main-content button").forEach((el) => {
+        const before = getComputedStyle(el, "::before").content;
+        if (!before || before === "none" || before === '""' || !/\d|counter/.test(before)) return;
+        const t = (el.innerText ?? "").trim();
+        if (numbered(t)) out.push(`counter+number "${t.slice(0, 42)}"`);
+      });
+      return [...new Set(out)];
+    });
+
+    for (const view of ["dashboard", "path", "guide", "results", "cases", "toolkit", "capstone",
+                        "fieldguide", "glossary", "sources", "deck", "divergences", "example"]) {
+      await np.evaluate((v) => { window.location.hash = v; }, view);
+      await np.waitForTimeout(420);
+      for (const h of await scan()) dbl.push(`${pkg}/${view}: ${h}`);
+    }
+    const stages = await np.locator(".sidebar-modules nav button").count();
+    for (let i = 0; i < stages; i += 1) {
+      await np.evaluate(() => { window.location.hash = "dashboard"; });
+      await np.waitForTimeout(110);
+      await np.locator(".sidebar-modules nav button").nth(i).click();
+      await np.waitForTimeout(420);
+      for (const h of await scan()) dbl.push(`${pkg}/stage ${i + 1}: ${h}`);
+    }
+    await nc.close();
+  }
+  check(
+    "Nothing is numbered twice, in any view of either package",
+    dbl.length === 0,
+    dbl.length ? `${dbl.length} — ${dbl.slice(0, 3).join(" | ")}` : "every view of both packages clean",
+  );
+}
+
+{
+  const pr = await browser.newContext({ viewport: { width: 1200, height: 1400 } });
+  const pp = await pr.newPage();
+  watchPage(pp, "print-tail");
+  await pp.goto(artifactUrl, { waitUntil: "load" });
+  await pp.waitForSelector(".sidebar");
+  await pp.evaluate(() => { window.location.hash = "guide"; });
+  await pp.waitForSelector(".guide-contents");
+  await pp.emulateMedia({ media: "print" });
+  await pp.waitForTimeout(400);
+
+  const printed = (await pp.innerText("body")).replace(/\s+/g, " ");
+  check(
+    "The printed page carries no keyboard skip link",
+    !/Skip to (learning content|main)/i.test(printed),
+    /Skip to/i.test(printed) ? "skip link is on the paper" : "absent, correctly",
+  );
+  check(
+    "The printed footer strands no separator",
+    !/publication\s*·\s*$/.test(printed.trim()) && !/·\s*·/.test(printed),
+    printed.slice(-90),
+  );
+  await pp.emulateMedia({ media: "screen" });
+  await pr.close();
+}
+
+/*
   "1 days".
 
   Found by completing a course rather than by any check: after a single
