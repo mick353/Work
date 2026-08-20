@@ -101,11 +101,27 @@ export const closureSources: Source[] = [
     checked: CLOSURE_REVIEWED,
   },
   {
+    id: "rmg109",
+    title: "Accounting for internally developed software and cloud computing arrangements (RMG 109)",
+    publisher: "Australian Government / Department of Finance",
+    url: "https://www.finance.gov.au/publications/resource-management-guides/accounting-internally-developed-software-and-cloud-computing-arrangements-rmg-109",
+    note: "Primary Commonwealth accounting guidance for the course's software cost examples. Research and option-selection costs are expensed; qualifying directly attributable development costs may be capitalised; training and implementation operating costs are expensed. Entity policy, evidence and Finance judgement still apply.",
+    checked: CLOSURE_REVIEWED,
+  },
+  {
+    id: "aasb138",
+    title: "AASB 138 Intangible Assets",
+    publisher: "Australian Accounting Standards Board",
+    url: "https://standards.aasb.gov.au/aasb-138-dec-2022",
+    note: "Accounting authority underlying RMG 109. Distinguishes research from development, sets the recognition tests for an internally generated intangible asset and excludes expenditure such as training from the asset's cost.",
+    checked: CLOSURE_REVIEWED,
+  },
+  {
     id: "rmg134",
     title: "Annual performance statements for Commonwealth entities (RMG 134)",
     publisher: "Australian Government / Department of Finance",
     url: "https://www.finance.gov.au/government/managing-commonwealth-resources/annual-performance-statements-commonwealth-entities-rmg-134",
-    note: "Where closure evidence ends up. Performance statements are audited, so a claim made at closure can be tested a year later.",
+    note: "Where some closure evidence may later surface. Annual performance statements can be audited at ministerial request or at the Auditor-General's discretion, and audit committees review the appropriateness of performance reporting. They are not automatically audited in every entity and year.",
     checked: CLOSURE_REVIEWED,
   },
   {
@@ -145,7 +161,7 @@ export const closureSources: Source[] = [
     title: "Commonwealth Procurement Rules",
     publisher: "Australian Government / Department of Finance",
     url: "https://www.finance.gov.au/government/procurement/commonwealth-procurement-rules",
-    note: "The procurement framework the contract sits inside. Relevant at closure for final acceptance, warranty and defects liability, retentions, and obligations that survive termination.",
+    note: "The procurement framework within which entities manage contracts. It does not itself determine when a particular contract's warranty, retention, acceptance or defects provisions take effect; those consequences must be checked in the executed contract and entity guidance.",
     checked: CLOSURE_REVIEWED,
   },
   {
@@ -305,21 +321,21 @@ const closureModuleDefs: Module[] = [
       {
         id: "cl-p2",
         moduleId: "purpose",
-        prompt: "A program has a total cost of $46m, of which the ICT component is $8m. On the financial thresholds alone, is it in scope for Gateway?",
+        prompt: "A proposal is close to a published Gateway financial threshold. What is the professionally sound way to determine whether Gateway applies?",
         options: [
-          "No — it is below the $50m program threshold",
-          "Yes, because any program over $30m is captured",
-          "Yes, because the total exceeds the threshold for an ICT-enabled project",
-          "No — Gateway cannot apply to anything below $50m",
+          "Check the current Finance guidance, classify it correctly as a project or program, and consider high-risk referral as well as the threshold",
+          "Use the threshold remembered from the last project because Finance changes only the gate names",
+          "Treat every digital proposal above $30m as automatically in scope",
+          "Wait until closure, when the final cost and ICT component are known",
         ],
         answer: 0,
         rationale:
-          "Programs are captured above $50m; this is $46m. The $30m-with-$10m-ICT test is a projects test and the ICT component here is $8m in any case. Note that Finance may still recommend a review for a high-risk proposal — the thresholds are a trigger, not a ceiling.",
+          "Thresholds are current reference information, not a memory test. Finance guidance distinguishes projects from programs and can apply assurance to high-risk proposals outside a simple financial trigger.",
         optionNotes: [
           "",
-          "The $30m figure is the projects threshold, not the programs threshold.",
-          "The ICT-enabled threshold applies to projects, and it also requires an ICT component of at least $10m.",
-          "Finance can still recommend assurance for a high-risk proposal; this answer overstates what the financial threshold means.",
+          "The consequence of stale recall is a missed or unnecessary assurance process.",
+          "The current guidance has separate tests and risk pathways; one remembered number is insufficient.",
+          "Gateway is an assurance decision made during the proposal lifecycle, not a retrospective classification.",
         ],
       },
       {
@@ -453,7 +469,7 @@ const closureModuleDefs: Module[] = [
           "Lessons captured and recorded in the Departmental Lessons Learned Register.",
         ],
         example:
-          "Read that list as six pieces of work with owners and dates, not as six paragraphs to write. The fifth item is the only one that is a document, and it is fifth for a reason.",
+          "Read that list as six pieces of work with owners and dates, not as six paragraphs to write. The closure report is one item in the process, and it becomes reliable only when it records the activities and acceptances that underpin it.",
         sourceIds: ["dewr-factsheet", "dewr-announcement"],
       },
       {
@@ -505,41 +521,41 @@ const closureModuleDefs: Module[] = [
       {
         id: "cl-pr1",
         moduleId: "process",
-        prompt: "Where does writing the closure report sit among the six closure activities?",
+        prompt: "A project drafts its closure report before BAU has accepted the handover or benefit ownership. What is the main risk?",
         options: [
-          "Near the end — it evidences work already done",
-          "First, so the sections drive the closure work",
-          "In parallel, drafted as each activity proceeds",
-          "It is not one of the six; it follows separately",
+          "Intentions are written in the past tense and become false evidence of completed transfer",
+          "The report will contain too much operational detail for the SRO",
+          "The PPO will reject it because drafting began too early",
+          "The Project Manager loses authority to complete the remaining activities",
         ],
         answer: 0,
         rationale:
-          "The factsheet lists the report fifth of six. Its job is to record work that happened, which is only possible once the work has happened.",
+          "The important capability is sequencing evidence after the underlying activity and acceptance—not recalling the report's ordinal position in a list.",
         optionNotes: [
           "",
-          "This is the common approach and it produces sections that describe intentions in the past tense.",
-          "Drafting alongside is fine as a habit, but the report is finalised on completed activity, not on progress.",
-          "It is explicitly one of the six, and it is approved by the SRO.",
+          "Operational detail can be edited to suit the approving audience; it is not the central evidence risk.",
+          "The PPO receives the approved report but does not reject it merely because drafting began early.",
+          "The project manager can continue closure work; the problem is claiming completion before acceptance exists.",
         ],
       },
       {
         id: "cl-pr2",
         moduleId: "process",
-        prompt: "The checklist asks you to confirm benefit ownership is 'defined and agreed'. What satisfies that?",
+        prompt: "The checklist asks you to confirm benefit ownership is 'defined and agreed'. What is the strongest evidence?",
         options: [
-          "A named business owner who has accepted the benefit",
+          "Recorded acceptance by the responsible business area, with an accountable role-holder identified under local governance",
           "A row in the benefits table naming the responsible branch",
           "The benefit being recorded in the Benefits Realisation Plan",
           "SRO sign-off on the benefits section of the report",
         ],
         answer: 0,
         rationale:
-          "'Agreed' requires the other party to have agreed. Naming a branch records an intention; a named person who accepted it records a transfer.",
+          "'Agreed' requires evidence that the responsible area accepted the accountability. Identifying the accountable role-holder is this course's recommended stronger practice; confirm whether local policy mandates it.",
         optionNotes: [
           "",
           "A branch name is where the benefit was pointed, not evidence anyone caught it.",
           "The plan records what was intended at the start, not who owns it now.",
-          "The SRO approves the report; they cannot accept a benefit on another area's behalf.",
+          "The SRO approves closure; that alone does not evidence acceptance by the area expected to realise the benefit.",
         ],
       },
       {
@@ -639,7 +655,7 @@ const closureModuleDefs: Module[] = [
         "Where has an intention been recorded as an event?",
       ],
       modelAnswer:
-        "The pattern in almost every real run: deliverables and documentation come out strong, because they are the project's own work and the project controls them. Transition ownership and stakeholder engagement come out weakest, because both require somebody outside the project to say yes.\n\nA typical honest assessment: deliverables accepted (evidenced by the acceptance record), PIR arrangements not done — nobody has been asked to own it, benefit ownership agreed for four of six, transition documented but not accepted, lessons written but not in the register, stakeholders informed but BAU contact points not confirmed.\n\nThat is six gaps, and five of them close with a conversation and a name. The sixth — the two benefits with no owner — is a real decision for the SRO, and it is exactly the kind of thing that gets buried when the report is written before the checklist is run.",
+        "A common pattern is that deliverables and documentation are stronger because they are the project's own work, while transition ownership and stakeholder engagement are weaker because both require acceptance outside the project.\n\nA typical honest assessment: deliverables accepted (evidenced by the acceptance record), PIR arrangements not done — nobody has been asked to own it, benefit ownership agreed for four of six, transition documented but not accepted, lessons written but not in the register, stakeholders informed but BAU contact points not confirmed.\n\nThat is six gaps, and five of them close with a conversation and a name. The sixth — the two benefits with no owner — is a real decision for the SRO, and it is exactly the kind of thing that gets buried when the report is written before the checklist is run.",
       criteria: [
         "Each item marked against evidence, not against intention",
         "At least one item where an intention had been recorded as an event",
@@ -652,13 +668,13 @@ const closureModuleDefs: Module[] = [
     id: "accountability",
     number: 3,
     title: "Who approves what",
-    subtitle: "The SRO, the Board, and the offices that will not save you",
+    subtitle: "The SRO, the Board, and the offices that receive the report",
     minutes: 0,
     slides: "",
     outcome:
       "Identify who must approve closure, who endorses it, who merely receives it, and what each of them is actually accountable for.",
     coreIdea:
-      "Closure has one accountable person and several audiences, and the difference matters. The Senior Responsible Officer approves and gives assurance. The Project Board endorses where required. The group PMO and the Portfolio Project Office receive the report — and the PPO explicitly does not check it. Nobody downstream will catch your errors, which puts the whole weight on the SRO's assurance being real.",
+      "Closure has one accountable approver and several audiences. The Senior Responsible Officer approves and gives assurance; the Project Board endorses where required; and the group PMO and Portfolio Project Office receive the report. The source expressly says the PPO does not review it for approval or compliance, but it does not define every group PMO quality-control practice or imply that recipients never read the report.",
     sections: [
       {
         heading: "What the SRO is accountable for",
@@ -678,10 +694,10 @@ const closureModuleDefs: Module[] = [
       },
       {
         heading: "Everyone else at the table",
-        body: "The approvals block in the full template names four roles and leaves room for more. Each signs for something different, and asking the wrong person for the wrong assurance wastes a fortnight.",
+        body: "The approvals block names four roles and leaves room for more. The template lists the roles but does not assign a separate legal attestation to each one. The table below is a practical course interpretation for preparing evidence; confirm local delegations and approval instructions before treating it as policy.",
         table: {
           caption: "Roles in the approvals block",
-          head: ["Role", "What they are signing for"],
+          head: ["Role", "Practical evidence to confirm"],
           rows: [
             ["Project Board", "Governance endorsement that closure is appropriate now"],
             ["Senior Responsible Officer", "Accountable approval — the assurances above"],
@@ -690,7 +706,7 @@ const closureModuleDefs: Module[] = [
           ],
         },
         example:
-          "The Senior User signature is the one people skip, and it is the one that makes the transition sections true. If the business owner has not signed, the report is asserting acceptance that nobody gave.",
+          "Acceptance from the receiving business owner is what makes a transition claim credible. A signature may evidence that acceptance where the form and local process use it, but the course should not invent a separate attestation beyond the approved template.",
         sourceIds: ["dewr-template", "dewr-factsheet"],
       },
       {
@@ -708,11 +724,11 @@ const closureModuleDefs: Module[] = [
         sourceIds: ["dewr-template"],
       },
       {
-        heading: "The PPO receives your report and does not read it for compliance",
+        heading: "The PPO receives the report but does not approve it or review it for compliance",
         body: "This is the single most commonly misunderstood part of the process, and getting it wrong in either direction is costly. The approved report goes to your group Project Management Office and to the Portfolio Project Office. The PPO does not review it for approval or compliance. It aggregates information across the department to identify trends, insights and emerging patterns for enterprise reporting and continuous improvement.",
         bullets: [
-          "Do not treat submission as a quality gate. Nothing downstream will bounce a weak report back to you.",
-          "Do not delay submission waiting for a review that is not coming.",
+          "Do not treat PPO submission as an approval or compliance gate.",
+          "Follow any documented group PMO quality process, but do not invent a mandatory PPO review that the source expressly disclaims.",
           "Do write for the aggregate audience as well as the local one: your lessons and ratings become departmental data.",
           "Lessons have their own destination — the Departmental Lessons Learned Register — and that is where they get reused.",
         ],
@@ -734,9 +750,9 @@ const closureModuleDefs: Module[] = [
       },
       {
         heading: "Where closure claims resurface",
-        body: "Performance information from delivery flows into the entity's corporate plan reporting and annual performance statements, which are subject to audit. A benefit claimed at closure can therefore be tested by someone with statutory powers, no relationship with the project, and a year's distance. That is a different reader from the sponsor who signed the report.",
+        body: "Some performance information from delivery may flow into corporate-plan reporting and annual performance statements. Those statements can be audited at ministerial request or at the Auditor-General's discretion, and audit committees review the appropriateness of performance reporting. A closure claim may also be tested in a later ANAO performance audit, so the evidence still has to survive.",
         bullets: [
-          "Annual performance statements report against the entity's purposes and are audited.",
+          "Annual performance statements report against the entity's purposes and can be audited; they are not automatically audited in every entity and year.",
           "ANAO performance audits examine whether reported information is meaningful and supported.",
           "Gateway lessons material aggregates across entities, so patterns become visible beyond one project.",
           "The evidence has to survive the project's systems being decommissioned.",
@@ -802,21 +818,21 @@ const closureModuleDefs: Module[] = [
       {
         id: "cl-ac3",
         moduleId: "accountability",
-        prompt: "Whose signature makes the transition sections credible?",
+        prompt: "What evidence most directly makes a transition claim credible?",
         options: [
-          "The Senior User or Business Owner receiving the outputs",
-          "The Senior Responsible Officer, who approves the whole report",
-          "The Project Manager, who performed the handover",
-          "The Project Board, which endorses closure",
+          "Recorded acceptance by the receiving Business Owner or BAU area",
+          "The Project Manager's statement that handover material was sent",
+          "PPO receipt of the approved report",
+          "A Project Board minute stating that closure is desirable",
         ],
         answer: 0,
         rationale:
-          "Transition is an acceptance by the receiving side. Only the business owner can confirm they have taken it on; everyone else is attesting to process.",
+          "Transition is completed by acceptance from the receiving side. A signature can be one form of evidence where the approved process uses it, but the capability is proving acceptance rather than memorising a role-specific attestation the template does not define.",
         optionNotes: [
           "",
-          "The SRO approves closure overall but cannot accept on the business area's behalf.",
-          "The PM can confirm the handover was offered, not that it was accepted.",
-          "Board endorsement is about whether closing now is appropriate.",
+          "Sending or offering a handover is not acceptance.",
+          "Receipt records submission, not operational acceptance.",
+          "Governance endorsement does not demonstrate that the receiving area can operate what it received.",
         ],
       },
       {
@@ -848,19 +864,19 @@ const closureModuleDefs: Module[] = [
           "Your closure report is complete and the SRO has approved it. A colleague suggests holding submission for a few weeks, on the basis that the Portfolio Project Office will come back with corrections and it is better to fix them in one pass.",
         prompt: "How should you respond?",
         options: [
-          "Submit now — nothing is coming back from the PPO",
+          "Submit through the documented process; do not wait for PPO approval or compliance review, while still following any group PMO quality check",
           "Hold it, since a single corrected submission is cleaner for the PPO",
           "Submit an early draft to the PPO to get their comments first",
           "Ask the group PMO to review it in place of the PPO",
         ],
         answer: 0,
         rationale:
-          "The PPO aggregates rather than assesses. Waiting for feedback that will not arrive delays the departmental trend data and holds the project open for nothing.",
+          "The source says the PPO does not review reports for approval or compliance. It does not justify claiming that nobody will read the report or that no local group PMO quality process exists.",
         optionNotes: [
           "",
-          "There is nothing to correct against — no review takes place.",
-          "The PPO does not comment on drafts either; the misunderstanding is the same one.",
-          "The group PMO receives it too, but review is not their role at this point.",
+          "The approved report should not be held for an invented PPO approval step.",
+          "The supplied source does not establish a PPO draft-review service.",
+          "The group PMO's documented local process should be followed rather than assumed away.",
         ],
       },
       {
@@ -1354,7 +1370,7 @@ const closureModuleDefs: Module[] = [
         sourceIds: ["dewr-template"],
       },
       {
-        heading: "Tolerances, and the five things they cover",
+        heading: "Tolerances, and the six dimensions they cover",
         body: "The template frames the objectives review around performance against targets and tolerances for time, cost, quality, scope, benefits and risk. Tolerance is the pre-agreed room to move before something has to be escalated, which makes it the cleanest way to describe performance: not whether the number moved, but whether it moved further than governance agreed it could.",
         table: {
           caption: "Reporting against tolerance",
@@ -1364,6 +1380,7 @@ const closureModuleDefs: Module[] = [
             ["Cost", "Came in over budget", "24 per cent over original approval; two rebaselines, both approved"],
             ["Scope", "Some features deferred", "One objective withdrawn by Board decision; two features deferred within tolerance"],
             ["Quality", "A few defects at go-live", "Nine severity-3 defects at release against a tolerance of twelve; none severity-1 or 2"],
+            ["Benefits", "Benefits are on track", "Two of six benefits below the agreed trajectory; remedial action approved for one and the other escalated"],
             ["Risk", "Risks were managed", "Two risks moved outside appetite; both escalated, one accepted by the SRO"],
           ],
         },
@@ -1381,7 +1398,7 @@ const closureModuleDefs: Module[] = [
           "Where a milestone moved, point at the change ID that moved it.",
         ],
         example:
-          "A report that shows nine approved changes and no rejected ones is describing a change process that approved everything. That is a finding about governance, and it belongs in the lessons table under change control.",
+          "A report that shows nine approved changes and no rejected ones is a signal to investigate: were proposals screened or withdrawn before formal submission, were rejections omitted from the register, or did the forum apply little challenge? The pattern is not proof on its own.",
         sourceIds: ["dewr-template"],
       },
       {
@@ -1462,21 +1479,21 @@ const closureModuleDefs: Module[] = [
       {
         id: "cl-m4",
         moduleId: "milestones",
-        prompt: "A project reports nine approved changes and no rejected ones. What does that suggest?",
+        prompt: "A project reports nine approved changes and no rejected ones. What is the sound conclusion?",
         options: [
-          "A change process that approved whatever was put to it",
-          "Strong scope discipline throughout delivery",
-          "That rejected changes were handled outside the register",
-          "An unusually stable set of requirements",
+          "It is a signal to investigate screening, withdrawals, register completeness and the level of challenge—not proof of one cause",
+          "The change process definitely approved whatever was submitted",
+          "Strong scope discipline has been demonstrated",
+          "All rejected changes must have been handled outside the register",
         ],
         answer: 0,
         rationale:
-          "A gate that never refuses anything is not a gate. It is worth naming in the lessons table under change control rather than passing over.",
+          "A zero-rejection pattern is decision-relevant, but several mechanisms can produce it. Investigate the process and evidence before turning the pattern into a governance finding.",
         optionNotes: [
           "",
-          "Discipline would show as changes considered and declined.",
-          "Possible, and if so the register is incomplete — which is also a finding.",
-          "Stable requirements would produce few change requests, not nine approvals.",
+          "Possible, but the data does not establish it without reviewing how changes enter the formal register.",
+          "Nine approved changes do not demonstrate strong scope discipline.",
+          "Possible, not necessary. Informal screening or withdrawal could also explain the pattern.",
         ],
       },
     ],
@@ -1533,10 +1550,10 @@ const closureModuleDefs: Module[] = [
       prompts: [
         "Which milestones moved, and can you point at an approved change for each?",
         "Which moved because the definition changed rather than the date?",
-        "How many changes were rejected, and what does that number say?",
+        "How many changes were rejected, and what process questions does that pattern raise?",
       ],
       modelAnswer:
-        "The exercise usually turns up one milestone that was met by quietly narrowing what it meant, and it is always the most useful line in the table.\n\nA workable format: 'Integration complete — planned Nov 2024 — rebaselined Mar 2025 — actual Jun 2025 — 31 weeks against original, 13 weeks against revised. Scope narrowed in April 2025 to exclude the two low-volume interfaces; agreed at the integration working group, not raised as a change request. CR-014 covers the date movement, not the scope change.'\n\nThat single row carries the delay, the approved part, the unapproved part, and where the record is incomplete. It also writes two lessons rows for you — one under schedule, one under change control — which is the general pattern: the milestone table is where lessons come from, not a separate exercise.\n\nOn rejected changes: if the answer is zero, say so in the change control paragraph rather than leaving the reader to notice. A process that approved eleven of eleven is worth a sentence.",
+        "The exercise usually turns up one milestone that was met by quietly narrowing what it meant, and it is always the most useful line in the table.\n\nA workable format: 'Integration complete — planned Nov 2024 — rebaselined Mar 2025 — actual Jun 2025 — 31 weeks against original, 13 weeks against revised. Scope narrowed in April 2025 to exclude the two low-volume interfaces; agreed at the integration working group, not raised as a change request. CR-014 covers the date movement, not the scope change.'\n\nThat single row carries the delay, the approved part, the unapproved part, and where the record is incomplete. It also writes two lessons rows for you — one under schedule, one under change control.\n\nOn rejected changes: if the answer is zero, say so and investigate how proposals were screened, withdrawn and entered into the register. Eleven approvals out of eleven is a useful signal, not proof that the forum approved everything it encountered.",
       criteria: [
         "Variance shown against the original baseline, not only the current one",
         "Each rebaseline dated and attributed to an approving forum",
@@ -1554,7 +1571,7 @@ const closureModuleDefs: Module[] = [
     slides: "",
     outcome: "Assign benefit ownership that survives closure, and schedule measurement that actually happens.",
     coreIdea:
-      "Almost no benefit is realised during a project. Benefits accrue afterwards, in the operational business, over months or years — which means the entity that promised them is not the entity that delivers them, and closure is the handover point where that responsibility either transfers or evaporates.",
+      "Benefits realisation is a whole-lifecycle discipline. Some benefits may begin during pilots, rollout or adoption, while others emerge only after the project closes. Closure records progress to date and transfers the remaining ownership, measurement and governance into the operational business.",
     sections: [
       {
         heading: "Objectives, business outcomes and key results",
@@ -1579,24 +1596,24 @@ const closureModuleDefs: Module[] = [
         sourceIds: ["anao-perf", "rmg134"],
       },
       {
-        heading: "The money is spent before the benefit arrives",
-        body: "The project spends the money and the business earns the return, usually long after the project has ceased to exist. This is not a flaw in how projects are run; it is what a project is. The consequence is that benefits realisation cannot be a project activity — by the time it is measurable there is no project. What closure can do is transfer ownership cleanly enough that measurement still happens.",
+        heading: "Benefits can begin in delivery and continue after closure",
+        body: "The project may observe early benefits during pilots, staged rollout and adoption, but many benefits mature in the operational business over months or years. At closure, report the percentage or evidence realised so far, the expected path for the remainder, and the governance that will keep measurement and corrective action alive after the project team disperses.",
         bullets: [
-          "Post-implementation review typically sits 6 to 12 months after closure, when effects have had time to appear.",
-          "The Senior Responsible Officer remains accountable for benefits across the lifecycle, including after delivery ends.",
-          "Realisation is the operational business's responsibility, supported by a named benefit owner per benefit.",
-          "A benefit with no named owner is not a benefit; it is a hope recorded in a business case.",
+          "Set the internal post-implementation review at the point the project's effects can be judged; there is no universal six-to-twelve-month rule for every PIR.",
+          "For proposals in Gateway, Gate 5 is generally six to twelve months after commissioning and follows an internal PIR or similar major review.",
+          "Ongoing realisation belongs in the operational business with clearly accepted accountability and durable measurement.",
+          "A benefit with no agreed owner or business area is an unresolved transfer, and the report should say so.",
         ],
-        sourceIds: ["teal", "rmg106"],
+        sourceIds: ["aga-standard", "teal", "rmg106"],
       },
       {
-        heading: "What a benefit owner has to have",
-        body: "Naming an owner is the easy part and is usually where it stops. An owner who cannot act is decoration. Four things have to be true, and closure is the last moment at which you can make them true while anyone is still paying attention.",
+        heading: "A practical test for durable benefit accountability",
+        body: "The departmental sources require agreed benefit ownership but use both 'business area' and 'Responsible Business Owner' language. This course recommends a stronger four-part test: identify the accountable role-holder where local governance permits, record acceptance, confirm influence over the driver, and use a measurement that will survive. Treat this as recommended practice unless local policy expressly makes each element mandatory.",
         table: {
           caption: "The four conditions",
           head: ["Condition", "Test", "Common failure"],
           rows: [
-            ["Named individual", "A person and role, not a branch or committee", "'The Service Delivery Group' — nobody"],
+            ["Accountable role-holder", "Prefer a named person and role, or record the responsible business area exactly as local governance requires", "A branch label with no accepted accountability"],
             ["Has agreed", "They have seen the number and accepted it", "Told after the fact, disputes it later"],
             ["Can influence it", "Their decisions plausibly move the measure", "Owner has no authority over the driver"],
             ["Has the measurement", "The data will exist without new work", "Measure requires a collection nobody funded"],
@@ -1648,41 +1665,41 @@ const closureModuleDefs: Module[] = [
       {
         id: "cl-b1",
         moduleId: "benefits",
-        prompt: "Why can benefits realisation not be completed as a project activity?",
+        prompt: "Why must closure record both benefits realised so far and the arrangements for those still to come?",
         options: [
-          "Benefits accrue in the business after delivery, when no project remains",
-          "Project teams lack the analytical skills to measure benefits properly",
-          "Benefits measurement is prohibited from being funded out of project budgets",
-          "Business cases deliberately defer benefits to avoid scrutiny during delivery",
+          "Benefits can begin during delivery but often continue in operations after the project team disperses",
+          "Only the operational business is permitted to collect benefits data",
+          "A closure report replaces the benefits management plan once delivery ends",
+          "Benefits are not reportable until every target has been completely realised",
         ],
         answer: 0,
         rationale:
-          "It is a timing fact, not a capability or funding one. The money is spent by the project and the return is earned by the business afterwards, which is why ownership must transfer at closure rather than being retained.",
+          "Benefits realisation spans the lifecycle. Closure must report progress already achieved and transfer the remaining measurement, decisions and corrective action into durable operational governance.",
         optionNotes: [
           "",
-          "Skills vary, but a highly capable team still cannot measure an effect that has not happened yet.",
-          "No such prohibition. Funding arrangements vary and are not the structural issue.",
-          "Cynical, and it describes a failure mode rather than the reason benefits arrive late.",
+          "No such general restriction exists; the issue is durable ownership and data.",
+          "The benefits plan remains the baseline against which progress and future arrangements are reported.",
+          "The closure standard expressly asks for progress, percentage realised and expected future realisation.",
         ],
       },
       {
         id: "cl-b2",
         moduleId: "benefits",
-        prompt: "A closure report names 'the Service Delivery Group' as owner of a contact-reduction benefit. What is wrong?",
+        prompt: "A closure report names 'the Service Delivery Group' as owner of a contact-reduction benefit, with no evidence that anyone accepted the target. What should be done?",
         options: [
-          "A group cannot hold accountability — a named individual in a role is required",
-          "Service Delivery is the wrong part of the organisation for this benefit",
-          "Benefit ownership should sit with the Senior Responsible Officer, not a business area",
-          "The benefit should be owned jointly by delivery and operations",
+          "Confirm the responsible area and accountable role-holder under local governance, record acceptance and identify who can act on the driver",
+          "Reject Service Delivery because benefits can only be owned by Finance",
+          "Leave the group name because publication of the report constitutes acceptance",
+          "Assign the target to both delivery and operations without naming decision rights",
         ],
         answer: 0,
         rationale:
-          "Ownership diffused across a group is ownership by nobody: no individual's performance depends on it and no calendar entry belongs to anyone. The SRO remains accountable overall, but each benefit needs a person.",
+          "The departmental forms require responsible ownership and acceptance but do not uniformly mandate a named individual. The stronger course control is to identify the accountable role-holder, while accurately recording the business area required by local policy and any contributing dependencies.",
         optionNotes: [
           "",
-          "Service Delivery may well be right. The failure is the level of specificity, not the area.",
-          "The SRO is accountable across the lifecycle, which is not the same as owning each individual benefit.",
-          "Joint ownership compounds the problem rather than fixing it.",
+          "Service Delivery may be the correct area; the question is whether accountability and acceptance are real.",
+          "Submission does not manufacture agreement by the receiving side.",
+          "Shared delivery responsibility can be valid, but joint accountability without one decision-holder diffuses action.",
         ],
       },
       {
@@ -1775,20 +1792,20 @@ const closureModuleDefs: Module[] = [
     assignment: {
       title: "Test a benefit against the four conditions",
       instruction:
-        "Take one benefit from a business case you know. Work it against the four conditions — named individual, has agreed, can influence, has the measurement — and write what is missing.",
+        "Take one benefit from a business case you know. Apply the course's recommended four-part test — accountable role-holder or locally required business area, acceptance, influence and durable measurement — and write what is missing.",
       prompts: [
         "The benefit, stated with its number and period",
-        "Named individual and role, or the gap",
+        "Responsible business area and accountable role-holder where local governance uses one, or the gap",
         "Evidence they have agreed, or the gap",
         "Whether they can influence the driver, and how the measurement will be obtained",
       ],
       criteria: [
-        "The owner is an individual in a role, or the absence is stated plainly",
+        "The answer distinguishes the departmental ownership field from the course's recommended stronger role-holder test",
         "The influence test is answered by naming the driver and who controls it",
         "The measurement identifies data that will exist without new funded work",
       ],
       modelAnswer:
-        "Benefit: $2.4m annual reduction in avoidable support contact, from FY2027-28. Owner: Director, Provider Support Branch — named, and has seen the figure at the June governance meeting, but has not formally accepted it; acceptance is scheduled for the August committee and is the outstanding item. Influence: partial. The Director controls support staffing and triage, but contact volume is driven substantially by the notification policy owned by Policy Branch. This is the real gap — the target should be jointly held or the driver moved. Measurement: contact volumes are already reported monthly through the standing Service Performance pack; no new collection is needed, and the definition (inbound contacts tagged 'application status') is stable back to 2024.",
+        "Benefit: $2.4m annual reduction in avoidable support contact, from FY2027-28. Responsible area: Provider Support Branch. Recommended accountable role-holder: Director, Provider Support Branch — has seen the figure but has not formally accepted it; acceptance is scheduled for the August committee and remains outstanding. Influence: partial. The Director controls support staffing and triage, while notification policy owned by Policy Branch is a recorded dependency with an agreed contributor and escalation path. One owner remains accountable for the target; contributing owners are explicit. Measurement: monthly contact volumes already appear in the standing Service Performance pack, with a stable definition back to 2024.",
     },
   },
 
@@ -1801,7 +1818,7 @@ const closureModuleDefs: Module[] = [
     slides: "",
     outcome: "Write a lesson that is specific, transferable and addressed to a decision someone will actually face.",
     coreIdea:
-      "Every entity has a lessons learned register and almost none of them change what the next project does. The failure is not that lessons are not captured — it is that they are captured as sentiments rather than as decisions, and stored where nobody looking for a decision would search.",
+      "Lessons registers often fail to change what the next project does. The problem is usually not the absence of captured lessons, but that they are recorded as sentiments rather than decisions and stored where a future team cannot readily retrieve them.",
     sections: [
       {
         heading: "Eighteen categories, and two columns each",
@@ -1843,7 +1860,7 @@ const closureModuleDefs: Module[] = [
       },
       {
         heading: "Making a register worth reading",
-        body: "Read any lessons register and the entries look like this: 'engage stakeholders earlier', 'ensure requirements are well defined', 'improve communication between teams'. These are not lessons. They are the categories under which lessons would sit, if any had been written. Nobody has ever read 'engage stakeholders earlier' and changed a decision, because it contains no information about which stakeholders, how early, or what happened when you did not.",
+        body: "Lessons registers commonly contain entries such as 'engage stakeholders earlier', 'ensure requirements are well defined' and 'improve communication between teams'. These are headings, not yet usable lessons. 'Engage stakeholders earlier' cannot reliably change a future decision because it contains no information about which stakeholders, how early, or what happened when engagement was late.",
         bullets: [
           "Written as sentiment, not as a decision that could have gone another way.",
           "Stored in a register organised by project, when the reader arrives with a problem.",
@@ -2127,7 +2144,7 @@ const closureModuleDefs: Module[] = [
       },
       {
         heading: "Passing on what you know about the system",
-        body: "Every delivered system has parts the team understands better than anyone else ever will — the integration that depends on a retry loop, the batch job with a timing window, the configuration with history behind it. Delivery teams rarely write these down, because writing them down feels like confessing. Not writing them down means the receiving team discovers each one during an incident.",
+        body: "A delivered system may contain parts the delivery team understands better than its receiving team — an integration that depends on a retry loop, a batch job with a timing window, or configuration with important history. Teams can hesitate to document these weaknesses because disclosure feels risky. If they are omitted, the receiving team may first discover them during an incident.",
         bullets: [
           "List the parts you would not want to change without care, and say why.",
           "Name the failure modes you have already seen, and what fixed them.",
@@ -2155,7 +2172,7 @@ const closureModuleDefs: Module[] = [
       },
       {
         heading: "Sequencing the shutdown",
-        body: "Decommissioning in the right order protects both the evidence the closure report depends on and the records the entity is obliged to keep. The ordering is not complicated; it is simply never planned, because switching things off is treated as an operational task rather than part of closure.",
+        body: "Decommissioning in the right order protects both the evidence the closure report depends on and the records the entity is obliged to keep. It is often under-planned when switching things off is treated as an operational task rather than part of closure.",
         bullets: [
           "Sentence the records first: what must be kept, for how long, under which authority.",
           "Export and verify — read the export back and confirm it is complete before anything is deleted.",
@@ -2233,16 +2250,16 @@ const closureModuleDefs: Module[] = [
       {
         id: "cl-h4",
         moduleId: "handover",
-        prompt: "Why do delivery teams under-document known fragility?",
+        prompt: "Why can delivery teams under-document known fragility?",
         options: [
-          "Recording weaknesses feels like confessing fault, so nobody does",
+          "Recording weaknesses can feel like admitting fault, despite the operational value of disclosure",
           "Fragility is usually discovered only after the delivery team has left",
           "Documentation standards do not include a section for it",
           "The information is considered too technical for a handover audience",
         ],
         answer: 0,
         rationale:
-          "The team usually knows exactly where the weak points are. The obstacle is that writing them into a closure document reads as a confession at the moment the team's record is being assessed — the same incentive problem the whole course keeps returning to.",
+          "The team may know where important weak points are but hesitate to record them while delivery performance is being assessed. Closure governance should make accurate operational disclosure safe and expected.",
         optionNotes: [
           "",
           "The team generally knows before it leaves. That is what makes the omission costly.",
@@ -2366,30 +2383,30 @@ const closureModuleDefs: Module[] = [
       },
       {
         heading: "Capitalise or expense",
-        body: "The distinction matters beyond accounting tidiness: capitalised costs sit on the balance sheet and depreciate, so an over-capitalised project reports a smaller hit now and an unexplained drag for years. The test is whether the spend produced an identifiable asset the entity controls and will derive benefit from — not whether the project would prefer it that way.",
+        body: "The distinction matters beyond accounting tidiness. AASB 138 and Finance RMG 109 separate the research phase from qualifying development: research and option-selection costs are expensed; directly attributable development costs are capitalised only when the recognition tests are met; training and other implementation operating costs are expensed. Entity thresholds, accounting policy, evidence and Finance judgement still apply.",
         table: {
           caption: "Common judgements at closure",
           head: ["Spend", "Usual treatment", "Where it goes wrong"],
           rows: [
-            ["Build of the delivered system", "Capitalise", "Includes work on abandoned options"],
+            ["Qualifying development of the delivered system", "Capitalise when AASB 138 recognition tests are met", "Assumes every build-labelled cost qualifies"],
             ["Discovery and options analysis", "Expense", "Capitalised to protect the operating result"],
             ["Data migration", "Depends on whether it creates the asset", "Treated inconsistently across releases"],
             ["Training and change management", "Expense", "Bundled into the build cost"],
-            ["Post-go-live defect fixing", "Usually expense", "Capitalised as 'completion of build'"],
+            ["Post-go-live work", "Assess whether maintenance/repair or a qualifying enhancement", "Automatically capitalised as 'completion of build'"],
             ["Licences prepaid beyond year end", "Prepayment", "Expensed in full, distorting the year"],
           ],
         },
         example:
-          "Discovery explored four options and three were abandoned. The cost of the three is not part of the asset — an asset is the thing you have, not the thinking that led to it. Capitalising all four overstates the asset and understates what the decision cost.",
-        sourceIds: ["closure"],
+          "Discovery searched and evaluated four options before selecting one. RMG 109 treats those research-phase search, evaluation and selection costs as expense. Later directly attributable design, construction and testing costs may qualify only after the development recognition tests are met.",
+        sourceIds: ["closure", "rmg109", "aasb138"],
       },
       {
         heading: "Contract closeout",
-        body: "A contract runs on past the point where the work stops. Final acceptance is a formal act with consequences: it starts warranty periods, releases retentions, and closes the window in which defects are the supplier's problem rather than yours. Signing it because the project is over — rather than because the obligations were met — transfers risk quietly and permanently.",
+        body: "A contract can run beyond the point where project work stops. Final acceptance is a formal act, but its consequences are contract-specific: it may trigger payment, warranty, retention, title or defects provisions on dates defined in the executed agreement. Before signing, read the acceptance criteria and surviving-obligation clauses and obtain procurement, commercial or legal advice where the position is unclear.",
         bullets: [
           "Confirm every deliverable was received and accepted against the contract, not against the current expectation.",
-          "Record the warranty or defects-liability period, when it ends, and who will act on it.",
-          "Settle retentions, milestone holdbacks and any liquidated damages position.",
+          "Record any warranty or defects-liability period the contract actually creates, when it starts and ends, and who will act on it.",
+          "Settle or transfer retentions, milestone holdbacks and any damages position according to the executed clauses.",
           "Confirm intellectual property, source code and data have actually been delivered — not merely licensed in principle.",
           "Check transition-out obligations: what the supplier must still do, and for how long.",
           "Note obligations that survive termination — confidentiality, records access, audit rights.",
@@ -2457,21 +2474,21 @@ const closureModuleDefs: Module[] = [
       {
         id: "cl-f3",
         moduleId: "financial",
-        prompt: "What does final acceptance under a contract actually do?",
+        prompt: "Before signing final acceptance with defects or obligations still open, what must the project do?",
         options: [
-          "Starts warranties, releases retentions, closes the defects window",
-          "Confirms the supplier has been paid in full for all work performed",
-          "Formally terminates the contract and all obligations under it",
-          "Transfers ownership of the delivered system to the entity",
+          "Check the executed contract's acceptance criteria and consequences, document the open position and obtain commercial advice where needed",
+          "Assume acceptance always starts warranties and releases every retention",
+          "Sign because low-severity defects can always be raised later as warranty claims",
+          "Refuse acceptance until every obligation of any kind has ended",
         ],
         answer: 0,
         rationale:
-          "It is a substantive legal act with timing consequences, which is why signing it because the project is over rather than because obligations were met transfers risk to the entity.",
+          "Acceptance consequences come from the executed contract, not a universal rule in the Commonwealth Procurement Rules. The project must preserve the entity's actual rights and document any conditional or deferred acceptance in the form the contract permits.",
         optionNotes: [
           "",
-          "Payment usually follows acceptance; it is not what acceptance means.",
-          "Several obligations survive — confidentiality, warranty, records access, audit rights.",
-          "IP and ownership are governed by their own clauses, not by acceptance.",
+          "Warranty and retention triggers vary by contract.",
+          "A later claim may have a different legal position; do not assume it is equivalent to an open pre-acceptance defect.",
+          "Some obligations legitimately survive acceptance and contract end.",
         ],
       },
       {
@@ -2503,19 +2520,19 @@ const closureModuleDefs: Module[] = [
           "Two weeks before closure the supplier asks you to sign final acceptance so they can invoice before their financial year end. Three low-severity defects remain open, all with agreed fixes scheduled for the following month.",
         prompt: "What is the right course?",
         options: [
-          "Withhold, or accept subject to the defects, recorded in writing",
+          "Apply the contract: withhold acceptance or document conditional acceptance only if the agreement permits it, with procurement/commercial advice",
           "Sign, since the defects are low severity and the fixes are already agreed",
           "Sign, and raise the defects separately as warranty claims after acceptance",
           "Refuse to engage until all three defects are closed, regardless of timing",
         ],
         answer: 0,
         rationale:
-          "Acceptance changes who carries the defects. Signing while they are open moves three known problems onto the entity in exchange for the supplier's reporting convenience. Conditional acceptance with the obligation written down is the ordinary commercial answer and costs nobody anything.",
+          "The correct response depends on the executed acceptance and defects clauses. Supplier convenience is not the test; preserve the entity's contractual position and document any permitted condition or reservation precisely.",
         optionNotes: [
           "",
-          "Severity is not the issue — an agreed fix before acceptance is a right; after acceptance it is a request.",
-          "This converts a present entitlement into a future claim, which is strictly worse.",
-          "Unnecessarily rigid; conditional acceptance meets both parties' needs.",
+          "Low severity does not remove the need to apply the agreed acceptance criteria.",
+          "A warranty route may differ from the current entitlement and must not be assumed equivalent.",
+          "Absolute refusal may also breach or mishandle the contract; use its actual mechanism.",
         ],
       },
       {
@@ -2532,7 +2549,7 @@ const closureModuleDefs: Module[] = [
         ],
         answer: 0,
         rationale:
-          "Both are conventionally expensed and both are large enough to matter. Closure is the last point at which the judgement can be revisited cheaply, and the decision belongs jointly with Finance — which is why it is raised with reasoning rather than either accepted silently or reclassified unilaterally.",
+          "RMG 109 treats training as an implementation operating expense. Post-go-live work needs separate assessment: repair and maintenance are not automatically part of the asset, while a qualifying enhancement may be. Closure should put both evidence-based questions to Finance rather than reclassifying them unilaterally.",
         optionNotes: [
           "",
           "A treatment agreed mid-delivery was agreed on expectations, not on what was ultimately delivered.",
@@ -2557,7 +2574,7 @@ const closureModuleDefs: Module[] = [
         "Recurring costs name a budget line, not a business area",
       ],
       modelAnswer:
-        "Commitments: two purchase orders remain open — $84k with the integration vendor, to be accrued as the work was performed in June and invoiced in July; $12k of unused contingency on the training PO, which should be closed rather than carried. Capitalisation to question: $2.1m of change management and training is inside the capitalised figure. It produced no asset the entity controls and is conventionally expensed; I would put this back to Finance with the delivery breakdown before the ledger closes rather than after. Warranty: twelve-month defects liability on the integration build, expiring 14 August 2027, held by the Assistant Director, Platform Services — recorded in the platform team's risk register with a calendar entry, because a warranty with no holder expires unnoticed. Transition-out: the supplier must provide source code and build documentation within 30 days of acceptance; this is outstanding and acceptance should not be signed until it is delivered. Recurring: $310k p.a. licences and hosting, transferred to cost centre PLT-4420 from FY2027-28, accepted by the Platform Services budget holder at the July finance meeting.",
+        "Commitments: two purchase orders remain open — $84k with the integration vendor, to be accrued as the work was performed in June and invoiced in July; $12k of unused contingency on the training PO, which should be closed rather than carried. Capitalisation to question: $2.1m of training and change activity is inside the capitalised figure. RMG 109 treats training as expense; the remaining activity needs to be classified by nature and tested with Finance before the ledger closes. Warranty: the executed contract creates a twelve-month defects-liability period from the defined acceptance event, expiring 14 August 2027, held by the Assistant Director, Platform Services and recorded in the risk register. Transition-out: the contract requires source code and build documentation within 30 days of acceptance; this is outstanding. The commercial lead must confirm whether the acceptance criteria permit acceptance now, conditional acceptance, or withholding until delivery. Recurring: $310k p.a. licences and hosting, transferred to cost centre PLT-4420 from FY2027-28, accepted by the Platform Services budget holder at the July finance meeting.",
     },
   },
   {
@@ -2642,7 +2659,7 @@ const closureModuleDefs: Module[] = [
         body: "Templates ask for it, and it usually appears as a paragraph asserting that stakeholders were satisfied. The useful version reports who was asked, what they said including the unflattering parts, and what it means for the thing now in operation. Treat it like any other claim: measured, estimated or asserted.",
         bullets: [
           "Name the groups consulted and how — survey, interview, workshop — and how many responded.",
-          "Report dissent, not just endorsement. Unanimous positive feedback usually means the wrong people were asked.",
+          "Report dissent, not just endorsement. Unanimous positive feedback is a prompt to check sampling, response rate and whether negative themes were filtered—not proof of a flawed process.",
           "Separate feedback about the product from feedback about the delivery, since they transfer to different owners.",
           "Mark it asserted where it is impressionistic, exactly as elsewhere in the report.",
         ],
@@ -2689,7 +2706,7 @@ const closureModuleDefs: Module[] = [
       {
         id: "cl-x4",
         moduleId: "openitems",
-        prompt: "What should the closure agreement signature attest to?",
+        prompt: "Before the closure agreement is signed, what should the report establish about transfers?",
         options: [
           "That the transfers described were accepted by the owners named",
           "That the project has ceased activity and released its resources",
@@ -2698,7 +2715,7 @@ const closureModuleDefs: Module[] = [
         ],
         answer: 0,
         rationale:
-          "Tying the signature to the transfers is what makes signing consequential. If a benefit has no owner, the signatory is declining to sign that transfer — which forces the gap into the open rather than letting closure proceed around it.",
+          "The approved template supplies the formal approval statements. The practical evidence standard is that transfers described as complete were accepted by the receiving owners; do not invent a separate legal attestation for each signature.",
         optionNotes: [
           "",
           "True and trivial. Everyone can already see the project stopped.",
@@ -2769,21 +2786,21 @@ const closureModuleDefs: Module[] = [
       {
         id: "cl-x8",
         moduleId: "openitems",
-        prompt: "Stakeholder feedback in a closure report is unanimously positive. What should a reader suspect?",
+        prompt: "Stakeholder feedback in a closure report is unanimously positive. What should a reviewer do?",
         options: [
-          "The wrong people were asked, or dissent was not reported",
-          "The project was unusually well received",
-          "Feedback was collected too late to capture early frustration",
-          "The sample was too small to be representative",
+          "Check who was asked, response rate, method and whether negative themes were sought and reported",
+          "Conclude the wrong people were asked",
+          "Accept the result because unanimity demonstrates successful engagement",
+          "Discard the feedback because unanimous results are never credible",
         ],
         answer: 0,
         rationale:
-          "Any change of substance produces someone who disliked it. Unanimity usually indicates a selected audience or a filtered write-up, and the dissent is the part with information in it.",
+          "Unanimity is a quality-control signal, not proof of bias. Test the sampling and reporting process before drawing a conclusion, and retain dissent where it exists because it often carries actionable information.",
         optionNotes: [
           "",
-          "Possible, and it is the least likely explanation and the one to test last.",
-          "Timing affects what is captured; it rarely eliminates dissent entirely.",
-          "A small sample produces noise, not uniform approval.",
+          "Possible, but the evidence does not establish it without checking the process.",
+          "Positive feedback can be genuine; the quality of collection still needs to be visible.",
+          "Absolute rejection is as unsupported as automatic acceptance.",
         ],
       },
     ],
@@ -2802,7 +2819,7 @@ const closureModuleDefs: Module[] = [
         ],
         answer: 0,
         rationale:
-          "The closure agreement attests that transfers were accepted. Two that were not accepted are exactly what the signatory needs to see, because they are the only items where signing changes anything. Assigning a name nobody agreed to is how the record becomes untrue.",
+          "A report used to approve closure must not describe unaccepted transfers as complete. The unresolved items are exactly what the signatory needs to see, and assigning an owner who has not agreed would make the record untrue.",
         optionNotes: [
           "",
           "Matching the format without matching the substance is the defect, not the fix.",
@@ -2864,7 +2881,7 @@ const closureModuleDefs: Module[] = [
     outcome:
       "Choose the right template for the project's tier, complete it so a reader finds the decision-relevant content, and submit it to the right places.",
     coreIdea:
-      "The department has two closure templates and they are structured differently, not merely sized differently. Pick by tier, complete every section the form asks for — justifying rather than deleting the ones that do not apply — and remember that nobody downstream will check your work. The craft that follows matters precisely because there is no safety net.",
+      "The department has two closure templates and they are structured differently, not merely sized differently. Pick by the departmental P3M tier, complete every section the form asks for, and justify rather than delete items that do not apply. PPO submission is not an approval or compliance check, so quality must be established before submission while still following any documented group PMO process.",
     sections: [
       {
         heading: "Which template, and what changes between them",
@@ -2915,13 +2932,13 @@ const closureModuleDefs: Module[] = [
       },
       {
         heading: "Signing it off and sending it on",
-        body: "Both forms end in approvals, and both accept email approval in place of a signature provided it is attached. Once approved, the report goes to your group Project Management Office and to the Portfolio Project Office — and that is the end of the process, because the PPO does not review it.",
+        body: "Both forms end in approvals, and both accept email approval in place of a signature provided it is attached. Once approved, the report goes to the group Project Management Office and the Portfolio Project Office. The PPO does not review it for approval or compliance; follow any separately documented group PMO quality process.",
         bullets: [
           "Full template: Project Board, SRO, Project Manager, Senior User or Business Owner, plus any other applicable roles.",
           "Tier 3 form: SRO, Project Manager, Business Owner, plus others as applicable.",
           "Attach the email where approval came that way — the form says so explicitly.",
           "Lessons go separately to the Departmental Lessons Learned Register. Submitting the report does not lodge them.",
-          "Send the approved report to the group PMO and the PPO as soon as practicable rather than waiting for a review that will not come.",
+          "Send the approved report to the group PMO and PPO as soon as practicable rather than inventing a PPO approval step.",
         ],
         example:
           "The two-destination rule catches people out. A report approved by the SRO and filed in the project's own SharePoint has not been submitted, and the lessons in it will never reach anyone who could use them.",

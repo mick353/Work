@@ -4,7 +4,95 @@ Read this before changing the learning system. This release began from `main`
 commit `28fc9a1f50568cd121befabe94c3cd71101390ec` and was published after a
 read-only whole-site review followed by owner-authorised corrections.
 
-## What changed
+## Subject-matter correction release — 20 August 2026
+
+After the first release, the owner authorised a second, complete content audit
+of both courses against the source pack in
+`Z:\WORK\Imported _from_work_DOCS`, the course's own authority boundaries and
+current primary guidance. The source documents and PowerPoint were used as
+evidence and were not edited.
+
+### Product Management corrections
+
+- Reframed Discovery so candidate ideas and hypotheses may be explored while
+  an idea remains unselected and unproven; removed the false implication that
+  any candidate idea means Discovery has ended.
+- Made leading and lagging indicators relational to a named outcome and time
+  horizon. A completion metric is not inherently leading, and satisfaction is
+  not inherently lagging.
+- Distinguished Scrum's Product Owner accountability for Product Backlog
+  management from the deck's local contribution and ordering model.
+- Restored the source deck's minimum fields for epics, features and stories,
+  including outcomes, measures, acceptance, scope, dependencies, sizing and
+  delivery-system paths where applicable.
+- Labelled the overlapping discovery/delivery cadence and “increment ahead”
+  language as a local planning heuristic rather than a universal definition of
+  continuous discovery.
+- Restored all three Ways of Working foundations — Behaviours, the Digital
+  Delivery Framework and Methods — and the four named DDF principles.
+- Replaced questions that depended on remembering principle, phase or cadence
+  numbers with applied decisions and evidence-based scenarios.
+
+### Closure Reports corrections
+
+- Recast benefits realisation as a whole-lifecycle process: some benefits may
+  begin during delivery, while closure reports progress and transfers the
+  remaining ownership, measurement, governance and corrective action.
+- Distinguished what the departmental forms actually require from this
+  course's stronger recommended benefit-accountability test. A named role-holder,
+  recorded acceptance, influence and durable measurement are recommended
+  practice unless local policy makes them mandatory.
+- Corrected the internal PIR/Gateway relationship. There is no universal
+  six-to-twelve-month rule for every PIR; the current Finance timing applies to
+  the Gateway Benefits Realisation review.
+- Corrected PPO and group-PMO language: the PPO receives and aggregates the
+  report but does not approve it or review it for compliance; local group-PMO
+  quality processes must be confirmed rather than invented or dismissed.
+- Corrected annual-performance-statement audit language. The statements can be
+  audited in the circumstances described by Finance; they are not automatically
+  audited for every entity every year.
+- Added Finance RMG 109 and AASB 138 as accounting authorities. Training and
+  research/option-selection costs are expensed; qualifying development and
+  post-go-live work require classification by nature and the applicable
+  recognition tests.
+- Made final-acceptance effects contract-specific. Warranty, retention,
+  payment, title and defects consequences must be taken from the executed
+  agreement and advice, not inferred from the Commonwealth Procurement Rules.
+- Restored benefits to the six performance dimensions and changed a
+  zero-rejection change register from “proof” of weak control to a signal that
+  requires investigation of screening, withdrawals, completeness and challenge.
+- Corrected the Tier 3 exemplar's stakeholder-engagement evidence and softened
+  unsupported universal or cynical statements throughout the teaching.
+- Replaced remaining gate-number and threshold-recall prompts with questions
+  about purpose, current applicability, evidence and action.
+
+Primary sources checked for this correction release:
+
+- [Scrum Guide](https://scrumguides.org/scrum-guide.html)
+- [Australian Government Architecture project closure reporting standard](https://architecture.digital.gov.au/standard/project-closure-reporting-standard-digital-and-ict-enabled-projects)
+- [Digital Service Standard — services](https://www.digital.gov.au/policy/digital-experience/digital-service-standard/services)
+- [Finance RMG 106](https://www.finance.gov.au/publications/resource-management-guides/guidance-assurance-reviews-process-rmg-106)
+- [Finance RMG 109](https://www.finance.gov.au/publications/resource-management-guides/accounting-internally-developed-software-and-cloud-computing-arrangements-rmg-109)
+- [Finance RMG 134](https://www.finance.gov.au/publications/resource-management-guides/annual-performance-statements-commonwealth-entities-rmg-134)
+- [AASB 138 Intangible Assets](https://standards.aasb.gov.au/aasb-138-dec-2022)
+- [Commonwealth Procurement Rules](https://www.finance.gov.au/government/procurement/commonwealth-procurement-rules)
+
+Regression coverage now protects the authority-sensitive corrections, the
+three Ways of Working foundations and the removal of principle-number recall,
+in addition to the existing Gateway checks. The generated HTML and `docs/`
+must continue to be produced by `npm run build`; do not hand-edit them.
+
+Verification for this correction release:
+
+- `npm run verify`: passed
+- TypeScript and both production builds: passed
+- Browser, content-integrity, interaction, responsive, print and accessibility
+  suite: **294/294 checks passed**
+- Standalone build: 4.49 MB with 98 slides inlined
+- GitHub Pages build: 1,105.2 KB with 98 slides fetched on demand
+- `npm audit --audit-level=moderate`: **0 vulnerabilities**
+
+## Earlier corrections in this release line
 
 ### Gateway teaching and assessment
 

@@ -97,6 +97,20 @@ check(
   !/Gate 6|Gate6/i.test(packagedContent),
 );
 const closurePackage = bank.trainingPackages.find((entry) => entry.manifest.id === "closure-reports");
+const packagedQuestions = [];
+const packagedQuestionKeys = new Set();
+for (const entry of bank.trainingPackages) {
+  for (const question of [
+    ...entry.content.practiceQuestions,
+    ...entry.content.diagnosticQuestions,
+    ...entry.content.supplementaryQuestions,
+  ]) {
+    const key = `${entry.manifest.id}:${question.id}`;
+    if (packagedQuestionKeys.has(key)) continue;
+    packagedQuestionKeys.add(key);
+    packagedQuestions.push({ ...question, packageId: entry.manifest.id });
+  }
+}
 const gatewayGuide = closurePackage?.content.fieldGuide.find((entry) => entry.id === "gates");
 check(
   "Gateway reference lists the six current project reviews",
@@ -115,6 +129,42 @@ check(
   "Gateway assessment tests purpose and application rather than gate-number recall",
   numberedGatePrompts.length === 0,
   numberedGatePrompts.join(" | "),
+);
+
+const productNumberedPrinciplePrompts = [
+  ...bank.practiceQuestions.map((item) => item.prompt),
+  ...bank.diagnosticQuestions.map((item) => item.prompt),
+  ...bank.supplementaryQuestions.map((item) => item.prompt),
+  ...bank.flashcards.map((item) => item.front),
+].filter((text) => /\bPrinciple\s+[0-9]+\b|\bprinciple number\b/i.test(text));
+check(
+  "Product Management assessment uses named principles rather than number recall",
+  productNumberedPrinciplePrompts.length === 0,
+  productNumberedPrinciplePrompts.join(" | "),
+);
+
+const authoritySensitiveErrors = [
+  /almost no benefit is realised until after closure/i,
+  /benefits realisation cannot be a project activity/i,
+  /starts warranties, releases retentions, closes the defects window/i,
+  /annual performance statements, which are audited/i,
+  /anyone may add; product management orders/i,
+].filter((pattern) => pattern.test(packagedContent));
+check(
+  "Authority-sensitive corrections remain in the packaged courses",
+  authoritySensitiveErrors.length === 0,
+  authoritySensitiveErrors.map(String).join(" | "),
+);
+
+const closureSourceIds = new Set(closurePackage?.content.sources.map((source) => source.id) ?? []);
+check(
+  "Closure accounting teaching cites current Finance and accounting authority",
+  closureSourceIds.has("rmg109") && closureSourceIds.has("aasb138"),
+  [...closureSourceIds].join(", "),
+);
+check(
+  "Product Management restores all three Ways of Working foundations",
+  /three Ways of Working foundations[\s\S]*Behaviours[\s\S]*Digital Delivery Framework[\s\S]*Methods/i.test(packagedContent),
 );
 
 /* ---------------------------------------------------------------- *
@@ -280,10 +330,19 @@ check("Question bank is substantially larger than one practice set", allQuestion
   );
 }
 
-check("Every question has four options", allQuestions.every((q) => q.options.length === 4));
+const malformedOptions = packagedQuestions.filter((q) => q.options.length !== 4);
 check(
-  "Every optionNotes array aligns with its options",
-  allQuestions.every((q) => !q.optionNotes || (q.optionNotes.length === 4 && q.optionNotes[q.answer] === "")),
+  "Every question in every package has four options",
+  malformedOptions.length === 0,
+  malformedOptions.map((q) => `${q.packageId}:${q.id}`).join(", "),
+);
+const misalignedNotes = packagedQuestions.filter(
+  (q) => q.optionNotes && (q.optionNotes.length !== q.options.length || q.optionNotes[q.answer] !== ""),
+);
+check(
+  "Every optionNotes array in every package aligns with its options",
+  misalignedNotes.length === 0,
+  misalignedNotes.map((q) => `${q.packageId}:${q.id}`).join(", "),
 );
 /*
  * Option-LENGTH bias.
@@ -340,26 +399,19 @@ check(
 }
 
 {
-  const bankAll2 = [];
-  const seen2 = new Set();
-  for (const q of [...bank.practiceQuestions, ...bank.diagnosticQuestions, ...bank.supplementaryQuestions]) {
-    if (seen2.has(q.id)) continue;
-    seen2.add(q.id);
-    bankAll2.push(q);
-  }
   // Thirty diagnostic items carried a rationale but no per-option note, so a
   // learner who chose wrongly was told the right answer and never why theirs
   // was wrong — which is where most of this course's teaching happens.
-  const incomplete = bankAll2.filter((q) => {
+  const incomplete = packagedQuestions.filter((q) => {
     const notes = q.optionNotes ?? [];
     return q.options.some((_, i) => i !== q.answer && !String(notes[i] ?? "").trim());
   });
   check(
     "Every question explains every wrong option",
     incomplete.length === 0,
-    `${incomplete.length} question(s) missing distractor feedback: ${incomplete.slice(0, 5).map((q) => q.id).join(", ")}`,
+    `${incomplete.length} question(s) missing distractor feedback: ${incomplete.slice(0, 5).map((q) => `${q.packageId}:${q.id}`).join(", ")}`,
   );
-  const keyNoted = bankAll2.filter((q) => String((q.optionNotes ?? [])[q.answer] ?? "").trim());
+  const keyNoted = packagedQuestions.filter((q) => String((q.optionNotes ?? [])[q.answer] ?? "").trim());
   check(
     "The correct option carries no note",
     keyNoted.length === 0,
@@ -673,7 +725,10 @@ if (!existsSync(docsDir)) {
   */
   const packageCount = (standaloneHtml.match(/"status":\s*"(available|in-development)"/g) ?? []).length || 2;
   const stageCountAll = (standaloneHtml.match(/"coreIdea":/g) ?? []).length || 20;
-  const budgetKb = 500 + 30 * stageCountAll;
+  // Allow 31 KB per stage: the authority notes and worked explanations added
+  // in the subject-matter audit took the measured bundle just above 30 KB per
+  // stage after the shared shell. This still catches asset/dependency bloat.
+  const budgetKb = 500 + 31 * stageCountAll;
   const pagesKb = Buffer.byteLength(pagesHtml, "utf8") / 1024;
   check(
     "Pages build stays small for the content it carries",

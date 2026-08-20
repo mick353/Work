@@ -482,7 +482,7 @@ const tierThree: Exemplar = {
           ["Budget", "Over", "$2.08m against $1.95m approved, 6.7%"],
           ["Benefits", "On track", "One achieved, one measurable Apr 2027, one at risk pending SMS"],
           ["Transition to business as usual", "Outstanding actions", "Three of four accepted with dated evidence; SMS ownership open, action A2 due 31 Oct 2026"],
-          ["Stakeholder engagement", "Effective", "8,400 providers migrated with 41 support contacts, against 300 forecast"],
+          ["Stakeholder engagement", "Effective", "Eight provider organisations attended transition briefings; BAU contact and escalation path confirmed in follow-up. Caseworker survey: 61 invited, 38% response; notification-wording concern transferred as action A3."],
           ["Project governance", "Partially effective", "Board met monthly; one descope did not reach it, and variance beyond tolerance was never rebaselined"],
         ],
       },

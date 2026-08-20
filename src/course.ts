@@ -523,10 +523,10 @@ export const modules: Module[] = [
       },
       {
         heading: "Discovery produces insight, not requirements",
-        body: "The deck draws a hard line here. Discovery produces interview notes, survey responses, analytics, feedback and observations. It does not produce requirements, features or solutions. The moment a discovery report contains a solution, it has stopped being evidence and started being advocacy.",
+        body: "The deck draws a useful local boundary here. Discovery produces interview notes, survey responses, analytics, feedback and observations; its primary job is to establish the problem, not to approve requirements or commit the team to a feature. Discovery may surface candidate ideas or solution hypotheses, but they remain unselected and unproven until solution exploration tests them.",
         bullets: [
           "Discovery outputs: insights, personas, journey maps, blueprints, problem statements, opportunities, hypotheses.",
-          "These become the inputs to solution exploration — the next stage, not this one.",
+          "Candidate ideas may be recorded, but the evidence must remain distinguishable from the recommendation and must not predetermine the next stage.",
           "A five-whys chain moves from the visible symptom to the structural cause.",
         ],
         example:
@@ -761,13 +761,13 @@ export const modules: Module[] = [
       },
       {
         heading: "Use a measurement system, not one magic number",
-        body: "Lagging indicators measure past performance and confirm an outcome after it occurs. Leading indicators are predictive measures of future performance and provide earlier signals, but they require validation. Pair them with diagnostic measures and guardrails, and define the population, denominator, baseline, period and exclusions before anyone reports on them.",
+        body: "Lagging indicators confirm a result after the outcome of interest; leading indicators move earlier and may predict it. The label is relational, not permanent: completion rate may lead a later successful-outcome measure while lagging the comprehension and usability conditions that produced it. State which outcome and time horizon make a measure leading or lagging, validate the relationship, and pair it with diagnostic measures and guardrails.",
         table: {
           caption: "Slide 42 — indicator types with worked examples",
           head: ["Type", "Purpose", "Example"],
           rows: [
-            ["Leading", "Predictive signal of future performance", "Feature usage; completion rate"],
-            ["Lagging", "Confirmation of past performance", "Customer satisfaction; outcome achieved"],
+            ["Leading", "Earlier signal expected to predict the named outcome", "Early feature usage as a signal for later sustained adoption"],
+            ["Lagging", "Confirmation after the named outcome has occurred", "Outcome achieved at the agreed review point"],
             ["Guardrail", "Detects harm or displacement", "Escalation rate for unresolved cases; assistive-technology success rate"],
           ],
         },
@@ -839,17 +839,16 @@ export const modules: Module[] = [
       {
         id: "outcomes-q4",
         moduleId: "outcomes",
-        prompt: "Which pairing correctly matches an indicator to its type?",
-        options: [ "Form completion rate measured at quarter end — lagging indicator",
-          "Feature usage in the first fortnight — leading indicator", "Number of releases shipped this quarter — lagging indicator", "Customer satisfaction score after release — leading indicator"],
+        prompt: "When can feature usage in the first fortnight legitimately be treated as a leading indicator?",
+        options: [ "Whenever usage rises, regardless of the outcome", "When evidence shows early usage predicts the later outcome being managed", "Only when the feature was delivered inside a Program Increment", "When usage is easier to collect than the outcome measure"],
         answer: 1,
         optionNotes: [
-          "Completion rate is leading — it moves early and predicts the later outcome.",
+          "A measure moving early does not establish that it predicts anything useful.",
           "",
-          "Release count is an output measure. It is neither leading nor lagging with respect to any outcome, because it measures activity rather than change.",
-          "Satisfaction is lagging: it reports how people felt about an experience they have already had."],
+          "Cadence does not determine the relationship between an indicator and an outcome.",
+          "Availability is not validity. An easy measure can still be unrelated to the result."],
         rationale:
-          "The deck pairs feature usage and completion rate as leading, and customer satisfaction and outcome achievement as lagging. Release counts measure activity, which is the trap the whole stage warns about.",
+          "Leading and lagging are relationships to a named outcome and time horizon. An early measure is useful only when its predictive relationship has been tested rather than assumed.",
       },
     ],
     scenarios: [
@@ -1166,12 +1165,12 @@ export const modules: Module[] = [
     sections: [
       {
         heading: "The backlog is an ordered model of current intent",
-        body: "The Scrum Guide describes the Product Backlog as an emergent, ordered list and the single source of work for the Scrum Team. The deck adds the local reality: the backlog is owned and maintained by product management, can be added to by anyone in the team, is prioritised in order of value with priority set by product management, and changes as new work is identified.",
+        body: "The Scrum Guide describes the Product Backlog as an emergent, ordered list and the single source of work for the Scrum Team, with the Product Owner accountable for effective backlog management and product value. The deck adds the local DES operating model: the backlog is maintained by product management, team members can propose or add work through the agreed process, and product management sets the value order. Keep the local convention distinct from Scrum accountability.",
         bullets: [
           "Product Goal: the longer-term target the backlog emerges against.",
           "Product Backlog: what may improve the product, ordered as knowledge changes.",
           "Sprint Backlog: the Sprint Goal, the selected items and the developers' plan.",
-          "Anyone may add; product management orders. Those are different rights and confusing them is a common failure.",
+          "Local DES practice allows team contribution; Scrum still leaves the Product Owner accountable for the Product Goal, backlog content, ordering, transparency and value.",
         ],
         sourceIds: ["scrum", "deck"],
       },
@@ -1211,15 +1210,15 @@ export const modules: Module[] = [
           rows: [
             [
               "Epic",
-              "Epic hypothesis; epic description; business outcomes and benefits; objective. Hypothesis-driven, expressed as the outcome delivered when the work is complete.",
+              "Epic hypothesis; epic description; business outcomes and benefits; objectives and key results; desired delivery period; in/out of scope; dependencies; sizing estimate. Hypothesis-driven and expressed as the outcome delivered when the work is complete.",
             ],
             [
               "Feature",
-              "Feature hypothesis; sizing estimate; acceptance criteria; in/out of scope; feature measurement (e.g. '30% reduction in processing time'); risks, issues and dependencies.",
+              "Feature description; feature hypothesis; sizing estimate; acceptance criteria; in/out of scope; feature measurement (e.g. '30% reduction in processing time'); risks, issues and dependencies; area and iteration path.",
             ],
             [
               "Story",
-              "Story description in as-a/I-want/so-that form; story points; area path; iteration path aligned to the sprint in which delivery is expected.",
+              "Story description in as-a/I-want/so-that form; acceptance criteria; story points; area path; iteration path aligned to the expected sprint; related work linked to the parent feature.",
             ],
           ],
         },
@@ -1249,10 +1248,10 @@ export const modules: Module[] = [
         sourceIds: ["deck"],
       },
       {
-        heading: "Discovery runs an increment ahead of delivery",
-        body: "Continuous delivery relies on parallel streams. Product management works on discovery and solution exploration an increment in advance, while delivery teams build the features identified from the previous refinement cycle. The two streams share outcomes, people and feedback — otherwise you get a discovery function producing documents nobody builds.",
+        heading: "Local planning keeps discovery ahead without creating a handoff",
+        body: "The deck's DES cadence uses overlapping streams: product management maintains enough discovery and solution exploration runway for the next increment while the multidisciplinary team delivers and learns from the current one. Treat 'an increment ahead' as a local planning heuristic, not a universal definition of continuous discovery or permission to separate researchers from delivery teams.",
         bullets: [
-          "Discovery for PI N+1 happens during delivery of PI N.",
+          "Discovery runway for likely PI N+1 work is developed during delivery of PI N, while urgent learning can still change current work.",
           "Releases occur throughout, not only at PI boundaries.",
           "Operational data and research from live releases feed back into the opportunity and product backlogs.",
           "Continuous does not mean chaotic — it means the loops overlap on a known cadence.",
@@ -1335,41 +1334,41 @@ export const modules: Module[] = [
       {
         id: "delivery-q3",
         moduleId: "delivery",
-        prompt: "How long is a Program Increment in the DES cadence, and what is it meant to deliver?",
+        prompt: "A proposed feature is too large to demonstrate within one DES Program Increment. What should happen before increment planning?",
         options: [
-          "2 weeks, delivering small increments of releasable value",
-          "6 weeks, delivering a release candidate",
-          "10 weeks, delivering key business outcomes",
-          "12 weeks, delivering a completed epic"],
-        answer: 2,
+          "Keep it intact because the sponsor has already named it a feature",
+          "Split or reshape it into demonstrable, measurable outcomes that fit the planning horizon",
+          "Convert it into a story and leave the scope unchanged",
+          "Add more teams until the original feature fits"],
+        answer: 1,
         optionNotes: [
-          "That is the sprint: two weeks, ten working days, small increments of value.",
-          "Six weeks is not part of the DES cadence.",
+          "A label does not make an item ready or appropriately sized.",
           "",
-          "Epics span many PIs by definition, so no single PI is expected to complete one."],
+          "A story is a smaller delivery slice; renaming an unchanged body of work does not reduce it.",
+          "Capacity may be relevant, but adding teams increases coordination and does not replace refinement."],
         rationale:
-          "DES runs two-week sprints inside ten-week PIs. Five sprints per PI is why features are sized to a PI and stories to a sprint.",
+          "The capability is sizing and refining work to produce a demonstrable, measurable result inside the local planning horizon—not recalling the number of weeks in that horizon.",
       },
       {
         id: "delivery-q4",
         moduleId: "delivery",
-        prompt: "Which field is required on a feature but not on a story?",
-        options: [ "Area path and the owning team", "Story points as estimated by the delivery team", "Iteration path for the current sprint", "In/out of scope and feature measurement"],
-        answer: 3,
+        prompt: "A feature has a description, scope, estimate, acceptance criteria and correct paths, but no feature measurement. What is the main risk?",
+        options: [ "The team cannot tell which sprint contains its stories", "The feature cannot be linked to its parent epic", "The team can confirm it was built but cannot tell whether it worked", "The feature cannot be demonstrated inside a Program Increment"],
+        answer: 2,
         optionNotes: [
-          "Area path is a story-level field.",
-          "Story points are a story-level field.",
-          "Iteration path is a story-level field, aligning the story to the sprint it is expected in.",
-          ""],
+          "Area and iteration paths address ownership and timing, and the prompt says they are present.",
+          "Parentage belongs in the hierarchy; measurement answers a different question.",
+          "",
+          "Size and refinement determine whether it fits. Measurement determines whether the delivered result changed anything."],
         rationale:
-          "Features carry a hypothesis, sizing estimate, acceptance criteria, in/out of scope, feature measurement and risks/issues/dependencies. Feature measurement is the one most often skipped and the one that determines whether you learn anything.",
+          "Acceptance criteria establish whether the feature was built as intended. A feature measurement establishes whether it produced the expected result and should influence the next decision.",
       },
       {
         id: "delivery-q5",
         moduleId: "delivery",
-        prompt: "In the continuous discovery and delivery model, what is product management working on while teams deliver PI N?",
+        prompt: "In the deck's local overlapping-stream model, what discovery runway is developed while the team delivers PI N?",
         options: [ "Nothing — discovery pauses entirely during delivery", "Acceptance testing for everything in PI N",
-          "Discovery and solution exploration for PI N+1",
+          "Shared discovery and solution exploration for likely PI N+1 work",
           "The business case for the next financial year"],
         answer: 2,
         optionNotes: [
@@ -1378,7 +1377,7 @@ export const modules: Module[] = [
           "",
           "Business case work happens, but it is not what the parallel-stream model describes."],
         rationale:
-          "Product management runs an increment ahead so that refined, validated features are ready when the next PI starts. Otherwise planning fills with unvalidated work.",
+          "The local cadence maintains enough shared discovery runway for the next planning event without turning discovery into a separate handoff function or preventing current evidence from changing the plan.",
       },
     ],
     scenarios: [
@@ -1820,7 +1819,7 @@ export const modules: Module[] = [
         "Which layer does this decision actually belong to — strategic, coordination or delivery — and where is it being made now?",
       ],
       modelAnswer:
-        "Decisions the team should make without asking: wording of validation messages, field order, which of two equivalent technical approaches, how to split a story. All reversible, all local, and the cost of being wrong is a later change.\n\nDecisions with a named business owner and an agreed response time: what counts as acceptable evidence for a claim; retention periods; whether a rejection reason can be waived. Owner is the claims policy lead, agreed response within three working days.\n\nDecisions that belong at a forum: whether to support bulk upload at all; whether to change the evidence requirement in policy; investment beyond the current PI.\n\nThe trio on this work: me on the outcome and the trade-offs, the designer on how providers understand a rejection, the tech lead on what is knowable at submission time. The feasibility question was the one that reframed the whole approach, which is the argument for having them in discovery rather than consulted after it.\n\nWhat I would stop doing: writing acceptance criteria. It is Product Owner work, and while I am doing it nobody is on the outcome.",
+        "Decisions the team should make without asking: wording of validation messages, field order, which of two equivalent technical approaches, how to split a story. All reversible, all local, and the cost of being wrong is a later change.\n\nDecisions with a named business owner and an agreed response time: what counts as acceptable evidence for a claim; retention periods; whether a rejection reason can be waived. Owner is the claims policy lead, agreed response within three working days.\n\nDecisions that belong at a forum: whether to support bulk upload at all; whether to change the evidence requirement in policy; investment beyond the current PI.\n\nThe trio on this work: me on the outcome and the trade-offs, the designer on how providers understand a rejection, the tech lead on what is knowable at submission time. The feasibility question was the one that reframed the whole approach, which is the argument for having them in discovery rather than consulted after it.\n\nWhat I would stop doing: personally drafting every acceptance criterion. In the local deck's split that detail sits mainly with the Product Owner and team; while I absorb it, nobody is protecting the outcome.",
       criteria: [
         "Sorts decisions into at least two tiers by reversibility and cost of being wrong",
         "Business-rule decisions have a named owner and an agreed response time",
@@ -1856,8 +1855,8 @@ export const modules: Module[] = [
         sourceIds: ["deck", "dss"],
       },
       {
-        heading: "Ways of Working: behaviours and framework",
-        body: "DES ways of working has two core elements. The behaviours describe how people are expected to operate; the Digital Delivery Framework is the end-to-end, repeatable delivery pipeline that ensures consistent practice.",
+        heading: "Ways of Working: behaviours, framework and methods",
+        body: "The source presents three Ways of Working foundations. Behaviours describe how people operate; the Digital Delivery Framework supplies the repeatable delivery pipeline; and Methods bring together design thinking, project management, Agile and Lean practice.",
         bullets: [
           "We put user needs at the centre.",
           "We are accountable and take ownership for solving issues.",
@@ -1865,12 +1864,14 @@ export const modules: Module[] = [
           "We connect and work across boundaries.",
           "We do the basics brilliantly.",
           "We are innovative and contemporary.",
+          "Framework principles: have a plan but adjust; set clear governance and shared purpose; be disciplined and transparent; collaborate for success.",
+          "Methods: Design Thinking, Project Management, Agile and Lean—selected and combined for the work rather than treated as competing brands.",
         ],
         sourceIds: ["deck"],
       },
       {
         heading: "The seven principles in practice",
-        body: "These are the division's stated operating principles. Each one has an implication that changes what a product manager actually does — which is why they are worth knowing by number, not just by sentiment.",
+        body: "These are the division's stated operating principles. Their value is in the decisions and behaviours they change; the number is reference information, not a learning objective.",
         table: {
           caption: "Slides 88–89 — principles and their implications",
           head: ["#", "Principle", "What it means in practice"],
@@ -2018,25 +2019,25 @@ export const modules: Module[] = [
       {
         id: "government-q3",
         moduleId: "government",
-        prompt: "Which are the four DES delivery phases, in order?",
+        prompt: "A team treats Discovery, Alpha, Beta and Live as replacements for the DES delivery pipeline. What is the correct response?",
         options: [
-          "Initiation, Planning, Execution, Benefits Realisation",
-          "Problem, Options, Build, Measure",
-          "Discovery, Alpha, Beta, Live",
-          "Pre-Approval, Pre-Delivery, Delivery, Closure"],
-        answer: 3,
+          "Use only the DTA phases because they are whole-of-government",
+          "Use only the DES phases because local practice overrides service design",
+          "Keep both: DTA phases guide service design and learning, while DES phases sequence local investment and delivery governance",
+          "Combine the labels into one eight-stage approval process"],
+        answer: 2,
         optionNotes: [
-          "Generic project phasing, not the DES pipeline.",
-          "This resembles the product lifecycle loop rather than the delivery pipeline.",
-          "That is the DTA service design and delivery process — a different framework that coexists with the DES pipeline.",
-          ""],
+          "The DTA phases add service-design discipline; discarding local governance is not the answer.",
+          "Local governance does not replace user-centred service design and continuous improvement.",
+          "",
+          "The frameworks overlap and serve different purposes; concatenating them invents gates neither framework defines."],
         rationale:
-          "DES divides its end-to-end pipeline into Pre-Approval, Pre-Delivery, Delivery and Closure, with stage gates between them. Keep it distinct from the DTA phases and from the Digital Service Standard.",
+          "The capability is keeping overlapping frameworks distinct and using each for its purpose, not recalling a sequence without context.",
       },
       {
         id: "government-q4",
         moduleId: "government",
-        prompt: "Principle 6 is 'design for the whole service'. Which decision best reflects it?",
+        prompt: "Which decision best reflects the DES principle 'design for the whole service'?",
         options: [ "Considering phone, paper and assisted channels, and reusing existing capability", "Delivering the digital service first and addressing other channels in a later project",
           "Standardising the interface across all departmental systems",
           "Optimising the online form's completion rate as the primary measure"],
