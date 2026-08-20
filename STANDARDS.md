@@ -11,7 +11,7 @@ Run the suite with `npm run qa`. It takes two to three minutes and runs against 
 | Rule | Threshold | Why it exists |
 |---|---|---|
 | Options per question | Exactly 4 | Four is the minimum that makes a 75% mastery threshold meaningful |
-| "Always click the longest option" strategy | Scores **≤ 40%** | At one point the key was the longest option in 129 of 158 questions, so that strategy scored 81.6% against a 75% pass mark |
+| "Always click the longest option" strategy | Scores **≤ 40%** | Chance is 25% and the mastery threshold is 75%. Above 40% the strategy starts to substitute for knowing the material |
 | Correct-answer-longest rate | Target **under 30%** when measuring a batch | Chance is 25% |
 | Mean key/distractor length ratio | Target **under 1.20** | |
 | `optionNotes` | 4 entries; the key's is `""` | Per-option feedback on the option the learner chose |

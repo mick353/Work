@@ -195,6 +195,12 @@ npm run qa          # the full suite
 
 Then, by hand:
 
+0. **Read the course as a course**, start to finish, in order. Nothing below and no check in the suite substitutes for this, and two classes of fault are only visible from it:
+   - **A stage that defines its terms after using them.** Sections are ordered by the author's sense of importance rather than the reader's need. If a stage's core idea rests on a distinction, the section drawing that distinction comes first.
+   - **A title or subtitle that no longer describes its stage.** These go stale whenever content moves between stages, and they are the first thing a learner reads.
+
+   Also read for a subject claimed by two stages. Two stages teaching the approvals block, or ownership, or evidence, is a contradiction a learner finds and an author does not.
+
 1. **Walk every view in the new package.** Not the default one. Anything keyed by id fails silently, and the default package will not show you.
 2. **Switch packages by clicking the button**, both directions. Seeding `localStorage` proves the content layer resolved and nothing else.
 3. **Complete a stage end to end**: read, fail the knowledge check deliberately, confirm it names what to reread, retry and pass, answer a scenario wrongly and retry, write the assignment, reveal the model answer, confirm mastery appears only when all three requirements are met.
@@ -287,3 +293,15 @@ Committed to memory or checked deliberately — nothing in this list produces an
 | `grid-template-columns: 1fr` around a `<pre>` or table | Horizontal overflow, often clipped |
 | Colour changed without its background | Text the same colour as what is behind it |
 | Flat shuffle over a question pool | A practice set drawn from one stage |
+
+## What no check will find
+
+The suite catches structure, measurement and coverage. It does not read. These need a person or an agent reading the course in order:
+
+| Fault | Where it comes from |
+|---|---|
+| A stage defining its terms after using them | Sections ordered by the author's priorities, not the reader's |
+| A title or subtitle that no longer fits | Content moved between stages; the heading did not follow |
+| Two stages claiming the same subject | A fold or a new stage that overlapped an existing one |
+| A reference entry describing a structure the course no longer teaches | Toolkit prompts, field guide entries and question rationales embed structural assumptions |
+| Prose that is accurate and unreadable | Nothing measures whether an explanation lands |
