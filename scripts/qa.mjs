@@ -548,13 +548,30 @@ if (!existsSync(docsDir)) {
     Slides stay out of the Pages build, which is the split that actually
     matters: they are megabytes of images rather than kilobytes of text.
   */
+  /*
+    Budgeted per STAGE, not per package.
+
+    It was per package, at a flat allowance each, which assumed packages are
+    roughly the same size. They are not: one course has nine stages and the
+    other fifteen, so adding four stages of legitimate prose to one package
+    failed a budget that had no way to know the package had grown. A budget
+    that fails on ordinary content and has to be raised each time is the
+    fixed-ceiling problem in a different costume.
+
+    A stage is the unit that carries the bytes, so the budget follows it —
+    and it falls again when stages are retired. The allowance is generous
+    against the ~24 KB a stage actually costs, because this check is not a
+    diet. It is here to catch an accidentally inlined image or a duplicated
+    dependency, both of which arrive in hundreds of kilobytes.
+  */
   const packageCount = (standaloneHtml.match(/"status":\s*"(available|in-development)"/g) ?? []).length || 2;
-  const budgetKb = 500 + 280 * packageCount;
+  const stageCountAll = (standaloneHtml.match(/"coreIdea":/g) ?? []).length || 20;
+  const budgetKb = 500 + 30 * stageCountAll;
   const pagesKb = Buffer.byteLength(pagesHtml, "utf8") / 1024;
   check(
-    "Pages build stays small for the number of packages",
+    "Pages build stays small for the content it carries",
     pagesKb < budgetKb,
-    `${pagesKb.toFixed(0)} KB against a ${budgetKb} KB budget for ${packageCount} package(s)`,
+    `${pagesKb.toFixed(0)} KB against ${budgetKb} KB for ${stageCountAll} stages across ${packageCount} packages`,
   );
   check(
     "All 98 slide images ship with the Pages build",

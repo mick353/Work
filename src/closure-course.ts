@@ -19,12 +19,46 @@ import type { Module, Source } from "./course";
 export const CLOSURE_REVIEWED = "16 August 2026";
 
 export const closureSources: Source[] = [
+  /*
+    The departmental documents come first because they are what a DEWR project
+    is actually closed against. An earlier version of this course was built on
+    the DTA standard, which is sound and is not the document anyone here opens.
+    The DTA material is retained below as a comparator, clearly labelled.
+  */
+  {
+    id: "dewr-template",
+    title: "Project Closure Report Template",
+    publisher: "DEWR / Portfolio Project Office — internal, Project Management Hub",
+    note: "The full template, for Tier 1 and Tier 2 projects. Document Control and Key Project Contacts, then fifteen numbered sections ending in a Lessons Learned table of eighteen fixed categories, each split into Strengths and Areas to improve. Every section is retained even when it does not apply — you justify the omission in place rather than deleting the heading. This is the spine of this course.",
+    checked: CLOSURE_REVIEWED,
+  },
+  {
+    id: "dewr-tier3",
+    title: "Project Closure Report — Tier 3",
+    publisher: "DEWR / Portfolio Project Office — internal, pilot",
+    note: "A simplified form for Tier 3 projects, released for testing in July 2026 and still gathering feedback, so treat the detail as current rather than settled. Nine table blocks rather than numbered sections, an overall Achieved / Partially achieved / Not achieved status, and a seven-area assessment grid with fixed rating scales. Feedback goes to the Portfolio Project Office.",
+    checked: CLOSURE_REVIEWED,
+  },
+  {
+    id: "dewr-factsheet",
+    title: "Project Closure Factsheet",
+    publisher: "DEWR / Portfolio Project Office — internal",
+    note: "What closure is, the six activities that constitute it, what the Senior Responsible Officer is accountable for, and a fifteen-item checklist across six categories. This is the process the report is the artefact of, and it is the part most people skip.",
+    checked: CLOSURE_REVIEWED,
+  },
+  {
+    id: "dewr-announcement",
+    title: "Project Closure Reports and when they need to be completed",
+    publisher: "DEWR / Portfolio Project Office — internal announcement, 3 July 2026",
+    note: "States plainly that a project cannot formally close without a completed closure report, lists what the report confirms, and sets out where it goes: the group Project Management Office and the Portfolio Project Office. The PPO does not review reports for approval or compliance — it aggregates them for trends and enterprise reporting.",
+    checked: CLOSURE_REVIEWED,
+  },
   {
     id: "aga-standard",
     title: "Project closure reporting standard for digital and ICT-enabled projects",
     publisher: "Australian Government Architecture / Digital Transformation Agency",
     url: "https://architecture.digital.gov.au/standard/project-closure-reporting-standard-digital-and-ict-enabled-projects",
-    note: "The standard an Australian Government digital or ICT-enabled project closure report is actually assessed against. Seven criteria, each rated Strong, Emerging or Nil, self-assessed by the agency before the report is finalised. This is the spine of this course.",
+    note: "Comparator, not the spine. The whole-of-government standard for digital and ICT-enabled closure reports: seven criteria, each self-assessed Strong, Emerging or Nil. Useful for judging whether a report is good rather than merely complete, and it is what a DEWR digital project would be measured against outside the department.",
     checked: CLOSURE_REVIEWED,
   },
   {
@@ -32,7 +66,7 @@ export const closureSources: Source[] = [
     title: "Digital project closure report templates",
     publisher: "Australian Government Architecture / Digital Transformation Agency",
     url: "https://architecture.digital.gov.au/design/digital-project-closure-report-templates",
-    note: "Templates built by the DTA with the ATO to meet the standard. One for Tier 1 and Tier 2 projects, one for Tier 3 and smaller work. Agencies may use their own template provided it meets the criteria.",
+    note: "Comparator. The DTA's own templates, built with the ATO — one for Tier 1 and Tier 2, one for Tier 3. The tiering language matches DEWR's; the sections do not. Use the departmental template.",
     checked: CLOSURE_REVIEWED,
   },
   {
@@ -129,7 +163,15 @@ export const closureSources: Source[] = [
  * Stages
  * ------------------------------------------------------------------ */
 
-export const closureModules: Module[] = [
+/*
+ * Definitions. Order here is irrelevant — see CLOSURE_ORDER below.
+ *
+ * `number` drives the stage colour, the sidebar, and next-stage navigation
+ * (`item.number === module.number + 1`), so it has to be contiguous from 1.
+ * Maintaining it by hand while inserting stages is how you get two stage 5s
+ * and a curriculum that cannot be navigated past them, so it is derived.
+ */
+const closureModuleDefs: Module[] = [
   {
     id: "purpose",
     number: 1,
@@ -382,6 +424,457 @@ export const closureModules: Module[] = [
   },
 
   {
+    id: "process",
+    number: 2,
+    title: "The closure process and its checklist",
+    subtitle: "Six activities, then a document that evidences them",
+    minutes: 0,
+    slides: "",
+    outcome:
+      "Run closure as a process with a checklist, so the report records work that happened rather than asserting work that did not.",
+    coreIdea:
+      "Closure is a set of activities; the report is the artefact that evidences them. Doing it in that order is what makes the document true. Written the other way round — report first, activities chased afterwards — every section becomes a claim somebody has to go and make good, and some of them never are.",
+    sections: [
+      {
+        heading: "The six things that constitute closure",
+        body: "The departmental factsheet lists what has to happen before a project can be formally closed. None of them is 'write the report'. The report comes after, and its job is to show these were done.",
+        bullets: [
+          "Outputs and deliverables completed, handed over, and formally accepted by the BAU teams that will own them — with the transition approach documented.",
+          "Outstanding risks, unresolved issues and ongoing benefits reviewed, documented and assigned to a BAU owner, including new operational risks surfaced by the transition itself.",
+          "Post Implementation Review arrangements considered and confirmed — timing, ownership and scope.",
+          "Closure formally approved and documented, with Project Board endorsement where required.",
+          "The Project Closure Report completed and approved by the Senior Responsible Officer.",
+          "Lessons captured and recorded in the Departmental Lessons Learned Register.",
+        ],
+        example:
+          "Read that list as six pieces of work with owners and dates, not as six paragraphs to write. The fifth item is the only one that is a document, and it is fifth for a reason.",
+        sourceIds: ["dewr-factsheet", "dewr-announcement"],
+      },
+      {
+        heading: "The checklist, and what each line is really asking",
+        body: "The factsheet turns those activities into fifteen checkboxes across six categories. The wording repays attention: most lines ask you to confirm something is agreed or accepted by a named party, not that you have written about it.",
+        table: {
+          caption: "The departmental closure checklist",
+          head: ["Category", "What you are confirming"],
+          rows: [
+            ["Deliverables and benefits transition", "Deliverables in the business case and plan completed and formally accepted; benefit ownership and ongoing realisation agreed; PIR ownership, timing and scope confirmed"],
+            ["Transition ownership to BAU", "Transition planning done and operational responsibilities documented (Tier 1 and 2 use the Project Transition Plan); outputs, risks, issues and benefits transferred with clear accountability; transition completed and documented"],
+            ["Closure documentation", "The report reflects performance against objectives, scope, schedule and budget"],
+            ["Lessons learned", "A lessons review conducted; lessons recorded in the Departmental Lessons Learned Register"],
+            ["Approvals and submission", "SRO approval obtained; governance endorsement where required; approved report sent to the PPO"],
+            ["Stakeholder engagement", "Stakeholders informed of closure; transition arrangements communicated; BAU ownership and contact points confirmed"],
+          ],
+        },
+        example:
+          "'Confirm benefit ownership … are defined and agreed' is a conversation with a named business owner who says yes. It is not a row in a table with a branch name in it.",
+        sourceIds: ["dewr-factsheet"],
+      },
+      {
+        heading: "Why the order matters more than it sounds",
+        body: "Writing the report first feels efficient because the sections are known in advance, and it produces a predictable failure: sections that describe an intention as though it were an event. The transition 'has been completed', the benefit 'will be owned by', the risk 'has been transferred' — each written before anyone agreed to it. The report is then correct in form and wrong in fact, and the person who discovers this is usually the BAU owner who never accepted the thing.",
+        bullets: [
+          "Do the activity, get the acceptance, then write the sentence that records it.",
+          "Where an activity genuinely has not happened, say so and name the action, owner and date. An honest gap is a manageable one.",
+          "A section you cannot evidence is a section describing work still to do — which belongs in outstanding actions, not in the past tense.",
+        ],
+        example:
+          "'Ongoing management of R4 has been transferred to Provider Support' and 'Provider Support has twice declined to accept R4; referred to the SRO for allocation' describe the same situation. Only one of them is true, and only one gives the SRO something to decide.",
+        sourceIds: ["dewr-factsheet"],
+      },
+      {
+        heading: "How much of this applies to you",
+        body: "The department tiers projects, and the tier sets how much process and which artefacts apply. Tier 1 and Tier 2 projects carry the fuller set — an Assurance Approach, a Project Transition Plan, the full closure template. Tier 3 projects use a lighter checklist and, from July 2026, a simplified closure form. The obligation to close formally does not change with tier; the paperwork does.",
+        bullets: [
+          "Tier 1 and 2: Assurance Approach, Project Transition Plan, the full fifteen-section template.",
+          "Tier 3: Assurance Plan or Checklist, and the simplified Tier 3 closure form.",
+          "Every tier: SRO approval, lessons in the register, submission to the group PMO and the Portfolio Project Office.",
+          "If a section of the full template does not apply, retain the heading and justify the omission in place — do not delete it.",
+        ],
+        example:
+          "The instruction to keep every heading and justify omissions is doing something specific: it makes a deliberate decision visible and an oversight obvious. A missing section reads as an error; a section saying 'not applicable because the project procured nothing' reads as a decision.",
+        sourceIds: ["dewr-template", "dewr-tier3", "dewr-factsheet"],
+      },
+    ],
+    questions: [
+      {
+        id: "cl-pr1",
+        moduleId: "process",
+        prompt: "Where does writing the closure report sit among the six closure activities?",
+        options: [
+          "Near the end — it evidences activities already done",
+          "First, so the sections drive the closure work",
+          "In parallel, drafted as each activity proceeds",
+          "It is not one of the six; it follows separately",
+        ],
+        answer: 0,
+        rationale:
+          "The factsheet lists the report fifth of six. Its job is to record work that happened, which is only possible once the work has happened.",
+        optionNotes: [
+          "",
+          "This is the common approach and it produces sections that describe intentions in the past tense.",
+          "Drafting alongside is fine as a habit, but the report is finalised on completed activity, not on progress.",
+          "It is explicitly one of the six, and it is approved by the SRO.",
+        ],
+      },
+      {
+        id: "cl-pr2",
+        moduleId: "process",
+        prompt: "The checklist asks you to confirm benefit ownership is 'defined and agreed'. What satisfies that?",
+        options: [
+          "A named business owner who has accepted the benefit",
+          "A row in the benefits table naming the responsible branch",
+          "The benefit being recorded in the Benefits Realisation Plan",
+          "SRO sign-off on the benefits section of the report",
+        ],
+        answer: 0,
+        rationale:
+          "'Agreed' requires the other party to have agreed. Naming a branch records an intention; a named person who accepted it records a transfer.",
+        optionNotes: [
+          "",
+          "A branch name is where the benefit was pointed, not evidence anyone caught it.",
+          "The plan records what was intended at the start, not who owns it now.",
+          "The SRO approves the report; they cannot accept a benefit on another area's behalf.",
+        ],
+      },
+      {
+        id: "cl-pr3",
+        moduleId: "process",
+        prompt: "A section of the full template does not apply to your project. What does the template instruct?",
+        options: [
+          "Keep the heading and justify why it does not apply",
+          "Delete the section to keep the report readable",
+          "Mark it 'N/A' with no further explanation",
+          "Move it to an appendix with the other unused sections",
+        ],
+        answer: 0,
+        rationale:
+          "Retaining the heading with a brief justification makes a decision visible. A deleted section is indistinguishable from an oversight.",
+        optionNotes: [
+          "",
+          "Deleting it removes the evidence that anyone considered it.",
+          "A bare 'N/A' records the outcome without the reasoning a later reader needs.",
+          "The template has no appendix for this, and moving it hides the same information.",
+        ],
+      },
+      {
+        id: "cl-pr4",
+        moduleId: "process",
+        prompt: "Which artefact do Tier 1 and Tier 2 projects use that Tier 3 projects do not?",
+        options: [
+          "The Project Transition Plan",
+          "The Departmental Lessons Learned Register",
+          "A Senior Responsible Officer approval",
+          "Submission to the Portfolio Project Office",
+        ],
+        answer: 0,
+        rationale:
+          "The checklist scopes the Project Transition Plan to Tier 1 and 2. The register, SRO approval and PPO submission apply at every tier.",
+        optionNotes: [
+          "",
+          "The register is departmental and applies to all projects.",
+          "SRO approval is required regardless of tier.",
+          "Every approved report goes to the group PMO and the PPO.",
+        ],
+      },
+    ],
+    scenarios: [
+      {
+        id: "cl-pr-s1",
+        moduleId: "process",
+        context:
+          "Your report is drafted and reads well. The transition section states that operational responsibility passed to the Service Delivery branch on 30 June. Checking with the branch, you find they were briefed but have not accepted the handover, and their assistant director is on leave until after your closure date.",
+        prompt: "What should the report say?",
+        options: [
+          "That handover is not yet accepted, with the outstanding action, owner and date",
+          "That handover completed on 30 June, since the briefing occurred then",
+          "Nothing about the handover until the assistant director returns and accepts",
+          "That handover completed, with a note that formal acceptance is pending",
+        ],
+        answer: 0,
+        rationale:
+          "The checklist asks you to confirm acceptance, not notification. An unaccepted handover recorded as an outstanding action is manageable; recorded as complete, it becomes a surprise for whoever inherits it.",
+        optionNotes: [
+          "",
+          "A briefing is not an acceptance, and dating the handover to it makes the report untrue.",
+          "Waiting stalls closure over one absence, and the gap is reportable as it stands.",
+          "'Complete, pending acceptance' is a contradiction that reads as complete to everyone skimming it.",
+        ],
+      },
+      {
+        id: "cl-pr-s2",
+        moduleId: "process",
+        context:
+          "A Tier 3 project has finished. The project manager plans to complete the simplified form, get the SRO to approve it, and file it in the team's SharePoint. She asks whether anything else is needed.",
+        prompt: "What is missing?",
+        options: [
+          "Lessons in the departmental register, and submission to the group PMO and PPO",
+          "Nothing — Tier 3 projects close on SRO approval alone",
+          "A Project Transition Plan, which is required at every tier",
+          "Portfolio Project Office review and approval of the report",
+        ],
+        answer: 0,
+        rationale:
+          "Filing locally is not submission. Lessons belong in the Departmental Lessons Learned Register, and the approved report goes to the group PMO and the PPO — both apply at every tier.",
+        optionNotes: [
+          "",
+          "SRO approval is necessary and not sufficient; the report still has to go somewhere.",
+          "The Transition Plan is scoped to Tier 1 and 2.",
+          "The PPO receives reports but explicitly does not review them for approval.",
+        ],
+      },
+    ],
+    assignment: {
+      title: "Run the checklist against a real project",
+      instruction:
+        "Take a project you know that has closed or is closing. Work down the six checklist categories and mark each of the fifteen items done, partly done or not done — then write what would have to happen to close the gaps.",
+      prompts: [
+        "Which items can you evidence with something a third party agreed to, rather than something you wrote?",
+        "Which item is furthest from done, and who has to act for it to be closed?",
+        "Where has an intention been recorded as an event?",
+      ],
+      modelAnswer:
+        "The pattern in almost every real run: deliverables and documentation come out strong, because they are the project's own work and the project controls them. Transition ownership and stakeholder engagement come out weakest, because both require somebody outside the project to say yes.\n\nA typical honest assessment: deliverables accepted (evidenced by the acceptance record), PIR arrangements not done — nobody has been asked to own it, benefit ownership agreed for four of six, transition documented but not accepted, lessons written but not in the register, stakeholders informed but BAU contact points not confirmed.\n\nThat is six gaps, and five of them close with a conversation and a name. The sixth — the two benefits with no owner — is a real decision for the SRO, and it is exactly the kind of thing that gets buried when the report is written before the checklist is run.",
+      criteria: [
+        "Each item marked against evidence, not against intention",
+        "At least one item where an intention had been recorded as an event",
+        "Gaps carry an owner and a date, not just a description",
+        "Distinguishes gaps you can close from decisions someone else must take",
+      ],
+    },
+  },
+  {
+    id: "accountability",
+    number: 3,
+    title: "Who approves what",
+    subtitle: "The SRO, the Board, and the offices that will not save you",
+    minutes: 0,
+    slides: "",
+    outcome:
+      "Identify who must approve closure, who endorses it, who merely receives it, and what each of them is actually accountable for.",
+    coreIdea:
+      "Closure has one accountable person and several audiences, and the difference matters. The Senior Responsible Officer approves and gives assurance. The Project Board endorses where required. The group PMO and the Portfolio Project Office receive the report — and the PPO explicitly does not check it. Nobody downstream will catch your errors, which puts the whole weight on the SRO's assurance being real.",
+    sections: [
+      {
+        heading: "What the SRO is accountable for",
+        body: "The factsheet is unusually specific here, and it is worth reading as a list of things the SRO has to be able to say honestly rather than as a description of a role. They are accountable for overseeing and approving closure, and for confirming the project has reached a point where it can properly conclude.",
+        table: {
+          caption: "The SRO's two jobs at closure",
+          head: ["Confirming", "Assuring"],
+          rows: [
+            ["Closure activities have been completed", "The project was delivered in line with its objectives, or formally closed for an approved reason"],
+            ["Outcomes and deliverables transitioned to the right business owner or BAU area", "Closure decisions are appropriate and well documented"],
+            ["Ongoing ownership of benefits, risks, issues and remaining actions clearly assigned", "Follow-on activities — benefits realisation, post implementation review — considered and assigned"],
+          ],
+        },
+        example:
+          "Notice what the SRO is not asked to confirm: that the project succeeded. 'Delivered in line with its objectives, or formally closed for an approved reason' makes an early or partial closure a legitimate outcome to sign, provided the reason is approved and documented.",
+        sourceIds: ["dewr-factsheet"],
+      },
+      {
+        heading: "Everyone else at the table",
+        body: "The approvals block in the full template names four roles and leaves room for more. Each signs for something different, and asking the wrong person for the wrong assurance wastes a fortnight.",
+        table: {
+          caption: "Roles in the approvals block",
+          head: ["Role", "What they are signing for"],
+          rows: [
+            ["Project Board", "Governance endorsement that closure is appropriate now"],
+            ["Senior Responsible Officer", "Accountable approval — the assurances above"],
+            ["Project Manager", "That the report is accurate and the activities were done"],
+            ["Senior User / Business Owner", "That what has been handed over is accepted, and ongoing ownership is understood"],
+          ],
+        },
+        example:
+          "The Senior User signature is the one people skip, and it is the one that makes the transition sections true. If the business owner has not signed, the report is asserting acceptance that nobody gave.",
+        sourceIds: ["dewr-template", "dewr-factsheet"],
+      },
+      {
+        heading: "The five assertions you are asking them to agree to",
+        body: "The Approvals section of the full template is not a signature block with a covering sentence. It sets out five specific statements, and signing means agreeing to all of them. Reading them before you draft is the fastest way to find out what the report has to establish.",
+        bullets: [
+          "The original project objectives have been met, subject to any approved changes.",
+          "Provision has been made to address all open issues and risks.",
+          "The project outcomes are in place and transferred to BAU.",
+          "Resources assigned to the project can be released.",
+          "The Post Implementation Review has been assigned to the BAU team, and all project documentation is up to date.",
+        ],
+        example:
+          "Work backwards from these five and the report writes itself: each one is a claim, and each claim needs a section that evidences it. The fourth is the one people forget — releasing resources is a decision with a date, not a consequence of the project ending.",
+        sourceIds: ["dewr-template"],
+      },
+      {
+        heading: "The PPO receives your report and does not read it for compliance",
+        body: "This is the single most commonly misunderstood part of the process, and getting it wrong in either direction is costly. The approved report goes to your group Project Management Office and to the Portfolio Project Office. The PPO does not review it for approval or compliance. It aggregates information across the department to identify trends, insights and emerging patterns for enterprise reporting and continuous improvement.",
+        bullets: [
+          "Do not treat submission as a quality gate. Nothing downstream will bounce a weak report back to you.",
+          "Do not delay submission waiting for a review that is not coming.",
+          "Do write for the aggregate audience as well as the local one: your lessons and ratings become departmental data.",
+          "Lessons have their own destination — the Departmental Lessons Learned Register — and that is where they get reused.",
+        ],
+        example:
+          "Because the PPO aggregates rather than assesses, a vague lesson is not just a wasted paragraph for your project; it is a row of noise in the department's only view of what keeps going wrong. 'Communication could have been better' aggregates to nothing.",
+        sourceIds: ["dewr-announcement", "dewr-factsheet"],
+      },
+      {
+        heading: "Assurance, in the departmental frame",
+        body: "Assurance at DEWR is scoped by tier and lives in named artefacts rather than in a separate review event. Tier 1 and 2 projects carry an Assurance Approach; Tier 3 projects an Assurance Plan or Checklist. Both are listed as project management deliverables in the closure report, and assurance is one of the eighteen lessons categories — so you report on the artefact, and separately on whether it did any good.",
+        bullets: [
+          "The report lists the assurance artefact and its version, as a deliverable.",
+          "The lessons table asks separately what assurance did well and where it should improve.",
+          "For projects over the Commonwealth thresholds, external Gateway reviews may also apply — that is a different regime, and it sits alongside rather than instead of the departmental one.",
+        ],
+        example:
+          "Listing 'Assurance Approach v1.2' proves an artefact existed. The lessons row is where you say whether it changed a decision — which is the only question worth asking about assurance.",
+        sourceIds: ["dewr-template", "gateway", "rmg106"],
+      },
+    ],
+    questions: [
+      {
+        id: "cl-ac1",
+        moduleId: "accountability",
+        prompt: "What does the Portfolio Project Office do with your submitted closure report?",
+        options: [
+          "Aggregates it for departmental trends and enterprise reporting",
+          "Reviews it for compliance with the P3M Framework",
+          "Approves it on behalf of the department",
+          "Returns it with feedback before the project can close",
+        ],
+        answer: 0,
+        rationale:
+          "The announcement states it plainly: reports are not reviewed by the PPO for approval. Information from them is used to identify trends, insights and emerging patterns.",
+        optionNotes: [
+          "",
+          "Explicitly not — no compliance review takes place.",
+          "Approval is the SRO's, not the PPO's.",
+          "Nothing comes back. Submission is not a gate.",
+        ],
+      },
+      {
+        id: "cl-ac2",
+        moduleId: "accountability",
+        prompt: "Which assurance can the SRO give about a project that was closed early?",
+        options: [
+          "That it was formally closed for an approved reason",
+          "That the objectives were met, subject to approved changes",
+          "None — early closure cannot be signed by the SRO",
+          "That the business case remained valid throughout",
+        ],
+        answer: 0,
+        rationale:
+          "The wording is 'delivered in line with its objectives, or formally closed for an approved reason'. Early closure is a legitimate thing to sign, provided the reason was approved and is documented.",
+        optionNotes: [
+          "",
+          "This is the alternative branch, and it does not describe a project closed early.",
+          "Early closure is explicitly provided for, and still requires SRO approval.",
+          "A project often closes early precisely because the case stopped being valid.",
+        ],
+      },
+      {
+        id: "cl-ac3",
+        moduleId: "accountability",
+        prompt: "Whose signature makes the transition sections credible?",
+        options: [
+          "The Senior User or Business Owner receiving the outputs",
+          "The Senior Responsible Officer, who approves the whole report",
+          "The Project Manager, who performed the handover",
+          "The Project Board, which endorses closure",
+        ],
+        answer: 0,
+        rationale:
+          "Transition is an acceptance by the receiving side. Only the business owner can confirm they have taken it on; everyone else is attesting to process.",
+        optionNotes: [
+          "",
+          "The SRO approves closure overall but cannot accept on the business area's behalf.",
+          "The PM can confirm the handover was offered, not that it was accepted.",
+          "Board endorsement is about whether closing now is appropriate.",
+        ],
+      },
+      {
+        id: "cl-ac4",
+        moduleId: "accountability",
+        prompt: "The approvals statement includes 'resources assigned to the project can be released'. Why is that listed separately?",
+        options: [
+          "Releasing resources is a decision with a date, not an automatic consequence",
+          "It confirms the project has not overspent its staffing allocation",
+          "It transfers employment responsibility to the receiving BAU area",
+          "It is required before the financial summary can be finalised",
+        ],
+        answer: 0,
+        rationale:
+          "Everything else in the statement concerns work being finished or transferred. This one asks the approver to agree that the people can now go — which is a call somebody has to make deliberately.",
+        optionNotes: [
+          "",
+          "Staffing spend is reported in the financial summary, not here.",
+          "Nothing about employment transfers with this statement.",
+          "The two are independent; the financial summary does not wait on it.",
+        ],
+      },
+    ],
+    scenarios: [
+      {
+        id: "cl-ac-s1",
+        moduleId: "accountability",
+        context:
+          "Your closure report is complete and the SRO has approved it. A colleague suggests holding submission for a few weeks, on the basis that the Portfolio Project Office will come back with corrections and it is better to fix them in one pass.",
+        prompt: "How should you respond?",
+        options: [
+          "Submit now — the PPO does not review reports and nothing is coming back",
+          "Hold it, since a single corrected submission is cleaner for the PPO",
+          "Submit an early draft to the PPO to get their comments first",
+          "Ask the group PMO to review it in place of the PPO",
+        ],
+        answer: 0,
+        rationale:
+          "The PPO aggregates rather than assesses. Waiting for feedback that will not arrive delays the departmental trend data and holds the project open for nothing.",
+        optionNotes: [
+          "",
+          "There is nothing to correct against — no review takes place.",
+          "The PPO does not comment on drafts either; the misunderstanding is the same one.",
+          "The group PMO receives it too, but review is not their role at this point.",
+        ],
+      },
+      {
+        id: "cl-ac-s2",
+        moduleId: "accountability",
+        context:
+          "Two of six benefits have no agreed owner. The business area approached has declined twice, on the grounds that the relevant staffing is set centrally. Your SRO is willing to approve the report and asks you to record the benefits as 'ownership to be confirmed'.",
+        prompt: "What is the problem with that wording?",
+        options: [
+          "It conceals an unresolved decision the SRO is accountable for taking",
+          "It is too vague for the PPO to accept the report",
+          "Benefits without owners must be deleted from the report",
+          "It commits the project to confirming ownership after closure",
+        ],
+        answer: 0,
+        rationale:
+          "The SRO's assurance includes that ongoing ownership of benefits has been clearly assigned. 'To be confirmed' reads as administrative tidying-up and is actually an allocation decision only the SRO can make.",
+        optionNotes: [
+          "",
+          "The PPO does not assess reports, so acceptance is not the constraint.",
+          "An unowned benefit is a finding worth recording, not one to remove.",
+          "The project will not exist to confirm anything — that is precisely the difficulty.",
+        ],
+      },
+    ],
+    assignment: {
+      title: "Draft the approvals page honestly",
+      instruction:
+        "For a project you know, write the five approval assertions out and mark each one true, partly true or not yet true. Then draft the wording you would put in front of the SRO.",
+      prompts: [
+        "Which of the five can you evidence today?",
+        "For any that are not yet true, what is the action, who owns it, and by when?",
+        "Is there anything you are asking the SRO to assure that only a business owner can actually confirm?",
+      ],
+      modelAnswer:
+        "The useful discipline is to treat each assertion as a testable claim and find the evidence before the meeting.\n\n'Objectives met, subject to approved changes' — true, with the two Board-approved scope reductions cited by date and minute reference. 'Provision made for all open issues and risks' — partly true: four risks transferred with named owners, one declined twice and unresolved. 'Outcomes in place and transferred to BAU' — partly true: five of six accepted, the sixth briefed but not accepted. 'Resources can be released' — true from 30 September, once the two-week transition support commitment ends. 'PIR assigned and documentation up to date' — not yet true; no PIR owner nominated.\n\nSo two of five need an SRO decision rather than more work by me: who takes the unowned risk, and who owns the PIR. Putting those two in front of them as decisions, with options, is a much better use of the approval meeting than presenting five green ticks and letting them discover the gaps later.",
+      criteria: [
+        "Each of the five assertions assessed separately against evidence",
+        "Distinguishes what more work will fix from what needs an SRO decision",
+        "Names the business-owner confirmations the SRO cannot give",
+        "Gaps carry an owner and a date",
+      ],
+    },
+  },
+  {
     id: "evidence",
     number: 2,
     title: "Evidence, baselines and what you may claim",
@@ -596,6 +1089,431 @@ export const closureModules: Module[] = [
     },
   },
 
+  {
+    id: "deliverables",
+    number: 5,
+    title: "Deliverables: the paperwork and the thing you built",
+    subtitle: "Two different questions the template asks separately",
+    minutes: 0,
+    slides: "",
+    outcome:
+      "Report project management artefacts and project-specific deliverables as the distinct things they are, and state a completion status you can evidence.",
+    coreIdea:
+      "The template asks about deliverables twice, and they are not the same question. Project management deliverables are the artefacts the framework required you to produce. Project-specific deliverables are the things the project existed to build. Answering both with the same list is the commonest way to make a report look complete while saying nothing about what was delivered.",
+    sections: [
+      {
+        heading: "The two questions",
+        body: "Section 7 asks which project management documents the plan said you would produce, and whether you produced them. Section 8 asks what the project actually delivered into the world. A report that lists the Project Management Plan under both has answered neither.",
+        table: {
+          caption: "Telling them apart",
+          head: ["", "Project management deliverables", "Project-specific deliverables"],
+          rows: [
+            ["What it is", "An artefact the P3M Framework required", "A good or service the project produced"],
+            ["Who wanted it", "Governance", "The business, or the public"],
+            ["Examples", "Business Case, PMP, Risk Management Plan, Change Register", "A status screen, a server upgrade, policy guidelines, a data migration"],
+            ["Recorded as", "Document, version or ID, delivery date", "Deliverable, purpose, delivery date"],
+            ["Failure mode", "Listing documents that were never produced", "Describing the artefact without saying what it was for"],
+          ],
+        },
+        example:
+          "'Policy guidelines for stakeholders — will assist the stakeholder cohort to understand and meet new legislative requirements' is a project-specific deliverable with its purpose attached. That second half is what makes the row worth reading in three years.",
+        sourceIds: ["dewr-template"],
+      },
+      {
+        heading: "The artefact list, and tailoring it by tier",
+        body: "The template pre-populates the project management deliverables with the framework's core set. It is meant to be tailored to the project's tier rather than completed exhaustively, and you add anything else the project produced.",
+        bullets: [
+          "Concept Definition; Business Case or New Policy Proposal.",
+          "Assurance Approach for Tier 1 and 2; Assurance Plan or Checklist for Tier 3.",
+          "Project Management Plan; Project Schedule.",
+          "Benefit Profiles and the Benefits Realisation Plan.",
+          "Stakeholder Engagement and Communications Strategy and Plan.",
+          "Risk Management Plan, held in RiskNet2.",
+          "Privacy Impact Assessment, where applicable.",
+          "Change Register; the Project Closure Report itself; status reports and change requests.",
+        ],
+        example:
+          "The row for status reports does not ask for a version — it asks you to state the cadence: 'Regular project status reports prepared and reviewed fortnightly.' A gap in that cadence is itself a finding, and it usually shows up later as a lessons entry about governance.",
+        sourceIds: ["dewr-template"],
+      },
+      {
+        heading: "Status you can evidence",
+        body: "The Tier 3 form asks for planned deliverable, delivered deliverable, and a status of Achieved, Partially achieved or Not achieved — with comments covering any approved variation. The full template asks the same thing in prose. Either way the useful discipline is identical: state the original approved scope, state what exists now, and account for the difference by pointing at an approval rather than at circumstances.",
+        bullets: [
+          "Take the planned deliverable from the approved business case, NPP or project outline — not from the most recent plan.",
+          "'Partially achieved' is a legitimate and useful answer. It is far more informative than an achieved status with a caveat buried in comments.",
+          "An approved variation is a different thing from a shortfall. Cite the approval: who, when, which forum.",
+          "A deliverable descoped without approval is not a variation. It is a scope reduction the report has to surface.",
+        ],
+        example:
+          "Two rows, same project. 'Participant-facing status view — Not achieved — withdrawn from scope by the Project Board, November 2025, on privacy assessment advice.' And: 'Bulk export — Not achieved — dependency on the provider gateway roadmap, no committed date.' The first is a decision. The second is an open item that needs an owner.",
+        sourceIds: ["dewr-tier3", "dewr-template"],
+      },
+    ],
+    questions: [
+      {
+        id: "cl-d1",
+        moduleId: "deliverables",
+        prompt: "What separates a project management deliverable from a project-specific one?",
+        options: [
+          "Who wanted it — governance, or the business",
+          "Whether it is a document or a working system",
+          "Whether it was named in the original business case",
+          "Whether it is capitalised or expensed",
+        ],
+        answer: 0,
+        rationale:
+          "Management deliverables are artefacts the framework required. Project-specific deliverables are what the project existed to produce for someone else.",
+        optionNotes: [
+          "",
+          "Both can be documents — policy guidelines are a project-specific deliverable.",
+          "Both are usually named there; that does not distinguish them.",
+          "Accounting treatment is a separate question entirely.",
+        ],
+      },
+      {
+        id: "cl-d2",
+        moduleId: "deliverables",
+        prompt: "Where should the 'planned deliverable' column be drawn from?",
+        options: [
+          "The approved business case, NPP or project outline",
+          "The most recent version of the project schedule",
+          "The Project Management Plan as last updated",
+          "The delivery team's backlog at the point of closure",
+        ],
+        answer: 0,
+        rationale:
+          "The original approval is the commitment being reported against. Using a later plan compares the project to itself and hides the drift.",
+        optionNotes: [
+          "",
+          "A current schedule already reflects the changes you are meant to be explaining.",
+          "Same problem — the plan moves, the approval does not.",
+          "A backlog describes remaining work, not what was promised.",
+        ],
+      },
+      {
+        id: "cl-d3",
+        moduleId: "deliverables",
+        prompt: "A deliverable was dropped, and no forum ever approved it. How is it reported?",
+        options: [
+          "As not achieved, with the fact that no approval exists",
+          "As an approved variation, since the Board did not object",
+          "Omitted, because it is no longer part of the project",
+          "As partially achieved, reflecting the work done before it stopped",
+        ],
+        answer: 0,
+        rationale:
+          "An unapproved reduction is a scope change nobody sanctioned. Recording it as a variation implies a decision that was never taken.",
+        optionNotes: [
+          "",
+          "Absence of objection is not approval, and the report should not manufacture one.",
+          "Omitting it hides the largest single fact about the scope.",
+          "Partial credit for abandoned work misrepresents what exists.",
+        ],
+      },
+      {
+        id: "cl-d4",
+        moduleId: "deliverables",
+        prompt: "What does the template ask for against the status-report row, rather than a version?",
+        options: [
+          "The cadence at which they were prepared and reviewed",
+          "The total number of reports issued over the project",
+          "A link to the folder where they are stored",
+          "The name of the officer who prepared them",
+        ],
+        answer: 0,
+        rationale:
+          "Status reporting is a rhythm rather than an artefact, so the row records how often it happened. A break in the rhythm is a governance finding.",
+        optionNotes: [
+          "",
+          "A count says nothing about whether reporting was regular.",
+          "Storage location matters for records, not for this row.",
+          "Authorship is not what the row is testing.",
+        ],
+      },
+    ],
+    scenarios: [
+      {
+        id: "cl-d-s1",
+        moduleId: "deliverables",
+        context:
+          "Your project produced a Privacy Impact Assessment, but only after go-live, following a query from the privacy team. The template lists a PIA row with a delivery date column.",
+        prompt: "How should the row read?",
+        options: [
+          "PIA listed with its actual date, and a comment that it followed go-live",
+          "PIA listed with the go-live date, since both happened in the same quarter",
+          "PIA omitted, as it was not part of the approved plan",
+          "PIA listed as delivered, with the timing raised in lessons instead",
+        ],
+        answer: 0,
+        rationale:
+          "The date column is the finding. A privacy assessment completed after release is exactly the pattern the register exists to surface, and hiding it in lessons removes the evidence.",
+        optionNotes: [
+          "",
+          "Aligning the dates removes the only detail that matters here.",
+          "It was produced, and it is a listed core artefact.",
+          "Lessons and the deliverables table are not alternatives — the row is the evidence the lesson rests on.",
+        ],
+      },
+      {
+        id: "cl-d-s2",
+        moduleId: "deliverables",
+        context:
+          "A Tier 3 project delivered three of four planned deliverables in full. The fourth, a reporting dashboard, went live with two of its five planned views. The project manager wants to mark the dashboard 'Achieved' and explain in comments.",
+        prompt: "What status fits?",
+        options: [
+          "Partially achieved, with the missing views named",
+          "Achieved, with the shortfall explained in the comments column",
+          "Not achieved, since the deliverable was not completed as planned",
+          "Achieved, because the dashboard is in use and delivering value",
+        ],
+        answer: 0,
+        rationale:
+          "The form offers Partially achieved precisely for this. It is the honest status, and it survives being skim-read in a way a caveat in a comments column does not.",
+        optionNotes: [
+          "",
+          "The status is what gets aggregated; comments are what gets skipped.",
+          "Two working views is not nothing, and Not achieved overstates the shortfall.",
+          "Being useful and being complete are different claims.",
+        ],
+      },
+    ],
+    assignment: {
+      title: "Split the two deliverable tables",
+      instruction:
+        "For a project you know, draft both tables — the project management artefacts with version and date, and the project-specific deliverables with purpose, date and status.",
+      prompts: [
+        "Which management artefacts were listed in the plan but never actually produced?",
+        "For each project-specific deliverable, what was it for — in a sentence a stranger would understand?",
+        "Which status is Partially achieved, and what exactly is missing?",
+      ],
+      modelAnswer:
+        "Two things usually surface, and both are worth more than the tables themselves.\n\nFirst, the artefact list exposes documents that were planned and quietly skipped. A Benefits Realisation Plan that was never written is a much better explanation of why the benefits section is thin than anything you could put in the benefits section itself. Write the row as 'Not produced' with a date of nil, rather than leaving it blank — blank reads as an oversight in filling out the table.\n\nSecond, writing the purpose column forces a clarity test. 'Provider portal enhancement' fails it. 'Self-service view so providers can see application status without ringing the support line' passes, and it also happens to name the benefit, which makes the benefits section easier to write and harder to fudge.\n\nOn status: use Partially achieved wherever it is true. A table of nine Achieved rows with three caveats in the comments column tells a reader the project succeeded. Six Achieved and three Partially achieved tells them the truth in a form that survives being skimmed.",
+      criteria: [
+        "Two separate tables, with no artefact appearing in both",
+        "Every project-specific deliverable has a purpose a stranger could follow",
+        "Artefacts planned but not produced are shown, not omitted",
+        "At least one honest Partially achieved, with the shortfall named",
+      ],
+    },
+  },
+  {
+    id: "milestones",
+    number: 6,
+    title: "Milestones, schedule and change control",
+    subtitle: "Variance against the baseline, and what made it legitimate",
+    minutes: 0,
+    slides: "",
+    outcome:
+      "Report schedule performance against the original baseline, and use the change record to distinguish an approved variation from a slip.",
+    coreIdea:
+      "A milestone table listing only actual dates is a diary. The variance is the content, and change control is what turns a variance into a decision somebody took rather than a thing that happened. Report against the original baseline; explain the movement with an approval reference, or admit there isn't one.",
+    sections: [
+      {
+        heading: "Planned, actual, variance",
+        body: "The template asks how the project performed against the original baselined schedule as set out in the Project Management Plan, and for details in the comments where delays breached tolerances. Three columns, and the third is the only one anybody reads.",
+        bullets: [
+          "Baseline from the approved PMP, not from the latest rebaseline.",
+          "Where the project was rebaselined, show both: variance to the current baseline and variance to the original.",
+          "State whether a delay breached tolerance. 'Late' and 'outside tolerance' are different findings.",
+          "A milestone met by moving its definition is not a milestone met — say what changed.",
+        ],
+        example:
+          "'Discovery complete — planned Feb 2024 — actual Feb 2024 — on time' takes one line and earns its place, because the reader now knows the early phase held and the problem is downstream.",
+        sourceIds: ["dewr-template"],
+      },
+      {
+        heading: "Tolerances, and the five things they cover",
+        body: "The template frames the objectives review around performance against targets and tolerances for time, cost, quality, scope, benefits and risk. Tolerance is the pre-agreed room to move before something has to be escalated, which makes it the cleanest way to describe performance: not whether the number moved, but whether it moved further than governance agreed it could.",
+        table: {
+          caption: "Reporting against tolerance",
+          head: ["Dimension", "Weak reporting", "Reporting against tolerance"],
+          rows: [
+            ["Time", "Delivered three months late", "Twelve weeks against an eight-week tolerance; escalated to the Board in March"],
+            ["Cost", "Came in over budget", "24 per cent over original approval; two rebaselines, both approved"],
+            ["Scope", "Some features deferred", "One objective withdrawn by Board decision; two features deferred within tolerance"],
+            ["Quality", "A few defects at go-live", "Nine severity-3 defects at release against a tolerance of twelve; none severity-1 or 2"],
+            ["Risk", "Risks were managed", "Two risks moved outside appetite; both escalated, one accepted by the SRO"],
+          ],
+        },
+        example:
+          "The right-hand column takes no more space than the left and answers the question governance is actually asking, which is whether the controls worked — not whether the project was perfect.",
+        sourceIds: ["dewr-template", "dewr-announcement"],
+      },
+      {
+        heading: "Change control and the register",
+        body: "Section 12 asks how the formal change process was managed and what decisions were made, and asks you to attach the Change Register. This is where a schedule variance gets its legitimacy: an approved change explains a moved date; the absence of one means the date moved on its own.",
+        bullets: [
+          "Each change carries an ID, a description and the decision taken — approved, rejected, deferred.",
+          "Rejected changes are worth keeping. They show what the project chose not to do, which is often the more interesting record.",
+          "Attach the register rather than summarising it. The summary is the section; the register is the evidence.",
+          "Where a milestone moved, point at the change ID that moved it.",
+        ],
+        example:
+          "A report that shows nine approved changes and no rejected ones is describing a change process that approved everything. That is a finding about governance, and it belongs in the lessons table under change control.",
+        sourceIds: ["dewr-template"],
+      },
+      {
+        heading: "Rebaselining is not the same as being on time",
+        body: "A rebaselined project measured against its new baseline reports zero variance, which is true and useless. Both facts belong in the report: the approved position the project was managed to, and the original commitment the department funded. Showing only the second looks like blame; showing only the first looks like success.",
+        bullets: [
+          "Report variance to the current baseline — it shows whether recent management held.",
+          "Report variance to the original approval — it shows what the commitment actually cost in time.",
+          "Name each rebaseline: when, which forum approved it, and why.",
+          "If the two figures differ substantially, that gap is the story of the project.",
+        ],
+        example:
+          "'On schedule against the revised baseline; twenty-two months later than the original approved date, following two rebaselines approved by the Project Board in March 2024 and August 2025.' Both true, and together they are informative in a way either alone is not.",
+        sourceIds: ["dewr-template", "rmg134"],
+      },
+    ],
+    questions: [
+      {
+        id: "cl-m1",
+        moduleId: "milestones",
+        prompt: "Which baseline does the milestone table report against?",
+        options: [
+          "The original baselined schedule in the approved PMP",
+          "The most recent approved rebaseline",
+          "Whichever baseline the Project Board last reviewed",
+          "The schedule in force at the start of the final delivery phase",
+        ],
+        answer: 0,
+        rationale:
+          "The template asks for performance against the original baselined schedule. A rebaselined project measured only against its new baseline always looks on time.",
+        optionNotes: [
+          "",
+          "Worth reporting as well, but on its own it conceals the movement.",
+          "Board attention does not change which commitment is being reported against.",
+          "This is a rebaseline by another name.",
+        ],
+      },
+      {
+        id: "cl-m2",
+        moduleId: "milestones",
+        prompt: "Why are rejected change requests worth reporting?",
+        options: [
+          "They record what the project deliberately chose not to do",
+          "They demonstrate the change process was applied consistently",
+          "They are required to reconcile the financial summary",
+          "They explain why the schedule variance exceeded tolerance",
+        ],
+        answer: 0,
+        rationale:
+          "Approved changes explain what happened. Rejected ones show where the project held its scope, which is the harder decision and the one nothing else in the report captures.",
+        optionNotes: [
+          "",
+          "True as a side effect, but it is not why the record is valuable.",
+          "The financial summary reconciles against budget, not against change decisions.",
+          "A rejected change did not move anything, so it explains no variance.",
+        ],
+      },
+      {
+        id: "cl-m3",
+        moduleId: "milestones",
+        prompt: "What does reporting a delay 'against tolerance' add?",
+        options: [
+          "Whether governance had agreed the project could move that far",
+          "A more precise figure for the length of the delay",
+          "The cost consequence of the additional time",
+          "Confirmation that the delay was escalated to the Board",
+        ],
+        answer: 0,
+        rationale:
+          "Tolerance is the room agreed in advance. Reporting against it answers whether the control worked, rather than only whether the date moved.",
+        optionNotes: [
+          "",
+          "Precision comes from the dates, not from the tolerance.",
+          "Cost is reported separately in the financial summary.",
+          "Escalation may follow a breach, but it is a different fact.",
+        ],
+      },
+      {
+        id: "cl-m4",
+        moduleId: "milestones",
+        prompt: "A project reports nine approved changes and no rejected ones. What does that suggest?",
+        options: [
+          "A change process that approved whatever was put to it",
+          "Strong scope discipline throughout delivery",
+          "That rejected changes were handled outside the register",
+          "An unusually stable set of requirements",
+        ],
+        answer: 0,
+        rationale:
+          "A gate that never refuses anything is not a gate. It is worth naming in the lessons table under change control rather than passing over.",
+        optionNotes: [
+          "",
+          "Discipline would show as changes considered and declined.",
+          "Possible, and if so the register is incomplete — which is also a finding.",
+          "Stable requirements would produce few change requests, not nine approvals.",
+        ],
+      },
+    ],
+    scenarios: [
+      {
+        id: "cl-m-s1",
+        moduleId: "milestones",
+        context:
+          "Your project was rebaselined twice, both approved by the Project Board. Measured against the current baseline every milestone was met. Measured against the original approved schedule, delivery was twenty-two months late.",
+        prompt: "What does the milestone table show?",
+        options: [
+          "Both variances, with each rebaseline dated and attributed",
+          "Variance to the current baseline, since both rebaselines were approved",
+          "Variance to the original schedule, as the commitment that was funded",
+          "Variance to the current baseline, with the original noted in lessons",
+        ],
+        answer: 0,
+        rationale:
+          "Each answers a different question — whether recent management held, and what the commitment cost in time. Showing one alone is either flattering or unfair.",
+        optionNotes: [
+          "",
+          "Approval makes the movement legitimate; it does not make it invisible.",
+          "This is closer to honest but reads as blame without the approvals alongside.",
+          "Relegating it to lessons keeps it out of the table where a reader would look for it.",
+        ],
+      },
+      {
+        id: "cl-m-s2",
+        moduleId: "milestones",
+        context:
+          "A key milestone, 'integration complete', was recorded as met in June. On checking, you find the definition was narrowed in April to exclude two of the five interfaces, and the narrowing was discussed at a working group but never raised as a change request.",
+        prompt: "How should the milestone be reported?",
+        options: [
+          "Met on the narrowed definition, with the change and its lack of approval stated",
+          "Met in June, since the working group agreed the narrower definition",
+          "Not met, because the original five interfaces were not delivered",
+          "Met, with the two interfaces recorded as outstanding actions",
+        ],
+        answer: 0,
+        rationale:
+          "Both facts are load-bearing: what was actually achieved, and that the goalposts moved without going through change control. The second is the finding that improves the next project.",
+        optionNotes: [
+          "",
+          "A working group is not a change authority, and the date alone conceals the redefinition.",
+          "Three interfaces were integrated; this overstates the shortfall and loses the real issue.",
+          "It captures the gap but not the governance failure that created it.",
+        ],
+      },
+    ],
+    assignment: {
+      title: "Rebuild a milestone table with its variances",
+      instruction:
+        "Take a project you know and draft the milestone table with planned, actual and variance columns. Where the project was rebaselined, show variance to both baselines. Then write the change control paragraph.",
+      prompts: [
+        "Which milestones moved, and can you point at an approved change for each?",
+        "Which moved because the definition changed rather than the date?",
+        "How many changes were rejected, and what does that number say?",
+      ],
+      modelAnswer:
+        "The exercise usually turns up one milestone that was met by quietly narrowing what it meant, and it is always the most useful line in the table.\n\nA workable format: 'Integration complete — planned Nov 2024 — rebaselined Mar 2025 — actual Jun 2025 — 31 weeks against original, 13 weeks against revised. Scope narrowed in April 2025 to exclude the two low-volume interfaces; agreed at the integration working group, not raised as a change request. CR-014 covers the date movement, not the scope change.'\n\nThat single row carries the delay, the approved part, the unapproved part, and where the record is incomplete. It also writes two lessons rows for you — one under schedule, one under change control — which is the general pattern: the milestone table is where lessons come from, not a separate exercise.\n\nOn rejected changes: if the answer is zero, say so in the change control paragraph rather than leaving the reader to notice. A process that approved eleven of eleven is worth a sentence.",
+      criteria: [
+        "Variance shown against the original baseline, not only the current one",
+        "Each rebaseline dated and attributed to an approving forum",
+        "At least one milestone examined for definition change, not just date change",
+        "The change record's shape — including rejections — is commented on",
+      ],
+    },
+  },
   {
     id: "benefits",
     number: 3,
@@ -2208,14 +3126,76 @@ export const closureModules: Module[] = [
   {
     id: "writing",
     number: 10,
-    title: "Writing the report",
-    subtitle: "Structure, candour and the shortfall paragraph",
+    title: "Writing it: choosing and completing the template",
+    subtitle: "Two forms, an assessment grid, and where the report goes",
     minutes: 0,
     slides: "",
-    outcome: "Produce a closure report structured so a reader can find the decision-relevant content, including where targets were not met.",
+    outcome:
+      "Choose the right template for the project's tier, complete it so a reader finds the decision-relevant content, and submit it to the right places.",
     coreIdea:
-      "A closure report is read by people looking for one thing, in a hurry. Structure it so they find it, and say the difficult part plainly enough that the rest of the document becomes believable.",
+      "The department has two closure templates and they are structured differently, not merely sized differently. Pick by tier, complete every section the form asks for — justifying rather than deleting the ones that do not apply — and remember that nobody downstream will check your work. The craft that follows matters precisely because there is no safety net.",
     sections: [
+      {
+        heading: "Which template, and what changes between them",
+        body: "Tier 1 and Tier 2 projects use the full template: Document Control and Key Project Contacts, then fifteen numbered sections. Tier 3 projects use the simplified form released in July 2026, which is a set of tables rather than numbered prose. The obligation is the same at both tiers; the shape of the answer is not.",
+        table: {
+          caption: "The same project, reported two ways",
+          head: ["What is being reported", "Full template", "Tier 3 form"],
+          rows: [
+            ["Overall result", "Inferred from sections 4, 5 and 6", "A single Achieved / Partially achieved / Not achieved at the top"],
+            ["What was delivered", "§7 management deliverables, §8 project-specific", "One delivery summary table, planned against delivered"],
+            ["Schedule", "§9 milestones against the baselined PMP", "Key milestones table with variance and comments"],
+            ["Benefits", "§11 with ID, measure, owner, timing", "Benefits table with status, BAU owner and next steps"],
+            ["Handover", "§10 outcomes and §14 asset management", "Transition BAU table, including evidence of acceptance"],
+            ["Risk", "Covered by the §3 approval assertions", "Three explicit yes/no questions and a RiskNet2 Plan ID"],
+            ["Overall judgement", "§4 Project Manager's Report, in prose", "A seven-area assessment grid with fixed ratings"],
+            ["Lessons", "Eighteen fixed categories, Strengths and Areas to improve", "Free themes, one row per lesson"],
+          ],
+        },
+        example:
+          "The Tier 3 form is easier to complete and harder to fudge, because it makes you commit to a rating in a box rather than describe a situation in a paragraph. That is worth knowing even if you are completing the full template — write section 4 as though you had to pick one of three words.",
+        sourceIds: ["dewr-template", "dewr-tier3"],
+      },
+      {
+        heading: "The assessment grid, and what evidence means there",
+        body: "The Tier 3 form ends with seven assessment areas, each with a fixed rating scale and a column headed Evidence. The ratings are the part that gets aggregated across the department; the evidence column is the part that makes your rating defensible when someone asks.",
+        table: {
+          caption: "The seven areas and their scales",
+          head: ["Assessment area", "Rating options"],
+          rows: [
+            ["Scope delivered", "Achieved / Partially achieved / Not achieved"],
+            ["Schedule", "On time / Minor delay / Significant delay"],
+            ["Budget", "Within / Over / Under"],
+            ["Benefits", "Achieved / On track / Not achieved"],
+            ["Transition to business as usual", "Complete / Outstanding actions"],
+            ["Stakeholder engagement", "Effective / Partially effective / Needs improvement"],
+            ["Project governance", "Effective / Partially effective / Needs improvement"],
+          ],
+        },
+        bullets: [
+          "Note that Budget has no 'good' option — Within, Over and Under are three descriptions, not a scale from best to worst.",
+          "Benefits offers 'On track', which is the honest answer for most projects at closure, because benefits usually land afterwards.",
+          "Transition is binary: Complete, or Outstanding actions. There is no partial credit, and outstanding actions need owners.",
+          "Evidence means a fact a reader could check — a date, a figure, a decision reference. Not a restatement of the rating.",
+        ],
+        example:
+          "Weak: 'Schedule — Minor delay — the project experienced some delays but recovered well.' Strong: 'Schedule — Minor delay — six weeks against the original date, within the eight-week tolerance; no rebaseline required.' Same rating, and only one of them survives a question.",
+        sourceIds: ["dewr-tier3"],
+      },
+      {
+        heading: "Signing it off and sending it on",
+        body: "Both forms end in approvals, and both accept email approval in place of a signature provided it is attached. Once approved, the report goes to your group Project Management Office and to the Portfolio Project Office — and that is the end of the process, because the PPO does not review it.",
+        bullets: [
+          "Full template: Project Board, SRO, Project Manager, Senior User or Business Owner, plus any other applicable roles.",
+          "Tier 3 form: SRO, Project Manager, Business Owner, plus others as applicable.",
+          "Attach the email where approval came that way — the form says so explicitly.",
+          "Lessons go separately to the Departmental Lessons Learned Register. Submitting the report does not lodge them.",
+          "Send the approved report to the group PMO and the PPO as soon as practicable rather than waiting for a review that will not come.",
+        ],
+        example:
+          "The two-destination rule catches people out. A report approved by the SRO and filed in the project's own SharePoint has not been submitted, and the lessons in it will never reach anyone who could use them.",
+        sourceIds: ["dewr-template", "dewr-tier3", "dewr-announcement"],
+      },
       {
         heading: "Structure for a reader in a hurry",
         body: "Assume your reader arrives with one question and about ninety seconds. They will scan for their answer, and if it is not findable in that time they either ask you directly or decide for themselves what it probably was. Structure is therefore doing real work here: it is the difference between a document that gets used and one that gets filed.",
@@ -2655,3 +3635,37 @@ export const closureModules: Module[] = [
     },
   },
 ];
+
+/*
+ * The curriculum, in the order a learner meets it.
+ *
+ * Process first, then the artefacts it produces — which is how closure
+ * actually runs at DEWR, and the opposite of how the first version of this
+ * course was built. Declaring the order here rather than by position in the
+ * array above means a stage can be inserted, moved or retired by editing one
+ * line, and the numbering follows automatically.
+ */
+const CLOSURE_ORDER = [
+  "purpose",        // what closure is, and why a project cannot close without one
+  "process",        // the six activities and the fifteen-item checklist
+  "accountability", // SRO, Board, Senior User, group PMO, PPO
+  "evidence",       // baselines, measurement, what you may claim
+  "deliverables",   // management artefacts, and what the project built
+  "milestones",     // schedule against baseline, tolerances, change control
+  "benefits",       // ownership and realisation after handover
+  "handover",       // transition to BAU, assets, records
+  "records",        // decommissioning, data and records — folds into handover
+  "openitems",      // risks, issues, dependencies, actions
+  "financial",      // OPEX/CAPEX against original approval
+  "lessons",        // the eighteen categories, and the departmental register
+  "sections",       // framing — folds into writing
+  "writing",        // the two templates, the assessment grid, submission
+  "assurance",      // folds into accountability
+] as const;
+
+export const closureModules: Module[] = CLOSURE_ORDER.map((id, index) => {
+  const found = closureModuleDefs.find((module) => module.id === id);
+  /* A typo here would silently drop a stage, so fail loudly at load. */
+  if (!found) throw new Error(`Closure curriculum references unknown stage "${id}"`);
+  return { ...found, number: index + 1 };
+});

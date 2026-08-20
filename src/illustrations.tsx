@@ -775,6 +775,103 @@ function IllusEvidenceLinks({ className }: Props) {
   );
 }
 
+/** Closure — six activities, then a document that evidences them. */
+function IllusClosureProcess({ className }: Props) {
+  const id = useId();
+  const acts = ["deliverables\naccepted", "risks and\nbenefits owned", "PIR\narranged", "closure\napproved", "lessons\nregistered"];
+  return (
+    <Frame id={id} className={className} viewBox="0 0 370 210" label="Five closure activities feed a report; the report is the evidence, not the work">
+      {acts.map((label, i) => (
+        <g key={label}>
+          <rect x="20" y={22 + i * 32} width="132" height="26" rx="6" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.3" />
+          <text x="86" y={39 + i * 32} textAnchor="middle" className="illus-caption">{label.replace("\n", " ")}</text>
+          <path d={`M 156 ${35 + i * 32} L 214 ${100}`} stroke="var(--stage)" strokeOpacity="0.34" strokeWidth="1.5" fill="none" />
+        </g>
+      ))}
+      <rect x="218" y="62" width="126" height="80" rx="9" fill={`url(#${id}-a)`} filter={`url(#${id}-shadow)`} />
+      <text x="281" y="96" textAnchor="middle" className="illus-on-accent">the report</text>
+      <text x="281" y="116" textAnchor="middle" className="illus-on-accent-sub">evidences them</text>
+      <text x="185" y="196" textAnchor="middle" className="illus-caption-dim">written last, because it records what happened</text>
+    </Frame>
+  );
+}
+
+/** Closure — who approves, who endorses, who merely receives. */
+function IllusApprovalChain({ className }: Props) {
+  const id = useId();
+  const tiers: [string, string, boolean][] = [
+    ["Senior Responsible Officer", "approves and assures", true],
+    ["Project Board · Senior User", "endorses · accepts handover", false],
+    ["Group PMO · Portfolio Project Office", "receives — does not review", false],
+  ];
+  return (
+    <Frame id={id} className={className} viewBox="0 0 370 210" label="The SRO approves, the Board endorses, the PMO and PPO only receive">
+      {tiers.map(([role, does, solid], i) => (
+        <g key={role}>
+          <rect
+            x={40 + i * 14} y={26 + i * 56} width={290 - i * 28} height="44" rx="8"
+            fill={solid ? `url(#${id}-a)` : `url(#${id}-soft)`}
+            stroke={solid ? "none" : "var(--stage)"} strokeOpacity="0.3"
+            strokeDasharray={i === 2 ? "5 4" : undefined}
+            filter={solid ? `url(#${id}-shadow)` : undefined}
+          />
+          <text x="185" y={46 + i * 56} textAnchor="middle" className={solid ? "illus-on-accent" : "illus-caption"}>{role}</text>
+          <text x="185" y={62 + i * 56} textAnchor="middle" className={solid ? "illus-on-accent-sub" : "illus-caption-dim"}>{does}</text>
+        </g>
+      ))}
+      <text x="185" y="200" textAnchor="middle" className="illus-caption-dim">nothing downstream will catch an error</text>
+    </Frame>
+  );
+}
+
+/** Closure — the paperwork and the thing you built are different questions. */
+function IllusTwoDeliverables({ className }: Props) {
+  const id = useId();
+  return (
+    <Frame id={id} className={className} viewBox="0 0 370 210" label="Management artefacts and project-specific deliverables are separate questions">
+      <rect x="26" y="30" width="148" height="132" rx="9" fill={`url(#${id}-panel)`} stroke="var(--stage)" strokeOpacity="0.24" />
+      <text x="100" y="52" textAnchor="middle" className="illus-caption">governance wanted</text>
+      {[0, 1, 2, 3].map((i) => (
+        <g key={i}>
+          <rect x="44" y={66 + i * 22} width="14" height="16" rx="2" fill="var(--stage)" opacity={0.5 - i * 0.07} />
+          <rect x="66" y={71 + i * 22} width="88" height="6" rx="3" fill="var(--stage)" opacity={0.32 - i * 0.05} />
+        </g>
+      ))}
+      <text x="100" y="176" textAnchor="middle" className="illus-caption-dim">plans, registers, profiles</text>
+
+      <rect x="196" y="30" width="148" height="132" rx="9" fill={`url(#${id}-a)`} filter={`url(#${id}-shadow)`} />
+      <text x="270" y="52" textAnchor="middle" className="illus-on-accent">the business got</text>
+      <circle cx="234" cy="98" r="17" className="illus-on-accent-lg" opacity="0.85" />
+      <rect x="260" y="82" width="56" height="32" rx="5" className="illus-on-accent-lg" opacity="0.6" />
+      <text x="270" y="140" textAnchor="middle" className="illus-on-accent-sub">a service, a system, a guide</text>
+      <text x="185" y="196" textAnchor="middle" className="illus-caption-dim">answering both with one list answers neither</text>
+    </Frame>
+  );
+}
+
+/** Closure — variance against the original baseline is the content. */
+function IllusBaselineVariance({ className }: Props) {
+  const id = useId();
+  return (
+    <Frame id={id} className={className} viewBox="0 0 370 210" label="Variance measured against the original baseline, not the latest rebaseline">
+      <line x1="30" y1="66" x2="340" y2="66" stroke="var(--stage)" strokeOpacity="0.55" strokeWidth="2" />
+      <text x="30" y="54" className="illus-caption">original baseline</text>
+      <circle cx="150" cy="66" r="5" fill="var(--stage)" />
+      <text x="150" y="42" textAnchor="middle" className="illus-caption-dim">planned</text>
+
+      <line x1="30" y1="126" x2="340" y2="126" stroke="var(--stage)" strokeOpacity="0.3" strokeWidth="2" strokeDasharray="6 4" />
+      <text x="30" y="114" className="illus-caption-dim">rebaselined</text>
+      <circle cx="266" cy="126" r="6" fill="var(--stage)" />
+      <text x="266" y="150" textAnchor="middle" className="illus-caption">actual</text>
+
+      <path d="M 150 72 L 266 120" stroke="var(--stage)" strokeOpacity="0.45" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
+      <rect x="176" y="80" width="64" height="22" rx="5" fill={`url(#${id}-a)`} />
+      <text x="208" y="95" textAnchor="middle" className="illus-on-accent-sub">variance</text>
+      <text x="185" y="182" textAnchor="middle" className="illus-caption-dim">report both, or the movement disappears</text>
+    </Frame>
+  );
+}
+
 /** Stage id → illustration. */
 export const stageIllustrations: Record<string, (props: Props) => React.ReactElement> = {
   thinking: IllusProductVsProject,
@@ -789,6 +886,10 @@ export const stageIllustrations: Record<string, (props: Props) => React.ReactEle
 
   // Closure Reports
   purpose: IllusClosurePurpose,
+  process: IllusClosureProcess,
+  accountability: IllusApprovalChain,
+  deliverables: IllusTwoDeliverables,
+  milestones: IllusBaselineVariance,
   evidence: IllusClaimStrength,
   benefits: IllusBenefitLag,
   lessons: IllusLessonShape,
