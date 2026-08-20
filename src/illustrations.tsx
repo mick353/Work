@@ -235,10 +235,10 @@ export function IllusDvf({ className }: Props) {
         <circle cx="280" cy="188" r="82" fill={`url(#${id}-warm)`} fillOpacity="0.24" stroke="var(--stage-8)" strokeWidth="2.5" />
       </g>
 
-      <text x="168" y="58" textAnchor="middle" className="illus-label">DESIRABLE</text>
-      <text x="168" y="76" textAnchor="middle" className="illus-caption-dim">people need it</text>
-      <text x="396" y="58" textAnchor="middle" className="illus-label">FEASIBLE</text>
-      <text x="396" y="76" textAnchor="middle" className="illus-caption-dim">we can build it</text>
+      <text x="168" y="55" textAnchor="middle" className="illus-label">DESIRABLE</text>
+      <text x="168" y="78" textAnchor="middle" className="illus-caption-dim">people need it</text>
+      <text x="396" y="55" textAnchor="middle" className="illus-label">FEASIBLE</text>
+      <text x="396" y="78" textAnchor="middle" className="illus-caption-dim">we can build it</text>
       <text x="280" y="264" textAnchor="middle" className="illus-label">VIABLE</text>
 
       <g filter={`url(#${id}-lift)`}>
@@ -420,10 +420,10 @@ export function IllusPhaseGates({ className }: Props) {
           </g>
         );
       })}
-      <text x="280" y="42" textAnchor="middle" className="illus-kicker">STAGE GATES</text>
+      <text x="280" y="26" textAnchor="middle" className="illus-kicker">STAGE GATES</text>
       <rect x="128" y="188" width="304" height="44" rx="14" className="illus-warn-panel" />
-      <text x="280" y="206" textAnchor="middle" className="illus-caption-strong">Closure is where product risk peaks</text>
-      <text x="280" y="224" textAnchor="middle" className="illus-caption-dim">hand over an owner, measures and a cadence — or quality decays unowned</text>
+      <text x="280" y="204" textAnchor="middle" className="illus-caption-strong">Closure is where product risk peaks</text>
+      <text x="280" y="226" textAnchor="middle" className="illus-caption-dim">hand over an owner, measures and a cadence — or quality decays unowned</text>
     </Frame>
   );
 }
@@ -532,11 +532,11 @@ function IllusClosurePurpose({ className }: Props) {
   return (
     <Frame id={id} className={className} viewBox="0 0 370 210" label="A project ends and its obligations continue, carried across by the closure report">
       <rect x="18" y="72" width="104" height="62" rx="10" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.45" />
-      <text x="70" y="98" textAnchor="middle" className="illus-caption-strong">Project</text>
-      <text x="70" y="116" textAnchor="middle" className="illus-caption-dim">ends here</text>
+      <text x="70" y="96" textAnchor="middle" className="illus-caption-strong">Project</text>
+      <text x="70" y="118" textAnchor="middle" className="illus-caption-dim">ends here</text>
       <rect x="146" y="58" width="78" height="90" rx="10" fill={`url(#${id}-a)`} filter={`url(#${id}-shadow)`} />
-      <text x="185" y="96" textAnchor="middle" className="illus-on-accent">Closure</text>
-      <text x="185" y="114" textAnchor="middle" className="illus-on-accent-sub">report</text>
+      <text x="185" y="94" textAnchor="middle" className="illus-on-accent">Closure</text>
+      <text x="185" y="116" textAnchor="middle" className="illus-on-accent-sub">report</text>
       <rect x="248" y="52" width="104" height="30" rx="8" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.4" />
       <text x="300" y="72" textAnchor="middle" className="illus-caption">Benefits</text>
       <rect x="248" y="88" width="104" height="30" rx="8" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.4" />
@@ -553,18 +553,25 @@ function IllusClosurePurpose({ className }: Props) {
 /** Stage 2 — measured, estimated, asserted. */
 function IllusClaimStrength({ className }: Props) {
   const id = useId();
+  /*
+    Bars occupy a fixed left column and the descriptions a fixed right one.
+    The bar width therefore cannot push a label off the canvas, whatever the
+    longest description happens to be.
+  */
+  const BAR_X = 20;
+  const SUB_X = 176;
   const rows = [
-    { y: 52, w: 300, label: "Measured", sub: "data before and after" },
-    { y: 96, w: 210, label: "Estimated", sub: "a model, assumptions stated" },
-    { y: 140, w: 120, label: "Asserted", sub: "judgement, no measurement" },
+    { y: 52, w: 148, label: "Measured", sub: "data before and after" },
+    { y: 96, w: 104, label: "Estimated", sub: "a model, assumptions stated" },
+    { y: 140, w: 60, label: "Asserted", sub: "judgement, no measurement" },
   ];
   return (
     <Frame id={id} className={className} viewBox="0 0 370 210" label="Three strengths of claim: measured, estimated and asserted">
       {rows.map((r, i) => (
         <g key={r.label}>
-          <rect x="20" y={r.y} width={r.w} height="30" rx="7" fill={i === 0 ? `url(#${id}-a)` : `url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity={i === 0 ? 0 : 0.45} />
-          <text x="32" y={r.y + 20} className={i === 0 ? "illus-on-accent" : "illus-caption-strong"}>{r.label}</text>
-          <text x={r.w + 30} y={r.y + 20} className="illus-caption-dim">{r.sub}</text>
+          <rect x={BAR_X} y={r.y} width={r.w} height="30" rx="7" fill={i === 0 ? `url(#${id}-a)` : `url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity={i === 0 ? 0 : 0.45} />
+          <text x={BAR_X + 12} y={r.y + 20} className={i === 0 ? "illus-on-accent" : "illus-caption-strong"}>{r.label}</text>
+          <text x={SUB_X} y={r.y + 20} className="illus-caption-dim">{r.sub}</text>
         </g>
       ))}
       <text x="20" y="186" className="illus-caption-dim">mark which one every sentence is</text>
@@ -579,12 +586,13 @@ function IllusBenefitLag({ className }: Props) {
     <Frame id={id} className={className} viewBox="0 0 370 210" label="Cost falls during delivery; benefits accrue afterwards, in the business">
       <path d="M28 150h316" className="illus-axis" />
       <rect x="40" y="66" width="112" height="84" rx="8" fill={`url(#${id}-a)`} filter={`url(#${id}-shadow)`} />
-      <text x="96" y="104" textAnchor="middle" className="illus-on-accent">Cost</text>
-      <text x="96" y="122" textAnchor="middle" className="illus-on-accent-sub">during delivery</text>
+      <text x="96" y="102" textAnchor="middle" className="illus-on-accent">Cost</text>
+      <text x="96" y="124" textAnchor="middle" className="illus-on-accent-sub">during delivery</text>
       <path d="M170 150c40 0 44-52 84-62s60-8 60-8" stroke="var(--stage)" strokeWidth="3" fill="none" strokeLinecap="round" strokeDasharray="1 7" />
-      <rect x="228" y="58" width="112" height="46" rx="8" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.5" />
-      <text x="284" y="78" textAnchor="middle" className="illus-caption-strong">Benefit</text>
-      <text x="284" y="94" textAnchor="middle" className="illus-caption-dim">6-12 months on</text>
+      {/* 54 high, not 46: two stacked labels need leading, not just clearance. */}
+      <rect x="228" y="54" width="112" height="54" rx="8" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.5" />
+      <text x="284" y="76" textAnchor="middle" className="illus-caption-strong">Benefit</text>
+      <text x="284" y="97" textAnchor="middle" className="illus-caption-dim">6-12 months on</text>
       <path d="M160 150v-14" className="illus-divider" />
       <text x="160" y="176" textAnchor="middle" className="illus-caption-dim">project ends</text>
       <text x="284" y="176" textAnchor="middle" className="illus-caption-dim">someone else owns it</text>
@@ -599,8 +607,8 @@ function IllusLessonShape({ className }: Props) {
   return (
     <Frame id={id} className={className} viewBox="0 0 370 210" label="A sentiment has no parts; a usable lesson has four">
       <rect x="20" y="44" width="150" height="44" rx="8" className="illus-warn-panel" />
-      <text x="95" y="63" textAnchor="middle" className="illus-caption-strong">&quot;Engage earlier&quot;</text>
-      <text x="95" y="79" textAnchor="middle" className="illus-caption-dim">no parts at all</text>
+      <text x="95" y="61" textAnchor="middle" className="illus-caption-strong">&quot;Engage earlier&quot;</text>
+      <text x="95" y="82" textAnchor="middle" className="illus-caption-dim">no parts at all</text>
       <text x="95" y="112" textAnchor="middle" className="illus-caption-dim">nobody acts differently</text>
       {parts.map((p, i) => (
         <g key={p}>
@@ -619,11 +627,11 @@ function IllusHandoverTest({ className }: Props) {
   return (
     <Frame id={id} className={className} viewBox="0 0 370 210" label="The handover test: can the receiving team work without the people who left">
       <circle cx="88" cy="94" r="34" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.4" strokeDasharray="4 5" />
-      <text x="88" y="92" textAnchor="middle" className="illus-caption-dim">delivery</text>
-      <text x="88" y="108" textAnchor="middle" className="illus-caption-dim">team gone</text>
+      <text x="88" y="90" textAnchor="middle" className="illus-caption-dim">delivery</text>
+      <text x="88" y="111" textAnchor="middle" className="illus-caption-dim">team gone</text>
       <circle cx="266" cy="94" r="42" fill={`url(#${id}-a)`} filter={`url(#${id}-shadow)`} />
-      <text x="266" y="90" textAnchor="middle" className="illus-on-accent">Receiving</text>
-      <text x="266" y="108" textAnchor="middle" className="illus-on-accent-sub">team</text>
+      <text x="266" y="88" textAnchor="middle" className="illus-on-accent">Receiving</text>
+      <text x="266" y="110" textAnchor="middle" className="illus-on-accent-sub">team</text>
       <path d="M128 94h96" stroke="var(--stage)" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="5 6" />
       <path d="M160 78l32 32M192 78l-32 32" stroke="var(--stage)" strokeWidth="3" strokeLinecap="round" opacity="0.55" />
       <text x="185" y="164" textAnchor="middle" className="illus-caption">run · change · diagnose</text>
@@ -680,10 +688,15 @@ function IllusShutdown({ className }: Props) {
 /** Stage 8 — objective, outcome and key result are three different questions. */
 function IllusThreeLevels({ className }: Props) {
   const id = useId();
+  /*
+    Three columns on one line: label, question, value. The value is
+    end-anchored, so a long value grows leftwards into the question. Values
+    are kept short for that reason — the question carries the meaning.
+  */
   const rows = [
     { label: "Objective", q: "what did we set out to do?", v: "achieved" },
-    { label: "Outcome", q: "what changed for users?", v: "18% of a 40% target" },
-    { label: "Key result", q: "how do we know?", v: "0.83 against 0.60" },
+    { label: "Outcome", q: "what changed for users?", v: "18% of 40%" },
+    { label: "Key result", q: "how do we know?", v: "0.83 v 0.60" },
   ];
   return (
     <Frame id={id} className={className} viewBox="0 0 370 210" label="Objective, business outcome and key result answer three different questions">
@@ -711,8 +724,8 @@ function IllusThreeDestinations({ className }: Props) {
   return (
     <Frame id={id} className={className} viewBox="0 0 370 210" label="At closure every open item is closed, formally accepted, or carried to a named owner">
       <rect x="22" y="76" width="104" height="52" rx="10" fill={`url(#${id}-a)`} filter={`url(#${id}-shadow)`} />
-      <text x="74" y="99" textAnchor="middle" className="illus-on-accent">Open item</text>
-      <text x="74" y="116" textAnchor="middle" className="illus-on-accent-sub">at closure</text>
+      <text x="74" y="97" textAnchor="middle" className="illus-on-accent">Open item</text>
+      <text x="74" y="118" textAnchor="middle" className="illus-on-accent-sub">at closure</text>
       {outs.map((o) => (
         <g key={o.label}>
           <path d={`M126 102C168 102 176 ${o.y + 15} ${o.x - 8} ${o.y + 15}`} stroke="var(--stage)" strokeWidth="2" fill="none" opacity="0.6" strokeLinecap="round" />
@@ -768,8 +781,8 @@ function IllusEvidenceLinks({ className }: Props) {
           </g>
         );
       })}
-      <text x="232" y="150" textAnchor="middle" className="illus-caption-dim">system decommissioned,</text>
-      <text x="232" y="166" textAnchor="middle" className="illus-caption-dim">no extract retained</text>
+      <text x="232" y="148" textAnchor="middle" className="illus-caption-dim">system decommissioned,</text>
+      <text x="232" y="169" textAnchor="middle" className="illus-caption-dim">no extract retained</text>
       <text x="185" y="46" textAnchor="middle" className="illus-caption">an auditor follows it until it runs out</text>
     </Frame>
   );
@@ -815,8 +828,8 @@ function IllusApprovalChain({ className }: Props) {
             strokeDasharray={i === 2 ? "5 4" : undefined}
             filter={solid ? `url(#${id}-shadow)` : undefined}
           />
-          <text x="185" y={46 + i * 56} textAnchor="middle" className={solid ? "illus-on-accent" : "illus-caption"}>{role}</text>
-          <text x="185" y={62 + i * 56} textAnchor="middle" className={solid ? "illus-on-accent-sub" : "illus-caption-dim"}>{does}</text>
+          <text x="185" y={43 + i * 56} textAnchor="middle" className={solid ? "illus-on-accent" : "illus-caption"}>{role}</text>
+          <text x="185" y={64 + i * 56} textAnchor="middle" className={solid ? "illus-on-accent-sub" : "illus-caption-dim"}>{does}</text>
         </g>
       ))}
       <text x="185" y="200" textAnchor="middle" className="illus-caption-dim">nothing downstream will catch an error</text>

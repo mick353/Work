@@ -18,6 +18,41 @@ const RATINGS: { key: Rating; label: string; hint: string; shortcut: string }[] 
   { key: "easy", label: "Easy", hint: "Long interval", shortcut: "4" },
 ];
 
+/**
+ * Draw a practice set spread across stages.
+ *
+ * A flat shuffle over the whole bank can return ten questions from one stage,
+ * which is a legitimate random outcome and a poor practice set: interleaving
+ * across topics is what makes mixed practice worth more than re-reading one.
+ *
+ * Round-robin over shuffled per-stage queues, so the set covers as many stages
+ * as it has room for and takes a second from a stage only once every stage has
+ * had a first. Stage order is shuffled too, so a short set is not always drawn
+ * from the earliest stages.
+ */
+export function spreadAcrossStages<T extends { moduleId: string }>(pool: T[], limit: number): T[] {
+  const byStage = new Map<string, T[]>();
+  for (const item of pool) {
+    const list = byStage.get(item.moduleId);
+    if (list) list.push(item);
+    else byStage.set(item.moduleId, [item]);
+  }
+  const queues = shuffle([...byStage.values()]).map((list) => shuffle(list));
+  const picked: T[] = [];
+  for (let round = 0; picked.length < limit; round += 1) {
+    let addedThisRound = false;
+    for (const queue of queues) {
+      if (picked.length >= limit) break;
+      const next = queue[round];
+      if (!next) continue;
+      picked.push(next);
+      addedThisRound = true;
+    }
+    if (!addedThisRound) break;   // every queue exhausted
+  }
+  return picked;
+}
+
 export function selectDueCards(cards: Flashcard[], reviews: ReviewMap, now: number, limit: number) {
   const scheduled = cards
     .filter((card) => reviews[card.id] && reviews[card.id].due <= now)
@@ -210,7 +245,7 @@ export function Practice({
   const [resurfaced, setResurfaced] = useState(0);
 
   const start = () => {
-    setQuestions(shuffle(practiceQuestions).slice(0, PRACTICE_SIZE));
+    setQuestions(spreadAcrossStages(practiceQuestions, PRACTICE_SIZE));
     setIndex(0);
     setSelected(null);
     setResults([]);

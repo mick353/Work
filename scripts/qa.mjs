@@ -67,6 +67,8 @@ const bankModule = await esbuild({
     contents: `
       export { practiceQuestions, modules, sources } from ${JSON.stringify(path.join(projectDir, "src/course.ts"))};
       export { diagnosticQuestions, flashcards, toolkitTemplates, supplementaryQuestions, divergences, glossary, caseStudies } from ${JSON.stringify(path.join(projectDir, "src/reference.ts"))};
+      export { trainingPackages } from ${JSON.stringify(path.join(projectDir, "src/packages.ts"))};
+      export { spreadAcrossStages } from ${JSON.stringify(path.join(projectDir, "src/views-practice.tsx"))};
       export { presentOptions } from ${JSON.stringify(path.join(projectDir, "src/lib.ts"))};
       export { slides, SLIDE_COUNT } from ${JSON.stringify(path.join(projectDir, "src/slides.ts"))};
     `,
@@ -173,6 +175,80 @@ const correctOptionFor = async (block) => {
   return null;
 };
 check("Question bank is substantially larger than one practice set", allQuestions.length >= 60, `${allQuestions.length} questions`);
+/* ---------------------------------------------------------------- *
+ * Per-package content coverage.
+ *
+ * Reference content is keyed by module id and resolved by lookup, so a stage
+ * with no flashcards, no glossary term or no diagnostic question renders an
+ * empty section and reports nothing. The diagnostic is the sharpest case: it
+ * draws one question per stage, so a stage absent from the pool is silently
+ * excluded from the recommendation the learner is given.
+ *
+ * A module id that no stage owns is the mirror image — content that can never
+ * be reached.
+ * ---------------------------------------------------------------- */
+{
+  const gaps = [];
+  const orphans = [];
+  for (const entry of bank.trainingPackages) {
+    const ids = entry.content.modules.map((m) => m.id);
+    const sets = {
+      "diagnostic questions": entry.content.diagnosticQuestions,
+      flashcards: entry.content.flashcards,
+      glossary: entry.content.glossary,
+      contrasts: entry.content.contrasts,
+      "supplementary questions": entry.content.supplementaryQuestions,
+    };
+    for (const [label, items] of Object.entries(sets)) {
+      if (!items?.length) continue;
+      const covered = new Set(items.map((i) => i.moduleId).filter(Boolean));
+      if (!covered.size) continue;
+      const missing = ids.filter((id) => !covered.has(id));
+      const extra = [...covered].filter((id) => !ids.includes(id));
+      if (missing.length) gaps.push(`${entry.manifest.id} ${label}: no ${missing.join(", ")}`);
+      if (extra.length) orphans.push(`${entry.manifest.id} ${label}: ${extra.join(", ")}`);
+    }
+  }
+  check(
+    "Every stage of every package has reference content of each kind",
+    gaps.length === 0,
+    gaps.length ? gaps.join(" | ") : "diagnostic, cards, glossary, contrasts and supplements all complete",
+  );
+  check(
+    "No reference content is keyed to a stage that does not exist",
+    orphans.length === 0,
+    orphans.length ? orphans.join(" | ") : "no orphaned module ids",
+  );
+}
+
+/* ---------------------------------------------------------------- *
+ * Mixed practice covers the curriculum.
+ *
+ * A flat shuffle over the bank can legitimately return ten questions from one
+ * stage. Interleaving across topics is the property that makes mixed practice
+ * worth more than re-reading, so the draw is round-robin over stages.
+ * ---------------------------------------------------------------- */
+{
+  const worst = [];
+  for (const entry of bank.trainingPackages) {
+    const pool = entry.content.practiceQuestions;
+    if (!pool?.length) continue;
+    const stages = new Set(pool.map((q) => q.moduleId)).size;
+    const want = Math.min(10, stages);
+    let low = Infinity;
+    for (let run = 0; run < 40; run += 1) {
+      const set = bank.spreadAcrossStages(pool, 10);
+      low = Math.min(low, new Set(set.map((q) => q.moduleId)).size);
+    }
+    if (low < want) worst.push(`${entry.manifest.id}: a set covered only ${low} of a possible ${want} stages`);
+  }
+  check(
+    "A ten-question practice set always spans as many stages as it can",
+    worst.length === 0,
+    worst.length ? worst.join(" | ") : "40 draws per package, every one fully spread",
+  );
+}
+
 check("Every question has four options", allQuestions.every((q) => q.options.length === 4));
 check(
   "Every optionNotes array aligns with its options",
@@ -1881,6 +1957,74 @@ check(
   );
   await pp.emulateMedia({ media: "screen" });
   await pr.close();
+}
+
+/*
+  Illustration text: collisions, spill and crowding.
+
+  SVG text does not wrap, reflow or push its neighbours. A label positioned
+  from a variable — a bar width, an end anchor, a stacked sub-label — collides
+  or runs off the canvas the moment the string is longer than the space
+  assumed for it, and nothing reports an error. The layout is fixed in user
+  units, so a fault is present at every viewport rather than only at narrow
+  ones; the sweep is here because font metrics are not perfectly proportional
+  to the scale factor.
+
+  Three faults, all checked: text over text, text outside the frame, and
+  stacked labels with under 4 user units of leading, which reads as collided
+  even where the boxes do not intersect.
+*/
+{
+  const faults = [];
+  for (const entry of bank.trainingPackages) {
+    const ids = entry.content.modules.map((m) => m.id);
+    /* One context per package; resize in place rather than rebuilding it. */
+    const ic = await browser.newContext({ viewport: { width: 1440, height: 1200 } });
+    const ip = await ic.newPage();
+    watchPage(ip, `illus-${entry.manifest.id}`);
+    await ip.addInitScript((id) =>
+      localStorage.setItem("product-practice-v2:active-package", JSON.stringify(id)), entry.manifest.id);
+    await ip.goto(artifactUrl, { waitUntil: "load" });
+    await ip.waitForSelector("#main-content");
+    for (const W of [1440, 390]) {
+      await ip.setViewportSize({ width: W, height: 1200 });
+      await ip.waitForTimeout(120);
+      for (const id of ids) {
+        await ip.evaluate((m) => { window.location.hash = `module/${m}`; }, id);
+        await ip.waitForTimeout(180);
+        const found = await ip.evaluate(() => {
+          const svg = document.querySelector("#main-content svg.illus");
+          if (!svg) return { missing: true };
+          const texts = [...svg.querySelectorAll("text")]
+            .map((t) => ({ s: (t.textContent || "").trim(), b: t.getBoundingClientRect() }))
+            .filter((t) => t.s && t.b.width > 0);
+          const box = svg.getBoundingClientRect();
+          const scale = svg.viewBox.baseVal.width / box.width;
+          const out = [];
+          for (let a = 0; a < texts.length; a += 1) for (let z = a + 1; z < texts.length; z += 1) {
+            const A = texts[a].b, B = texts[z].b;
+            const ox = Math.min(A.right, B.right) - Math.max(A.left, B.left);
+            if (ox <= 0.5) continue;
+            const oy = Math.min(A.bottom, B.bottom) - Math.max(A.top, B.top);
+            if (oy > 0.5) { out.push(`"${texts[a].s.slice(0, 24)}" over "${texts[z].s.slice(0, 24)}"`); continue; }
+            const gap = (Math.max(A.top, B.top) - Math.min(A.bottom, B.bottom)) * scale;
+            if (gap >= 0 && gap < 4) out.push(`"${texts[a].s.slice(0, 24)}" / "${texts[z].s.slice(0, 24)}" ${gap.toFixed(1)}u apart`);
+          }
+          texts.filter((t) => t.b.left < box.left - 1 || t.b.right > box.right + 1)
+            .forEach((t) => out.push(`"${t.s.slice(0, 24)}" outside the frame`));
+          return { out: [...new Set(out)] };
+        });
+        if (found.missing) { faults.push(`${entry.manifest.id}/${id} @${W}: no illustration`); continue; }
+        found.out.forEach((o) => faults.push(`${entry.manifest.id}/${id} @${W}: ${o}`));
+      }
+    }
+    await ic.close();
+  }
+  check(
+    "Illustration labels never collide, crowd or leave the frame",
+    faults.length === 0,
+    faults.length ? `${faults.length} — ${faults.slice(0, 3).join(" | ")}` : "every stage, two widths, both packages",
+  );
 }
 
 /*

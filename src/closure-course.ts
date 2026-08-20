@@ -181,7 +181,7 @@ const closureModuleDefs: Module[] = [
     slides: "",
     outcome: "Explain who reads a closure report, what decision it informs, and why most are written to be filed rather than read.",
     coreIdea:
-      "A closure report is the first piece of evidence about whether an investment was worth making. Writing it well means working against the moment: the people who know most are dispersing, and the document is due when time is shortest.",
+      "A project is not formally closed until its closure report is approved, which makes this the document that ends the project rather than one that describes it. It is also the first piece of evidence about whether the investment was worth making. Writing it well means working against the moment: the people who know most are dispersing, and the document is due when time is shortest.",
     sections: [
       {
         heading: "Why this document is hard to write well",
@@ -212,42 +212,49 @@ const closureModuleDefs: Module[] = [
         sourceIds: ["rmg106", "anao-perf"],
       },
       {
-        heading: "The standard you are actually assessed against",
-        body: "For Australian Government digital and ICT-enabled projects there is a published standard for this document, and it is short enough to hold in your head. The Digital Transformation Agency's closure reporting standard sets seven criteria, and asks the agency to self-assess its draft against each one as Strong, Emerging or Nil before finalising it. Everything else in this course is depth behind one of those seven.",
-        table: {
-          caption: "The seven criteria",
-          head: ["#", "The report records...", "Covered here in"],
-          rows: [
-            ["1", "Performance against the scope agreed in the business case, with the rationale and impact of any change", "Stage 8"],
-            ["2", "Performance against the agreed schedule, with the rationale and impact of any slippage", "Stage 8"],
-            ["3", "Outcomes achieved and benefits realised against the benefits management plan", "Stage 3"],
-            ["4", "Performance against the agreed budget, with the rationale and impact of any change", "Stages 6 and 8"],
-            ["5", "Completion of assurance activities under the Assurance Plan agreed with the DTA", "Stage 11"],
-            ["6", "Fit-for-purpose transition arrangements into business as usual", "Stages 5 and 9"],
-            ["7", "Lessons learned, and how they will be applied to other projects", "Stage 4"],
-          ],
-        },
+        heading: "A project cannot formally close without one",
+        body: "This is the rule that makes the document unavoidable. Under the department's Project, Program and Portfolio Management Framework, a project or program is not formally closed until a closure report has been completed and approved. The report is not a courtesy or a write-up; it is the instrument that ends the project.",
         bullets: [
-          "Self-assessed by the agency, so the honest rating is the useful one — a report rated Strong on everything by its own author tells the reader nothing.",
-          "Strong almost always means the same extra thing: not just what changed, but why, and what it cost.",
-          "Several criteria require artefacts attached, not merely referenced — the original business case, the lessons learned register.",
-          "Agencies may use their own template. The criteria apply either way.",
+          "Approved by the Senior Responsible Officer, and endorsed by the Project Board where required.",
+          "Submitted to your group Project Management Office and to the Portfolio Project Office.",
+          "The tier sets which template applies: the full fifteen-section form for Tier 1 and Tier 2, a simplified form for Tier 3.",
+          "Lessons go to the Departmental Lessons Learned Register, which is a separate destination from the report itself.",
         ],
         example:
-          "The pattern repeats across all seven. Emerging records what happened; Strong explains why it happened and what followed from it. A schedule table showing an eight-week slip is Emerging. The same table plus 'the identity broker token lifetime changed without notice, costing 11 weeks and $3.8m of rework' is Strong.",
-        sourceIds: ["aga-standard", "aga-templates"],
+          "Because the report is what closes the project, an unfinished report is an open project — still carrying its governance, its reporting obligations and its budget line, long after the team has gone.",
+        sourceIds: ["dewr-announcement", "dewr-factsheet"],
       },
       {
-        heading: "Why someone independent checks your closure",
-        body: "Above certain values, a Commonwealth project's closure is independently reviewed. The Department of Finance runs a series of independent checkpoints across a project's life called the Gateway Review Process, numbered Gate 0 to Gate 6. The last of them, Gate 6, is the Benefits Realisation review: an independent check that the investment delivered what was promised, that benefits have named owners, and that the arrangements to keep harvesting them survive the project's disappearance. The gate exists precisely because self-reported closure was found not to be reliable.",
+        heading: "What the report has to confirm",
+        body: "The department states what a closure report establishes. Read it as the specification for the document: seven things, each of which some later section has to evidence.",
+        table: {
+          caption: "What the report confirms, and where this course covers it",
+          head: ["The report confirms", "Covered in"],
+          rows: [
+            ["Performance against scope, schedule, cost, quality and risk tolerances", "Stages 5 and 6"],
+            ["Delivery of project outcomes and transition to business as usual", "Stage 8"],
+            ["Achievement of key milestones and deliverables", "Stages 5 and 6"],
+            ["Benefits realised, and ongoing ownership of benefits", "Stage 7"],
+            ["Financial performance against the approved budget", "Stage 10"],
+            ["Lessons learned and recommendations for future projects", "Stage 11"],
+            ["Formal approvals and closure by the Senior Responsible Officer", "Stage 3"],
+          ],
+        },
+        example:
+          "Note what is not on the list: whether the project succeeded. Every item is about establishing a position and transferring it to someone. A project that fell short and says so precisely satisfies the specification; one that succeeded and cannot evidence it does not.",
+        sourceIds: ["dewr-announcement"],
+      },
+      {
+        heading: "Larger projects get an external review as well",
+        body: "Departmental closure is one regime. Above certain values a Commonwealth project also faces the Department of Finance's Gateway Review Process — independent checkpoints numbered Gate 0 to Gate 6, the last of which reviews benefits realisation. It applies alongside the departmental process rather than instead of it, and only above the thresholds, so most projects never meet it.",
         bullets: [
-          "Gateway applies to non-corporate Commonwealth entities above the thresholds: $30m procurement or infrastructure, $30m with an ICT component of at least $10m, $50m for programs.",
-          "Gate 6 assesses delivery of the purpose and benefits of the investment, not delivery of the scope.",
+          "Thresholds for non-corporate Commonwealth entities: $30m procurement or infrastructure, $30m where the ICT component is at least $10m, $50m for programs.",
+          "Gate 6 assesses whether the investment delivered its purpose and benefits — not whether the scope was built.",
           "It looks for benefits that are identified, owned, and still being measured after the team has gone.",
-          "The Senior Responsible Officer is the accountable party — not the project manager.",
+          "The Senior Responsible Officer is accountable at the gate, as they are for departmental closure.",
         ],
         example:
-          "A $42m program with a $14m ICT component is inside scope on two counts. Its Gate 6 review will ask who owns the benefit in eighteen months. If the answer is 'the project', there is no answer.",
+          "The question a Gate 6 review asks is the same one the departmental benefits section asks: who owns this benefit in eighteen months. If the answer is 'the project', there is no answer.",
         sourceIds: ["gateway", "rmg106"],
       },
       {
@@ -501,7 +508,7 @@ const closureModuleDefs: Module[] = [
         moduleId: "process",
         prompt: "Where does writing the closure report sit among the six closure activities?",
         options: [
-          "Near the end — it evidences activities already done",
+          "Near the end — it evidences work already done",
           "First, so the sections drive the closure work",
           "In parallel, drafted as each activity proceeds",
           "It is not one of the six; it follows separately",
@@ -585,7 +592,7 @@ const closureModuleDefs: Module[] = [
           "Your report is drafted and reads well. The transition section states that operational responsibility passed to the Service Delivery branch on 30 June. Checking with the branch, you find they were briefed but have not accepted the handover, and their assistant director is on leave until after your closure date.",
         prompt: "What should the report say?",
         options: [
-          "That handover is not yet accepted, with the outstanding action, owner and date",
+          "Not yet accepted, with the action, owner and date",
           "That handover completed on 30 June, since the briefing occurred then",
           "Nothing about the handover until the assistant director returns and accepts",
           "That handover completed, with a note that formal acceptance is pending",
@@ -607,7 +614,7 @@ const closureModuleDefs: Module[] = [
           "A Tier 3 project has finished. The project manager plans to complete the simplified form, get the SRO to approve it, and file it in the team's SharePoint. She asks whether anything else is needed.",
         prompt: "What is missing?",
         options: [
-          "Lessons in the departmental register, and submission to the group PMO and PPO",
+          "The register entry, and submission to the PMO and PPO",
           "Nothing — Tier 3 projects close on SRO approval alone",
           "A Project Transition Plan, which is required at every tier",
           "Portfolio Project Office review and approval of the report",
@@ -726,6 +733,31 @@ const closureModuleDefs: Module[] = [
           "Listing 'Assurance Approach v1.2' proves an artefact existed. The lessons row is where you say whether it changed a decision — which is the only question worth asking about assurance.",
         sourceIds: ["dewr-template", "gateway", "rmg106"],
       },
+      {
+        heading: "Where closure claims resurface",
+        body: "Performance information from delivery flows into the entity's corporate plan reporting and annual performance statements, which are subject to audit. A benefit claimed at closure can therefore be tested by someone with statutory powers, no relationship with the project, and a year's distance. That is a different reader from the sponsor who signed the report.",
+        bullets: [
+          "Annual performance statements report against the entity's purposes and are audited.",
+          "ANAO performance audits examine whether reported information is meaningful and supported.",
+          "Gateway lessons material aggregates across entities, so patterns become visible beyond one project.",
+          "The evidence has to survive the project's systems being decommissioned.",
+        ],
+        sourceIds: ["rmg134", "anao-perf", "anao-gateway"],
+      },
+      {
+        heading: "Recording what assurance actually did",
+        body: "Assurance appears twice in the departmental report, and the two entries answer different questions. The deliverables table records the artefact — an Assurance Approach for Tier 1 and Tier 2, an Assurance Plan or Checklist for Tier 3 — with its version and date. The lessons table asks separately what assurance did well and where it should improve. The first is most often answered with a list of review dates, which records that assurance happened and not what it was worth; the second is where that question actually gets asked.",
+        bullets: [
+          "List the planned assurance activities, internal and external, and whether each happened.",
+          "Where an activity was dropped, deferred or substituted, give the reason — a changed plan is fine, an unexplained one is not.",
+          "Record the key findings and what was done about them, not just that a review took place.",
+          "For a Strong rating, assess whether the assurance was any use: which recommendations changed the delivery, and which were noted and left.",
+          "Assurance findings are also a source of lessons, and the standard expects the lessons section to draw on them.",
+        ],
+        example:
+          "'Gate 4 review conducted 12 March; Gate 6 review conducted 4 June' is a record of attendance. 'Gate 4 recommended splitting the integration release; adopted, and the second release absorbed the identity broker change without a further slip. Gate 6 recommended a benefits owner for B6; not resolved at closure and carried as R4' tells a reader whether the money spent on assurance bought anything.",
+        sourceIds: ["aga-standard", "rmg106", "anao-gateway"],
+      },
     ],
     questions: [
       {
@@ -733,7 +765,7 @@ const closureModuleDefs: Module[] = [
         moduleId: "accountability",
         prompt: "What does the Portfolio Project Office do with your submitted closure report?",
         options: [
-          "Aggregates it for departmental trends and enterprise reporting",
+          "Aggregates it for departmental trend reporting",
           "Reviews it for compliance with the P3M Framework",
           "Approves it on behalf of the department",
           "Returns it with feedback before the project can close",
@@ -793,7 +825,7 @@ const closureModuleDefs: Module[] = [
         moduleId: "accountability",
         prompt: "The approvals statement includes 'resources assigned to the project can be released'. Why is that listed separately?",
         options: [
-          "Releasing resources is a decision with a date, not an automatic consequence",
+          "Releasing people is a dated decision, not a consequence",
           "It confirms the project has not overspent its staffing allocation",
           "It transfers employment responsibility to the receiving BAU area",
           "It is required before the financial summary can be finalised",
@@ -817,7 +849,7 @@ const closureModuleDefs: Module[] = [
           "Your closure report is complete and the SRO has approved it. A colleague suggests holding submission for a few weeks, on the basis that the Portfolio Project Office will come back with corrections and it is better to fix them in one pass.",
         prompt: "How should you respond?",
         options: [
-          "Submit now — the PPO does not review reports and nothing is coming back",
+          "Submit now — nothing is coming back from the PPO",
           "Hold it, since a single corrected submission is cleaner for the PPO",
           "Submit an early draft to the PPO to get their comments first",
           "Ask the group PMO to review it in place of the PPO",
@@ -839,7 +871,7 @@ const closureModuleDefs: Module[] = [
           "Two of six benefits have no agreed owner. The business area approached has declined twice, on the grounds that the relevant staffing is set centrally. Your SRO is willing to approve the report and asks you to record the benefits as 'ownership to be confirmed'.",
         prompt: "What is the problem with that wording?",
         options: [
-          "It conceals an unresolved decision the SRO is accountable for taking",
+          "It hides a decision the SRO must take",
           "It is too vague for the PPO to accept the report",
           "Benefits without owners must be deleted from the report",
           "It commits the project to confirming ownership after closure",
@@ -1216,7 +1248,7 @@ const closureModuleDefs: Module[] = [
         moduleId: "deliverables",
         prompt: "What does the template ask for against the status-report row, rather than a version?",
         options: [
-          "The cadence at which they were prepared and reviewed",
+          "The cadence they were prepared at",
           "The total number of reports issued over the project",
           "A link to the folder where they are stored",
           "The name of the officer who prepared them",
@@ -1413,7 +1445,7 @@ const closureModuleDefs: Module[] = [
         moduleId: "milestones",
         prompt: "What does reporting a delay 'against tolerance' add?",
         options: [
-          "Whether governance had agreed the project could move that far",
+          "Whether governance agreed it could move that far",
           "A more precise figure for the length of the delay",
           "The cost consequence of the additional time",
           "Confirmation that the delay was escalated to the Board",
@@ -1479,7 +1511,7 @@ const closureModuleDefs: Module[] = [
           "A key milestone, 'integration complete', was recorded as met in June. On checking, you find the definition was narrowed in April to exclude two of the five interfaces, and the narrowing was discussed at a working group but never raised as a change request.",
         prompt: "How should the milestone be reported?",
         options: [
-          "Met on the narrowed definition, with the change and its lack of approval stated",
+          "Met as narrowed, stating the unapproved change",
           "Met in June, since the working group agreed the narrower definition",
           "Not met, because the original five interfaces were not delivered",
           "Met, with the two interfaces recorded as outstanding actions",
@@ -1517,8 +1549,8 @@ const closureModuleDefs: Module[] = [
   {
     id: "benefits",
     number: 3,
-    title: "Benefits realisation",
-    subtitle: "Why benefits are the business's job, not the project's",
+    title: "Objectives, outcomes and benefits",
+    subtitle: "Three different claims, and who owns each after closure",
     minutes: 0,
     slides: "",
     outcome: "Assign benefit ownership that survives closure, and schedule measurement that actually happens.",
@@ -1588,6 +1620,28 @@ const closureModuleDefs: Module[] = [
         example:
           "'Caseworkers save 12 minutes per application' is worth having and is not $2m. It becomes $2m only if positions are removed or work is absorbed that would otherwise have needed new positions — and the report should say which, or say neither.",
         sourceIds: ["teal", "closure"],
+      },
+      {
+        heading: "Objectives, business outcomes and key results",
+        body: "These three answer different questions, and keeping them apart is what makes the section worth reading. An objective is what the project set out to do. A business outcome is the change in the world that justified the spending. A key result is the measure that tells you whether the outcome happened. Closure reports against all three, and the interesting content is where they disagree.",
+        table: {
+          caption: "Three different questions",
+          head: ["Term", "The question", "At closure, report"],
+          rows: [
+            ["Objective", "What did we set out to do?", "Achieved, partially achieved, or not — against the original wording"],
+            ["Business outcome", "What changed for the business or users?", "The measured or estimated change, with its baseline"],
+            ["Key result", "How do we know?", "The metric, its target, and its actual"],
+          ],
+        },
+        bullets: [
+          "Quote the objective as originally written, not as it came to be described.",
+          "An objective delivered while its outcome did not move is the most informative result in the report — say so.",
+          "Key results carry a target and an actual. A key result with no target was a metric, not a key result.",
+          "Where an objective was dropped or changed, record when and on whose decision.",
+        ],
+        example:
+          "Objective: 'Provide providers with self-service visibility of application status.' Achieved. Business outcome: 'Reduce avoidable support contact.' Measured at 18 per cent against a target of 40. Key result: contacts per application, target 0.6, actual 0.83. The objective was met and the outcome largely was not — which is the finding, and it is invisible if all three are reported as one sentence.",
+        sourceIds: ["anao-perf", "rmg134"],
       },
     ],
     questions: [
@@ -1749,6 +1803,44 @@ const closureModuleDefs: Module[] = [
     coreIdea:
       "Every entity has a lessons learned register and almost none of them change what the next project does. The failure is not that lessons are not captured — it is that they are captured as sentiments rather than as decisions, and stored where nobody looking for a decision would search.",
     sections: [
+      {
+        heading: "Eighteen categories, and two columns each",
+        body: "The full template does not ask for a free-form lessons narrative. It gives eighteen fixed rows, and each one is split into Strengths and Areas to improve, with a third column for recommendations to future projects. The structure is doing something useful: it forces you past the two or three areas you were already thinking about, and it makes the aggregate comparable across the department.",
+        table: {
+          caption: "The eighteen lessons categories",
+          head: ["", "", ""],
+          rows: [
+            ["Governance arrangements", "Project management", "Project planning"],
+            ["Budget", "Assurance", "Change control"],
+            ["Risk management", "Schedule", "Roles and responsibilities"],
+            ["Project communication", "Testing / QA / quality control", "Architecture / technical solution"],
+            ["Partnering with other agencies", "Contribution to Closing the Gap", "Vendor management"],
+            ["Training", "Deployment", "Transition to operations"],
+          ],
+        },
+        bullets: [
+          "Both columns are asked for. A category with only Areas to improve reads as a post-mortem; one with only Strengths reads as a defence.",
+          "Contribution to Closing the Gap is a standing category, present whether or not the project was aimed at First Nations outcomes.",
+          "The Tier 3 form uses open themes instead — governance, scope, stakeholder engagement, schedule, risk management, change control, transition to BAU, Closing the Gap — one row per lesson.",
+          "Every row carries a recommendation: what a future project should repeat, improve or avoid.",
+        ],
+        example:
+          "Vendor management and Training are the two categories most often left blank, and they are where the same lessons recur department-wide. A blank row is a claim that nothing happened worth recording, which is rarely true.",
+        sourceIds: ["dewr-template", "dewr-tier3"],
+      },
+      {
+        heading: "Where lessons actually go",
+        body: "Lessons have a destination separate from the report. They are recorded in the Departmental Lessons Learned Register, and submitting the closure report does not lodge them. The distinction matters because the register is the only place another project will look.",
+        bullets: [
+          "The report carries lessons so the closure record is complete; the register carries them so they get reused.",
+          "The Portfolio Project Office aggregates closure reports for trends — a vague lesson becomes a row of noise in the department's only cross-project view.",
+          "A lesson written for the register has to make sense to someone with no knowledge of your project.",
+          "Recording lessons in the register is an explicit checklist item, separate from completing the report.",
+        ],
+        example:
+          "'Communication could have been better' aggregates to nothing. 'Eligibility rules were confirmed stable at design sign-off, then changed twice through Ministerial correspondence without reaching project governance' aggregates into a pattern about policy-dependent delivery that several projects would recognise.",
+        sourceIds: ["dewr-factsheet", "dewr-announcement"],
+      },
       {
         heading: "Making a register worth reading",
         body: "Read any lessons register and the entries look like this: 'engage stakeholders earlier', 'ensure requirements are well defined', 'improve communication between teams'. These are not lessons. They are the categories under which lessons would sit, if any had been written. Nobody has ever read 'engage stakeholders earlier' and changed a decision, because it contains no information about which stakeholders, how early, or what happened when you did not.",
@@ -1956,7 +2048,7 @@ const closureModuleDefs: Module[] = [
   {
     id: "handover",
     number: 5,
-    title: "Handover to business as usual",
+    title: "Transition to business as usual",
     subtitle: "What has to be true before the team can leave",
     minutes: 0,
     slides: "",
@@ -1964,6 +2056,42 @@ const closureModuleDefs: Module[] = [
     coreIdea:
       "A handover is complete when the receiving team can run, support and change the thing without calling anyone who has left. That is the test worth setting, and it is a higher bar than a signed document.",
     sections: [
+      {
+        heading: "What the transition table records",
+        body: "The Tier 3 form asks five things about each transition, and the middle one is the one that decides whether the row is true: evidence and status of acceptance. Not that a handover was planned or offered — that the receiving side took it.",
+        table: {
+          caption: "One row per thing transferred",
+          head: ["Column", "What belongs there"],
+          rows: [
+            ["Deliverable transitioned", "The service, benefit, residual risk, issue or outstanding work being transferred"],
+            ["BAU owner", "The business area taking ongoing ownership"],
+            ["Evidence and status of acceptance", "How acceptance was given, and whether it has been"],
+            ["Handover status", "Complete / In progress / Not started / Not required"],
+            ["Outstanding actions", "Anything remaining, with a due date"],
+          ],
+        },
+        bullets: [
+          "Four statuses, and 'Not required' is one of them — say so explicitly rather than leaving a row blank.",
+          "Tier 1 and Tier 2 projects document the approach in a Project Transition Plan and reference it here.",
+          "Where the closure report claims outcomes are in place and transferred to BAU, this table is the evidence for that claim.",
+        ],
+        example:
+          "'Evidence: accepted at the Service Delivery leadership meeting, 12 August, minuted.' That is a row a reader can check. 'Evidence: briefed to the branch' is a row that says the handover was announced.",
+        sourceIds: ["dewr-tier3", "dewr-factsheet"],
+      },
+      {
+        heading: "Assets, and their two owners",
+        body: "Section 14 lists every asset the project developed that is now in use, and asks for a business owner and an IT owner separately. The separation is deliberate: the area that uses an asset and the area that keeps it running are rarely the same, and an asset with only one of the two named will fail in whichever direction was left blank.",
+        bullets: [
+          "Asset name, business owner, IT owner, location, and the timing of handover.",
+          "Location means where it actually lives — an environment, a tenancy, a physical site — not a team name.",
+          "Handover timing may be later than closure. Record the date and who is accountable for it happening.",
+          "An asset in use with no IT owner keeps working until it needs patching, at which point nobody is funded to do it.",
+        ],
+        example:
+          "A reporting database with a business owner in Performance Reporting and no IT owner runs fine for a year and then fails a security review, and the first question is who has been maintaining it. The answer is nobody.",
+        sourceIds: ["dewr-template"],
+      },
       {
         heading: "Can they work without you?",
         body: "A handover has worked when the receiving team can act on its own. There is one reliable sign that it has not landed yet: three months later, someone is still messaging a former team member who now works elsewhere. That informal channel is what makes an inadequate handover survivable, which is why it hides the problem instead of exposing it. The honest test is to ask what breaks if that person does not reply.",
@@ -2020,6 +2148,35 @@ const closureModuleDefs: Module[] = [
         example:
           "A platform built by six engineers handed to an operations team of two, neither of whom has worked with the framework. That is a legitimate arrangement if it is stated and resourced, and a failure waiting to happen if the handover pack simply lands in their inbox.",
         sourceIds: ["rmg106", "teal"],
+      },
+      {
+        heading: "Data in a business system is a record",
+        body: "Information created or received in the course of Australian Government business is a Commonwealth record under the Archives Act 1983, including the data sitting inside a business system. It cannot be destroyed because a project ended, a contract lapsed, or a cloud subscription was not renewed. Destruction requires authority — normally a records authority issued by the National Archives, which sets the minimum retention period.",
+        bullets: [
+          "Records authorities give permission to destroy, retain or transfer, and set minimum retention.",
+          "The obligation attaches to the information, not to the system that happens to hold it.",
+          "Migration to a new system does not restart or discharge the obligation.",
+          "Access must be maintained for the prescribed period, which can outlast several platforms.",
+          "Disposal can mean secure destruction, transfer to the Archives, or transfer to another entity.",
+        ],
+        example:
+          "A cloud workspace deleted when the subscription lapsed took eleven years of case data with it. Nobody decided to destroy those records; that is precisely the problem — destruction without authority is still destruction.",
+        sourceIds: ["archives", "naa-data"],
+      },
+      {
+        heading: "Sequencing the shutdown",
+        body: "Decommissioning in the right order protects both the evidence the closure report depends on and the records the entity is obliged to keep. The ordering is not complicated; it is simply never planned, because switching things off is treated as an operational task rather than part of closure.",
+        bullets: [
+          "Sentence the records first: what must be kept, for how long, under which authority.",
+          "Export and verify — read the export back and confirm it is complete before anything is deleted.",
+          "Retain the closure evidence separately, with its queries and definitions.",
+          "Confirm no downstream system, report or interface still consumes the data.",
+          "Revoke access and integrations before deleting anything, so failures surface while recovery is still possible.",
+          "Only then release infrastructure, close accounts and cancel subscriptions.",
+        ],
+        example:
+          "Turn off the integrations a fortnight before deleting the data. Anything that breaks in that fortnight was a dependency nobody had documented, and you still have the system to turn back on.",
+        sourceIds: ["naa-data", "closure"],
       },
     ],
     questions: [
@@ -2181,6 +2338,28 @@ const closureModuleDefs: Module[] = [
     coreIdea:
       "The financial close is the one part of closure with a hard deadline and a statutory audience, so it repays doing while the team is still together. Every commitment either settles now or transfers to a named owner; anything left in between resurfaces later as an unexplained accrual, a lapsed warranty, or a payment nobody can approve.",
     sections: [
+      {
+        heading: "The table the template asks for",
+        body: "Section 13 is a grid, not a narrative: one row per financial year, with approved budget and actual expenditure each split into operating and capital, and the variance for both. The split is the part people get wrong, because a project thinks in total cost and the department reports in OPEX and CAPEX separately.",
+        table: {
+          caption: "Financial summary, as the template lays it out",
+          head: ["Financial year", "Approved OPEX", "Approved CAPEX", "Actual OPEX", "Actual CAPEX", "Variance"],
+          rows: [
+            ["2024–25", "$4.2m", "$11.8m", "$4.9m", "$10.6m", "+$0.7m / −$1.2m"],
+            ["2025–26", "$3.1m", "$9.4m", "$3.4m", "$12.9m", "+$0.3m / +$3.5m"],
+            ["Total", "$7.3m", "$21.2m", "$8.3m", "$23.5m", "+$1.0m / +$2.3m"],
+          ],
+        },
+        bullets: [
+          "Approved budget means the originally approved figure. Where the project was rebaselined, say so and give both.",
+          "Variance is reported per column, not as a single net number — an OPEX overspend offset by a CAPEX underspend is two findings, not zero.",
+          "Explain each material variance in the comments rather than leaving the reader to infer a cause from the numbers.",
+          "The Tier 3 form adds an ASL column — Average Staffing Level — per financial year, alongside budget and actual.",
+        ],
+        example:
+          "A net variance of zero can hide a project that expensed a million dollars it expected to capitalise. Reporting the two separately is what makes that visible, which is the whole reason the template splits the columns.",
+        sourceIds: ["dewr-template", "dewr-tier3"],
+      },
       {
         heading: "What must be true before the ledger closes",
         body: "Financial closure is a set of positive assertions: every cost incurred is recorded in the right period, every commitment is either paid or accrued, everything capitalised is an asset that exists and works, and everything that will keep costing money has a budget holder who knows.",
@@ -2391,466 +2570,6 @@ const closureModuleDefs: Module[] = [
         "Commitments: two purchase orders remain open — $84k with the integration vendor, to be accrued as the work was performed in June and invoiced in July; $12k of unused contingency on the training PO, which should be closed rather than carried. Capitalisation to question: $2.1m of change management and training is inside the capitalised figure. It produced no asset the entity controls and is conventionally expensed; I would put this back to Finance with the delivery breakdown before the ledger closes rather than after. Warranty: twelve-month defects liability on the integration build, expiring 14 August 2027, held by the Assistant Director, Platform Services — recorded in the platform team's risk register with a calendar entry, because a warranty with no holder expires unnoticed. Transition-out: the supplier must provide source code and build documentation within 30 days of acceptance; this is outstanding and acceptance should not be signed until it is delivered. Recurring: $310k p.a. licences and hosting, transferred to cost centre PLT-4420 from FY2027-28, accepted by the Platform Services budget holder at the July finance meeting.",
     },
   },
-
-  {
-    id: "records",
-    number: 7,
-    title: "Decommissioning, data and records",
-    subtitle: "What the law requires you to keep after you switch it off",
-    minutes: 0,
-    slides: "",
-    outcome: "Decommission a system without destroying Commonwealth records or losing access the entity is obliged to maintain.",
-    coreIdea:
-      "Data held in a government business system is a Commonwealth record, and the obligation to keep it accessible outlives the system holding it. Decommissioning is therefore a records decision before it is a technical one.",
-    sections: [
-      {
-        heading: "Data in a business system is a record",
-        body: "Information created or received in the course of Australian Government business is a Commonwealth record under the Archives Act 1983, including the data sitting inside a business system. It cannot be destroyed because a project ended, a contract lapsed, or a cloud subscription was not renewed. Destruction requires authority — normally a records authority issued by the National Archives, which sets the minimum retention period.",
-        bullets: [
-          "Records authorities give permission to destroy, retain or transfer, and set minimum retention.",
-          "The obligation attaches to the information, not to the system that happens to hold it.",
-          "Migration to a new system does not restart or discharge the obligation.",
-          "Access must be maintained for the prescribed period, which can outlast several platforms.",
-          "Disposal can mean secure destruction, transfer to the Archives, or transfer to another entity.",
-        ],
-        example:
-          "A cloud workspace deleted when the subscription lapsed took eleven years of case data with it. Nobody decided to destroy those records; that is precisely the problem — destruction without authority is still destruction.",
-        sourceIds: ["archives", "naa-data"],
-      },
-      {
-        heading: "Keeping it readable, years from now",
-        body: "Accessibility is the obligation, and it asks more than storage does. If the only way to read the data is software the entity no longer licenses, running on an operating system it no longer supports, the obligation is not met in any practical sense — and the failure is discovered when someone asks for the data, usually under FOI or in litigation.",
-        table: {
-          caption: "Retention approaches at decommissioning",
-          head: ["Approach", "Access in five years", "When it is appropriate"],
-          rows: [
-            ["Leave the system running", "Good, at full run cost", "Short residual period, active use continues"],
-            ["Migrate records to the successor", "Good, if the migration is complete", "A successor exists and the records fit"],
-            ["Export to an open, documented format", "Good, with the schema retained", "Most decommissioning of retired systems"],
-            ["Retain a database backup", "Poor — needs the original software", "Almost never sufficient on its own"],
-            ["Virtual machine snapshot", "Fragile, degrades over time", "Short-term bridge only"],
-            ["Transfer to National Archives", "Good, permanent", "Records of archival value, per the authority"],
-          ],
-        },
-        example:
-          "An export to CSV with the schema, the code tables and a plain-English data dictionary will be readable in a decade. A .bak file for a database version nobody licenses will not.",
-        sourceIds: ["naa-data", "archives"],
-      },
-      {
-        heading: "Sequencing the shutdown",
-        body: "Decommissioning in the right order protects both the evidence the closure report depends on and the records the entity is obliged to keep. The ordering is not complicated; it is simply never planned, because switching things off is treated as an operational task rather than part of closure.",
-        bullets: [
-          "Sentence the records first: what must be kept, for how long, under which authority.",
-          "Export and verify — read the export back and confirm it is complete before anything is deleted.",
-          "Retain the closure evidence separately, with its queries and definitions.",
-          "Confirm no downstream system, report or interface still consumes the data.",
-          "Revoke access and integrations before deleting anything, so failures surface while recovery is still possible.",
-          "Only then release infrastructure, close accounts and cancel subscriptions.",
-        ],
-        example:
-          "Turn off the integrations a fortnight before deleting the data. Anything that breaks in that fortnight was a dependency nobody had documented, and you still have the system to turn back on.",
-        sourceIds: ["naa-data", "closure"],
-      },
-      {
-        heading: "What became of the system you replaced",
-        body: "Closure should also say what became of the thing being replaced. The common gap is the mirror image of the last section: the new service goes live, the report describes it, and the old system keeps running — costing money, holding duplicate data, and still accepting transactions. Closure should state the disposition of what was replaced, or say plainly that it remains in service and why.",
-        bullets: [
-          "Name the system or process replaced, and its current status.",
-          "If it is still running, say who owns it, what it costs, and when it will stop.",
-          "If both are running, name the system of record — two sources of truth is a data-integrity issue, not a transitional inconvenience.",
-          "Record any residual users who have not migrated, and what the plan for them is.",
-        ],
-        sourceIds: ["closure", "naa-data"],
-      },
-    ],
-    questions: [
-      {
-        id: "cl-r1",
-        moduleId: "records",
-        prompt: "A cloud subscription lapses and eleven years of case data is deleted. How is this best characterised?",
-        options: [
-          "Destruction of Commonwealth records without authority",
-          "A procurement failure with data loss as a consequence",
-          "An acceptable outcome, since the retention period was not specified",
-          "A technical incident to be managed through the incident process",
-        ],
-        answer: 0,
-        rationale:
-          "Nobody decided to destroy the records, which is the point. Data in a government business system is a Commonwealth record under the Archives Act, and unauthorised destruction is unauthorised however it happens.",
-        optionNotes: [
-          "",
-          "Accurate as a proximate cause, and it understates what was actually breached.",
-          "An unspecified retention period does not create a permission to destroy.",
-          "Incident handling addresses the outage; it does not address the legal position.",
-        ],
-      },
-      {
-        id: "cl-r2",
-        moduleId: "records",
-        prompt: "Why is a database backup usually insufficient for long-term retention?",
-        options: [
-          "Reading it needs software the entity may no longer have",
-          "Backups are not recognised as records under the Archives Act",
-          "Backup media degrade faster than the required retention periods",
-          "Backups exclude the metadata needed to interpret the records",
-        ],
-        answer: 0,
-        rationale:
-          "The obligation is continuing access, not continuing storage. A backup that can only be read by a database version nobody licenses does not deliver access, and the gap is discovered when the data is requested.",
-        optionNotes: [
-          "",
-          "Format has no bearing on whether something is a record.",
-          "Media degradation is real and secondary to the software dependency.",
-          "Often true, and the binding problem is being unable to open it at all.",
-        ],
-      },
-      {
-        id: "cl-r3",
-        moduleId: "records",
-        prompt: "What should happen first when decommissioning a system?",
-        options: [
-          "Sentence the records — what to keep, how long, under what authority",
-          "Revoke user access to prevent further data being created",
-          "Export the data to an open format for long-term retention",
-          "Confirm that no downstream system still consumes the data",
-        ],
-        answer: 0,
-        rationale:
-          "Everything else depends on the answer. Exporting, revoking and checking dependencies are all necessary, and doing any of them before you know what must be retained risks doing them to the wrong scope.",
-        optionNotes: [
-          "",
-          "Necessary, and premature — do it after you know what must be preserved.",
-          "You cannot decide the export scope before sentencing tells you what to keep.",
-          "Essential, and it comes after retention scope is known.",
-        ],
-      },
-      {
-        id: "cl-r4",
-        moduleId: "records",
-        prompt: "Why revoke integrations before deleting data rather than after?",
-        options: [
-          "Undocumented dependencies surface while the system can still be restored",
-          "Deletion is faster once integrations are removed",
-          "Retaining integrations during deletion risks propagating the deletion downstream",
-          "Access revocation is required before disposal under records authorities",
-        ],
-        answer: 0,
-        rationale:
-          "It is a deliberately reversible test. Whatever breaks in that window is a dependency nobody documented, and you still have the system to turn back on — which you do not once the data is gone.",
-        optionNotes: [
-          "",
-          "Speed is irrelevant to the sequencing decision.",
-          "Plausible-sounding and not the reason; the point is discovering dependencies safely.",
-          "Records authorities govern disposal of records, not access sequencing.",
-        ],
-      },
-    ],
-    scenarios: [
-      {
-        id: "cl-r-s1",
-        moduleId: "records",
-        context:
-          "The replaced legacy system is still running six months after go-live. It costs $190k a year, holds duplicate participant data, and about 40 users still transact in it because a niche function was never rebuilt.",
-        prompt: "What must the closure report do?",
-        options: [
-          "Name it as still in service, its owner and cost, and the system of record",
-          "Record the new service as delivered and treat the legacy system as a separate operational matter",
-          "Recommend immediate decommissioning of the legacy system to realise the saving",
-          "Defer the closure report until the residual users have been migrated",
-        ],
-        answer: 0,
-        rationale:
-          "Two live systems holding the same participant data is a data-integrity problem and an unfunded cost, and it is a direct consequence of what this project did. Naming the system of record is the urgent part — without it, staff cannot know which record is authoritative.",
-        optionNotes: [
-          "",
-          "It is not separate; the duplication exists because of this delivery.",
-          "Premature — 40 users depend on a function that was never rebuilt.",
-          "Deferral leaves the ambiguity unrecorded for however long migration takes.",
-        ],
-      },
-      {
-        id: "cl-r-s2",
-        moduleId: "records",
-        context:
-          "You plan to export case records to CSV before decommissioning. A colleague suggests also keeping a VM snapshot of the whole system 'just in case', and skipping the data dictionary since the column names are self-explanatory.",
-        prompt: "What is the correct position?",
-        options: [
-          "Keep the dictionary and schema; the snapshot is a short-term bridge",
-          "The snapshot is sufficient on its own, since it preserves the system exactly as it was",
-          "Both are unnecessary if the CSV export is verified as complete",
-          "Skip the CSV and rely on the snapshot, which preserves relationships the CSV would lose",
-        ],
-        answer: 0,
-        rationale:
-          "Column names are self-explanatory to people who worked on the system, which is a group that shrinks to zero. Code tables, units and exclusions are what a future reader needs. A snapshot degrades — it needs a hypervisor, an OS and licences that all age.",
-        optionNotes: [
-          "",
-          "Snapshots depend on infrastructure and licensing that will not survive the retention period.",
-          "A verified export without its schema is a grid of values nobody can interpret.",
-          "Relationships can be preserved in exports; long-term readability cannot be preserved in a snapshot.",
-        ],
-      },
-    ],
-    assignment: {
-      title: "Plan the shutdown",
-      instruction:
-        "For a system you know, write the decommissioning position: what must be retained and under what authority, how access will be maintained, the shutdown sequence, and the disposition of whatever it replaced.",
-      prompts: [
-        "Records to be retained, retention period, and the authority relied on",
-        "How access will be maintained — format, schema, dictionary, holder",
-        "Shutdown sequence, with the reversible checkpoint identified",
-        "Disposition of the system or process replaced",
-      ],
-      criteria: [
-        "Retention names an authority or states plainly that one has not been identified",
-        "The access approach would still be readable without the original software",
-        "The sequence puts a reversible step before anything irreversible",
-      ],
-      modelAnswer:
-        "Retention: participant case records, minimum seven years from last action, under the entity's records authority for programme administration — confirmed with the information governance team rather than assumed. Financial transaction records fall under a separate authority with a longer period; both were checked. Access: export to CSV per table, with the DDL schema, all code and lookup tables, and a plain-English data dictionary covering every column, its units and its exclusions. Held by the Assistant Director, Information Governance, in the departmental records store — not in the platform team's storage, which is itself subject to future decommissioning. Sequence: sentence records → export → read the export back and reconcile row counts and totals against the live system → retain closure evidence separately → confirm no downstream consumers → revoke integrations and monitor for a fortnight, which is the reversible checkpoint and the last point at which the system can simply be turned back on → then release infrastructure and cancel subscriptions. Replaced system: the legacy register is still running and will be until the niche reporting function is rebuilt, currently scheduled for Q3. Owner: Platform Services; cost $190k p.a.; the new service is the system of record from go-live and the legacy register is read-only for the 40 residual users — stated explicitly because two writable copies of participant data would be a data-integrity failure, not a transitional inconvenience.",
-    },
-  },
-
-  {
-    id: "sections",
-    number: 8,
-    title: "Framing the report",
-    subtitle: "Purpose, overview, objectives and the numbers",
-    minutes: 0,
-    slides: "",
-    outcome: "Write the framing sections: purpose, overview, objectives, business outcomes, key results, milestones and the financial summary.",
-    coreIdea:
-      "Most closure reports are written into a departmental template with fixed headings. Knowing how to think about evidence and benefits is necessary and not sufficient — you also have to know what belongs under 'Outstanding dependencies' and why 'Project overview' is the section people waste and then need.",
-    sections: [
-      {
-        heading: "The two sections everyone wastes",
-        body: "Document purpose and project overview are the two sections everyone treats as padding, and they are the reason the report is usable in three years. The reader in three years has no idea what the project was, what it was called internally, or which of four similar initiatives this one is. Two hundred words of orientation is the difference between a findable record and an archived file.",
-        table: {
-          caption: "The two sections people waste",
-          head: ["Section", "What it is for", "How it is usually failed"],
-          rows: [
-            ["Document purpose", "Says what this document decides and who must act on it", "'This document reports on the closure of the project.'"],
-            ["Project overview", "Orients a reader who was not there — problem, scope, dates, cost, who", "A paragraph lifted from the business case, unchanged since 2023"],
-          ],
-        },
-        bullets: [
-          "Purpose names the decisions the report supports and who takes them.",
-          "Overview states the problem the project addressed, in the words a stranger would use.",
-          "Include the internal name, any codename, and the funding or investment reference — this is how it gets found.",
-          "Give start and end dates, total cost, and the delivery model in two lines, not two pages.",
-        ],
-        example:
-          "'This report closes the Provider Status project and transfers six benefits, four residual risks and one unresolved dependency to named owners. It supports the SRO's decision to stand down programme governance, and Finance's treatment of $47.3m of capitalised and expensed cost.' That is a purpose statement. It tells you who has to read it.",
-        sourceIds: ["rmg106", "closure"],
-      },
-      {
-        heading: "Objectives, business outcomes and key results",
-        body: "These three answer different questions, and keeping them apart is what makes the section worth reading. An objective is what the project set out to do. A business outcome is the change in the world that justified the spending. A key result is the measure that tells you whether the outcome happened. Closure reports against all three, and the interesting content is where they disagree.",
-        table: {
-          caption: "Three different questions",
-          head: ["Term", "The question", "At closure, report"],
-          rows: [
-            ["Objective", "What did we set out to do?", "Achieved, partially achieved, or not — against the original wording"],
-            ["Business outcome", "What changed for the business or users?", "The measured or estimated change, with its baseline"],
-            ["Key result", "How do we know?", "The metric, its target, and its actual"],
-          ],
-        },
-        bullets: [
-          "Quote the objective as originally written, not as it came to be described.",
-          "An objective delivered while its outcome did not move is the most informative result in the report — say so.",
-          "Key results carry a target and an actual. A key result with no target was a metric, not a key result.",
-          "Where an objective was dropped or changed, record when and on whose decision.",
-        ],
-        example:
-          "Objective: 'Provide providers with self-service visibility of application status.' Achieved. Business outcome: 'Reduce avoidable support contact.' Measured at 18 per cent against a target of 40. Key result: contacts per application, target 0.6, actual 0.83. The objective was met and the outcome largely was not — which is the finding, and it is invisible if all three are reported as one sentence.",
-        sourceIds: ["anao-perf", "rmg134"],
-      },
-      {
-        heading: "Milestones and the financial summary",
-        body: "Both sections are usually presented as a table of what happened, which is the least useful form. The value is in the variance: planned against actual, with the reason. A milestone table showing everything delivered on the revised date tells the reader nothing they could not have assumed.",
-        bullets: [
-          "Milestones: planned date, actual date, variance, and the reason for any material slip.",
-          "Show the original planned dates alongside any rebaselined ones, as with cost.",
-          "Financial summary: original approved, revisions with dates and reasons, final actual, variance against the original.",
-          "Split capital and operating, and state what was capitalised and on what basis.",
-          "Name the recurring cost transferring to business as usual, and the budget line receiving it.",
-        ],
-        example:
-          "A milestone table where every actual equals the planned date is a table that was written backwards from the outcome. Real delivery has variance; a report showing none has usually rebaselined until there was none.",
-        sourceIds: ["closure", "anao-gateway"],
-      },
-      {
-        heading: "Outstanding risks, issues, dependencies and actions",
-        body: "This is the section that determines whether the report does anything, and it is routinely a copy of the RAID log with the closed items filtered out. A closure RAID section is not a status report — it is a transfer document. Every remaining item is either being accepted by someone named, or it is being abandoned, and abandonment is a decision that should be visible rather than implied by silence.",
-        table: {
-          caption: "What each column has to carry",
-          head: ["Item", "Must state", "Failure"],
-          rows: [
-            ["Risk", "Owner, current rating, treatment, where it now lives", "Transferred to a register nobody reviews"],
-            ["Issue", "Owner, impact if unresolved, resolution path or acceptance", "Reclassified as a risk to avoid resolving it"],
-            ["Dependency", "The other party, what is owed, by when, who chases", "Named as a system rather than a person"],
-            ["Action", "Owner, due date, and what happens if it is not done", "Assigned to the disbanding project team"],
-          ],
-        },
-        bullets: [
-          "Every item names an individual, a destination register, and a review date.",
-          "An issue that will not be fixed is closed as accepted, with who accepted it — not carried indefinitely.",
-          "Actions assigned to the project team are actions assigned to nobody. Reassign or close them.",
-          "State explicitly if an item has no owner. That is a live problem, and burying it does not make it less true.",
-        ],
-        example:
-          "'Risk: identity broker token lifetime may change without notice. Owner: Assistant Director, Platform Services. Rating: medium. Treatment: registered as a consuming system with Platform Identity, notification requested. Transferred to: Platform Services risk register, ref PS-R-118. Next review: December.' That item survives the project. 'Risk: integration dependencies — ongoing' does not.",
-        sourceIds: ["rmg106", "teal"],
-      },
-    ],
-    questions: [
-      {
-        id: "cl-x1",
-        moduleId: "sections",
-        prompt: "What is the difference between an objective and a business outcome at closure?",
-        options: [
-          "The objective is what you set out to do; the outcome is why it mattered",
-          "The objective is set by the project; the outcome is set by the entity's corporate plan",
-          "The objective is qualitative; the outcome is always expressed as a number",
-          "They are the same thing, described at different levels of governance",
-        ],
-        answer: 0,
-        rationale:
-          "Keeping them separate is what lets the report show an objective delivered while the outcome did not move — the single most informative result a closure report can contain.",
-        optionNotes: [
-          "",
-          "Both can come from either. The distinction is what each asks, not who wrote it.",
-          "Objectives are often measurable and outcomes are often estimated. Form is not the difference.",
-          "Collapsing them is exactly the failure that hides the interesting result.",
-        ],
-      },
-      {
-        id: "cl-x2",
-        moduleId: "sections",
-        prompt: "A milestone table shows every actual date equal to the planned date. What should a reader infer?",
-        options: [
-          "The plan was rebaselined until variance disappeared",
-          "The project was managed with unusual schedule discipline",
-          "Milestones were defined loosely enough to always be met",
-          "The table was completed from the delivery plan rather than actuals",
-        ],
-        answer: 0,
-        rationale:
-          "Real delivery has variance. A table with none has almost always been reported against the most recent replan, which is the schedule equivalent of reporting cost against the revised budget.",
-        optionNotes: [
-          "",
-          "Possible in principle and vanishingly rare in practice for anything substantial.",
-          "A genuine failure mode, and it usually produces vague milestones rather than exact date matches.",
-          "Would produce the same table, and is a subset of reporting against the latest plan.",
-        ],
-      },
-      {
-        id: "cl-x9",
-        moduleId: "sections",
-        prompt: "What does a financial summary give you that a table of final costs does not?",
-        options: [
-          "The variance against original approval, with each revision dated and reasoned",
-          "A breakdown of expenditure by supplier and by cost centre",
-          "Confirmation that spending stayed within delegated authority",
-          "The proportion of the budget consumed in each financial year",
-        ],
-        answer: 0,
-        rationale:
-          "Final cost answers what it cost. The decision-relevant question is how far the delivered thing moved from the approved thing, which only the variance and the revision chain show.",
-        optionNotes: [
-          "",
-          "Useful operational detail that does not address the approval question.",
-          "A compliance matter, separate from whether the investment held its shape.",
-          "Phasing, relevant to Finance rather than to the approval gap.",
-        ],
-      },
-      {
-        id: "cl-x10",
-        moduleId: "sections",
-        prompt: "Why does the project overview matter to a reader in three years?",
-        options: [
-          "They will not know what it was, what it was called, or which of several it is",
-          "It supplies the context required for the report to be formally accepted",
-          "Overviews are the section most often requested under freedom of information",
-          "It establishes the scope against which variances are later measured",
-        ],
-        answer: 0,
-        rationale:
-          "Orientation makes the record findable and usable. Internal name, codename and funding reference are how someone locates it; problem and dates are how they judge relevance.",
-        optionNotes: [
-          "",
-          "Acceptance turns on the transfers, not the overview.",
-          "Occasionally true, and not the reason to write it well.",
-          "Scope baselines live in the objectives and financial sections.",
-        ],
-      },
-    ],
-    scenarios: [
-      {
-        id: "cl-x-s2",
-        moduleId: "sections",
-        context:
-          "Your objective was 'provide self-service visibility of application status'. It was delivered and works. The business outcome was 'reduce avoidable support contact', measured at 18 per cent against a 40 per cent target. Your sponsor wants the section to lead with the delivered objective.",
-        prompt: "How should the section be written?",
-        options: [
-          "Report all three separately: objective met, outcome largely not",
-          "Lead with the objective as requested, and cover the outcome shortfall in the shortfall section",
-          "Lead with the outcome, since it is the reason the investment was funded",
-          "Combine them into a single statement describing partial achievement",
-        ],
-        answer: 0,
-        rationale:
-          "The sponsor is not wrong that the objective was met. Reporting the levels separately serves both truths and produces the useful finding: the thing was built, works, and did not change behaviour as expected — which points at take-up or at the theory, and neither is visible in a merged sentence.",
-        optionNotes: [
-          "",
-          "Splitting them across sections lets a reader take the objective as the result and stop.",
-          "Reversing the emphasis is as distorting as the sponsor's version, in the other direction.",
-          "'Partial achievement' is the phrase that hides which part.",
-        ],
-      },
-      {
-        id: "cl-x-s3",
-        moduleId: "sections",
-        context:
-          "Your milestone table shows eleven milestones, every one delivered on its planned date. The project was rebaselined twice, in March and September, and each rebaseline moved the remaining dates.",
-        prompt: "How should the table be presented?",
-        options: [
-          "Original planned dates alongside the rebaselined ones, with variance against original",
-          "As it stands, since both rebaselines were formally approved",
-          "Original dates only, so that the true slip is visible",
-          "Replaced by a narrative explaining the two rebaselines",
-        ],
-        answer: 0,
-        rationale:
-          "The same principle as cost. Both rebaselines were legitimate and disclosed; a table showing no variance against a twice-moved plan answers an easier question than the reader is asking.",
-        optionNotes: [
-          "",
-          "Approval makes the revision legitimate, not the presentation complete.",
-          "Hiding approved revisions swaps one distortion for another.",
-          "A narrative loses the per-milestone detail the table exists to carry.",
-        ],
-      },
-    ],
-    assignment: {
-      title: "Write the framing sections",
-      instruction:
-        "For a piece of work you know, draft the document purpose, a project overview a stranger could use, and the objective / business outcome / key result set reported separately.",
-      prompts: [
-        "Document purpose: the decisions this report supports, and who takes them",
-        "Project overview: problem, scope, dates, cost, internal name and funding reference",
-        "Objective as originally written, marked achieved / partial / not",
-        "Business outcome with its baseline, and the key result with target and actual",
-      ],
-      criteria: [
-        "The purpose statement would not be true of any other closure report",
-        "The overview lets someone who was not there tell whether it is relevant to them",
-        "Objective, outcome and key result are reported separately rather than merged",
-      ],
-      modelAnswer:
-        "Purpose: this report closes the Provider Status project and transfers six benefits, four residual risks and one unresolved dependency to named owners. It supports the SRO's decision to stand down programme governance, and Finance's treatment of $47.3m of capitalised and expensed cost. Overview: providers could not see where participant applications had got to, and rang support to find out. Delivered a self-service status view in the provider portal, Aug 2023 to Jun 2026, $47.3m against $38.1m approved. Known internally as Provider Status, codename PANDA in early planning papers, NPP reference 2023-DEWR-114. Delivery: internal team with an integration vendor. Objective: 'Provide providers with self-service visibility of application status' — achieved. Business outcome: reduce avoidable support contact — measured 18% reduction (Q3 2026 against a Q1 2024 baseline, source CRM-RPT-88) against a 40% target. Key result: contacts per application, target 0.6, actual 0.83. The objective was met and the outcome was not, which is the finding: providers use it, and it has not displaced the phone call.",
-    },
-  },
-
   {
     id: "openitems",
     number: 9,
@@ -2862,6 +2581,28 @@ const closureModuleDefs: Module[] = [
     coreIdea:
       "The back half of a closure report is where things either transfer or quietly evaporate. Every open item has exactly three legitimate destinations — closed, formally accepted, or carried to a named person with a date — and 'ongoing' is not one of them.",
     sections: [
+      {
+        heading: "The three questions the form asks about risk",
+        body: "The Tier 3 form reduces risk at closure to three yes/no questions and a plan reference. They are worth answering even on the full template, because between them they cover everything a reader needs to know about what is still live.",
+        table: {
+          caption: "The risk gates at closure",
+          head: ["Question", "If yes"],
+          rows: [
+            ["Does the risk plan highlight any issues — realised risks — that occurred?", "List them from the attached RiskNet2 plan"],
+            ["Are any risks outside appetite or tolerance?", "Identify each and summarise its status"],
+            ["Are there risks requiring ongoing management in BAU?", "Name the risk, the BAU owner, and the planned management approach"],
+          ],
+        },
+        bullets: [
+          "The form asks for the RiskNet2 Plan ID and whether the plan is attached — a reference, not a retyped summary.",
+          "A realised risk is an issue. Recording it as a risk that 'may occur' after it has occurred is the commonest error here.",
+          "Outside appetite is a governance fact, not a severity rating: it means the entity had said it would not accept this, and does.",
+          "Every risk continuing into BAU needs a named owner, not a receiving branch.",
+        ],
+        example:
+          "Answering 'no' to all three is a strong claim: no realised issues, nothing outside tolerance, nothing to carry. It is occasionally true, and a reader will check it against the milestone and financial variances before believing it.",
+        sourceIds: ["dewr-tier3", "dewr-template"],
+      },
       {
         heading: "Completion criteria, quality and the team",
         body: "Three review dimensions that templates ask for and delivery people skip. Completion criteria are the conditions agreed at the start for calling the project done — reporting against them rather than against a general sense of doneness is what stops closure being a matter of opinion. Quality is not scope: a delivered feature that fails under load has been delivered and is not finished. And team performance is asked for in most templates and answered with a thank-you list, which wastes the only chance anyone gets to record what the delivery model actually cost.",
@@ -3397,243 +3138,6 @@ const closureModuleDefs: Module[] = [
         "The business case forecast a $3.1m annual reduction in processing cost from FY2027-28. Current measurement at nine months post-release indicates $1.2m annualised, a shortfall of $1.9m against the original commitment. The cause is forecast error rather than delivery failure: the system performs to specification and processes within the designed service levels, but take-up is at 41 per cent against a forecast 85 per cent. The forecast assumed take-up equivalent to the 2023 online lodgement rollout, which was a mandatory channel change; this service is opt-in. That comparator error is recorded in the departmental lessons pool as entry LP-2026-118, classed against opt-in digital service forecasting, with the recommendation that opt-in take-up be forecast from opt-in precedents only.",
     },
   },
-
-  {
-    id: "assurance",
-    number: 11,
-    title: "Assurance and audit readiness",
-    subtitle: "Writing for a reader who will test the claim",
-    minutes: 0,
-    slides: "",
-    outcome: "Anticipate how a closure claim will be tested, and hold the evidence that makes it stand.",
-    coreIdea:
-      "A closure report's claims travel. They can reappear in annual performance statements, which are audited, and in ANAO performance audits years later. Write as though each claim will be tested, because it may be.",
-    sections: [
-      {
-        heading: "Where closure claims resurface",
-        body: "Performance information from delivery flows into the entity's corporate plan reporting and annual performance statements, which are subject to audit. A benefit claimed at closure can therefore be tested by someone with statutory powers, no relationship with the project, and a year's distance. That is a different reader from the sponsor who signed the report.",
-        bullets: [
-          "Annual performance statements report against the entity's purposes and are audited.",
-          "ANAO performance audits examine whether reported information is meaningful and supported.",
-          "Gateway lessons material aggregates across entities, so patterns become visible beyond one project.",
-          "The evidence has to survive the project's systems being decommissioned.",
-        ],
-        sourceIds: ["rmg134", "anao-perf", "anao-gateway"],
-      },
-      {
-        heading: "What a tester actually does",
-        body: "Audit reads for evidence. It selects a claim, asks what supports it, and follows the chain until it either reaches primary data or runs out. Most claims fail not because they were false but because the chain breaks — the analyst left, the extract was not retained, the definition was not written down.",
-        table: {
-          caption: "The chain",
-          head: ["Step", "What must exist", "Where it usually breaks"],
-          rows: [
-            ["The claim", "A specific, quantified statement", "Vague wording admits no test"],
-            ["The method", "How the figure was derived, written down", "Lived in an analyst's spreadsheet"],
-            ["The data", "Retained extract or reproducible query", "System decommissioned, extract not kept"],
-            ["The definition", "What was counted, and what was not", "Never recorded; two readings possible"],
-            ["The approval", "Who accepted the figure and when", "Approved verbally, no record"],
-          ],
-        },
-        sourceIds: ["anao-perf", "rmg134"],
-      },
-      {
-        heading: "Deciding what to keep before it is deleted",
-        body: "Evidence has to outlive the systems that produced it, and that is a decision somebody makes at closure. Systems are decommissioned, licences lapse, cloud accounts are closed, and the extract that supported the headline benefit goes with them. Deciding what to retain is part of writing the report, not an afterthought for records management.",
-        bullets: [
-          "Retain the extract, not the dashboard — dashboards depend on systems that will be turned off.",
-          "Keep the query or method alongside the data, so the figure can be reproduced rather than merely cited.",
-          "Record the definition in the same place, in plain words.",
-          "Confirm the retention period against the entity's obligations, and name who holds it.",
-        ],
-        example:
-          "A benefit claim supported by 'the Power BI dashboard' is supported by nothing eighteen months after the workspace is deleted. A retained CSV, the SQL that produced it, and a paragraph defining the metric will still answer the question.",
-        sourceIds: ["closure", "rmg134"],
-      },
-      {
-        heading: "Recording what assurance actually did",
-        body: "One of the seven criteria is about assurance itself: the report must record that the activities in the Assurance Plan agreed with the Digital Transformation Agency were completed, note any material change to what was planned, and capture what those activities found. It is the criterion most often answered with a list of review dates, which records that assurance occurred and not what it was worth.",
-        bullets: [
-          "List the planned assurance activities, internal and external, and whether each happened.",
-          "Where an activity was dropped, deferred or substituted, give the reason — a changed plan is fine, an unexplained one is not.",
-          "Record the key findings and what was done about them, not just that a review took place.",
-          "For a Strong rating, assess whether the assurance was any use: which recommendations changed the delivery, and which were noted and left.",
-          "Assurance findings are also a source of lessons, and the standard expects the lessons section to draw on them.",
-        ],
-        example:
-          "'Gate 4 review conducted 12 March; Gate 6 review conducted 4 June' is a record of attendance. 'Gate 4 recommended splitting the integration release; adopted, and the second release absorbed the identity broker change without a further slip. Gate 6 recommended a benefits owner for B6; not resolved at closure and carried as R4' tells a reader whether the money spent on assurance bought anything.",
-        sourceIds: ["aga-standard", "rmg106", "anao-gateway"],
-      },
-      {
-        heading: "Assurance and audit are different readers",
-        body: "They are routinely conflated, and the difference changes who you are writing for. Assurance is advice to the person accountable, given while there is still time to act — Gateway exists to help an SRO deliver. Audit is independent examination reported to others, usually after the fact, and its finding is about the entity rather than about you. A closure report is read by both, at different times, for different purposes.",
-        table: {
-          caption: "Two different readers",
-          head: ["", "Assurance", "Audit"],
-          rows: [
-            ["Reports to", "The accountable officer", "The entity's audit committee, Parliament"],
-            ["Timing", "During, in time to change the outcome", "After, on a sample"],
-            ["Question", "Will this succeed, and what would help?", "Is what was reported supported?"],
-            ["Consequence", "Recommendations to the SRO", "A finding against the entity"],
-          ],
-        },
-        bullets: [
-          "Write assurance responses to be useful; write the record to be testable. They are not in tension, and they are not the same task.",
-          "An assurance recommendation not acted on is itself something a later audit will look at.",
-          "Internal audit follow-up asks whether the closure commitments were kept, not whether the report was well written.",
-          "The three-lines model is a useful check: management owns it, oversight functions monitor it, internal audit independently examines it. A closure report feeds all three.",
-        ],
-        example:
-          "A Gate 6 reviewer asks what would improve the outcome from here. An ANAO auditor asks what supports the number on page four. Answering the second well is what protects the entity; answering the first well is what protects the benefit.",
-        sourceIds: ["rmg106", "anao-gateway", "anao-perf"],
-      },
-    ],
-    questions: [
-      {
-        id: "cl-a1",
-        moduleId: "assurance",
-        prompt: "Why does a closure claim warrant more care than the immediate audience suggests?",
-        options: [
-          "It can flow into audited performance statements and be tested years later",
-          "Closure reports are published externally and attract media attention",
-          "The Senior Responsible Officer is personally liable for inaccurate closure claims",
-          "Gateway reviewers re-examine closure reports at each subsequent gate",
-        ],
-        answer: 0,
-        rationale:
-          "The immediate reader is a sponsor who will sign it. The eventual reader may be an auditor testing a performance statement that inherited the claim, with statutory powers and no stake in the original narrative.",
-        optionNotes: [
-          "",
-          "Most closure reports are internal. Media exposure is not the general case.",
-          "Accountability is real; personal liability of that kind overstates it.",
-          "Gate 6 is normally the final gate. Later gates do not re-examine it.",
-        ],
-      },
-      {
-        id: "cl-a2",
-        moduleId: "assurance",
-        prompt: "Where does an evidence chain most commonly break?",
-        options: [
-          "The data — the system was decommissioned and no extract kept",
-          "The claim — the statement is too specific to defend",
-          "The approval — nobody was willing to sign off the figure",
-          "The method — the calculation was too complex to reproduce",
-        ],
-        answer: 0,
-        rationale:
-          "Retention is the usual failure. The number was real, the analysis was done, and the thing it was drawn from no longer exists — which is why deciding what to keep belongs in the closure process rather than after it.",
-        optionNotes: [
-          "",
-          "Specificity strengthens a claim's defensibility rather than weakening it.",
-          "Sign-off is usually obtained; the record of it is what sometimes goes missing.",
-          "Complexity is manageable when the method was written down; the writing-down is the issue.",
-        ],
-      },
-      {
-        id: "cl-a3",
-        moduleId: "assurance",
-        prompt: "Which is the more durable evidence for a benefit claim?",
-        options: [
-          "A retained extract, with the query and metric definition beside it",
-          "A Power BI dashboard showing the trend, linked from the report",
-          "A signed statement from the analyst confirming the figure",
-          "A screenshot of the reporting tool taken at the time of closure",
-        ],
-        answer: 0,
-        rationale:
-          "Only the first survives decommissioning and allows reproduction. A dashboard depends on a live system, an attestation is not the underlying data, and a screenshot proves what was displayed rather than what was true.",
-        optionNotes: [
-          "",
-          "Depends entirely on a workspace that may be deleted well within the retention period.",
-          "An attestation about data is weaker than the data, and the analyst will move on.",
-          "Shows a rendering, not a reproducible figure, and carries no definition.",
-        ],
-      },
-      {
-        id: "cl-a4",
-        moduleId: "assurance",
-        prompt: "Why should the metric definition be retained alongside the data?",
-        options: [
-          "The same metric defined two ways gives two answers, and a tester cannot tell",
-          "Records management policy requires definitions to accompany datasets",
-          "It demonstrates that the delivery team followed a rigorous process",
-          "Definitions are needed to rebuild the reporting solution if required",
-        ],
-        answer: 0,
-        rationale:
-          "Ambiguity in the definition is where a real improvement and a measurement artefact become indistinguishable. Without it, a tester has a number and no way to know what it counts.",
-        optionNotes: [
-          "",
-          "Policy may or may not require it, and that would not explain why it matters.",
-          "Process rigour is a by-product, not the reason.",
-          "System rebuild is a rare and separate concern.",
-        ],
-      },
-    ],
-    scenarios: [
-      {
-        id: "cl-a-s1",
-        moduleId: "assurance",
-        context:
-          "Eighteen months after closure, an ANAO performance audit selects your reported benefit for testing. The reporting system was decommissioned at closure. You have the closure report, a summary slide, and an email from the analyst confirming the figure.",
-        prompt: "What is the position?",
-        options: [
-          "The claim is unsupported — nothing left is primary data or reproducible",
-          "The analyst's email is sufficient contemporaneous evidence of the figure",
-          "The closure report itself stands as the record, having been formally approved",
-          "The summary slide provides adequate support if it shows the underlying trend",
-        ],
-        answer: 0,
-        rationale:
-          "Everything retained is a restatement of the claim by parties connected to it. Audit follows the chain to primary data or a reproducible method, and neither exists. This is the ordinary way closure claims fail — not falsification, but evaporation.",
-        optionNotes: [
-          "",
-          "An email asserts the figure; it does not evidence it, and the analyst is an interested party.",
-          "Approval records that someone accepted the claim, not that the claim was supported.",
-          "A slide is a presentation of a figure, without definition, source or reproducibility.",
-        ],
-      },
-      {
-        id: "cl-a-s2",
-        moduleId: "assurance",
-        context:
-          "You are two weeks from closure. The cloud workspace holding all reporting data will be deleted 30 days after closure under the decommissioning plan. The benefit measurement period runs for another nine months.",
-        prompt: "What is the necessary action?",
-        options: [
-          "Establish a durable data source now, and retain the baseline extract",
-          "Extend the workspace retention until the measurement period ends",
-          "Complete a final measurement before deletion and report that as the outcome",
-          "Transfer the workspace ownership to the receiving operational team",
-        ],
-        answer: 0,
-        rationale:
-          "The measurement has to run for nine more months, so it needs a durable source regardless of what happens to this workspace — and the baseline must be preserved now, while it still exists. Extending or transferring the workspace defers the same problem and leaves the benefit owner dependent on infrastructure nobody has funded.",
-        optionNotes: [
-          "",
-          "Buys time without solving it, and the extension will expire during a period when nobody is watching.",
-          "Measuring at closure measures nothing — the benefit has not accrued yet.",
-          "Hands the receiving team a cost and a dependency they have not agreed to fund or support.",
-        ],
-      },
-    ],
-    assignment: {
-      title: "Trace the chain",
-      instruction:
-        "Take one benefit claim and trace its evidence chain: the claim, the method, the data, the definition, the approval. Mark where it breaks and what you would retain to fix it.",
-      prompts: [
-        "The claim, stated as it would appear in the report",
-        "Method and where it is written down",
-        "Data source, and what happens to it after closure",
-        "Definition, approval, and the weakest link",
-      ],
-      criteria: [
-        "The chain is traced to primary data or the break is named honestly",
-        "The retention action names a format and a holder, not just an intention",
-        "The weakest link is identified explicitly rather than left for the reader to infer",
-      ],
-      modelAnswer:
-        "Claim: median lodgement-to-decision time fell from 14 to 9 days between Q1 and Q3 2026. Method: monthly extract from the case management system, median calculated across all decided applications in the period, excluding withdrawn applications — written up in the measurement note appended to the closure report, not only in the analyst's notebook. Data: CMS reporting replica, which is retained under the entity's standard operational retention and is not part of the project decommissioning scope — so it survives, which is the fortunate case rather than the designed one. Definition: lodgement timestamp to decision timestamp, both system-generated; withdrawn and duplicate applications excluded; definition unchanged across both periods and recorded in the measurement note. Approval: figure accepted by the Director, Provider Support Branch, at the 14 July governance meeting — minuted, which is the record that would otherwise be missing. Weakest link: the exclusion rule for duplicates was applied by a script held in the analyst's personal repository. If she leaves, the figure cannot be reproduced exactly. Action: move the script into the branch's shared analytics repository with the measurement note, owned by the Assistant Director, Performance Reporting.",
-    },
-  },
 ];
 
 /*
@@ -3648,19 +3152,16 @@ const closureModuleDefs: Module[] = [
 const CLOSURE_ORDER = [
   "purpose",        // what closure is, and why a project cannot close without one
   "process",        // the six activities and the fifteen-item checklist
-  "accountability", // SRO, Board, Senior User, group PMO, PPO
+  "accountability", // SRO, Board, Senior User, group PMO, PPO, assurance
   "evidence",       // baselines, measurement, what you may claim
   "deliverables",   // management artefacts, and what the project built
   "milestones",     // schedule against baseline, tolerances, change control
-  "benefits",       // ownership and realisation after handover
-  "handover",       // transition to BAU, assets, records
-  "records",        // decommissioning, data and records — folds into handover
+  "benefits",       // objectives, outcomes, benefits and their owners
+  "handover",       // transition to BAU, assets, records and decommissioning
   "openitems",      // risks, issues, dependencies, actions
   "financial",      // OPEX/CAPEX against original approval
   "lessons",        // the eighteen categories, and the departmental register
-  "sections",       // framing — folds into writing
   "writing",        // the two templates, the assessment grid, submission
-  "assurance",      // folds into accountability
 ] as const;
 
 export const closureModules: Module[] = CLOSURE_ORDER.map((id, index) => {

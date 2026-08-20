@@ -29,6 +29,27 @@ import type {
  * ------------------------------------------------------------------ */
 
 export const closureFlashcards: Flashcard[] = [
+  { id: "cf-p1", moduleId: "process", kind: "definition", front: "What are the six activities that constitute closure?", back: "Deliverables handed over and accepted; risks, issues and benefits assigned to BAU owners; PIR arrangements confirmed; closure formally approved; the closure report completed and approved by the SRO; lessons recorded in the Departmental Lessons Learned Register." },
+  { id: "cf-p2", moduleId: "process", kind: "definition", front: "How many items are on the departmental closure checklist, and across how many categories?", back: "Fifteen items across six categories: deliverables and benefits transition, transition ownership to BAU, closure documentation, lessons learned, approvals and submission, and stakeholder engagement." },
+  { id: "cf-p3", moduleId: "process", kind: "discrimination", front: "Why is the closure report written after the closure activities rather than before?", back: "Its job is to evidence work that happened. Written first, sections describe intentions in the past tense — a transition 'completed' that nobody accepted." },
+  { id: "cf-p4", moduleId: "process", kind: "application", front: "A template section does not apply to your project. What do you do?", back: "Keep the heading and justify the omission in place. A deleted section is indistinguishable from an oversight; a justified one records a decision." },
+  { id: "cf-p5", moduleId: "process", kind: "discrimination", front: "Which closure artefact is scoped to Tier 1 and Tier 2 projects only?", back: "The Project Transition Plan. SRO approval, the Lessons Learned Register and submission to the PMO and PPO apply at every tier." },
+  { id: "cf-p6", moduleId: "process", kind: "application", front: "What satisfies 'benefit ownership is defined and agreed'?", back: "A named business owner who has accepted it. Naming a branch in a table records where the benefit was pointed, not that anyone caught it." },
+
+  { id: "cf-d1", moduleId: "deliverables", kind: "discrimination", front: "Project management deliverable or project-specific deliverable?", back: "Management deliverables are artefacts the P3M Framework required — plans, registers, profiles. Project-specific deliverables are the goods or services the project existed to produce." },
+  { id: "cf-d2", moduleId: "deliverables", kind: "definition", front: "Which core artefacts does the closure template pre-populate?", back: "Concept Definition; Business Case or NPP; Assurance Approach or Plan; PMP; Schedule; Benefit Profiles; Benefits Realisation Plan; Stakeholder Engagement Strategy; Risk Management Plan in RiskNet2; PIA where applicable; Change Register; the closure report; status reports; change requests." },
+  { id: "cf-d3", moduleId: "deliverables", kind: "application", front: "Where does the 'planned deliverable' column come from?", back: "The approved business case, NPP or project outline — the original commitment. Taking it from the latest plan compares the project to itself." },
+  { id: "cf-d4", moduleId: "deliverables", kind: "definition", front: "The three delivery statuses on the Tier 3 form", back: "Achieved, Partially achieved, Not achieved. Partially achieved is a legitimate answer and survives skim-reading in a way a caveat in a comments column does not." },
+  { id: "cf-d5", moduleId: "deliverables", kind: "discrimination", front: "A deliverable was dropped with no approval anywhere. Variation or shortfall?", back: "A shortfall. An approved variation cites who approved it, when and in which forum. Absence of objection is not approval." },
+  { id: "cf-d6", moduleId: "deliverables", kind: "application", front: "What does the status-report row ask for instead of a version?", back: "The cadence — weekly, fortnightly, monthly. A break in the rhythm is a governance finding." },
+
+  { id: "cf-m1", moduleId: "milestones", kind: "definition", front: "Which baseline does the milestone table report against?", back: "The original baselined schedule in the approved PMP. Where the project was rebaselined, report variance to both, with each rebaseline dated and attributed." },
+  { id: "cf-m2", moduleId: "milestones", kind: "definition", front: "The five dimensions performance is reported against", back: "Time, cost, quality, scope, benefits and risk — each against targets and agreed tolerances, so the question is whether the movement exceeded what governance had allowed." },
+  { id: "cf-m3", moduleId: "milestones", kind: "discrimination", front: "Late, or outside tolerance?", back: "Different findings. Tolerance is the room agreed in advance; reporting against it says whether the control worked, not merely whether the date moved." },
+  { id: "cf-m4", moduleId: "milestones", kind: "application", front: "Why report rejected change requests?", back: "They record what the project deliberately chose not to do. A register showing nine approvals and no rejections describes a gate that never refused anything." },
+  { id: "cf-m5", moduleId: "milestones", kind: "application", front: "A milestone was met by narrowing its definition. How is it reported?", back: "Met on the narrowed definition, with the change stated and whether it went through change control. The redefinition is the finding." },
+  { id: "cf-m6", moduleId: "milestones", kind: "definition", front: "What does section 12 ask you to attach?", back: "The Change Register. The section summarises how change was managed; the register is the evidence." },
+
   { id: "cf1", moduleId: "purpose", kind: "definition", front: "What is a closure report for?", back: "To provide the first evidence about whether an investment was worth making, and to transfer every obligation that outlives the project to a named owner." },
   { id: "cf2", moduleId: "purpose", kind: "definition", front: "What does Gateway Gate 6 assess?", back: "Benefits realisation: whether the purpose and benefits of the investment were delivered, and whether benefit harvesting survives the project's closure." },
   { id: "cf3", moduleId: "purpose", kind: "definition", front: "Gateway financial thresholds", back: "$30m for procurement or infrastructure projects; $30m where the ICT component is at least $10m; $50m for programs. Non-corporate Commonwealth entities." },
@@ -36,10 +57,10 @@ export const closureFlashcards: Flashcard[] = [
   { id: "cf5", moduleId: "purpose", kind: "application", front: "Which closure-report reader has no alternative source of information?", back: "The next delivery team. The SRO can ask, Finance has the ledger, audit can test — only the next team depends entirely on what was written down." },
   { id: "cf6", moduleId: "purpose", kind: "discrimination", front: "Why is a structural conflict, not carelessness, the reason closure reports are weak?", back: "The author's own record is the subject, written at the point of least time and least incentive to be candid, for readers who cannot verify." },
 
-  { id: "cf75", moduleId: "purpose", kind: "definition", front: "What standard governs Australian Government digital project closure reports?", back: "The DTA's closure reporting standard: seven criteria — scope, schedule, outcomes and benefits, budget, assurance, transition to BAU, lessons — each self-assessed as Strong, Emerging or Nil." },
-  { id: "cf76", moduleId: "purpose", kind: "discrimination", front: "Strong or Emerging?", back: "Emerging records what happened. Strong explains why it happened and what it cost. That single move separates the two on all seven criteria." },
+  { id: "cf75", moduleId: "purpose", kind: "definition", front: "What governs a DEWR project's closure?", back: "The department's P3M Framework. A project cannot formally close without a closure report approved by the SRO and submitted to the group PMO and the Portfolio Project Office. The DTA's seven-criteria standard is a whole-of-government comparator, not the departmental requirement." },
+  { id: "cf76", moduleId: "purpose", kind: "discrimination", front: "Strong or Emerging? (DTA comparator)", back: "Emerging records what happened. Strong explains why it happened and what it cost. Useful as a quality test on any closure report, including one written to the departmental template." },
   { id: "cf77", moduleId: "purpose", kind: "application", front: "Which criteria require an artefact attached, not referenced?", back: "Scope requires the original business case as agreed by Government; lessons requires the lessons learned register." },
-  { id: "cf78", moduleId: "assurance", kind: "definition", front: "What does criterion 5 require?", back: "That internal and external assurance activities in the Assurance Plan agreed with the DTA were completed, with the reason for any material change and the key outcomes. Strong adds whether the assurance was worth its cost." },
+  { id: "cf78", moduleId: "accountability", kind: "definition", front: "What does criterion 5 require?", back: "That internal and external assurance activities in the Assurance Plan agreed with the DTA were completed, with the reason for any material change and the key outcomes. Strong adds whether the assurance was worth its cost." },
   { id: "cf79", moduleId: "financial", kind: "definition", front: "Movement of Funds", back: "A request to shift approved funding between financial years. A Strong budget rating gives the rationale for it and its impact, including on the wider agency." },
   { id: "cf80", moduleId: "handover", kind: "definition", front: "What does a Strong transition rating add?", back: "Sustainment funding plans, and the impact of transferring incomplete or outstanding deliverables into business as usual." },
 
@@ -79,20 +100,20 @@ export const closureFlashcards: Flashcard[] = [
   { id: "cf48", moduleId: "financial", kind: "application", front: "Why do warranties expire unnoticed?", back: "Invoices and payments have owners in the finance process. A warranty is a right with no natural owner once the project dissolves — so name one and record the end date." },
   { id: "cf49", moduleId: "financial", kind: "application", front: "What obligations survive contract termination?", back: "Typically confidentiality, warranty and defects liability, records access, audit rights, and transition-out duties. Record them with end dates." },
 
-  { id: "cf50", moduleId: "records", kind: "definition", front: "Is data in a business system a Commonwealth record?", back: "Yes. Information created or received in the course of Australian Government business is a Commonwealth record under the Archives Act 1983, wherever it is held." },
-  { id: "cf51", moduleId: "records", kind: "definition", front: "What does a records authority do?", back: "Gives permission to destroy, retain or transfer described records, and sets the minimum retention period. Destruction without authority is unauthorised." },
-  { id: "cf52", moduleId: "records", kind: "discrimination", front: "Continuing storage or continuing access?", back: "Access. A backup readable only by software the entity no longer licenses does not meet the obligation, and the gap is found when the data is requested." },
-  { id: "cf53", moduleId: "records", kind: "application", front: "Best long-term retention format at decommissioning", back: "Export to an open, documented format with the schema, code tables and a plain-English data dictionary. Not a database backup; not a VM snapshot." },
-  { id: "cf54", moduleId: "records", kind: "application", front: "What comes first in a decommissioning sequence?", back: "Sentence the records — what must be kept, how long, under which authority. Export scope and everything after it depends on that answer." },
-  { id: "cf55", moduleId: "records", kind: "application", front: "Why revoke integrations before deleting data?", back: "It is a reversible test. Whatever breaks is an undocumented dependency, and the system can still be turned back on — which it cannot once data is gone." },
-  { id: "cf56", moduleId: "records", kind: "discrimination", front: "The legacy system is still running. Closure report?", back: "State it: owner, cost, when it stops, and which system is the system of record. Two writable copies of the same data is a data-integrity failure." },
-  { id: "cf57", moduleId: "records", kind: "application", front: "Does migrating to a new system discharge the retention obligation?", back: "No. The obligation attaches to the information, not the system, and access must be maintained for the prescribed period across however many platforms." },
+  { id: "cf50", moduleId: "handover", kind: "definition", front: "Is data in a business system a Commonwealth record?", back: "Yes. Information created or received in the course of Australian Government business is a Commonwealth record under the Archives Act 1983, wherever it is held." },
+  { id: "cf51", moduleId: "handover", kind: "definition", front: "What does a records authority do?", back: "Gives permission to destroy, retain or transfer described records, and sets the minimum retention period. Destruction without authority is unauthorised." },
+  { id: "cf52", moduleId: "handover", kind: "discrimination", front: "Continuing storage or continuing access?", back: "Access. A backup readable only by software the entity no longer licenses does not meet the obligation, and the gap is found when the data is requested." },
+  { id: "cf53", moduleId: "handover", kind: "application", front: "Best long-term retention format at decommissioning", back: "Export to an open, documented format with the schema, code tables and a plain-English data dictionary. Not a database backup; not a VM snapshot." },
+  { id: "cf54", moduleId: "handover", kind: "application", front: "What comes first in a decommissioning sequence?", back: "Sentence the records — what must be kept, how long, under which authority. Export scope and everything after it depends on that answer." },
+  { id: "cf55", moduleId: "handover", kind: "application", front: "Why revoke integrations before deleting data?", back: "It is a reversible test. Whatever breaks is an undocumented dependency, and the system can still be turned back on — which it cannot once data is gone." },
+  { id: "cf56", moduleId: "handover", kind: "discrimination", front: "The legacy system is still running. Closure report?", back: "State it: owner, cost, when it stops, and which system is the system of record. Two writable copies of the same data is a data-integrity failure." },
+  { id: "cf57", moduleId: "handover", kind: "application", front: "Does migrating to a new system discharge the retention obligation?", back: "No. The obligation attaches to the information, not the system, and access must be maintained for the prescribed period across however many platforms." },
 
-  { id: "cf58", moduleId: "sections", kind: "discrimination", front: "Objective, business outcome, key result — what is the difference?", back: "Objective: what you set out to do. Outcome: the change that justified doing it. Key result: the measure telling you whether it happened. Report all three separately." },
-  { id: "cf59", moduleId: "sections", kind: "application", front: "Objective delivered, outcome did not move. Report it how?", back: "Separately, and prominently — it is the most informative result a closure report can carry, and it disappears the moment the three levels are merged into one sentence." },
-  { id: "cf60", moduleId: "sections", kind: "definition", front: "What is the document purpose section for?", back: "Naming the decisions this report supports and who must take them. Not 'this document reports on closure', which the title already said." },
-  { id: "cf61", moduleId: "sections", kind: "application", front: "Why does the project overview matter in three years?", back: "The reader will not know what the project was, what it was called internally, or which of four similar initiatives it is. Orientation is what makes the record findable." },
-  { id: "cf62", moduleId: "sections", kind: "discrimination", front: "Every milestone actual equals its planned date. Infer what?", back: "The plan was rebaselined until variance disappeared. Real delivery has variance; report against original dates as well as revised ones." },
+  { id: "cf58", moduleId: "benefits", kind: "discrimination", front: "Objective, business outcome, key result — what is the difference?", back: "Objective: what you set out to do. Outcome: the change that justified doing it. Key result: the measure telling you whether it happened. Report all three separately." },
+  { id: "cf59", moduleId: "benefits", kind: "application", front: "Objective delivered, outcome did not move. Report it how?", back: "Separately, and prominently — it is the most informative result a closure report can carry, and it disappears the moment the three levels are merged into one sentence." },
+  { id: "cf60", moduleId: "benefits", kind: "definition", front: "What is the document purpose section for?", back: "Naming the decisions this report supports and who must take them. Not 'this document reports on closure', which the title already said." },
+  { id: "cf61", moduleId: "benefits", kind: "application", front: "Why does the project overview matter in three years?", back: "The reader will not know what the project was, what it was called internally, or which of four similar initiatives it is. Orientation is what makes the record findable." },
+  { id: "cf62", moduleId: "benefits", kind: "discrimination", front: "Every milestone actual equals its planned date. Infer what?", back: "The plan was rebaselined until variance disappeared. Real delivery has variance; report against original dates as well as revised ones." },
   { id: "cf63", moduleId: "openitems", kind: "definition", front: "What is the outstanding items section actually for?", back: "It is a transfer document, not a status report. Every remaining risk, issue, dependency and action is accepted by someone named, or visibly abandoned." },
   { id: "cf64", moduleId: "openitems", kind: "application", front: "What must every outstanding item carry?", back: "A named individual, a destination register, and a review date. An item owned by a team or by the project is owned by nobody." },
   { id: "cf65", moduleId: "openitems", kind: "discrimination", front: "An action assigned to the project team — what is wrong?", back: "The team is dissolving. An entity that will not exist cannot be chased. Reassign to an individual who remains, or close it." },
@@ -114,12 +135,12 @@ export const closureFlashcards: Flashcard[] = [
   { id: "cf35", moduleId: "writing", kind: "discrimination", front: "'Delivered within the revised budget' — what does a reader hear?", back: "Over the original budget. State it as delivered at $X against original $Y, revised to $Z with dates and reasons." },
   { id: "cf36", moduleId: "writing", kind: "application", front: "Why give shortfalls their own heading?", back: "Buried bad news reads as concealed bad news, and the reader then re-reads everything looking for what else was placed carefully." },
 
-  { id: "cf37", moduleId: "assurance", kind: "definition", front: "Where do closure claims resurface?", back: "In annual performance statements, which are audited, and in ANAO performance audits — tested by parties with no relationship to the project." },
-  { id: "cf38", moduleId: "assurance", kind: "definition", front: "The evidence chain", back: "Claim, method, data, definition, approval. Audit follows it until it reaches primary data or runs out." },
-  { id: "cf39", moduleId: "assurance", kind: "application", front: "Where does the chain usually break?", back: "At the data. The source system was decommissioned and no extract was retained. The number was real and the evidence evaporated." },
-  { id: "cf40", moduleId: "assurance", kind: "discrimination", front: "Dashboard or extract — which is durable evidence?", back: "The extract, with the query and the definition beside it. A dashboard depends on a workspace that may be deleted well inside the retention period." },
-  { id: "cf41", moduleId: "assurance", kind: "application", front: "Why retain the metric definition with the data?", back: "The same metric defined two ways gives two answers. Without the definition a tester has a number and no way to know what it counts." },
-  { id: "cf42", moduleId: "assurance", kind: "application", front: "Measurement runs nine months; the workspace is deleted in 30 days. What now?", back: "Establish a durable data source for the ongoing measurement and retain the baseline extract and method now, while they still exist." },
+  { id: "cf37", moduleId: "accountability", kind: "definition", front: "Where do closure claims resurface?", back: "In annual performance statements, which are audited, and in ANAO performance audits — tested by parties with no relationship to the project." },
+  { id: "cf38", moduleId: "accountability", kind: "definition", front: "The evidence chain", back: "Claim, method, data, definition, approval. Audit follows it until it reaches primary data or runs out." },
+  { id: "cf39", moduleId: "accountability", kind: "application", front: "Where does the chain usually break?", back: "At the data. The source system was decommissioned and no extract was retained. The number was real and the evidence evaporated." },
+  { id: "cf40", moduleId: "accountability", kind: "discrimination", front: "Dashboard or extract — which is durable evidence?", back: "The extract, with the query and the definition beside it. A dashboard depends on a workspace that may be deleted well inside the retention period." },
+  { id: "cf41", moduleId: "accountability", kind: "application", front: "Why retain the metric definition with the data?", back: "The same metric defined two ways gives two answers. Without the definition a tester has a number and no way to know what it counts." },
+  { id: "cf42", moduleId: "accountability", kind: "application", front: "Measurement runs nine months; the workspace is deleted in 30 days. What now?", back: "Establish a durable data source for the ongoing measurement and retain the baseline extract and method now, while they still exist." },
 ];
 
 /* ------------------------------------------------------------------ *
@@ -127,7 +148,28 @@ export const closureFlashcards: Flashcard[] = [
  * ------------------------------------------------------------------ */
 
 export const closureGlossary: GlossaryEntry[] = [
-  { term: "Annual performance statements", origin: "Government", moduleId: "assurance", definition: "The statements a Commonwealth entity publishes in its annual report, reporting performance against the purposes set out in its corporate plan. Audited, which is why a closure claim that flows into them can be tested." },
+  { term: "ASL", origin: "Government", moduleId: "financial", definition: "Average Staffing Level — the Commonwealth measure of staffing, reported per financial year alongside budget and actual expenditure on the Tier 3 closure form." },
+  { term: "Asset Management (closure section)", origin: "Government", moduleId: "handover", definition: "Section 14 of the full template. Lists each asset the project developed and now in use, with a business owner, an IT owner, a location and the timing of handover. Two owners because the area that uses an asset and the area that keeps it running are rarely the same." },
+  { term: "Assurance Approach", origin: "Government", moduleId: "accountability", definition: "The assurance artefact required of Tier 1 and Tier 2 projects, listed as a project management deliverable at closure. Tier 3 projects carry an Assurance Plan or Checklist instead." },
+  { term: "Benefit Profile", origin: "Government", moduleId: "benefits", definition: "The artefact defining an individual benefit — what it is, how it will be measured and who owns it. Listed among the project management deliverables in the closure report." },
+  { term: "CAPEX", origin: "General", moduleId: "financial", definition: "Capital expenditure — spend that produces an identifiable asset the entity controls. Reported separately from OPEX for each financial year in the closure financial summary, against approved budget and actual." },
+  { term: "Change Register", origin: "Government", moduleId: "milestones", definition: "The record of every change request raised, with its decision. Attached to the closure report rather than summarised, because the summary is the section and the register is the evidence." },
+  { term: "Closing the Gap", origin: "Government", moduleId: "lessons", definition: "One of the eighteen fixed lessons categories in the full closure template, asking what the project contributed and where it could improve. Present whether or not the project was aimed at First Nations outcomes." },
+  { term: "Concept Definition", origin: "Government", moduleId: "deliverables", definition: "The earliest P3M artefact, preceding the business case. Listed among the project management deliverables in the closure report." },
+  { term: "Document Control", origin: "Government", moduleId: "writing", definition: "The version table opening the full template — version, change description and date. Front matter rather than a numbered section, and the record of how the report itself was revised before approval." },
+  { term: "Key Project Contacts", origin: "Government", moduleId: "accountability", definition: "The front-matter table naming the Senior Responsible Officer, the Project Manager and any other applicable roles, with responsibilities as defined in the P3M Framework." },
+  { term: "OPEX", origin: "General", moduleId: "financial", definition: "Operating expenditure — spend consumed in the period rather than producing an asset. Reported separately from CAPEX for each financial year in the closure financial summary." },
+  { term: "P3M Framework", origin: "Government", moduleId: "process", definition: "The department's Project, Program and Portfolio Management Framework. Defines project tiers, roles and the artefacts each tier must produce, including the closure report without which a project cannot formally close." },
+  { term: "Portfolio Project Office (PPO)", origin: "Government", moduleId: "accountability", definition: "The departmental office that receives approved closure reports. It does not review them for approval or compliance; it aggregates them to identify trends, insights and emerging patterns for enterprise reporting." },
+  { term: "Post Implementation Review (PIR)", origin: "Government", moduleId: "benefits", definition: "A review after delivery assessing outcomes and benefits realisation. Its timing, ownership and scope must be confirmed and assigned to the BAU team before closure is approved." },
+  { term: "Project Management Office (PMO)", origin: "Government", moduleId: "accountability", definition: "The group-level office to which an approved closure report is submitted, alongside the Portfolio Project Office." },
+  { term: "Project Management Hub", origin: "Government", moduleId: "process", definition: "The departmental intranet location holding the P3M Framework, the closure templates and supporting material." },
+  { term: "Project Transition Plan", origin: "Government", moduleId: "handover", definition: "The artefact documenting transition planning and ongoing operational responsibilities. Required of Tier 1 and Tier 2 projects; Tier 3 projects record transition directly on the closure form." },
+  { term: "RiskNet2", origin: "Government", moduleId: "openitems", definition: "The departmental risk system. The closure report cites the Risk Plan ID, and the Tier 3 form asks whether the plan is attached and whether any risk sits outside appetite or tolerance." },
+  { term: "Senior User", origin: "Government", moduleId: "accountability", definition: "Also called the Business Owner. Signs the closure report for the receiving side — that what has been handed over is accepted and ongoing ownership is understood. The signature that makes the transition sections credible." },
+  { term: "Tier (project)", origin: "Government", moduleId: "process", definition: "The P3M classification setting how much process applies. Tier 1 and Tier 2 carry the Assurance Approach, the Project Transition Plan and the full fifteen-section closure template; Tier 3 carries a lighter checklist and the simplified closure form." },
+  { term: "Tolerance", origin: "Government", moduleId: "milestones", definition: "The room agreed in advance for a project to move on time, cost, quality, scope, benefits or risk before escalation is required. Reporting against tolerance says whether the control worked, not merely whether the number moved." },
+  { term: "Annual performance statements", origin: "Government", moduleId: "accountability", definition: "The statements a Commonwealth entity publishes in its annual report, reporting performance against the purposes set out in its corporate plan. Audited, which is why a closure claim that flows into them can be tested." },
   { term: "Asserted claim", origin: "General", moduleId: "evidence", definition: "A statement resting on informed judgement with no measurement behind it. Legitimate in a closure report if labelled as such; corrosive if written in the same confident past tense as a measurement." },
   { term: "Assurance review", origin: "Government", moduleId: "purpose", definition: "A short, intensive independent review at a defined point in a proposal's lifecycle, providing the Senior Responsible Officer with advice and early identification of areas needing corrective action." },
   { term: "Baseline", origin: "General", moduleId: "evidence", definition: "The approved position against which delivery is measured. The useful one is the baseline approved when the investment decision was made, not the most recent revision." },
@@ -135,9 +177,9 @@ export const closureGlossary: GlossaryEntry[] = [
   { term: "Benefits realisation", origin: "Government", moduleId: "benefits", definition: "The process of achieving and measuring the benefits promised in a business case. Occurs in the operational business after delivery, which is why it cannot be completed as a project activity." },
   { term: "Benefits realisation management plan", origin: "Government", moduleId: "benefits", definition: "The document setting out what each benefit is, who owns it, how and when it will be measured, and what happens if it is not realised." },
   { term: "Closure report", origin: "Government", moduleId: "purpose", definition: "The record produced at the end of delivery stating what was promised, what was delivered, what it cost, what was learned, and who now owns everything that outlives the project." },
-  { term: "Decommissioning", origin: "General", moduleId: "assurance", definition: "Retiring the systems and environments used during delivery. The most common cause of an evidence chain breaking, because the data supporting a benefit claim goes with the system." },
+  { term: "Decommissioning", origin: "General", moduleId: "accountability", definition: "Retiring the systems and environments used during delivery. The most common cause of an evidence chain breaking, because the data supporting a benefit claim goes with the system." },
   { term: "Estimated claim", origin: "General", moduleId: "evidence", definition: "A figure derived from a model rather than measured. Sound practice when the assumptions it depends on are stated, so a reader can judge whether they still hold." },
-  { term: "Evidence chain", origin: "General", moduleId: "assurance", definition: "Claim, method, data, definition, approval. What an auditor follows from a reported figure until they reach primary data or run out." },
+  { term: "Evidence chain", origin: "General", moduleId: "accountability", definition: "Claim, method, data, definition, approval. What an auditor follows from a reported figure until they reach primary data or run out." },
   { term: "Forecast error", origin: "General", moduleId: "benefits", definition: "A shortfall caused by the original estimate being wrong rather than by delivery failing. Distinguishing the two is what makes a shortfall useful to the next business case." },
   { term: "Gate 6", origin: "Government", moduleId: "purpose", definition: "The Benefits Realisation gate in the Gateway process. Assesses whether the investment delivered its purpose and benefits, and whether benefit harvesting continues after closure." },
   { term: "Gateway Review Process", origin: "Government", moduleId: "purpose", definition: "The Department of Finance process of independent reviews at critical points across a high-risk proposal's lifecycle, for non-corporate Commonwealth entities above defined financial thresholds." },
@@ -146,39 +188,39 @@ export const closureGlossary: GlossaryEntry[] = [
   { term: "Lessons learned", origin: "Government", moduleId: "lessons", definition: "Transferable findings from delivery. Usable only when they carry context, a specific event with magnitude, a cost, and an action a future team could put in a plan." },
   { term: "Measured claim", origin: "General", moduleId: "evidence", definition: "A figure from data collected before and after, using the same definition both times. The only kind of claim that supports itself without qualification." },
   { term: "New Policy Proposal", origin: "Government", moduleId: "purpose", definition: "A proposal put to Government for funding. Where high risk and above the financial thresholds, Finance may recommend it be subject to the Gateway Review Process." },
-  { term: "PGPA Act", origin: "Government", moduleId: "assurance", definition: "The Public Governance, Performance and Accountability Act 2013, which establishes the Commonwealth performance framework requiring entities to measure and report performance against their purposes." },
+  { term: "PGPA Act", origin: "Government", moduleId: "accountability", definition: "The Public Governance, Performance and Accountability Act 2013, which establishes the Commonwealth performance framework requiring entities to measure and report performance against their purposes." },
   { term: "Post-implementation review", origin: "Government", moduleId: "benefits", definition: "A review conducted after delivery — typically 6 to 12 months post-closure — to assess whether benefits are being realised and to capture findings for future work." },
   { term: "Capitalisation", origin: "Government", moduleId: "financial", definition: "Recording spend as an asset rather than an expense. Requires an identifiable asset the entity controls and will benefit from — which abandoned options, training and most post-go-live defect work are not." },
-  { term: "Commonwealth record", origin: "Government", moduleId: "records", definition: "Information created or received in the course of Australian Government business, including data inside a business system. Governed by the Archives Act 1983; cannot be destroyed without authority." },
-  { term: "Continuing access", origin: "Government", moduleId: "records", definition: "The obligation to keep retained records readable for the prescribed period — not merely stored. A backup requiring software the entity no longer licenses does not satisfy it." },
+  { term: "Commonwealth record", origin: "Government", moduleId: "handover", definition: "Information created or received in the course of Australian Government business, including data inside a business system. Governed by the Archives Act 1983; cannot be destroyed without authority." },
+  { term: "Continuing access", origin: "Government", moduleId: "handover", definition: "The obligation to keep retained records readable for the prescribed period — not merely stored. A backup requiring software the entity no longer licenses does not satisfy it." },
   { term: "Defects liability period", origin: "General", moduleId: "financial", definition: "The window after final acceptance during which the supplier must remedy defects at their cost. Worthless without a named holder and a recorded end date." },
   { term: "Final acceptance", origin: "General", moduleId: "financial", definition: "The formal act confirming contracted deliverables were received and met the contract. Starts warranty periods, releases retentions and closes the defects window." },
-  { term: "Business outcome", origin: "Government", moduleId: "sections", definition: "The change in the world that justified the investment, as distinct from what the project set out to build. Reported with its baseline, and often the place where a delivered objective turns out not to have moved anything." },
+  { term: "Business outcome", origin: "Government", moduleId: "benefits", definition: "The change in the world that justified the investment, as distinct from what the project set out to build. Reported with its baseline, and often the place where a delivered objective turns out not to have moved anything." },
   { term: "Closure agreement", origin: "General", moduleId: "openitems", definition: "The signed act ending the project. Meaningful only when it attests that the transfers described in the report were accepted by the owners named — not merely that the project stopped." },
-  { term: "Key result", origin: "General", moduleId: "sections", definition: "The measure that shows whether a business outcome occurred. Carries a target and an actual; without a target it was a metric, not a key result." },
-  { term: "Objective", origin: "General", moduleId: "sections", definition: "What the project set out to do, quoted as originally written. Achievement of an objective is not achievement of the outcome that justified it." },
+  { term: "Key result", origin: "General", moduleId: "benefits", definition: "The measure that shows whether a business outcome occurred. Carries a target and an actual; without a target it was a metric, not a key result." },
+  { term: "Objective", origin: "General", moduleId: "benefits", definition: "What the project set out to do, quoted as originally written. Achievement of an objective is not achievement of the outcome that justified it." },
   { term: "Project artefacts", origin: "General", moduleId: "openitems", definition: "The outputs a project leaves behind — architecture decisions, data dictionaries, test evidence, contracts, benefits plans. Indexed with location and owner so a stranger can find them." },
   { term: "RAID", origin: "General", moduleId: "openitems", definition: "Risks, assumptions, issues and dependencies. At closure it stops being a status log and becomes a transfer table: every open item accepted by a named person or visibly abandoned." },
   { term: "Completion criteria", origin: "General", moduleId: "openitems", definition: "The conditions agreed at the outset for calling the project done. Reported at closure as met, partially met or waived — with who waived them — so that closure is a test rather than an opinion." },
   { term: "Follow-on action recommendation", origin: "General", moduleId: "openitems", definition: "Unfinished work carried out of a closing project to a named owner with a date. The discipline is that every open issue at closure is closed, formally accepted, or converted to one — there is no 'ongoing'." },
   { term: "Recommendation", origin: "General", moduleId: "openitems", definition: "A proposal directed at this entity about how it works, as distinct from a lesson aimed at future projects. A recommendation that changes a control is often the most valuable line in a closure report." },
-  { term: "Assurance Plan", origin: "Government", moduleId: "assurance", definition: "The plan agreed with the Digital Transformation Agency setting out the internal and external assurance activities a digital or ICT-enabled project will undergo. The closure report must record their completion — this is criterion 5 of the closure reporting standard." },
+  { term: "Assurance Plan", origin: "Government", moduleId: "accountability", definition: "The plan agreed with the Digital Transformation Agency setting out the internal and external assurance activities a digital or ICT-enabled project will undergo. The closure report must record their completion — this is criterion 5 of the closure reporting standard." },
   { term: "Benefits management plan", origin: "Government", moduleId: "benefits", definition: "The artefact recording each benefit, its owner, how and when it will be measured. Criterion 3 of the closure reporting standard measures the report against this plan, not against the business case narrative." },
   { term: "Closure reporting standard", origin: "Government", moduleId: "purpose", definition: "The DTA standard for closure reports on Australian Government digital and ICT-enabled projects. Seven criteria, each self-assessed by the agency as Strong, Emerging or Nil before the report is finalised." },
   { term: "Investment Oversight Framework", origin: "Government", moduleId: "purpose", definition: "The framework tiering Australian Government digital and ICT investments by size and complexity. The tier determines which closure report template applies — Tier 1 and 2 use the fuller template, Tier 3 a lighter one." },
   { term: "Movement of Funds", origin: "Government", moduleId: "financial", definition: "A request to move approved funding between financial years. Named explicitly in the closure reporting standard: a Strong budget criterion gives the rationale for each such change and its impact, including on the wider agency." },
   { term: "Strong, Emerging, Nil", origin: "Government", moduleId: "purpose", definition: "The three ratings in the closure reporting standard's self-assessment. Nil means the criterion is not addressed; Emerging records what happened; Strong explains why it happened and what followed from it." },
   { term: "Sustainment funding", origin: "Government", moduleId: "handover", definition: "The ongoing funding to operate and support what was delivered, after project funding ends. Required for a Strong rating on the transition criterion, alongside the impact of handing incomplete work to business as usual." },
-  { term: "Records authority", origin: "Government", moduleId: "records", definition: "An instrument issued by the National Archives giving permission to destroy, retain or transfer described records, and setting minimum retention periods." },
-  { term: "Sentencing", origin: "Government", moduleId: "records", definition: "Determining, against a records authority, which records must be kept, for how long, destroyed, or transferred. The first step in any decommissioning, because everything else depends on the answer." },
-  { term: "System of record", origin: "General", moduleId: "records", definition: "The authoritative source for a given set of data. Must be named explicitly when a replaced system stays running, or staff cannot know which copy governs." },
+  { term: "Records authority", origin: "Government", moduleId: "handover", definition: "An instrument issued by the National Archives giving permission to destroy, retain or transfer described records, and setting minimum retention periods." },
+  { term: "Sentencing", origin: "Government", moduleId: "handover", definition: "Determining, against a records authority, which records must be kept, for how long, destroyed, or transferred. The first step in any decommissioning, because everything else depends on the answer." },
+  { term: "System of record", origin: "General", moduleId: "handover", definition: "The authoritative source for a given set of data. Must be named explicitly when a replaced system stays running, or staff cannot know which copy governs." },
   { term: "Transition-out obligations", origin: "General", moduleId: "financial", definition: "What a supplier must still do after the engagement ends — deliver source code and documentation, support handover, provide records access. Frequently unenforced because nobody records the deadline." },
   { term: "Work in progress", origin: "Government", moduleId: "financial", definition: "Costs accumulated against a project not yet transferred to an asset or an expense. Left uncleared at closure it becomes an unexplained balance nobody can resolve later." },
   { term: "Reference class data", origin: "General", moduleId: "lessons", definition: "Pooled estimate-versus-actual figures across comparable projects, used to forecast new work from what similar work actually cost rather than from what a team hopes." },
   { term: "Residual risk", origin: "General", moduleId: "handover", definition: "A risk that survives closure. Must transfer to a named owner in the entity's risk register, or it disappears from view without disappearing from existence." },
-  { term: "Retention", origin: "Government", moduleId: "assurance", definition: "Keeping the extract, method and definition behind a reported figure for long enough that the claim can still be tested. A design decision at closure, not an afterthought." },
+  { term: "Retention", origin: "Government", moduleId: "accountability", definition: "Keeping the extract, method and definition behind a reported figure for long enough that the claim can still be tested. A design decision at closure, not an afterthought." },
   { term: "RMG 106", origin: "Government", moduleId: "purpose", definition: "Finance's Guidance on the Assurance Reviews Process — the operating guidance for Gateway, including the gates and what the Senior Responsible Officer is accountable for." },
-  { term: "RMG 134", origin: "Government", moduleId: "assurance", definition: "Finance's guidance on annual performance statements for Commonwealth entities. Where closure evidence eventually surfaces in audited form." },
+  { term: "RMG 134", origin: "Government", moduleId: "accountability", definition: "Finance's guidance on annual performance statements for Commonwealth entities. Where closure evidence eventually surfaces in audited form." },
   { term: "Run cost", origin: "General", moduleId: "handover", definition: "The recurring cost of operating a delivered system — licences, hosting, support. Must transfer to a funded budget line with a named holder, or a renewal lapses." },
   { term: "Senior Responsible Officer", origin: "Government", moduleId: "purpose", definition: "The individual accountable for a proposal achieving its objectives and realising its benefits, across the whole lifecycle including after delivery ends. The recipient of Gateway assurance." },
   { term: "Shortfall paragraph", origin: "General", moduleId: "writing", definition: "A direct passage stating what was not achieved, by how much against the original commitment, why, and where the lesson is recorded — unaccompanied by a compensating success." },
@@ -190,6 +232,24 @@ export const closureGlossary: GlossaryEntry[] = [
  * ------------------------------------------------------------------ */
 
 export const closureContrasts: Contrast[] = [
+  {
+    moduleId: "process",
+    good: "Each checklist item is closed by someone outside the project agreeing to it, and the report records who and when.",
+    usual: "The report is drafted first and the checklist ticked against what the report says.",
+    tell: "Pick any 'has been transferred' sentence and ask who accepted it. If the answer is a branch rather than a person, nothing was transferred.",
+  },
+  {
+    moduleId: "deliverables",
+    good: "Planned deliverables are quoted from the approved business case, and anything short of complete is marked Partially achieved with the gap named.",
+    usual: "Deliverables are listed from the current plan and marked Achieved, with shortfalls explained in the comments column.",
+    tell: "Count the Achieved rows that carry a caveat. Each one should have been Partially achieved.",
+  },
+  {
+    moduleId: "milestones",
+    good: "Variance is shown against the original baseline and the current one, with each rebaseline dated and attributed to the forum that approved it.",
+    usual: "Milestones are shown against the latest baseline, so the table reports almost no variance.",
+    tell: "If every milestone was met, ask when the baseline was last moved and by whom.",
+  },
   {
     moduleId: "purpose",
     good: "The report names the decision each reader will make with it, and answers that decision on page one.",
@@ -227,13 +287,13 @@ export const closureContrasts: Contrast[] = [
     tell: "Ask who holds the warranty and when it ends. If nobody can answer in a minute, it will expire unnoticed.",
   },
   {
-    moduleId: "records",
+    moduleId: "handover",
     good: "Records were sentenced against an authority, exported with their schema and dictionary, and verified before anything was deleted.",
     usual: "The data was backed up, the subscription was cancelled, and the retention question was never asked.",
     tell: "Ask what happens if someone requests this data in five years. If the answer needs software you no longer license, you have storage, not access.",
   },
   {
-    moduleId: "sections",
+    moduleId: "benefits",
     good: "Objective, business outcome and key result are reported separately, so a delivered objective with a flat outcome is visible.",
     usual: "One sentence covers all three, at whichever level of abstraction flatters the result.",
     tell: "Ask what changed for users, then ask what was built. If the same sentence answers both, the levels have been merged.",
@@ -251,7 +311,7 @@ export const closureContrasts: Contrast[] = [
     tell: "Search the document for 'broadly', 'largely' and 'revised'. Each one marks a number somebody chose not to state.",
   },
   {
-    moduleId: "assurance",
+    moduleId: "accountability",
     good: "The extract, the query and the definition are retained with a named holder, and would answer an audit in two years.",
     usual: "The claim is supported by a dashboard in a workspace scheduled for deletion, and an email from the analyst.",
     tell: "Ask what would answer this question after the system is turned off. If the answer is a person, it is not evidence.",
@@ -263,6 +323,66 @@ export const closureContrasts: Contrast[] = [
  * ------------------------------------------------------------------ */
 
 export const closureDiagnostic: Question[] = [
+  {
+    id: "cd-process",
+    moduleId: "process",
+    prompt: "Before a project can be formally closed, what has to have happened to its deliverables?",
+    options: [
+      "Accepted by the BAU teams that will own them",
+      "Completed and signed off by the project manager",
+      "Listed in the closure report with delivery dates",
+      "Verified against the business case by the group PMO",
+    ],
+    answer: 0,
+    rationale:
+      "The checklist asks for formal acceptance by the receiving side. Completion is the project's own view; acceptance is somebody else's.",
+    optionNotes: [
+      "",
+      "The project confirming its own work is not acceptance.",
+      "Listing them records an intention to hand over, not a handover.",
+      "The PMO receives the report and does not verify deliverables.",
+    ],
+  },
+  {
+    id: "cd-deliverables",
+    moduleId: "deliverables",
+    prompt: "The closure template asks about deliverables in two separate sections. What distinguishes them?",
+    options: [
+      "Artefacts governance required, against what the project built",
+      "Documents completed, against documents still outstanding",
+      "Deliverables inside scope, against those added by change request",
+      "Items delivered on time, against those delivered late",
+    ],
+    answer: 0,
+    rationale:
+      "Project management deliverables are the framework's artefacts — plans, registers, profiles. Project-specific deliverables are the goods or services the project existed to produce.",
+    optionNotes: [
+      "",
+      "Both sections cover completed work; outstanding items belong elsewhere.",
+      "Scope changes are recorded in change control, not by splitting the tables.",
+      "Timeliness is reported in the milestones section.",
+    ],
+  },
+  {
+    id: "cd-milestones",
+    moduleId: "milestones",
+    prompt: "A project was rebaselined twice, both times with approval. Which schedule variance does the closure report show?",
+    options: [
+      "Both — against the original baseline and the current one",
+      "Against the current baseline, since the changes were approved",
+      "Against the original baseline only, as the funded commitment",
+      "Neither, provided each rebaseline has an approval reference",
+    ],
+    answer: 0,
+    rationale:
+      "One shows whether recent management held; the other shows what the original commitment cost in time. Either alone is misleading.",
+    optionNotes: [
+      "",
+      "Approval makes the movement legitimate without making it invisible.",
+      "Honest, but it reads as blame with no mention of the approvals.",
+      "Approval references explain variance; they do not replace reporting it.",
+    ],
+  },
   {
     id: "cd1",
     moduleId: "purpose",
@@ -343,7 +463,7 @@ export const closureDiagnostic: Question[] = [
   },
   {
     id: "cd7",
-    moduleId: "assurance",
+    moduleId: "accountability",
     prompt: "Where does an evidence chain most commonly break?",
     options: [
       "The data — the system was decommissioned, no extract kept",
@@ -356,7 +476,7 @@ export const closureDiagnostic: Question[] = [
   },
   {
     id: "cd9",
-    moduleId: "records",
+    moduleId: "handover",
     prompt: "A cloud subscription lapses, deleting eleven years of case data. What has happened?",
     options: [
       "Commonwealth records were destroyed without authority",
@@ -413,6 +533,106 @@ export const closureDiagnostic: Question[] = [
  * ------------------------------------------------------------------ */
 
 export const closureSupplementary: Question[] = [
+  {
+    id: "cs-pr1",
+    moduleId: "process",
+    prompt: "Where do lessons from a closed project have to be recorded?",
+    options: [
+      "The Departmental Lessons Learned Register",
+      "The closure report, which the PPO then indexes",
+      "The group PMO's project archive",
+      "The project's own SharePoint, linked from the report",
+    ],
+    answer: 0,
+    rationale:
+      "The register is a separate destination from the report. Submitting the report does not lodge the lessons, and the register is where other projects find them.",
+    optionNotes: [
+      "",
+      "The PPO aggregates reports for trends; it does not index lessons into the register for you.",
+      "The PMO receives the report, not the lessons.",
+      "A project archive disappears with the project.",
+    ],
+  },
+  {
+    id: "cs-pr2",
+    moduleId: "process",
+    prompt: "A Tier 3 project has SRO approval and the form is filed in the team's SharePoint. What remains outstanding?",
+    options: [
+      "Submission to the group PMO and the PPO",
+      "Nothing — Tier 3 closes on SRO approval",
+      "Project Board endorsement, required at every tier",
+      "A Project Transition Plan for the BAU handover",
+    ],
+    answer: 0,
+    rationale:
+      "Filing locally is not submission. Every tier submits the approved report to the group PMO and the Portfolio Project Office.",
+    optionNotes: [
+      "",
+      "Approval is necessary and not sufficient; the report still has to go somewhere.",
+      "Board endorsement applies where required, not universally.",
+      "The Transition Plan is scoped to Tier 1 and Tier 2.",
+    ],
+  },
+  {
+    id: "cs-d1",
+    moduleId: "deliverables",
+    prompt: "A Privacy Impact Assessment was completed after go-live. How does it appear in the deliverables table?",
+    options: [
+      "Listed with its actual date, noting it followed release",
+      "Listed with the go-live date, since both fell in the same quarter",
+      "Omitted, as it was not produced within the planned schedule",
+      "Listed as delivered, with the timing raised under lessons instead",
+    ],
+    answer: 0,
+    rationale:
+      "The date is the finding. A privacy assessment completed after release is exactly what the record exists to surface.",
+    optionNotes: [
+      "",
+      "Aligning the dates removes the only detail that matters.",
+      "It was produced, and it is a listed core artefact.",
+      "The lessons entry needs the table row as its evidence.",
+    ],
+  },
+  {
+    id: "cs-d2",
+    moduleId: "deliverables",
+    prompt: "A dashboard went live with two of five planned views. Which Tier 3 status applies?",
+    options: [
+      "Partially achieved",
+      "Achieved, with the missing views in comments",
+      "Not achieved, since it was not delivered as planned",
+      "Achieved, because it is in use and delivering value",
+    ],
+    answer: 0,
+    rationale:
+      "The status is what gets aggregated across the department; comments are what gets skipped. Partially achieved is the honest and durable answer.",
+    optionNotes: [
+      "",
+      "A caveat in a comments column does not survive skim-reading.",
+      "Two working views is not nothing, and this overstates the shortfall.",
+      "Useful and complete are different claims.",
+    ],
+  },
+  {
+    id: "cs-m1",
+    moduleId: "milestones",
+    prompt: "What does attaching the Change Register add that the change control section cannot?",
+    options: [
+      "The evidence behind the summary, including rejected changes",
+      "A reconciliation between approved changes and the budget variance",
+      "Confirmation that each change was approved by the Project Board",
+      "The audit trail required before the SRO can approve closure",
+    ],
+    answer: 0,
+    rationale:
+      "The section summarises how change was managed. The register is the underlying record, and it is where decisions to refuse a change are visible.",
+    optionNotes: [
+      "",
+      "Budget reconciliation belongs in the financial summary.",
+      "The register records the decision-maker, which is not always the Board.",
+      "SRO approval does not depend on the register being attached.",
+    ],
+  },
   {
     id: "cs1",
     moduleId: "purpose",
@@ -569,7 +789,7 @@ export const closureSupplementary: Question[] = [
   },
   {
     id: "cs12",
-    moduleId: "assurance",
+    moduleId: "accountability",
     prompt: "Which evidence would still answer an audit question two years after decommissioning?",
     options: [
       "A retained extract with its query and metric definition",
@@ -583,7 +803,7 @@ export const closureSupplementary: Question[] = [
   },
   {
     id: "cs13",
-    moduleId: "assurance",
+    moduleId: "accountability",
     prompt: "Why is retention a closure decision rather than a records-management afterthought?",
     options: [
       "Decommissioning destroys the evidence, and it happens at closure",
@@ -639,7 +859,7 @@ export const closureSupplementary: Question[] = [
   },
   {
     id: "cs18",
-    moduleId: "records",
+    moduleId: "handover",
     prompt: "Which retention approach is most likely to still be readable in ten years?",
     options: [
       "An open-format export with schema and dictionary",
@@ -653,7 +873,7 @@ export const closureSupplementary: Question[] = [
   },
   {
     id: "cs19",
-    moduleId: "records",
+    moduleId: "handover",
     prompt: "The replaced system is still live and holds duplicate data. What is the most urgent thing to record?",
     options: [
       "Which system is the system of record",
@@ -667,7 +887,7 @@ export const closureSupplementary: Question[] = [
   },
   {
     id: "cs20",
-    moduleId: "records",
+    moduleId: "handover",
     prompt: "Does migrating records into a new system discharge the original retention obligation?",
     options: [
       "No — it attaches to the information, not the system",
@@ -681,7 +901,7 @@ export const closureSupplementary: Question[] = [
   },
   {
     id: "cs21",
-    moduleId: "sections",
+    moduleId: "benefits",
     prompt: "Which is a usable document purpose statement?",
     options: [
       "It names the decisions the report supports and who must take them",
@@ -737,7 +957,7 @@ export const closureSupplementary: Question[] = [
   },
   {
     id: "cs25",
-    moduleId: "assurance",
+    moduleId: "accountability",
     prompt: "A closure report lists the dates of the Gate 4 and Gate 6 reviews and nothing further. How does that rate on the assurance criterion?",
     options: [
       "Nil — completion is recorded but no findings or outcomes are captured",
@@ -832,7 +1052,7 @@ export const closureCaseStudies: CaseStudy[] = [
           "Three of the four conditions failed and the item would still have been signed off as 'handed to Payments Operations'. The four-condition test is what turns an assumption into a visible gap.",
       },
       {
-        moduleId: "assurance",
+        moduleId: "accountability",
         stage: 4,
         heading: "The evidence that was about to be deleted",
         decision: "Rely on the existing reporting, or extract and retain before decommissioning?",
@@ -883,7 +1103,7 @@ export const closureCaseStudies: CaseStudy[] = [
       "A licensing register was replaced and decommissioned. The first attempt would have destroyed Commonwealth records without authority; the second was sequenced properly and cost three weeks.",
     steps: [
       {
-        moduleId: "records",
+        moduleId: "handover",
         stage: 1,
         heading: "The decommissioning plan that was a cancellation plan",
         decision: "Accept the plan as written, or ask what happens to the data?",
@@ -896,7 +1116,7 @@ export const closureCaseStudies: CaseStudy[] = [
           "The plan was competent about everything it considered. What it did not consider was the majority of the data, because 'not active' had been quietly read as 'not needed'.",
       },
       {
-        moduleId: "records",
+        moduleId: "handover",
         stage: 2,
         heading: "Sentencing, which nobody had done",
         decision: "Assume the standard seven years, or check the authority?",
@@ -909,7 +1129,7 @@ export const closureCaseStudies: CaseStudy[] = [
           "Nothing at all could be destroyed on the planned date. The assumption that a decommissioning date is a technical decision was the whole error, and it was one question away from being caught.",
       },
       {
-        moduleId: "records",
+        moduleId: "handover",
         stage: 3,
         heading: "Export, and reading it back",
         decision: "Trust the export, or reconcile it?",
@@ -935,7 +1155,7 @@ export const closureCaseStudies: CaseStudy[] = [
           "The saving had been promised to a budget process before anyone knew whether the system could lawfully be switched off. That is the ordinary sequence, and it is backwards.",
       },
       {
-        moduleId: "records",
+        moduleId: "handover",
         stage: 5,
         heading: "The fortnight with the integrations off",
         decision: "Delete on schedule, or run a reversible test first?",
@@ -1072,12 +1292,13 @@ export const closureToolkit: ToolkitTemplate[] = [
   },
   {
     id: "self-assess",
-    title: "Self-assessment against the seven criteria",
-    prompt: "For each criterion: rating (Strong / Emerging / Nil) · what the report currently says · what it would take to move up a level.",
+    title: "The closure assessment grid",
+    prompt:
+      "Seven areas, each with a fixed rating and the evidence for it. Scope delivered (Achieved / Partially / Not) · Schedule (On time / Minor delay / Significant delay) · Budget (Within / Over / Under) · Benefits (Achieved / On track / Not achieved) · Transition to BAU (Complete / Outstanding actions) · Stakeholder engagement and Project governance (Effective / Partially effective / Needs improvement).",
     example:
-      "C2 Schedule — EMERGING. The report has a milestone table with planned, rebaselined and actual dates. It does not say why integration slipped 35 weeks or what it cost. To reach Strong: add the identity broker token change as the cause, with the 11-week and $3.8m impact, and note the knock-on to public release.\n\nC5 Assurance — NIL. Gate 4 and Gate 6 dates are listed and nothing else. To reach Emerging: record the findings of each and what was done about them. To reach Strong: say which recommendations changed delivery and which were noted and left.",
+      "Schedule — MINOR DELAY. Six weeks against the original date, inside the eight-week tolerance; no rebaseline required.\n\nBudget — OVER. $47.3m against $38.1m originally approved, 24 per cent. Two rebaselines, both approved by the Project Board.\n\nTransition to BAU — OUTSTANDING ACTIONS. Five of six outcomes accepted; the sixth briefed to Provider Support but not accepted. Action A9, owner AD Provider Support, due 30 September.\n\nProject governance — PARTIALLY EFFECTIVE. Board met monthly and made every scope decision; eleven change requests raised and eleven approved, with no record of any refused.",
     note:
-      "Do this on the draft, before it goes to the SRO. Rating yourself Strong on all seven is not an outcome, it is a tell — and the reviewer reads the same standard you do.",
+      "Evidence means a fact a reader could check — a date, a figure, a decision reference. Restating the rating in a sentence is not evidence. Budget has no good option: Within, Over and Under are three descriptions, not a scale.",
   },
   {
     id: "purpose-stmt",
@@ -1433,9 +1654,9 @@ export const closureFieldGuide: FieldGuideEntry[] = [
   },
   {
     id: "criteria",
-    title: "The seven criteria, and what Strong means",
+    title: "Whole-of-government comparator: the DTA seven criteria",
     summary:
-      "The DTA standard for digital and ICT-enabled project closure reports. Agencies self-assess each criterion as Strong, Emerging or Nil before finalising. Emerging records what happened; Strong explains why, and what followed. Read the right-hand column as the only thing standing between the two.",
+      "Not the departmental template — the DTA standard that applies to Australian Government digital and ICT-enabled closure reports, and the yardstick a DEWR digital project meets outside the department. Agencies self-assess each criterion as Strong, Emerging or Nil. Emerging records what happened; Strong explains why, and what followed. Useful here as a test of whether a report is good rather than merely complete.",
     sourceIds: ["aga-standard", "aga-templates"],
     items: [
       { term: "1. Scope", detail: "Emerging: overview, objectives and scope as agreed in the business case, performance against it, any adjustments recorded, and the original business case attached. Strong adds the rationale for each adjustment and its impact." },
