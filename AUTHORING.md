@@ -1,0 +1,289 @@
+# Authoring a training package
+
+The end-to-end procedure for adding a new course to this system, or revising an existing one. Follow it in order. Each phase ends in a gate that must pass before the next begins.
+
+This document says **what to do**. [STANDARDS.md](STANDARDS.md) says **what "good" means** in measurable terms, and every rule referenced here is defined there. [ARCHITECTURE.md](ARCHITECTURE.md) says how the code is put together.
+
+---
+
+## The model
+
+A course is **data**. The player is **code**. They meet at one interface: `PackageContent` in `src/packages.ts`.
+
+Adding a course means authoring arrays and registering a manifest. It does not mean editing a view. If you find yourself editing a view to accommodate a course, either the course is wrong or the interface needs extending — decide which, and say so.
+
+Everything a learner sees comes through `src/content.ts`, which resolves the active package once at load. No view imports a course file directly.
+
+---
+
+## Phase 0 — Establish the governing artefact
+
+**Nothing else starts until this is done.** A course teaches people to do something that exists at work. Find the thing that governs it.
+
+1. Ask the course owner whether their area has a template, form, standard or guidance for this. Their answer outranks everything below — it is the document people actually open.
+2. Search `architecture.digital.gov.au` for a whole-of-government standard or design.
+3. Search `finance.gov.au` for a Resource Management Guide, `anao.gov.au` for the audit view.
+4. Search `site:.gov.au "<artefact name>" template`.
+5. Only then reach for PRINCE2, PMBOK, IPA or overseas material — as **comparators**, labelled as such, never as the spine.
+
+**Produce:** the governing document(s), stored locally outside the repository if internal. A list of every section, table, field, rating scale and fixed vocabulary they contain.
+
+**Gate:** you can name the governing document, its sections, and who assesses against it. If you are describing good practice in general terms, Phase 0 is not finished.
+
+**If the source is a slide deck or presentation:** it travels with the package. See "Importing a source deck" below.
+
+---
+
+## Phase 1 — Structure
+
+Decide the stages. The structure follows the artefact and the process around it, not a taxonomy you find elegant.
+
+1. Map every section of the governing artefact to a stage. A stage may cover several sections; no section may be unowned.
+2. Add stages for the process around the artefact where one exists — who approves it, where it goes, what must be true before it is produced.
+3. Name each stage for the capability it builds, not the jargon it contains. A heading must be meaningful to someone who has never heard the term it would otherwise use.
+4. Assign each stage a **stable id**. Ids are permanent: questions, flashcards, glossary terms, contrasts and illustrations are all keyed to them.
+5. Order the stages in a `*_ORDER` array. `number` is derived from position — never hand-maintained.
+
+**Produce:** an id-to-title map, and a table mapping every artefact section to the stage that owns it.
+
+**Gate:** every section of the governing artefact appears in the map exactly once. No two stages cover the same ground.
+
+---
+
+## Phase 2 — Teaching content
+
+For each stage, author the `Module`:
+
+| Field | What it is |
+|---|---|
+| `id`, `number`, `title`, `subtitle` | Identity. `number` derived from the order array. |
+| `outcome` | The capability the learner gains, stated as something they can do. |
+| `coreIdea` | The one idea the stage exists to install, in two or three sentences. |
+| `sections[]` | `heading`, `body`, optional `bullets`, `table`, `example`, `sourceIds`. |
+| `questions[]` | See Phase 3. |
+| `scenarios[]` | See Phase 3. |
+| `assignment` | `title`, `instruction`, `prompts[]`, `modelAnswer`, `criteria[]`. |
+| `minutes` | **Derived, never typed.** `stageMinutes()` computes it from word count. |
+| `slides` | Slide range, or `""` where the package has no deck. |
+
+Rules that apply to every section — thresholds in [STANDARDS.md](STANDARDS.md):
+
+- Lead with what the practice achieves; use failure as contrast. Roughly 90% of section openers state the positive first.
+- Every load-bearing claim carries `sourceIds`.
+- One worked-reasoning passage per stage: a decision made badly, why that fails, the better move with the thinking exposed.
+- No development history, no version notes, no commentary on colleagues' work. Rationale for design decisions belongs in code comments.
+- Use the governing artefact's own vocabulary. Where the course introduces its own term, it goes in the glossary.
+
+**Produce:** every stage's `Module`.
+
+**Gate:** `npm run typecheck` passes. Every stage has an outcome, a core idea, and at least the minimum body words.
+
+---
+
+## Phase 3 — Assessment
+
+Four pools, each with a different job. Keep them separate.
+
+| Pool | Purpose | Drawn how |
+|---|---|---|
+| `module.questions` | Knowledge check at the end of a stage | Fresh sample per attempt from the stage's pool |
+| `module.scenarios` | Applied decision, with context | All shown |
+| `supplementaryQuestions` | Extends a stage's quiz pool | Merged into `quizPoolFor(moduleId)` |
+| `diagnosticQuestions` | Recommends a starting stage | One per stage, at random |
+| `practiceQuestions` | Mixed practice | Round-robin across stages |
+
+Item-writing rules — every one is enforced by a check:
+
+1. Exactly four options.
+2. `optionNotes` has four entries; the correct one is `""`, the other three explain why that option is wrong.
+3. **The correct answer must not be the longest option** more often than chance. Measure after every batch.
+4. Options approximately equal in length. Mean key/distractor ratio under the threshold.
+5. Distractors must be plausible and wrong for a stateable reason.
+6. Every stage needs at least one diagnostic question. The diagnostic draws one per stage; a stage absent from the pool is silently excluded from the recommendation.
+7. Ids unique across the whole package.
+
+**Produce:** all four pools.
+
+**Gate:** run the item-quality measurement. Correct-answer-longest under the threshold, mean length ratio under the threshold, every stage represented in the diagnostic pool.
+
+---
+
+## Phase 4 — Reference content
+
+Every one of these is keyed by `moduleId` and **renders nothing on a miss**. Every stage needs coverage in each.
+
+| Array | Shape | Per stage |
+|---|---|---|
+| `flashcards` | `id`, `moduleId`, `kind` (definition / application / discrimination), `front`, `back` | 5+ |
+| `glossary` | `term`, `definition`, `origin`, `moduleId` | Every term the course uses that a learner would not know |
+| `contrasts` | `moduleId`, `good`, `usual`, `tell` | 1+ |
+| `fieldGuide` | `id`, `title`, `summary`, `sourceIds`, `items[{term, detail}]` | Lookup material for use at work |
+| `toolkitTemplates` | `id`, `title`, `prompt`, `example`, `note` | One per artefact the learner must produce |
+| `sources` | `id`, `title`, `publisher`, `url?`, `note`, `checked` | Governing documents first; comparators labelled as comparators |
+| `divergences` | `id`, `topic`, `slides`, `deck`, `here`, `why` | Anything the course teaches that the source does not |
+
+The `tell` in a contrast must be an **observable check** the learner can run, not a restatement of the good practice.
+
+`divergences` is not optional housekeeping. Anything the course adds beyond its source is declared here, so a learner knows which wording is the department's and which is the course's.
+
+**Produce:** all seven arrays.
+
+**Gate:** no stage missing from any array; no `moduleId` referring to a stage that does not exist.
+
+---
+
+## Phase 5 — Applied content
+
+| Array | Shape |
+|---|---|
+| `caseStudies` | `id`, `title`, `subtitle`, `outcome` ("worked" / "corrected"), `summary`, `steps[]`, `closing` |
+| `capstoneSteps` | `id`, `title`, `prompt`, `checks[]` |
+| `capstoneBriefs` | `id`, `title`, `short`, `brief`, `twist` |
+| `capstoneRubric` | The self-assessment criteria |
+
+Each case step names the decision on the table **before** saying what the team did. A case where everything went well teaches nothing; at least one case carries `outcome: "corrected"`.
+
+**Produce:** cases covering every stage, and a capstone that walks the learner through producing the real artefact.
+
+**Gate:** every stage appears in at least one case study.
+
+---
+
+## Phase 6 — The worked document
+
+**If the course teaches people to produce a document, it must contain at least one complete example of that document.** Fragments in templates are not sufficient.
+
+- One `Exemplar` per form the course teaches. Where the department has a full form and a simplified one, author both.
+- Follow the real form exactly: its section numbering, its front matter, its table columns, its rating scales.
+- Every section carries a `note` explaining why it is written that way. The note is commentary, not part of the report.
+- **Make it uncomfortable.** A cost overrun against original approval, a benefit that missed, a transfer nobody accepted, an approval that was never sought. A worked example of the easy case teaches nothing, and everyone can already write that one.
+- Cross-references inside the document must point at sections that exist.
+
+**Produce:** `exemplars: Exemplar[]`.
+
+**Gate:** each exemplar carries every element the real form asks for by name.
+
+---
+
+## Phase 7 — Wire it up
+
+1. Add the manifest: `id`, `title`, `subtitle`, `publisher`, `sourceAuthor?`, `source`, `reviewed`, `status`, `summary`, `arc`.
+2. Register in `trainingPackages`.
+3. **Add an illustration for every stage** in `illustrations.tsx` and register it under the stage id. A missing key renders nothing and reports no error.
+4. Derive `minutes` for every stage via `stageMinutes()`.
+
+Illustration rules:
+
+- All colour from `var(--stage)` so the diagram recolours per stage.
+- Namespace every gradient and filter id per instance.
+- Text is fixed in user units and does not reflow. Position labels in **fixed columns**, never from a variable such as a bar width or an end anchor, or they collide when the string grows.
+- Minimum 4 user units of leading between stacked labels.
+
+**Gate:** the package appears in the library, switches by clicking, and every stage renders a diagram.
+
+---
+
+## Phase 8 — Verify
+
+Run in this order. Do not skip to the end.
+
+```bash
+npm run typecheck
+npm run build
+npm run qa          # the full suite
+```
+
+Then, by hand:
+
+1. **Walk every view in the new package.** Not the default one. Anything keyed by id fails silently, and the default package will not show you.
+2. **Switch packages by clicking the button**, both directions. Seeding `localStorage` proves the content layer resolved and nothing else.
+3. **Complete a stage end to end**: read, fail the knowledge check deliberately, confirm it names what to reread, retry and pass, answer a scenario wrongly and retry, write the assignment, reveal the model answer, confirm mastery appears only when all three requirements are met.
+4. **Check the reporting agrees** with what you actually answered.
+5. **Print the guide and the completion record** and read them. Measuring the PDF is not reading it.
+6. `scripts/walkthrough.mjs <packageId>` automates 3 and 4 across every stage.
+
+**Gate:** the full suite green, and every item above done by hand at least once.
+
+---
+
+## Phase 9 — Publish
+
+```bash
+npm run verify      # typecheck + build + qa
+git add -A && git commit -m "..."
+git push
+```
+
+`docs/` is generated and committed, because GitHub Pages serves it directly. Committing source without rebuilding means the live site does not match the code.
+
+---
+
+## Revising an existing course
+
+The dangerous operations, in order of risk.
+
+### Changing what a stage teaches
+
+Realign the stage, then check everything keyed to it still fits: its questions, its flashcards, its glossary terms, its contrasts, its case study steps, its illustration, and any cross-reference in another stage.
+
+### Retiring or merging a stage
+
+Never delete a stage definition on its own. Roughly 50 items may be keyed to its id.
+
+1. Decide which stage absorbs it.
+2. Move the sections worth keeping into the absorbing stage.
+3. **Remap `moduleId`** on every question, scenario, flashcard, glossary term, contrast and case step from the retired id to the absorbing one.
+4. Remove the id from the order array.
+5. Delete the stage definition.
+6. Confirm no orphaned `moduleId` remains, and no stage is left with a gap in any reference array.
+
+Reversing steps 3 and 5 orphans the content silently.
+
+### Changing the governing artefact
+
+When the department reissues a template, or you discover the course was built on the wrong document:
+
+1. Re-run Phase 0 against the new artefact.
+2. Map old stages to new sections. Expect gaps in both directions.
+3. Audit **every** piece of content for the old frame — not just the stages. Toolkit prompts, field guide entries, flashcards and question rationales all embed assumptions about structure.
+4. Search the built artefact for the old vocabulary. Anything that survives is a contradiction a learner will hit.
+5. Rebuild the worked document to the new form.
+6. Record what the course adds beyond the new artefact in `divergences`.
+
+### Adding a check
+
+Whenever you fix something the suite did not catch, add a check for it. Then **break the thing again and confirm the check fails.** A check that has never failed has never been tested.
+
+---
+
+## Importing a source deck
+
+`src/slides.ts` and `public/slides/` are generated and committed. A normal build never regenerates them.
+
+```bash
+apt-get install libreoffice poppler-utils
+pip install python-pptx pillow
+python3 scripts/import-slides.py path/to/deck.pptx
+```
+
+The script reads the stage-to-slide mapping out of the course file, so the two cannot drift. Every slide the course cites must exist, and the stage ranges must cover the deck with no overlap.
+
+A citation the learner cannot follow is an assertion. Either the source travels with the package or the citation goes.
+
+---
+
+## What fails silently
+
+Committed to memory or checked deliberately — nothing in this list produces an error.
+
+| Fault | Symptom |
+|---|---|
+| Missing illustration for a stage | Blank space where the diagram belongs |
+| `moduleId` naming a stage that does not exist | Content unreachable |
+| A stage missing from the diagnostic pool | Excluded from the recommendation |
+| Course name or stage count hardcoded in a view | Wrong package's name after switching |
+| Optional manifest field unhandled at a render site | Stranded label with nothing after it |
+| SVG label positioned from a variable | Collides or leaves the canvas |
+| `grid-template-columns: 1fr` around a `<pre>` or table | Horizontal overflow, often clipped |
+| Colour changed without its background | Text the same colour as what is behind it |
+| Flat shuffle over a question pool | A practice set drawn from one stage |

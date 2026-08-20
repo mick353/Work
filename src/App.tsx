@@ -1,4 +1,4 @@
-import { divergences, exemplar, findModule, flashcards, manifest, modules, slides } from "./content";
+import { divergences, exemplars, findModule, flashcards, manifest, modules, slides } from "./content";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Brain,
@@ -223,7 +223,7 @@ const NUMBER_WORDS = [
 function navItemApplies(item: { id: string }): boolean {
   if (item.id === "deck") return slides.length > 0;
   if (item.id === "divergences") return divergences.length > 0;
-  if (item.id === "example") return exemplar !== null;
+  if (item.id === "example") return exemplars.length > 0;
   return true;
 }
 

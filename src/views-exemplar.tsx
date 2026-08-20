@@ -1,17 +1,24 @@
 /**
  * The worked example view.
  *
- * A course about producing a document should show the finished document. This
- * renders the report as a document — numbered sections, real tables, fixed
- * -width register extracts — with the commentary set beside it rather than
- * inside it, so the report can be read straight through and ignored.
+ * A course about producing a document shows the finished document. The report
+ * renders as a document — numbered sections, real tables, fixed-width register
+ * extracts — with commentary beside it rather than inside it, so the report
+ * can be read straight through and the notes ignored.
+ *
+ * A package may carry more than one worked document where it teaches more than
+ * one form. They are switched rather than concatenated, because each is meant
+ * to be read as a complete document.
  */
 
-import { exemplar, manifest } from "./content";
+import { useState } from "react";
+import { exemplars, manifest } from "./content";
 import { LessonTableView, PageIntro } from "./components";
 
 export function WorkedExample() {
-  if (!exemplar) {
+  const [active, setActive] = useState(0);
+
+  if (!exemplars.length) {
     return (
       <div className="page">
         <PageIntro
@@ -23,13 +30,27 @@ export function WorkedExample() {
     );
   }
 
+  const exemplar = exemplars[Math.min(active, exemplars.length - 1)];
+
   return (
     <div className="page exemplar-page">
-      <PageIntro
-        eyebrow="Worked example"
-        title={exemplar.subtitle}
-        body={exemplar.intro}
-      />
+      <PageIntro eyebrow="Worked example" title={exemplar.subtitle} body={exemplar.intro} />
+
+      {exemplars.length > 1 && (
+        <div className="case-switch" role="group" aria-label="Choose a worked document">
+          {exemplars.map((item, index) => (
+            <button
+              key={item.id}
+              className={index === active ? "active" : ""}
+              aria-pressed={index === active}
+              onClick={() => setActive(index)}
+            >
+              <strong>{item.tab}</strong>
+              <span>{item.title}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       <dl className="exemplar-meta">
         {exemplar.meta.map((item) => (

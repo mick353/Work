@@ -299,7 +299,11 @@ export function Sources({ navigate }: { navigate: Navigate }) {
 }
 
 /* ------------------------------------------------------------------ *
- * Course additions — what this course adds to the deck
+ * Course additions — where the course goes beyond its source material
+ *
+ * Copy comes from the manifest. A package built from a slide deck and one
+ * built from published documents both land here, and neither should be
+ * described in the other's terms.
  * ------------------------------------------------------------------ */
 
 export function Divergences() {
@@ -315,32 +319,42 @@ export function Divergences() {
     );
   }
 
+  const hasSlides = slides.length > 0;
+  const sourceName = hasSlides ? "the deck" : "the source documents";
+
   return (
     <div className="page">
       <PageIntro
         eyebrow="Course additions"
-        title="What this course adds to the deck"
-        body="The deck is a briefing — it has one session to cover the whole of product management, so it earns its brevity. This course has about eight hours, and spends some of that going further in a few places. Those places are listed here rather than left for you to discover, so that when you use the deck's wording at work you know exactly where the extra depth came from."
+        title={`What this course adds to ${sourceName}`}
+        body={
+          hasSlides
+            ? "The deck is a briefing — it has one session to cover the whole of product management, so it earns its brevity. This course has longer, and spends some of it going further in a few places. Those places are listed here rather than left for you to discover, so that when you use the deck's wording at work you know exactly where the extra depth came from."
+            : "The source documents are a template and its guidance: they set out what a closure report must contain, and they do not set out how to make each part good. This course spends time on that, and on material the documents do not reach at all. Those places are listed here, so that when you follow the template at work you know which of this is departmental requirement and which is this course's reasoning."
+        }
       />
       <p className="divergence-note">
-        Nothing here replaces the deck. Where a team already shares an artefact in the deck's format — a hypothesis
-        statement, a problem statement — keep using it. The additions below are for your own reasoning behind it.
+        {hasSlides
+          ? "Nothing here replaces the deck. Where a team already shares an artefact in the deck's format — a hypothesis statement, a problem statement — keep using it. The additions below are for your own reasoning behind it."
+          : "Nothing here replaces the template. Where the department asks for a section, a table or a rating, use the departmental form and wording. The additions below are for the judgement you apply while filling it in."}
       </p>
       <div className="divergence-list">
         {divergences.map((item) => (
           <article key={item.id} className="divergence">
             <header>
               <h2>{item.topic}</h2>
-              {/* One entry covers ground the deck does not, so it has no slide to open. */}
-              {item.slides === "not covered" ? (
-                <span className="divergence-scope">Beyond the deck's scope</span>
+              {/* Some entries cover ground the source does not, so there is nothing to open. */}
+              {item.slides === "not covered" || !hasSlides ? (
+                <span className="divergence-scope">
+                  {item.slides === "not covered" ? `Beyond ${sourceName}` : item.slides}
+                </span>
               ) : (
                 <SlideRangeLink range={item.slides} />
               )}
             </header>
             <dl>
               <div>
-                <dt>In the deck</dt>
+                <dt>{hasSlides ? "In the deck" : "In the source documents"}</dt>
                 <dd>{item.deck}</dd>
               </div>
               <div>

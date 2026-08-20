@@ -7,13 +7,26 @@ Two packages ship today.
 | Package | Stages | Questions | Cards | Built from |
 |---|---|---|---|---|
 | **Product Management Fundamentals** | 9 | 122 | 92 | The 98-slide *Product Management Fundamentals* deck by Simon Morris, DEWR Digital Experience and Solutions |
-| **Closure Reports** | 11 | 105 | 80 | Commonwealth assurance and performance frameworks, spined on the DTA project closure reporting standard |
+| **Closure Reports** | 12 | 119 | 98 | The DEWR Project Closure Report Template, the Tier 3 form, the Project Closure Factsheet and the P3M Framework |
 
 A source artefact supplies the subject matter and nothing else. Everything the learner interacts with — the staged lessons, the questions and their per-option feedback, the flashcards, the cases, the capstone, the templates and the player itself — was built around that source, and the app says "built from" rather than "by" throughout so the two are never conflated.
 
 > Unofficial internal learning aid. **Not an official Australian Government publication**, and not a substitute for departmental guidance or the Digital Service Standard. See [NOTICE.md](NOTICE.md).
 
-New here and reading the code? [ARCHITECTURE.md](ARCHITECTURE.md) explains how it fits together. Adding a course? Read [BUILDING-TRAINING.md](BUILDING-TRAINING.md) first — it is the checklist written after the second package was built, and it exists because most of what goes wrong is not obvious. [ROADMAP.md](ROADMAP.md) records what is deliberately not built yet.
+## The documentation set
+
+Each document has one job. Start with the one that matches what you are doing.
+
+| Document | Read it when |
+|---|---|
+| **README.md** (this file) | You want to know what the system is, what ships in it, and how to run it |
+| **[AUTHORING.md](AUTHORING.md)** | You are adding a course or revising one. The end-to-end procedure, in order, with a gate at each phase |
+| **[STANDARDS.md](STANDARDS.md)** | You need the measurable definition of "good" — every threshold the check suite enforces |
+| **[ARCHITECTURE.md](ARCHITECTURE.md)** | You are changing the player rather than the content |
+| **[ROADMAP.md](ROADMAP.md)** | You want to know what is deliberately not built yet, and why |
+| **[NOTICE.md](NOTICE.md)** | Provenance, status and takedown contact |
+
+If you are an AI agent picking this up cold: read AUTHORING.md end to end before changing any content, and STANDARDS.md before writing any assessment item. Both are written to be followed without further context.
 
 ## Use it
 
@@ -41,48 +54,29 @@ Per package:
 
 | | Product Management Fundamentals | Closure Reports |
 |---|---|---|
-| Stages | 9 | 11 |
-| Knowledge checks | 74 | 72 |
-| Decision scenarios | 18 | 22 |
-| Diagnostic pool | 30 | 11 |
-| Mixed-practice pool | 92 | 68 |
-| Flashcards | 92 | 80 |
-| Glossary | 59 | 56 |
+| Stages | 9 | 12 |
+| Knowledge checks | 74 | 81 |
+| Decision scenarios | 18 | 24 |
+| Diagnostic pool | 30 | 14 |
+| Mixed-practice pool | 92 | 74 |
+| Flashcards | 92 | 98 |
+| Glossary | 59 | 77 |
 | Worked cases | 4 | 3 |
 | Templates | 10 | 16 |
 | Capstone | 3 briefs × 9 sections | 4 briefs × 10 sections |
-| Practice contrasts | 17 | 11 |
-| Course additions | 7 | — |
+| Practice contrasts | 17 | 14 |
+| Field guide entries | 7 | 10 |
+| Course additions | 7 | 7 |
 | Source slides | 98, all in the app | — |
-| Worked example document | — | A complete 14-section closure report with commentary |
-| Sources | 16 | 13 |
-| Reading time | ~1h 55m | ~2h |
+| Worked documents | — | The full template and the Tier 3 form, each complete with commentary |
+| Sources | 16 | 17 |
+| Reading time | ~1h 55m | ~2h 40m |
 
 Question counts are the assessed items — knowledge checks, scenarios and the diagnostic pool. The mixed-practice pool is separate, so a good diagnostic score means the ideas transfer rather than that you recognise the wording.
 
-## Design decisions worth knowing
+## Design decisions
 
-**A course is a package, not the whole product.** Content was flat top-level arrays, which was right for one course and wrong the moment there would be more: a second would have shared one progress record, one review queue and one results page with the first, so finishing one would have looked like partly finishing the other. Each package carries a manifest and owns its own storage namespace — the shape SCORM and cmi5 both settled on. Person-level settings (theme, shuffle salt, sidebar state) deliberately sit outside any package, because re-randomising someone's option order for opening a different course would be pointless churn.
-
-**Every optional section can be absent.** Closure Reports has no source deck and no divergence register; Product Management Fundamentals has no worked example document. The player was indexing `[0]` on arrays a smaller package leaves empty, which took the whole app down, and six views rendered blank with no explanation. Each optional section now has an empty state that says what is missing and confirms the rest still works, and navigation hides destinations a package does not fill.
-
-**Question sets are drawn, not fixed.** A stage quiz takes a fresh five from that stage's pool each attempt, so retaking it is a new test rather than a memory check of the same items. Mixed practice draws ten from the whole bank. The diagnostic takes one question per stage at random — always covering the full curriculum, never the same set twice. Flashcards are the deliberate exception: they are scheduled by an SM-2 spaced-repetition algorithm, so a card returns when it is due rather than at random.
-
-**Answer options are shuffled per learner, and equal in length.** The permutation is seeded from the question id plus a per-install salt, so it is stable for you across reloads but differs between people. Length matters as much as position: at one point the correct answer was the longest option in 99 of 122 questions, so clicking the longest answer scored 81% against a 75% mastery threshold. The QA suite fails the build if that strategy scores above 40%.
-
-**Body copy is set to a measure, not to the container.** Prose once rendered at 117 characters per line against a published optimum of 66. A `ch`-based measure applies to running text only — tables and artefacts deliberately break out, because a table is scanned rather than read. The QA suite fails the build if any view drifts outside 45–80 characters.
-
-**Stage length is computed, never typed.** The course used to advertise "about 8 hours" against roughly 27 minutes of reading, because the per-stage `minutes` were guesses the content had outgrown. They are now derived from word count plus an allowance per question, and move when the content does.
-
-**Errors drive the review queue.** Getting a question wrong brings forward the flashcards covering it, so the queue is shaped by what you missed rather than by a fixed order. It moves the due date only, never the card's ease or lapse count, because rating a card the learner has not seen would corrupt it with data from a different exercise.
-
-**The completion record is deliberately not a certificate.** It is readable and printable, and states on its face that it is self-recorded in one browser, not issued or verified by anyone. A QA check fails the build if the wording drifts toward implying a credential.
-
-**Assignments are checked against a model, not left blank.** Marking free text is impossible in an offline single file; revealing a worked answer *after* the learner commits their own, against explicit criteria they tick themselves, is not. The model stays disabled until something is written, because seeing a good answer first replaces the work with recognition.
-
-**Motion preference is honoured in JavaScript, not just CSS.** The stylesheet neutralises transitions under `prefers-reduced-motion`, but a JavaScript `scrollIntoView({ behavior: "smooth" })` is not CSS and that rule never reaches it. The QA suite runs a reduced-motion browser context to prove it.
-
-**The deck ships with the app, and the two builds carry it differently.** The standalone HTML inlines all 98 slides as data URIs, because a single file that loses its images the first time it is emailed on is not a single file. The GitHub Pages build leaves them as lazy-loaded files, so a phone downloads about 1 MB and fetches only the slides actually opened. Both are asserted by the QA suite, because getting it backwards is invisible until someone is on mobile data.
+The learning design is deliberate and in several places counter-intuitive — how mastery is gated, why the completion record is not a certificate, why question sets are drawn rather than fixed. Those decisions and their reasoning are documented in [ARCHITECTURE.md](ARCHITECTURE.md#7-design-decisions), alongside the code that implements them.
 
 ## Development
 
@@ -95,7 +89,7 @@ npx playwright install chromium   # once, before the first QA run
 npm run build      # writes both builds
 npm run dev        # rebuild on change
 npm run typecheck  # tsc --noEmit
-npm run qa         # 277-check verification suite
+npm run qa         # 283-check verification suite
 npm run verify     # typecheck + build + qa
 ```
 
@@ -134,11 +128,11 @@ The script reads the stage-to-slide mapping out of `course.ts`, so the two canno
 
 ### QA
 
-`scripts/qa.mjs` runs **277 checks** against the real built artefact in a real browser, and writes `qa-report.json`. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` runs **283 checks** against the real built artefact in a real browser, and writes `qa-report.json`. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
 
 It covers question-bank integrity, scoring arithmetic, mastery gating, backup round-trip including rejection of malformed files, package switching **through the control a learner clicks**, contrast on all 40 stage-page/theme combinations, axe-core WCAG 2.1 A/AA across every view in both packages and both themes, line measure and horizontal overflow from 320 px to 2560 px, target sizes, keyboard and focus behaviour, reduced motion, and console hygiene.
 
-Two rules about this suite, both learned the hard way and both written up in [BUILDING-TRAINING.md](BUILDING-TRAINING.md): test through the control the user touches rather than by seeding storage, and after writing a check, break the thing deliberately and confirm the check fails.
+The rules governing additions to the suite are in [STANDARDS.md](STANDARDS.md#10-rules-for-the-check-suite-itself).
 
 ### Source layout
 
@@ -151,12 +145,13 @@ public/                Assets copied into docs/ at build time
 docs/                  GENERATED — the GitHub Pages build. Do not edit by hand.
 scripts/
   build.mjs            esbuild bundle; emits both builds
-  qa.mjs               The 277-check verification suite
+  qa.mjs               The 283-check verification suite
   import-slides.py     Deck → slides.ts + public/slides (see above)
-  add-notes.py         One-off content migrations, already applied and kept
-  add-reasoning.py     only for provenance. NOT part of the build, and not
-  new-cases.py         safe to re-run — two of them corrupted content when
-  rebalance.py         first written. See BUILDING-TRAINING.md §14.
+  walkthrough.mjs      Completes a course end to end as a learner; not part of qa
+  add-notes.py         One-off content migrations, already applied. Retained for
+  add-reasoning.py     provenance only: not part of the build and not safe to
+  new-cases.py         re-run.
+  rebalance.py
   *.json               Payloads those migrations consumed
 src/
   packages.ts          THE REGISTRY. Manifests, the PackageContent interface,

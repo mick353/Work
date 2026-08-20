@@ -93,21 +93,21 @@ The service worker's cache name is stamped with a hash of the built HTML (`__BUI
 
 ## 5. Traps
 
-Each of these has cost real time. They are here so they cost it once.
+Behaviours that produce no error and no visible symptom until someone reports one. Check each before shipping a change in its area.
 
-**`grid-template-columns: 1fr` means `minmax(auto, 1fr)`, and `auto` will not shrink below its content.** Any track that might hold a `<pre>`, a table or a long token needs `minmax(0, 1fr)`. This bit three times in one session.
+**`grid-template-columns: 1fr` means `minmax(auto, 1fr)`, and `auto` will not shrink below its content.** Any track that might hold a `<pre>`, a table or a long token needs `minmax(0, 1fr)`.
 
-**`--stage-N` and `--accent-N` are not interchangeable.** `--stage-N` is a bright fill colour. `--accent-N` aliases `--stage-N-ink`, a darker variant, and is used for **text**. Brightening the fill without keeping the split produced hundreds of contrast failures.
+**`--stage-N` and `--accent-N` are not interchangeable.** `--stage-N` is a bright fill colour. `--accent-N` aliases `--stage-N-ink`, a darker variant, used for **text**. Brightening the fill without preserving the split fails contrast across every stage at once.
 
-**Colour and background must be changed together.** `.core-idea` was authored as a dark slab with white text; two later rules restyled the background to a light tint and neither touched `color`. Twenty stage pages rendered white-on-white in the light theme and every check passed, because the contrast check only opened the dashboard.
+**Colour and background travel together.** A rule that restyles a background without setting `color` leaves whatever the previous rule set. Because stage hue is bound per stage via `[data-stage]`, the result can be legible on one stage and invisible on another, so contrast is checked on every stage page in both themes rather than on a sample.
 
-**Anything keyed by module id silently renders nothing on a miss.** `illustrations.tsx` is `Record<moduleId, Component>`. The second package shipped eleven stages with no diagrams and no error.
+**Anything keyed by module id renders nothing on a miss, and reports nothing.** `illustrations.tsx` is `Record<moduleId, Component>`; flashcards, glossary terms, contrasts and questions resolve the same way. A stage absent from any of them shows an empty section.
 
-**Optional manifest and content fields must be handled at every render site.** `sourceAuthor` is absent on one package, `exemplar` on the other, `slides` on the other again. A missing optional field should produce no output, not a stranded label.
+**Optional manifest and content fields need handling at every render site.** `sourceAuthor`, `exemplars` and `slides` are each absent from one package. A missing optional field must produce no output rather than a label with nothing after it.
 
-**`sourceAuthor` wrote the source, not the package.** He wrote the deck or standard the package was built from. The stages, questions, cards, cases and capstone — the overwhelming majority of what a learner touches — are separate work. A field called `author`, or a byline under the title, hands him credit for all of it; that shipped once and had to be undone.
+**`sourceAuthor` names whoever wrote the source artefact, and nothing else.** The stages, questions, cards, cases and capstone are separate work. A single `author` field, or a byline under the title, attributes all of it to the source author. There is deliberately no field naming the package author: the separation is carried by the wording "built from".
 
-**The package author is deliberately unnamed.** The separation is carried by wording — everything says "built from" — rather than by a second name. This is easy to undo by accident, because naming both people is the obvious way to express the distinction. A QA check reads the built artefact and fails if a personal name appears as a package credit.
+**The package author is unnamed by design.** A check reads the built artefact and fails if a personal name appears as a package credit.
 
 **`opacity` composites an element *and* its background toward the page.** A disabled button at `opacity: 0.45` computed to 1.04:1 in dark mode. Use real colour tokens for disabled states.
 
@@ -117,7 +117,7 @@ Each of these has cost real time. They are here so they cost it once.
 
 ## 6. Verification
 
-`scripts/qa.mjs` — **277 checks** against the real built artefact in a real Chromium, writing `qa-report.json`. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` — **283 checks** against the real built artefact in a real Chromium, writing `qa-report.json`. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
 
 Coverage: question-bank integrity and item-writing statistics, scoring arithmetic, mastery gating, backup round-trip including malformed-file rejection, package switching *through the button*, contrast across all 40 stage-page/theme combinations, axe-core WCAG 2.1 A/AA on every view in both packages and both themes, line measure and horizontal overflow from 320 px to 2560 px, target sizes, keyboard and focus, reduced motion, and console hygiene.
 
@@ -128,4 +128,32 @@ Two rules govern additions to it:
 
 The count varies by one between runs. That is expected: one check only fires when the harness's first-option click lands on a wrong answer, and option order is salted.
 
-[BUILDING-TRAINING.md](BUILDING-TRAINING.md) is the full checklist for authoring a package, written after the second one. Read it before adding a course.
+[AUTHORING.md](AUTHORING.md) is the procedure for adding or revising a course. [STANDARDS.md](STANDARDS.md) holds every threshold this suite enforces.
+
+---
+
+## 7. Design decisions
+
+Why the learning design is shaped the way it is. Read before changing any of it.
+
+**A course is a package, not the whole product.** Each package carries a manifest and owns its own storage namespace — the shape SCORM and cmi5 both settled on. Flat top-level content arrays would give two courses one progress record, one review queue and one results page between them, so finishing one would read as partly finishing the other. Person-level settings (theme, shuffle salt, sidebar state) deliberately sit outside any package, because re-randomising someone's option order for opening a different course would be pointless churn.
+
+**Every optional section can be absent.** Closure Reports has no source deck; Product Management Fundamentals has no worked example document. Each optional section carries an empty state naming what is missing and confirming the rest still works, and navigation hides destinations a package does not fill. Code must not index `[0]` on a content array a smaller package leaves empty.
+
+**Question sets are drawn, not fixed.** A stage quiz takes a fresh five from that stage's pool each attempt, so retaking it is a new test rather than a memory check of the same items. Mixed practice draws ten from the whole bank. The diagnostic takes one question per stage at random — always covering the full curriculum, never the same set twice. Flashcards are the deliberate exception: they are scheduled by an SM-2 spaced-repetition algorithm, so a card returns when it is due rather than at random.
+
+**Answer options are shuffled per learner, and equal in length.** The permutation is seeded from the question id plus a per-install salt: stable for one person across reloads, different between people. Length matters as much as position — a key that is reliably the longest option makes "click the longest answer" a winning strategy regardless of shuffling. The suite fails the build if that strategy scores above 40%.
+
+**Body copy is set to a measure, not to the container.** A `ch`-based measure applies to running text only — tables and artefacts deliberately break out, because a table is scanned rather than read. The QA suite fails the build if any view drifts outside 45–80 characters.
+
+**Stage length is computed, never typed.** `stageMinutes()` derives it from word count plus an allowance per question, so the figure moves when the content does. Hand-typed values drift from the content and cannot be trusted once a stage is edited.
+
+**Errors drive the review queue.** Getting a question wrong brings forward the flashcards covering it, so the queue is shaped by what you missed rather than by a fixed order. It moves the due date only, never the card's ease or lapse count, because rating a card the learner has not seen would corrupt it with data from a different exercise.
+
+**The completion record is deliberately not a certificate.** It is readable and printable, and states on its face that it is self-recorded in one browser, not issued or verified by anyone. A QA check fails the build if the wording drifts toward implying a credential.
+
+**Assignments are checked against a model, not left blank.** Marking free text is impossible in an offline single file; revealing a worked answer *after* the learner commits their own, against explicit criteria they tick themselves, is not. The model stays disabled until something is written, because seeing a good answer first replaces the work with recognition.
+
+**Motion preference is honoured in JavaScript, not just CSS.** The stylesheet neutralises transitions under `prefers-reduced-motion`, but a JavaScript `scrollIntoView({ behavior: "smooth" })` is not CSS and that rule never reaches it. The QA suite runs a reduced-motion browser context to prove it.
+
+**The deck ships with the app, and the two builds carry it differently.** The standalone HTML inlines all 98 slides as data URIs, because a single file that loses its images the first time it is emailed on is not a single file. The GitHub Pages build leaves them as lazy-loaded files, so a phone downloads about 1 MB and fetches only the slides actually opened. Both are asserted by the QA suite, because getting it backwards is invisible until someone is on mobile data.

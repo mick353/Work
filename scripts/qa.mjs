@@ -773,15 +773,14 @@ check(
     }
   }
   /*
-    The worked report must satisfy each of the DTA closure reporting standard's
-    seven criteria, including the specific things the standard names and that
-    are easy to omit: the attached business case, percentage of benefits
-    realised, the benefits management plan by name, and the attached lessons
-    register. Four of these were missing when the exemplar was first written.
+    The worked documents are written to the departmental templates, so they are
+    checked against those: the full template's front matter and its numbered
+    sections, and the Tier 3 form's blocks. Each item below is something the
+    form asks for by name and that a plausible-looking report can omit.
 
-    Runs in its own context on the package that HAS a worked document — the
-    default package has none, and the first version of this check silently
-    reported everything missing because it was reading an empty state.
+    Runs on the package that HAS worked documents — a package without them
+    renders an empty state, and a check reading that would report every
+    requirement missing.
   */
   {
     const ex = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
@@ -793,31 +792,72 @@ check(
     await exPage.goto(artifactUrl, { waitUntil: "load" });
     await exPage.evaluate(() => { window.location.hash = "example"; });
     await exPage.waitForSelector(".exemplar-doc");
-    const doc = (await exPage.locator(".exemplar-doc").innerText()).toLowerCase();
-    const required = [
-      ["business case attached", /business case[\s\S]{0,80}attach|attached[\s\S]{0,80}business case/],
-      ["percentage of benefits realised", /% realised|realised at closure/],
-      ["benefits management plan named", /benefits management plan/],
-      ["assurance plan", /assurance plan/],
-      ["sustainment or recurring cost", /sustainment|recurring cost/],
-      ["lessons learned register attached", /lessons learned register/],
+
+    const tabs = await exPage.locator(".case-switch button").count();
+    check("Both departmental forms are shown as worked documents", tabs === 2, `${tabs} document(s)`);
+
+    /* Document 1 — the full template. */
+    const full = (await exPage.locator(".exemplar-doc").innerText()).toLowerCase();
+    const fullNeeds = [
+      ["document control", /document control/],
+      ["key project contacts", /key project contacts/],
+      ["the five approval assertions", /resources assigned to the project can be released/],
+      ["OPEX and CAPEX", /opex/, /capex/],
+      ["asset management with both owners", /business owner/, /it owner/],
+      ["a lessons category with both columns", /areas to improve/],
+      ["Closing the Gap", /closing the gap/],
+      ["the lessons register", /lessons learned register/],
+      ["tolerance reporting", /tolerance/],
+      ["RiskNet2 or the risk plan", /risknet2|risk management plan/],
     ];
-    const missing = required.filter(([, re]) => !re.test(doc)).map(([label]) => label);
+    const fullMissing = fullNeeds
+      .filter(([, ...res]) => !res.every((re) => re.test(full)))
+      .map(([label]) => label);
     check(
-      "The worked report meets the standard's named requirements",
-      missing.length === 0,
-      missing.length ? `missing: ${missing.join(", ")}` : "all six present",
+      "The full-template worked report carries what the template asks for",
+      fullMissing.length === 0,
+      fullMissing.length ? `missing: ${fullMissing.join(", ")}` : `all ${fullNeeds.length} present`,
     );
-    const sectionCount = await exPage.locator(".exemplar-section").count();
-    const refs = [...doc.matchAll(/sections? (\d+)(?: and (\d+))?/g)]
-      .flatMap((m) => [m[1], m[2]])
+
+    /*
+      Cross-references name NUMBERED sections. Front matter is unnumbered, so
+      the ceiling is the count of headings that begin with a number, not the
+      count of rendered blocks.
+    */
+    const numbered = await exPage.$$eval(".exemplar-section h3", (hs) =>
+      hs.map((h) => Number((h.textContent || "").match(/^(\d+)\./)?.[1])).filter(Boolean));
+    const top = numbered.length ? Math.max(...numbered) : 0;
+    const refs = [...full.matchAll(/sections? (\d+)(?:[, ]+(?:and )?(\d+))?(?:[, ]+(?:and )?(\d+))?/g)]
+      .flatMap((m) => [m[1], m[2], m[3]])
       .filter(Boolean)
       .map(Number);
     check(
       "Cross-references in the worked report point at sections that exist",
-      sectionCount > 0 && refs.every((n) => n >= 1 && n <= sectionCount),
-      `${sectionCount} sections, refs ${[...new Set(refs)].sort((a, b) => a - b).join(",")}`,
+      top > 0 && refs.every((n) => n >= 1 && n <= top),
+      `numbered 1–${top}, refs ${[...new Set(refs)].sort((a, b) => a - b).join(",") || "none"}`,
     );
+
+    /* Document 2 — the Tier 3 form. */
+    if (tabs > 1) {
+      await exPage.locator(".case-switch button").nth(1).click();
+      await exPage.waitForTimeout(400);
+      const t3 = (await exPage.locator(".exemplar-doc").innerText()).toLowerCase();
+      const t3Needs = [
+        ["an overall delivery status", /achieved|partially achieved|not achieved/],
+        ["the assessment grid", /project closure assessment|assessment area/],
+        ["a fixed schedule rating", /on time|minor delay|significant delay/],
+        ["evidence of BAU acceptance", /evidence and status of acceptance|accepted at|accepted by/],
+        ["ASL", /asl/],
+        ["the RiskNet2 plan id", /risknet2|plan id/],
+        ["approval by email accepted", /approval by email|attached/],
+      ];
+      const t3Missing = t3Needs.filter(([, re]) => !re.test(t3)).map(([label]) => label);
+      check(
+        "The Tier 3 worked report carries what the form asks for",
+        t3Missing.length === 0,
+        t3Missing.length ? `missing: ${t3Missing.join(", ")}` : `all ${t3Needs.length} present`,
+      );
+    }
     await ex.close();
   }
   /*

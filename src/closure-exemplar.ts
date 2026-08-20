@@ -1,25 +1,19 @@
 /**
- * A complete worked closure report.
+ * Complete worked closure reports, one per departmental template.
  *
- * The course taught every section, showed fragments in the templates, and
- * walked three cases — and never once showed a finished document. For a course
- * about writing a document that is the single most obvious thing to be
- * missing: a learner could pass every question and still have no picture of
- * what the whole thing looks like on the page.
- *
- * This is one report, end to end, for the running case. Every section carries
- * a note explaining why it is written the way it is, and several deliberately
- * show the uncomfortable version — the cost overrun against original approval,
- * the benefit that missed, the risk nobody would accept — because a worked
- * example of the easy case teaches nothing.
+ * A course about producing a document has to show the finished document. Both
+ * examples cover the same project so the two forms can be compared directly,
+ * and both show the uncomfortable version — a cost overrun against original
+ * approval, a benefit that missed, a transfer nobody accepted — because a
+ * worked example of the easy case teaches nothing.
  */
 
 import type { LessonTable } from "./course";
 
 export type ExemplarSection = {
-  /** Numbered as it would appear in the document. */
+  /** Numbered or named as it appears in the form. */
   heading: string;
-  /** The actual report text, as paragraphs. */
+  /** The report text, as paragraphs. */
   body?: string[];
   table?: LessonTable;
   /** Paragraphs after the table, where a section argues from its own figures. */
@@ -31,6 +25,9 @@ export type ExemplarSection = {
 };
 
 export type Exemplar = {
+  /** Short label for the switcher. */
+  id: string;
+  tab: string;
   title: string;
   subtitle: string;
   intro: string;
@@ -39,211 +36,476 @@ export type Exemplar = {
   closing: string;
 };
 
-export const closureExemplar: Exemplar = {
+const CASE_INTRO =
+  "One report, end to end, for a project that broadly succeeded and missed several things. The grey notes beside each section are commentary for you, not part of the document. Read the report first and ignore them; then read them and see what each section is doing.";
+
+/* ------------------------------------------------------------------ *
+ * The full template — Tier 1 and Tier 2
+ * ------------------------------------------------------------------ */
+
+const fullTemplate: Exemplar = {
+  id: "full",
+  tab: "Full template (Tier 1–2)",
   title: "Provider Application Status",
-  subtitle: "Project Closure Report — a complete worked example",
-  intro:
-    "One report, end to end, for a project that broadly succeeded and missed several things. The grey notes beside each section are commentary for you, not part of the document. Read the report first and ignore them; then read them and see what each section is doing.",
+  subtitle: "Project Closure Report — the full template, worked end to end",
+  intro: CASE_INTRO,
   meta: [
+    { label: "Form", value: "Project Closure Report Template — Tier 1 and Tier 2" },
     { label: "Status", value: "Illustrative — not a real DEWR project" },
-    { label: "Length", value: "14 sections, about 2,500 words" },
-    { label: "Aligned to", value: "The DTA closure reporting standard — all seven criteria" },
+    { label: "Length", value: "Front matter plus fifteen sections" },
   ],
   sections: [
     {
-      heading: "1. Document purpose",
+      heading: "Document Control",
+      table: {
+        caption: "Version history",
+        head: ["Version", "Change description", "Date"],
+        rows: [
+          ["0.1", "Initial draft for project team review", "14 Jul 2026"],
+          ["0.2", "Financial summary and benefits owners added following Finance review", "28 Jul 2026"],
+          ["0.3", "Residual risk R4 escalated to SRO; benefits section revised", "11 Aug 2026"],
+          ["1.0", "Approved by SRO", "19 Aug 2026"],
+        ],
+      },
+      note:
+        "Front matter, not a numbered section. The 0.3 row is the useful one: it records that an unresolved risk was escalated rather than smoothed away, which is visible here and nowhere else in the document.",
+    },
+    {
+      heading: "Key Project Contacts",
+      table: {
+        caption: "Roles as defined in the P3M Framework",
+        head: ["Role", "Name"],
+        rows: [
+          ["Senior Responsible Officer", "First Assistant Secretary, Provider Services"],
+          ["Project Manager", "Director, Provider Platform Delivery"],
+          ["Senior User / Business Owner", "Assistant Secretary, Provider Support Branch"],
+          ["Group PMO contact", "Director, Digital Group PMO"],
+        ],
+      },
+      note:
+        "Names the people a reader in three years has to find. The Senior User is listed because they sign for the receiving side, and their absence from a contacts table is usually a sign they were not involved.",
+    },
+    {
+      heading: "1. Purpose of this Document",
       body: [
-        "This report closes the Provider Application Status project and transfers six benefits, four residual risks, two follow-on actions and one unresolved dependency to the owners named in sections 9 and 10.",
-        "It supports two decisions: the Senior Responsible Officer's decision to stand down project governance, and the Chief Financial Officer's treatment of $47.3m of capitalised and expensed cost. Section 14 records the acceptance of those transfers.",
+        "This report closes the Provider Application Status project. It assesses the project against the Business Case, the Project Management Plan and the project's objectives, and transfers six benefits, four residual risks, two follow-on actions and one unresolved dependency to the owners named in sections 10, 11 and 14.",
+        "The Senior Responsible Officer and the Project Board use it to assess the success of the project, inform best practice, resolve open issues where possible, and transition activities to business as usual. Section 3 records the approvals.",
       ],
       note:
         "Names the decisions and who takes them. A purpose section that says 'this document reports on the closure of the project' has restated the title and told nobody whether the document is theirs to act on.",
     },
     {
-      heading: "2. Project overview",
+      heading: "2. Introduction and Background",
       body: [
         "Employment service providers could not reliably see how far a participant's application had progressed. Information sat across three systems, none of it provider-facing, so providers rang the support line to ask — generating roughly 34,000 avoidable contacts a year against a support function sized for 20,000.",
         "The project delivered a self-service application status view in the provider portal, drawing on the case management system and the payments platform, with status definitions agreed with Policy Branch.",
-        "Known internally as Provider Status; appears as PANDA in planning papers before August 2023. New Policy Proposal reference 2023-DEWR-114. Delivered August 2023 to June 2026 by an internal team of 14 with an integration vendor, at a final cost of $47.3m against $38.1m originally approved.",
+        "Known internally as Provider Status; appears as PANDA in planning papers before August 2023. New Policy Proposal reference 2023-DEWR-114. Tier 2. Delivered August 2023 to June 2026 by an internal team of 14 with an integration vendor, at a final cost of $47.3m against $38.1m originally approved.",
       ],
       note:
-        "Written for someone who has never heard of it. The internal name, the old codename and the NPP reference are how a reader in three years finds this at all; the contact numbers are how they judge whether it is worth reading.",
+        "Written for someone who has never heard of it. The internal name, the old codename, the NPP reference and the tier are how a reader in three years finds this at all; the contact numbers are how they judge whether it is worth reading.",
     },
     {
-      heading: "3. Objectives",
+      heading: "3. Approvals",
+      body: [
+        "It is agreed that the original project objectives have been met subject to approved changes; that provision has been made to address all open issues and risks, with the exception recorded below; that project outcomes are in place and transferred to BAU, with one exception recorded at section 10; that resources assigned to the project can be released from 30 September 2026; and that the Post Implementation Review has been assigned to Provider Support Branch, with all project documentation up to date.",
+        "Exception to the second assertion: residual risk R4, the support staffing avoidance benefit, has no accepted owner. Provider Support Branch has declined it twice on the grounds that staffing levels are set centrally. This is presented to the SRO as an allocation decision rather than as an outstanding administrative action.",
+      ],
+      table: {
+        caption: "Approval",
+        head: ["Role", "Name", "Approval date"],
+        rows: [
+          ["Project Board", "Chair, Provider Services Investment Board", "18 Aug 2026"],
+          ["Senior Responsible Officer", "FAS, Provider Services", "19 Aug 2026"],
+          ["Project Manager", "Director, Provider Platform Delivery", "14 Aug 2026"],
+          ["Senior User / Business Owner", "AS, Provider Support Branch", "18 Aug 2026"],
+        ],
+      },
+      note:
+        "The five assertions are quoted, and the one that is not fully true is qualified in place rather than left to be discovered. Putting the exception here, above the signature block, is what makes the signature mean something.",
+    },
+    {
+      heading: "4. Project Manager's Report",
+      body: [
+        "The project delivered its core objective. The status view was released to all providers in March 2026 and is in routine use, with 78 per cent of active provider organisations accessing it at least weekly.",
+        "It cost 24 per cent more than originally approved and arrived twenty-two months later than the original schedule, across two approved rebaselines. The dominant cause in both cases was integration scope: the original estimate assumed two interfaces to the case management system and the delivered solution required seven, a finding that emerged in discovery and was accepted at the first rebaseline.",
+        "The benefit that justified the investment has moved less than forecast. Contact volume fell to 28,900 a year against a forecast of 20,400. The system performs to specification and take-up is high; the forecast was built on a comparator that did not hold. That is set out at section 11 and recorded as a lesson.",
+      ],
+      note:
+        "Three paragraphs: what was achieved, what it cost, and the thing that did not work. Written in that order because a reader who stops after the first paragraph should still have been told the project was late and over.",
+    },
+    {
+      heading: "5. Review of the Business Case",
+      body: [
+        "The Business Case remains valid in its problem statement and largely invalid in its cost and benefit estimates.",
+        "The problem — providers unable to see application status, driving avoidable contact — was correctly identified and is evidenced by the measured reduction in contact volume, even though that reduction was smaller than forecast. Nothing in delivery suggested the investment was aimed at the wrong problem.",
+        "The cost estimate understated integration by a factor of 3.4. The benefit estimate assumed contact would fall in proportion to visibility, on the precedent of the 2023 online lodgement rollout. That rollout was a mandatory channel change; this is an opt-in information screen, and the comparator was not sound. Both are recorded as lessons at section 15 under Project planning and Budget.",
+      ],
+      note:
+        "Separates the parts of a business case that can be wrong independently. A project can be worth doing and badly estimated, and saying so precisely is more useful than a verdict on the case as a whole.",
+    },
+    {
+      heading: "6. Review of Project Objectives",
       body: [
         "Objective as approved: 'Provide employment service providers with self-service visibility of participant application status, reducing avoidable contact with the provider support line.'",
-        "Assessment: achieved. The status view was released to all providers in March 2026 and is in routine use, with 78 per cent of active provider organisations accessing it at least weekly.",
+      ],
+      table: {
+        caption: "Performance against targets and tolerances",
+        head: ["Dimension", "Target", "Outcome", "Within tolerance"],
+        rows: [
+          ["Time", "Delivery by Aug 2024", "Jun 2026, after two approved rebaselines", "No — escalated, rebaselined twice"],
+          ["Cost", "$38.1m", "$47.3m, +24%", "No — both increases approved"],
+          ["Quality", "Under 12 severity-3 defects at release", "9 severity-3, no severity-1 or 2", "Yes"],
+          ["Scope", "Provider and participant visibility", "Provider only; participant view withdrawn", "No — withdrawn by Board decision"],
+          ["Benefits", "0.60 contacts per application", "0.83", "No — 38% short"],
+          ["Risk", "No risk outside appetite at closure", "One risk unallocated (R4)", "No — referred to SRO"],
+        ],
+      },
+      body2: [
         "One objective was withdrawn. 'Extend status visibility to participants directly' was removed from scope in November 2025 by the Project Board, on advice that participant-facing release required a privacy assessment that could not be completed in the funded period. It is not delivered and is not counted as a benefit.",
       ],
       note:
-        "Quotes the objective as originally written, not as it came to be described, and records the withdrawn objective with the date and who decided. Scope that quietly disappears is the most common thing a closure report is asked about later.",
+        "Reported against tolerance rather than as good or bad. Four of six outside tolerance with every breach approved or escalated describes a project that was managed; the same four with no approvals would describe one that was not.",
     },
     {
-      heading: "4. Business outcomes and key results",
-      body: [
-        "The outcome that justified the investment was a reduction in avoidable contact, and it has moved less than forecast.",
-      ],
+      heading: "7. Project Management Deliverables",
       table: {
-        caption: "Outcomes against target",
-        head: ["Outcome", "Measure", "Target", "Actual", "Basis"],
+        caption: "Artefacts required under the P3M Framework for a Tier 2 project",
+        head: ["Documentation", "Version / ID", "Delivery date / comments"],
         rows: [
-          ["Reduced avoidable contact", "Contacts per application", "0.60", "0.83", "Measured"],
-          ["Reduced avoidable contact", "Annual contact volume", "20,400", "28,900", "Measured"],
-          ["Faster provider decisions", "Median days to provider action", "4.0", "4.2", "Measured"],
-          ["Provider confidence", "Provider satisfaction (portal)", "—", "+11 pts", "Measured, no target set"],
+          ["Concept Definition", "1.0", "Mar 2023"],
+          ["Business Case (NPP 2023-DEWR-114)", "2.1", "Jun 2023; v2.1 reflects the Nov 2025 scope withdrawal"],
+          ["Assurance Approach", "1.2", "Oct 2023"],
+          ["Project Management Plan", "3.0", "Rebaselined Mar 2024 and Aug 2025"],
+          ["Project Schedule", "3.0", "Aligned to PMP v3.0"],
+          ["Benefit Profiles", "1.1", "Six profiles; B5 added Feb 2024"],
+          ["Benefits Realisation Plan", "1.0", "Jun 2023 — not revised after the Nov 2025 scope change"],
+          ["Stakeholder Engagement and Communications Strategy", "1.0", "Sep 2023"],
+          ["Risk Management Plan (RiskNet2)", "PLAN-4471", "Maintained to closure; attached"],
+          ["Privacy Impact Assessment", "1.0", "Nov 2025 — completed after provider release, before the withdrawn participant scope"],
+          ["Change Register", "—", "31 requests, 24 approved, 7 rejected; attached"],
+          ["Project Closure Report", "1.0", "This document"],
+          ["Project Status Report", "—", "Prepared and reviewed fortnightly; two gaps in Feb 2025 during resourcing change"],
+          ["Project Change Request", "—", "Each recorded in the Change Register"],
         ],
       },
       note:
-        "Objective, outcome and key result kept apart. The objective was met and the outcome largely was not — providers use the screen and still ring. That is the finding, and it disappears the moment the three are merged into one sentence about success.",
+        "Two rows carry findings a reader would otherwise miss: the Benefits Realisation Plan was never updated after scope was cut, and status reporting lapsed for a month. Both became lessons. A table of clean version numbers would have hidden them.",
     },
     {
-      heading: "5. What we did not achieve",
-      body: [
-        "Contact reduction. The business case forecast a fall to 0.60 contacts per application by June 2026. Measured at 0.83. The shortfall is approximately 8,500 contacts a year, worth about $1.9m annually against the forecast saving of $3.1m.",
-        "The cause is forecast error rather than delivery failure. The system performs to specification and take-up is high. The forecast assumed contact would fall in proportion to visibility, based on the 2023 online lodgement rollout — which was a mandatory channel change. This is an opt-in information screen, and the comparator was wrong. Recorded as lesson LP-2026-118.",
-        "Cost. Final cost $47.3m against $38.1m originally approved, an overrun of $9.2m or 24 per cent. Both rebaselines were approved (section 7). The original approval was still exceeded.",
-        "Participant-facing extension. Withdrawn November 2025, as recorded at section 3.",
-      ],
-      note:
-        "Its own heading, early, in the same units as the original commitment, and no compensating success anywhere in it. Distinguishing forecast error from delivery failure is what makes it useful rather than merely honest — one is a lesson for the next business case, the other would be a lesson for the next delivery team.",
-    },
-    {
-      heading: "6. Milestones",
+      heading: "8. Review of Project Specific Deliverables",
       table: {
-        caption: "Planned against actual",
-        head: ["Milestone", "Original plan", "Rebaselined", "Actual", "Variance to original"],
+        caption: "What the project produced",
+        head: ["Deliverable", "Purpose", "Delivery date / comments"],
         rows: [
-          ["Discovery complete", "Feb 2024", "—", "Feb 2024", "On time"],
-          ["Alpha assessment", "Aug 2024", "Oct 2024", "Oct 2024", "+8 weeks"],
-          ["Private beta", "Mar 2025", "Jul 2025", "Aug 2025", "+22 weeks"],
-          ["Integration complete", "Jun 2025", "Jan 2026", "Feb 2026", "+35 weeks"],
-          ["Public release", "Sep 2025", "Mar 2026", "Mar 2026", "+26 weeks"],
+          ["Provider status view", "Lets providers see application progress without contacting the support line", "Mar 2026 — delivered in full"],
+          ["Status definition set", "Common language for application states across three systems, agreed with Policy Branch", "Jan 2025 — delivered in full"],
+          ["CMS and payments integration", "Supplies status data to the portal", "Feb 2026 — seven interfaces against two estimated"],
+          ["Provider bulk export", "Lets large providers reconcile status offline", "Not delivered — dependency on the provider gateway roadmap, no committed date"],
+          ["Participant status view", "Direct participant visibility", "Not delivered — withdrawn by Project Board, Nov 2025"],
         ],
       },
-      body: [
-        "The integration slip drove the schedule. A change to the whole-of-department identity broker token lifetime in September 2025 broke session handling in user acceptance testing; the rework is described at sections 5 and 7.",
-      ],
       note:
-        "Both columns shown. A milestone table where every actual equals the rebaselined date — which this one nearly is — tells a reader nothing until the original is beside it.",
+        "The purpose column is what makes this readable in three years. The last two rows are both 'not delivered' and are entirely different facts: one is an approved decision, the other is an open dependency that needs an owner. Section 10 carries it.",
     },
     {
-      heading: "7. Financial summary",
-      artefact:
-        "Original approved (Aug 2023)          $38.1m\n  Revision 1 (Mar 2025)                 $43.5m   reconciliation module added to scope\n  Revision 2 (Nov 2025)                 $47.3m   integration rework, identity broker change\n  Final actual                          $47.3m\n  Variance to original approval          +$9.2m   (+24%)\n\n  Capitalised                           $28.4m\n  Expensed                              $18.9m\n    of which discovery and options       $3.2m\n    of which training and change         $2.1m\n    of which post-release defect work    $1.4m\n\n  Recurring cost from FY2027-28          $310k p.a.  licences, hosting, support\n  Transferred to                         Cost centre PLT-4420, Platform Services\n  Accepted by                            Budget holder, 14 July 2026",
-      body: [
-        "Training, change management and post-release defect work were reassessed at closure and moved from capital to expense, reducing the capitalised figure by $3.5m from the position carried during delivery. Discovery costs relating to the three options not pursued were expensed.",
-      ],
-      note:
-        "The chain, not the endpoint. Note the recurring cost has a cost centre and a named acceptance date — a run cost handed to 'operations' with no budget line is how a licence lapses eighteen months later.",
-    },
-    {
-      heading: "8. Completion criteria and quality",
-      body: [
-        "Seven completion criteria were agreed at investment decision. Six are met. One — bulk status export for provider back-office systems — was waived by the Senior Responsible Officer on 3 June 2026 and moved to the platform backlog.",
-        "Quality: 14 known defects were accepted into production, two at severity 3 and twelve at severity 4, all owned in the platform backlog with the Assistant Director, Platform Services. Peak load tested to three times forecast volume. Accessibility audited at WCAG 2.1 AA with two outstanding AAA items. No open security findings above low.",
-      ],
-      note:
-        "Quality is not scope. 'Passed user acceptance testing' would report that a meeting happened; defect counts by severity, load headroom, accessibility conformance and security position report whether the thing works.",
-    },
-    {
-      heading: "9. Benefits and their owners",
+      heading: "9. Review of Milestones",
       table: {
-        caption: "Benefits against the benefits management plan (BMP v3, Nov 2025)",
-        head: ["Benefit", "Planned value", "% realised at closure", "Full realisation expected", "Owner (accepted)"],
+        caption: "Against the original baselined schedule",
+        head: ["Key milestone", "Scheduled", "Actual", "Comments"],
         rows: [
-          ["Reduced avoidable contact", "$3.1m p.a.", "39%", "Not expected to reach plan — see s.5", "Director, Provider Support (14 Jul 2026)"],
-          ["Reduced manual reconciliation", "$6.2m p.a.", "0% — starts FY2027-28", "Jun 2028", "Director, Payments Operations (22 Jul 2026)"],
-          ["Faster provider action", "Non-cashable", "Partly — 4.2 days against 4.0", "Dec 2026", "Director, Provider Support (14 Jul 2026)"],
-          ["Reduced rework from status errors", "$0.4m p.a.", "62%", "Jun 2027", "Director, Case Management (14 Jul 2026)"],
-          ["Provider satisfaction", "Non-cashable", "Achieved, +11 pts", "Realised", "Director, Provider Support (14 Jul 2026)"],
-          ["Support staffing avoidance", "Cost avoidance $0.9m", "0%", "Unknown", "NOT ACCEPTED — see s.10 R4"],
+          ["Discovery complete", "Feb 2024", "Feb 2024", "On time"],
+          ["Integration design approved", "Jun 2024", "Nov 2024", "22 weeks. Interface count rose from 2 to 7. CR-009, first rebaseline"],
+          ["CMS integration complete", "Nov 2024", "Jun 2025", "31 weeks against original, 13 against revised. Definition narrowed Apr 2025 to exclude two low-volume interfaces; agreed at the integration working group and not raised as a change request"],
+          ["Provider release", "Feb 2025", "Mar 2026", "56 weeks against original. Second rebaseline CR-021 approved Aug 2025"],
+          ["Benefits baseline confirmed", "Aug 2025", "Sep 2025", "4 weeks, within tolerance"],
         ],
       },
-      body: [
-        "Measured against benefits management plan version 3 (November 2025). One formal change was made to the plan during delivery: the participant-facing benefit was removed in November 2025 when that scope was withdrawn, and no replacement benefit was substituted.",
-        "Five of six benefits have a named owner who has seen the figure and accepted it, with the acceptance date shown. The sixth is unresolved and is recorded at section 10.",
-        "Two benefits are non-cashable. No budget line falls as a result of either, and neither is claimed as a saving. Ongoing measurement and its governance transfer to the benefit owners named above, reporting to the Service Performance Committee half-yearly until June 2028; the project's own benefits governance ceases at closure.",
-      ],
       note:
-        "Criterion 3 measures the report against the benefits management plan, not the business case narrative — so name the plan and its version, give the percentage realised and the expected date for each, and say what happens to benefit governance after closure. Marking the two non-cashable benefits explicitly is what stops the report claiming $8.7m of savings it cannot deliver.",
+        "The CMS row is the most useful line in the report. It carries the delay, the approved part, the part that was never approved, and where the record is incomplete — and it writes two lessons, one under Schedule and one under Change control.",
     },
     {
-      heading: "10. Outstanding risks, issues, dependencies and actions",
-      artefact:
-        "RISK R1  Identity broker token lifetime may change again without notice.\n           Owner: AD Platform Services · Medium · Registered as a consuming\n           system with Platform Identity; notification requested.\n           → Platform Services register PS-R-118 · Review Dec 2026\n\n  RISK R4  Support staffing avoidance benefit ($0.9m) has no agreed owner.\n           UNTRANSFERRED. Provider Support has been approached twice and has\n           not accepted it, on the grounds that staffing levels are set\n           centrally. Referred to the SRO for allocation before signature.\n\n  ISSUE I7 Notification wording continues to generate calls that the status\n           screen was expected to prevent.\n           Owner: Director, Eligibility Policy → follow-on action A3.\n\n  DEP  D1  Bulk export (waived criterion, s.8) depends on the provider\n           gateway roadmap. Owed by: Provider Systems (external vendor).\n           Chased by: AD Platform Services. No committed date.\n\n  ACT  A3  Revise notification wording. Owner: Director, Eligibility Policy.\n           Due 30 Nov 2026. If not done: contact reduction stays near 0.83\n           and the benefit owner cannot act, the driver being outside their\n           control.\n\n  ACT  A7  Move the duplicate-exclusion script from the analyst's personal\n           repository into the branch analytics repository, with the\n           measurement note. Owner: AD Performance Reporting. Due 30 Sep 2026.\n           If not done: the baseline figures cannot be reproduced.",
-      note:
-        "A transfer table, not a filtered status log. Every row has a person, a destination and a date — and R4 says UNTRANSFERRED in plain sight rather than being assigned to a branch that never agreed. That single line is what makes the signature at section 14 mean something.",
-    },
-    {
-      heading: "11. Assurance activities",
-      body: [
-        "All assurance activities in the Assurance Plan agreed with the Digital Transformation Agency were completed. One was substituted: the planned Gate 5 operational review was replaced by an internal readiness assessment in February 2026, on the Project Board's decision, because public release had moved to March and a Gate 5 before release would have assessed nothing.",
-      ],
+      heading: "10. Outcomes",
       table: {
-        caption: "Assurance completed",
-        head: ["Activity", "Date", "Key finding", "What we did"],
+        caption: "Outcomes and ongoing ownership",
+        head: ["Outcome", "Responsible Business Owner", "Status"],
         rows: [
-          ["Gate 2 — procurement strategy", "Nov 2023", "Integration scope understated", "Accepted; scope and estimate revised before market approach"],
-          ["Gate 4 — readiness for service", "Mar 2025", "Release too large to absorb change", "Adopted; split into two releases"],
-          ["Internal readiness assessment", "Feb 2026", "Support model undersized", "Partly adopted; two roles added, third deferred"],
-          ["Gate 6 — benefits realisation", "Jun 2026", "Benefit B6 had no owner", "Not resolved; carried as R4 at section 10"],
+          ["Providers can self-serve application status", "AS, Provider Support Branch", "In place, accepted 12 Aug 2026"],
+          ["Common status definitions maintained across systems", "Director, Eligibility Policy", "In place, accepted 5 Aug 2026"],
+          ["Support line demand managed against reduced volumes", "AS, Provider Support Branch", "In place, accepted 12 Aug 2026"],
+          ["Post Implementation Review", "Director, Provider Support Branch", "Assigned; scheduled Jun 2027, scope agreed"],
+          ["Bulk export dependency", "AD, Platform Services", "NOT TRANSFERRED — Provider Systems has no committed date"],
+        ],
+      },
+      note:
+        "Acceptance dates, not intentions. The last row says NOT TRANSFERRED in the table rather than in a footnote, because a reader scanning this column for problems will only look in this column.",
+    },
+    {
+      heading: "11. Benefits",
+      table: {
+        caption: "Against the Benefit Profiles",
+        head: ["ID", "Benefit", "How measured", "Owner", "When realised / measured"],
+        rows: [
+          ["B1", "Reduced avoidable contact — $3.1m p.a. forecast", "Contacts per application, monthly CMS extract", "AS, Provider Support Branch", "Partly realised: $1.9m p.a. from Jun 2026. Reviewed each Dec"],
+          ["B2", "Faster provider action on applications", "Median days to provider action", "AS, Provider Support Branch", "Realised: 4.2 days against 4.0 target. Standing Service Performance pack"],
+          ["B3", "Improved provider confidence", "Portal satisfaction score", "Director, Provider Engagement", "Realised: +11 points. Annual provider survey"],
+          ["B4", "Reduced duplicate applications", "Duplicate rate at lodgement", "Director, Eligibility Policy", "On track: measurement begins Dec 2026"],
+          ["B5", "Fewer status escalations to the department", "Escalations per 1,000 applications", "AS, Provider Support Branch", "Realised: down 34%"],
+          ["B6", "Support staffing avoidance — $0.9m p.a.", "Staffing against forecast demand", "UNALLOCATED", "Referred to SRO at section 3"],
         ],
       },
       body2: [
-        "Was it worth it? The Gate 4 recommendation to split the release is the clearest value: the second release absorbed the identity broker change without a further slip, against a plausible counterfactual of a further six to eight weeks. Gate 2's finding on integration scope was correct and acted on, though the revised estimate still proved 3.4 times short.",
-        "Gate 6 identified the unowned benefit that remains unresolved at closure. The finding was right and the project could not act on it, because allocation sits above the Project Board. That is recorded here rather than presented as an assurance failure.",
+        "B1 is the benefit that justified the investment and it has landed at roughly 61 per cent of forecast. The shortfall is approximately 8,500 contacts a year, worth about $1.2m annually against the forecast saving. The cause is forecast error rather than delivery failure: the system performs to specification and take-up is high, but the forecast assumed contact would fall in proportion to visibility on a comparator that was a mandatory channel change rather than an opt-in screen.",
       ],
       note:
-        "Criterion 5 of the closure reporting standard, and the one most often answered with a list of dates. Findings and what was done about them make it Emerging. The closing paragraphs — whether the assurance was worth its cost, including a recommendation that was correct and still not acted on — are what make it Strong.",
+        "Every benefit carries a measurement that exists without new funded work, and an owner who has agreed. B6 is shown unallocated rather than pointed at a branch that has refused it twice — the honest version is the one the SRO can act on.",
     },
     {
-      heading: "12. Lessons and recommendations",
+      heading: "12. Change Control",
       body: [
-        "LP-2026-118 — Forecasting take-up for opt-in services. Context: any business case forecasting behaviour change from an opt-in digital channel. Event: contact reduction forecast at 40 per cent using the 2023 online lodgement rollout as comparator; that was a mandatory channel change and this is opt-in. Actual reduction 18 per cent. Cost: $1.9m of forecast annual benefit not realised. Action: forecast opt-in take-up from opt-in precedents only, and state the comparator in the business case so it can be challenged.",
-        "LP-2026-204 — Consuming shared identity services. Context: any build depending on the whole-of-department identity broker. Event: token lifetime changed September 2025 with no notification to consuming programs; session handling broke in user acceptance testing. Cost: integration rework at 3.4 times the original estimate, $3.8m, 11 weeks. Action: register as a consuming system with Platform Identity at design and request change notification — there is no automatic list, you must ask.",
-        "Recommendation R1 — that business cases forecasting behaviour change state the comparator initiative they draw on, so the assumption is visible at approval rather than at closure. Directed to: Assistant Secretary, Investment Assurance. Status: accepted, to apply from the 2027-28 NPP round.",
-      ],
-      note:
-        "Lessons carry context, event, cost and action, and go to a pool a stranger would search. The recommendation is a different kind of thing — it is aimed at this entity's process, and filing it as a lesson would have sent it somewhere nobody with authority to act would read it.",
-    },
-    {
-      heading: "13. Handover, artefacts and records",
-      body: [
-        "Operational support transferred to Platform Services on 12 June 2026. Before transfer, the receiving team completed two routine changes and one diagnostic task with the delivery team unavailable; the eleven questions raised became the handover backlog and were closed by 30 June.",
-        "Known fragility disclosed at handover: the nightly reconciliation fails if the provider feed arrives after 02:00 (twice observed, recovered by manual rerun, no alerting); the eligibility rules engine is compiled rather than configured, so an urgent policy change cannot be applied in under five working days.",
-      ],
-      body2: [
-        "Attached to this report, as required by the closure reporting standard: the original business case as agreed by Government (August 2023), and the full lessons learned register. Both are attachments rather than references, so a reader can check the report against its own source without requesting anything.",
+        "Change was managed through the Project Board under the P3M change process. Thirty-one change requests were raised: twenty-four approved, seven rejected. The Change Register is attached.",
+        "One scope change did not pass through the process. The definition of 'CMS integration complete' was narrowed in April 2025 to exclude two low-volume interfaces. This was agreed at the integration working group, which is not a change authority, and was never raised as a change request. CR-014 covers the associated date movement but not the scope reduction. This is recorded as a lesson under Change control.",
       ],
       table: {
-        caption: "Artefacts",
-        head: ["Artefact", "Location", "Owner", "Retention"],
+        caption: "Material changes",
+        head: ["Change ID", "Description", "Decision"],
         rows: [
-          ["Original business case (Aug 2023)", "ATTACHED to this report", "SRO", "Per schedule"],
-          ["Lessons learned register (full)", "ATTACHED to this report", "AD Delivery Assurance", "Per schedule"],
-          ["Benefits management plan v3", "Governance library", "Director, Provider Support", "Business"],
-          ["Architecture decision records", "Platform wiki / ADR", "AD Platform Services", "Business"],
-          ["Data dictionary and export schema", "Records store REC-2026-0881", "AD Information Governance", "7 years"],
-          ["Baseline measurement extracts", "Records store REC-2026-0881", "AD Performance Reporting", "7 years"],
-          ["Benefits realisation plan", "Governance library", "Director, Provider Support", "Business"],
-          ["Contracts and final acceptance", "Procurement records", "Director, Procurement", "Per schedule"],
-          ["Test evidence and accessibility audit", "Platform wiki", "AD Platform Services", "Business"],
+          ["CR-009", "Integration scope from two interfaces to seven; first rebaseline", "Approved Mar 2024"],
+          ["CR-014", "CMS integration date moved to Jun 2025", "Approved Apr 2025"],
+          ["CR-018", "Add provider bulk export to scope", "Rejected — no funded capacity"],
+          ["CR-021", "Second rebaseline; provider release to Mar 2026", "Approved Aug 2025"],
+          ["CR-027", "Withdraw participant-facing status view", "Approved Nov 2025"],
+          ["CR-030", "Extend vendor engagement three months for defect support", "Rejected — absorbed internally"],
         ],
       },
       note:
-        "Two of these are attachments the standard requires rather than merely lists: the original business case (criterion 1) and the lessons learned register (criterion 7). The handover was tested rather than signed, and the fragility is written down — the two things delivery teams most often skip, because one costs time and the other feels like confessing. Every artefact carries a location and an owner; a list of names is not an index.",
+        "Seven rejections out of thirty-one is the number that makes this section credible: it shows a gate that refused things. The unapproved narrowing is stated plainly, because a reader comparing sections 8 and 9 would find it anyway.",
     },
     {
-      heading: "14. Agreement on closure",
-      body: [
-        "Signed by the Senior Responsible Officer, confirming that the benefits, risks, dependencies and actions recorded at sections 9 and 10 have been accepted by the owners named there.",
-        "Exception: risk R4 (support staffing avoidance benefit, $0.9m) remains untransferred and is referred to the Deputy Secretary for allocation. Signature is given on the basis that this exception is recorded and pursued, not resolved.",
+      heading: "13. Financial Summary",
+      table: {
+        caption: "Against the originally approved budget",
+        head: ["Financial year", "Approved OPEX", "Approved CAPEX", "Actual OPEX", "Actual CAPEX", "Variance"],
+        rows: [
+          ["2023–24", "$3.4m", "$9.1m", "$3.9m", "$8.2m", "+$0.5m / −$0.9m"],
+          ["2024–25", "$4.2m", "$11.8m", "$4.9m", "$14.1m", "+$0.7m / +$2.3m"],
+          ["2025–26", "$2.8m", "$6.8m", "$4.1m", "$12.1m", "+$1.3m / +$5.3m"],
+          ["Total", "$10.4m", "$27.7m", "$12.9m", "$34.4m", "+$2.5m / +$6.7m"],
+        ],
+      },
+      body2: [
+        "Total actual cost $47.3m against $38.1m originally approved, an overrun of $9.2m or 24 per cent. Both increases were approved at rebaseline. The original approval was still exceeded, and that is the comparison this section reports against.",
+        "The dominant driver is CAPEX in 2025–26: integration build for five interfaces beyond the original estimate. OPEX overran in every year, largely vendor engagement extended alongside the schedule.",
+        "Of the $34.4m capitalised, $1.6m relates to the withdrawn participant-facing view. That work produced no asset and has been expensed, which is reflected in the 2025–26 OPEX position.",
       ],
       note:
-        "The signature is tied to the transfers, so signing is an act with content. And the exception is above the signature, not buried — the SRO signs knowing exactly what has not been accepted, which is the entire reason the section exists.",
+        "Split by year and by OPEX and CAPEX because that is how the department reports it, and because a single net figure would have hidden the $1.6m written off. The capitalisation judgement is stated rather than left in the ledger.",
+    },
+    {
+      heading: "14. Asset Management",
+      table: {
+        caption: "Assets in use at closure",
+        head: ["Asset", "Business owner", "IT owner", "Location", "Handover timing"],
+        rows: [
+          ["Provider status view (portal module)", "AS, Provider Support Branch", "AD, Provider Platform Services", "Provider Portal production tenancy", "Complete, 12 Aug 2026"],
+          ["Status definition service", "Director, Eligibility Policy", "AD, Integration Services", "Departmental integration layer", "Complete, 5 Aug 2026"],
+          ["CMS status interfaces (7)", "AS, Provider Support Branch", "AD, Integration Services", "Departmental integration layer", "Complete, 5 Aug 2026"],
+          ["Provider status reporting dataset", "AD, Performance Reporting", "AD, Data Platform", "Analytics workspace ANL-PRV-02", "30 Sep 2026 — see action A7"],
+        ],
+      },
+      note:
+        "Two owners each, because the area that uses an asset and the area that keeps it running are different. The last asset has a handover date after closure, which is legitimate provided a named person is accountable for it happening — action A7 at section 10 of the register.",
+    },
+    {
+      heading: "15. Lessons Learned",
+      body: [
+        "The following lessons were recorded during the project lifecycle and have been entered in the Departmental Lessons Learned Register. Categories with nothing material to report are marked accordingly rather than left blank.",
+      ],
+      table: {
+        caption: "Extract — the categories with material findings",
+        head: ["Project area", "Key learnings", "Recommendation"],
+        rows: [
+          ["Governance arrangements", "Strengths: Board met monthly and took every scope decision. Areas to improve: the integration working group made a scope decision it had no authority to make.", "Define which forums may vary a deliverable definition, not only a date."],
+          ["Project planning", "Strengths: discovery correctly identified the problem and completed on time. Areas to improve: integration scope was estimated at two interfaces against seven delivered.", "For work integrating with the case management system, treat interface count as unknown until discovery completes."],
+          ["Budget", "Strengths: both increases were approved before commitment. Areas to improve: the benefit forecast used a mandatory channel change as the comparator for an opt-in screen.", "Where a benefit forecast rests on a precedent, state the precedent in the business case so its fit can be challenged."],
+          ["Change control", "Strengths: 7 of 31 requests were refused. Areas to improve: one scope narrowing bypassed the process entirely.", "Audit the change register against the deliverables table before closure."],
+          ["Assurance", "Strengths: the Gate 4 recommendation to split the release was acted on and absorbed the identity broker change. Areas to improve: assurance findings were recorded without noting which changed a decision.", "Record for each assurance finding whether it changed delivery or was noted and left."],
+          ["Contribution to Closing the Gap", "Strengths: status definitions were reviewed with providers serving remote communities. Areas to improve: no disaggregated take-up measure was built, so effect on remote providers cannot be assessed.", "Where a service reaches remote providers, build the disaggregated measure at release rather than retrofitting it."],
+          ["Transition to operations", "Strengths: five of six outcomes accepted with dated evidence. Areas to improve: one benefit was refused twice and remained unallocated at closure.", "Raise a refused ownership transfer to the SRO at the point of the second refusal, not at closure."],
+        ],
+      },
+      note:
+        "Both columns filled for every category, and the register reference given. Contribution to Closing the Gap is answered rather than skipped — the honest answer is that the measure was not built, which is itself the recommendation.",
     },
   ],
   closing:
-    "This project delivered its objective, missed its outcome, ran 24 per cent over its original approval, and left one benefit without an owner. It is a normal project. A closure report that made it sound like an unqualified success would have been easy to write, would have been signed without comment, and would have taught the next team nothing.",
+    "The report runs to about 2,600 words. Its usefulness is concentrated in four places: the exception in section 3, the CMS row in section 9, the unallocated benefit in section 11, and the unapproved scope change in section 12. Each of those is a thing that went wrong, stated where a reader will find it.",
 };
+
+/* ------------------------------------------------------------------ *
+ * The Tier 3 form
+ * ------------------------------------------------------------------ */
+
+const tierThree: Exemplar = {
+  id: "tier3",
+  tab: "Tier 3 form",
+  title: "Provider Notification Preferences",
+  subtitle: "Project Closure Report — the Tier 3 form, worked end to end",
+  intro:
+    "A smaller project on the simplified form. Same discipline, a third of the length: the form asks for ratings and evidence rather than prose, which is easier to complete and harder to fudge.",
+  meta: [
+    { label: "Form", value: "Project Closure Report — Tier 3 (piloted from July 2026)" },
+    { label: "Status", value: "Illustrative — not a real DEWR project" },
+    { label: "Length", value: "Nine table blocks" },
+  ],
+  sections: [
+    {
+      heading: "Project Information",
+      table: {
+        caption: "Overall delivery status",
+        head: ["Overall delivery status", "Start date", "Completion date"],
+        rows: [["PARTIALLY ACHIEVED", "3 Feb 2025", "27 Jun 2026"]],
+      },
+      note:
+        "One word at the top of the document, chosen from three. Partially achieved is the honest answer for a project that delivered its core scope and dropped one deliverable, and it is what gets aggregated across the department.",
+    },
+    {
+      heading: "Delivery summary",
+      table: {
+        caption: "Planned against delivered",
+        head: ["Planned deliverable", "Delivered", "Status", "Comments / approved variation"],
+        rows: [
+          ["Provider notification preference settings", "Preference screen in the provider portal", "Achieved", "Delivered in full, Apr 2026"],
+          ["Email and SMS channel selection", "Email selection only", "Partially achieved", "SMS deferred; gateway contract not in place. Approved by the Project Board, Feb 2026"],
+          ["Preference migration for existing providers", "8,400 of 8,400 providers migrated", "Achieved", "Completed May 2026"],
+          ["Notification volume reporting", "Not delivered", "Not achieved", "Descoped Jan 2026 to protect the delivery date. No approval recorded"],
+        ],
+      },
+      note:
+        "Four rows, four different truths. The last two are both shortfalls and only one of them was approved — writing 'no approval recorded' is what turns a quiet descope into a finding.",
+    },
+    {
+      heading: "Key milestones",
+      table: {
+        caption: "Planned against actual",
+        head: ["Milestone", "Planned", "Actual", "Variance / comments"],
+        rows: [
+          ["Design agreed", "28 Mar 2025", "11 Apr 2025", "2 weeks, within tolerance"],
+          ["Build complete", "29 Aug 2025", "14 Nov 2025", "11 weeks. Portal framework upgrade dependency"],
+          ["Provider release", "31 Oct 2025", "24 Apr 2026", "25 weeks against the original date"],
+          ["Migration complete", "30 Nov 2025", "22 May 2026", "25 weeks, tracking the release"],
+        ],
+      },
+      note:
+        "No rebaseline column, because there was no rebaseline — the project ran 25 weeks late against its original dates and never formally moved them. That absence is a governance finding and it appears in the lessons block.",
+    },
+    {
+      heading: "Benefits",
+      table: {
+        caption: "Status and ongoing ownership",
+        head: ["Expected benefit", "Status", "BAU owner", "Next steps"],
+        rows: [
+          ["Fewer unwanted notifications to providers", "Achieved", "Director, Provider Engagement", "Monitored in the quarterly provider experience pack"],
+          ["Reduced notification cost", "On track", "AD, Provider Platform Services", "Measure at 12 months once volumes stabilise; first read Apr 2027"],
+          ["Higher provider engagement with notifications", "At risk", "Director, Provider Engagement", "Depends on SMS, which was deferred. Reassess when the gateway contract is settled"],
+        ],
+      },
+      note:
+        "'On track' and 'At risk' are both legitimate at closure — most benefits land afterwards. The third row names what it depends on, so the owner inherits the dependency rather than just the target.",
+    },
+    {
+      heading: "Lessons learned",
+      table: {
+        caption: "One row per lesson",
+        head: ["Theme", "Lesson learned", "Recommendation / action"],
+        rows: [
+          ["Schedule", "The project ran 25 weeks past its original dates without ever rebaselining, so status reporting showed variance against dates nobody believed.", "Rebaseline or escalate once variance exceeds tolerance; do not keep reporting against a superseded date."],
+          ["Change control", "Notification volume reporting was descoped in January with no approval recorded.", "Any deliverable removed from scope goes to the Board, including one removed to protect a date."],
+          ["Transition to BAU", "Two BAU owners were identified late and accepted in the final fortnight, which compressed handover.", "Identify BAU owners at design, not at closure."],
+          ["Closing the Gap", "Preference defaults were not tested with providers in remote communities, where SMS is often the only reliable channel.", "Where a channel choice affects remote service delivery, test defaults with those providers before release."],
+        ],
+      },
+      note:
+        "Free themes rather than eighteen fixed categories, but the same rule applies: each lesson names what happened specifically enough that another project would recognise it, and each carries an action.",
+    },
+    {
+      heading: "Transition to BAU",
+      table: {
+        caption: "What transferred, and the evidence",
+        head: ["Deliverable transitioned", "BAU owner", "Evidence and status of acceptance", "Handover status", "Outstanding actions"],
+        rows: [
+          ["Preference screen and settings", "AD, Provider Platform Services", "Accepted at Platform Services leadership meeting, 10 Jun 2026, minuted", "Complete", "—"],
+          ["Preference data and migration record", "AD, Data Platform", "Accepted by email, 17 Jun 2026, attached", "Complete", "—"],
+          ["Provider communications about preferences", "Director, Provider Engagement", "Accepted at branch meeting, 24 Jun 2026", "Complete", "—"],
+          ["SMS channel (deferred scope)", "AD, Provider Platform Services", "Briefed 24 Jun 2026; not accepted pending gateway contract", "Not started", "A2 — confirm ownership once contract settled. Due 31 Oct 2026"],
+        ],
+      },
+      note:
+        "The evidence column is what makes the first three rows true. The fourth says 'briefed, not accepted' and carries an action with a date, which is the correct treatment of a handover that has not happened.",
+    },
+    {
+      heading: "Financial summary",
+      table: {
+        caption: "Budget, actual and staffing",
+        head: ["Financial year", "Approved budget", "Actual expenditure", "ASL", "Comments"],
+        rows: [
+          ["2024–25", "$1.10m", "$0.94m", "3.2", "Underspend: build started six weeks late"],
+          ["2025–26", "$0.85m", "$1.14m", "4.1", "Overspend: extended build and delayed release"],
+          ["Total", "$1.95m", "$2.08m", "—", "+$0.13m, 6.7% over approved budget"],
+        ],
+      },
+      note:
+        "ASL is reported alongside the money because staffing is the cost. The two years offset each other, which a total-only view would present as a small overspend rather than as a project that shifted a quarter of its cost into the following year.",
+    },
+    {
+      heading: "Key risks and issues",
+      table: {
+        caption: "The three questions, and the plan reference",
+        head: ["Question", "Response", "Detail"],
+        rows: [
+          ["Does the risk plan highlight any issues (realised risks) that occurred?", "Yes", "R3 — portal framework upgrade dependency, realised Jul 2025, 11 weeks of delay"],
+          ["Are any risks outside appetite and/or tolerance?", "No", "—"],
+          ["Are there risks requiring ongoing management in BAU?", "Yes", "R7 — providers with email-only preferences may miss time-critical notices. Owner: Director, Provider Engagement. Managed through the quarterly experience pack until SMS is available"],
+          ["RiskNet2 Plan ID", "PLAN-5182", "Risk plan attached: Yes"],
+        ],
+      },
+      note:
+        "R3 is recorded as an issue because it happened. Carrying it as a risk that 'may occur' after it has occurred is the commonest error in this block, and it makes the schedule variance look unexplained.",
+    },
+    {
+      heading: "Project closure assessment",
+      table: {
+        caption: "Seven areas, each with evidence",
+        head: ["Assessment area", "Rating", "Evidence"],
+        rows: [
+          ["Scope delivered", "Partially achieved", "Three of four deliverables complete; SMS deferred with Board approval, volume reporting descoped without"],
+          ["Schedule", "Significant delay", "25 weeks against original dates, no rebaseline taken"],
+          ["Budget", "Over", "$2.08m against $1.95m approved, 6.7%"],
+          ["Benefits", "On track", "One achieved, one measurable Apr 2027, one at risk pending SMS"],
+          ["Transition to business as usual", "Outstanding actions", "Three of four accepted with dated evidence; SMS ownership open, action A2 due 31 Oct 2026"],
+          ["Stakeholder engagement", "Effective", "8,400 providers migrated with 41 support contacts, against 300 forecast"],
+          ["Project governance", "Partially effective", "Board met monthly; one descope did not reach it, and variance beyond tolerance was never rebaselined"],
+        ],
+      },
+      note:
+        "Every rating carries a fact a reader could check. Note that Budget is 'Over' rather than a judgement — the scale has no good option, and 6.7 per cent over is simply the position.",
+    },
+    {
+      heading: "Project closure approvals",
+      table: {
+        caption: "Sign-off",
+        head: ["Role", "Name", "Signature", "Date"],
+        rows: [
+          ["Senior Responsible Officer", "AS, Provider Services Delivery", "Approval by email, attached", "27 Jun 2026"],
+          ["Project Manager", "AD, Provider Platform Delivery", "Signed", "24 Jun 2026"],
+          ["Business Owner", "Director, Provider Engagement", "Approval by email, attached", "26 Jun 2026"],
+        ],
+      },
+      note:
+        "Email approval is accepted provided it is attached, which the form states. The Business Owner signature is the one that makes the transition block credible.",
+    },
+  ],
+  closing:
+    "About 900 words against the full template's 2,600, and it carries the same four hard facts: an unapproved descope, a schedule never rebaselined, a benefit at risk, and a handover not accepted. The form is shorter; the honesty required is not.",
+};
+
+export const closureExemplars: Exemplar[] = [fullTemplate, tierThree];

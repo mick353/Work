@@ -75,7 +75,7 @@ import {
   type ToolkitTemplate,
 } from "./reference";
 import { SLIDE_COUNT, slides, type Slide } from "./slides";
-import { closureExemplar, type Exemplar } from "./closure-exemplar";
+import { closureExemplars, type Exemplar } from "./closure-exemplar";
 
 export type PackageStatus = "available" | "in-development";
 
@@ -139,8 +139,8 @@ export type PackageContent = {
   capstoneBriefs: CapstoneBrief[];
   capstoneRubric: typeof capstoneRubric;
   fieldGuide: FieldGuideEntry[];
-  /** A complete worked document, where the package is about producing one. */
-  exemplar: Exemplar | null;
+  /** Worked documents. One per form the package teaches; empty where it teaches none. */
+  exemplars: Exemplar[];
   slides: Slide[];
   slideCount: number;
   contentReviewed: string;
@@ -188,7 +188,7 @@ const pmFundamentals: TrainingPackage = {
     capstoneBriefs,
     capstoneRubric,
     fieldGuide,
-    exemplar: null,
+    exemplars: [],
     slides,
     slideCount: SLIDE_COUNT,
     contentReviewed: CONTENT_REVIEWED,
@@ -259,7 +259,7 @@ const closureReports: TrainingPackage = {
     capstoneBriefs: closureCapstoneBriefs,
     capstoneRubric: closureCapstoneRubric,
     fieldGuide: closureFieldGuide,
-    exemplar: closureExemplar,
+    exemplars: closureExemplars,
     slides: [],
     slideCount: 0,
     contentReviewed: CLOSURE_REVIEWED,
