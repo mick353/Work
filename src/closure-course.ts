@@ -1558,6 +1558,28 @@ const closureModuleDefs: Module[] = [
       "Almost no benefit is realised during a project. Benefits accrue afterwards, in the operational business, over months or years — which means the entity that promised them is not the entity that delivers them, and closure is the handover point where that responsibility either transfers or evaporates.",
     sections: [
       {
+        heading: "Objectives, business outcomes and key results",
+        body: "These three answer different questions, and keeping them apart is what makes the section worth reading. An objective is what the project set out to do. A business outcome is the change in the world that justified the spending. A key result is the measure that tells you whether the outcome happened. Closure reports against all three, and the interesting content is where they disagree.",
+        table: {
+          caption: "Three different questions",
+          head: ["Term", "The question", "At closure, report"],
+          rows: [
+            ["Objective", "What did we set out to do?", "Achieved, partially achieved, or not — against the original wording"],
+            ["Business outcome", "What changed for the business or users?", "The measured or estimated change, with its baseline"],
+            ["Key result", "How do we know?", "The metric, its target, and its actual"],
+          ],
+        },
+        bullets: [
+          "Quote the objective as originally written, not as it came to be described.",
+          "An objective delivered while its outcome did not move is the most informative result in the report — say so.",
+          "Key results carry a target and an actual. A key result with no target was a metric, not a key result.",
+          "Where an objective was dropped or changed, record when and on whose decision.",
+        ],
+        example:
+          "Objective: 'Provide providers with self-service visibility of application status.' Achieved. Business outcome: 'Reduce avoidable support contact.' Measured at 18 per cent against a target of 40. Key result: contacts per application, target 0.6, actual 0.83. The objective was met and the outcome largely was not — which is the finding, and it is invisible if all three are reported as one sentence.",
+        sourceIds: ["anao-perf", "rmg134"],
+      },
+      {
         heading: "The money is spent before the benefit arrives",
         body: "The project spends the money and the business earns the return, usually long after the project has ceased to exist. This is not a flaw in how projects are run; it is what a project is. The consequence is that benefits realisation cannot be a project activity — by the time it is measurable there is no project. What closure can do is transfer ownership cleanly enough that measurement still happens.",
         bullets: [
@@ -1621,28 +1643,7 @@ const closureModuleDefs: Module[] = [
           "'Caseworkers save 12 minutes per application' is worth having and is not $2m. It becomes $2m only if positions are removed or work is absorbed that would otherwise have needed new positions — and the report should say which, or say neither.",
         sourceIds: ["teal", "closure"],
       },
-      {
-        heading: "Objectives, business outcomes and key results",
-        body: "These three answer different questions, and keeping them apart is what makes the section worth reading. An objective is what the project set out to do. A business outcome is the change in the world that justified the spending. A key result is the measure that tells you whether the outcome happened. Closure reports against all three, and the interesting content is where they disagree.",
-        table: {
-          caption: "Three different questions",
-          head: ["Term", "The question", "At closure, report"],
-          rows: [
-            ["Objective", "What did we set out to do?", "Achieved, partially achieved, or not — against the original wording"],
-            ["Business outcome", "What changed for the business or users?", "The measured or estimated change, with its baseline"],
-            ["Key result", "How do we know?", "The metric, its target, and its actual"],
-          ],
-        },
-        bullets: [
-          "Quote the objective as originally written, not as it came to be described.",
-          "An objective delivered while its outcome did not move is the most informative result in the report — say so.",
-          "Key results carry a target and an actual. A key result with no target was a metric, not a key result.",
-          "Where an objective was dropped or changed, record when and on whose decision.",
-        ],
-        example:
-          "Objective: 'Provide providers with self-service visibility of application status.' Achieved. Business outcome: 'Reduce avoidable support contact.' Measured at 18 per cent against a target of 40. Key result: contacts per application, target 0.6, actual 0.83. The objective was met and the outcome largely was not — which is the finding, and it is invisible if all three are reported as one sentence.",
-        sourceIds: ["anao-perf", "rmg134"],
-      },
+
     ],
     questions: [
       {
@@ -2049,7 +2050,7 @@ const closureModuleDefs: Module[] = [
     id: "handover",
     number: 5,
     title: "Transition to business as usual",
-    subtitle: "What has to be true before the team can leave",
+    subtitle: "Acceptance, assets and records — what has to be true before the team can leave",
     minutes: 0,
     slides: "",
     outcome: "Specify an operational handover that does not depend on the delivery team remaining reachable.",
@@ -2093,16 +2094,19 @@ const closureModuleDefs: Module[] = [
         sourceIds: ["dewr-template"],
       },
       {
-        heading: "Can they work without you?",
-        body: "A handover has worked when the receiving team can act on its own. There is one reliable sign that it has not landed yet: three months later, someone is still messaging a former team member who now works elsewhere. That informal channel is what makes an inadequate handover survivable, which is why it hides the problem instead of exposing it. The honest test is to ask what breaks if that person does not reply.",
+        heading: "Who is receiving, and can they work without you?",
+        body: "Handover succeeds as a transfer of capability and is usually planned as a transfer of information. The receiving team may be smaller, differently skilled, already at capacity, or unaware they are receiving anything — none of which is visible in a document-completeness check, and all of which decides whether the service survives its first incident. The honest test of whether it landed is what happens three months later: if someone is still messaging a former team member who has moved on, the handover did not work, and that informal channel is hiding the problem rather than exposing it.",
         bullets: [
-          "Can the receiving team deploy a change without the delivery team present?",
-          "Can they diagnose the three most likely failures from documentation alone?",
-          "Do they know what the system costs to run, and who pays?",
-          "Do they know which parts are understood to be fragile, and why?",
+          "Confirm the receiving team knows and has agreed — being named in a plan is not agreement.",
+          "Check capacity, not just capability: a team already at full load absorbs this by dropping something else.",
+          "Name the skills the delivery team had that the receiving team does not, plainly.",
+          "Can they deploy a change without the delivery team present, and diagnose the three most likely failures from documentation alone?",
+          "Do they know what it costs to run, who pays, and which parts are understood to be fragile?",
+          "Agree the support model in terms someone can act on: hours, response expectations, escalation path, who is called at 2am.",
+          "Name a contact point on both sides for the first three months, with an end date, so it does not become permanent informal dependency.",
         ],
         example:
-          "A useful exercise before closure: have the receiving team perform a routine change with the delivery team explicitly unavailable for a day. What they need to ask is the handover backlog.",
+          "A platform built by six engineers handed to an operations team of two, neither of whom has used the framework, is a legitimate arrangement if it is stated and resourced — and a failure waiting to happen if the pack simply lands in their inbox. The exercise that settles it before closure: have the receiving team perform a routine change with the delivery team explicitly unavailable for a day. What they need to ask is the handover backlog.",
         sourceIds: ["rmg106", "teal"],
       },
       {
@@ -2135,20 +2139,7 @@ const closureModuleDefs: Module[] = [
           "'The nightly reconciliation assumes the provider feed arrives before 02:00. It has been late twice; both times the job was rerun manually by the platform team. There is no alerting on this.' That paragraph is worth more than most handover packs.",
         sourceIds: ["teal"],
       },
-      {
-        heading: "Who is receiving, and can they",
-        body: "Handover succeeds as a transfer of capability, and it is usually planned as a transfer of information. The receiving team may be smaller, differently skilled, already at capacity, or entirely unaware they are receiving anything. None of that is visible in a document-completeness check, and all of it determines whether the service survives contact with its first incident.",
-        bullets: [
-          "Confirm the receiving team knows and has agreed — being named in a plan is not agreement.",
-          "Check capacity, not just capability: a team already at full load will absorb this by dropping something else.",
-          "Identify the skills the delivery team had that the receiving team does not, and say so plainly.",
-          "Agree the support model in terms someone can act on: hours, response expectations, escalation path, who is called at 2am.",
-          "Name the first three months' contact point on both sides, and put an end date on it so it does not become permanent informal dependency.",
-        ],
-        example:
-          "A platform built by six engineers handed to an operations team of two, neither of whom has worked with the framework. That is a legitimate arrangement if it is stated and resourced, and a failure waiting to happen if the handover pack simply lands in their inbox.",
-        sourceIds: ["rmg106", "teal"],
-      },
+
       {
         heading: "Data in a business system is a record",
         body: "Information created or received in the course of Australian Government business is a Commonwealth record under the Archives Act 1983, including the data sitting inside a business system. It cannot be destroyed because a project ended, a contract lapsed, or a cloud subscription was not renewed. Destruction requires authority — normally a records authority issued by the National Archives, which sets the minimum retention period.",
@@ -2574,7 +2565,7 @@ const closureModuleDefs: Module[] = [
     id: "openitems",
     number: 9,
     title: "Closing the open items",
-    subtitle: "Quality, feedback, and everything that outlives the project",
+    subtitle: "Risks, quality, feedback and everything that outlives the project",
     minutes: 0,
     slides: "",
     outcome: "Close out quality, team and stakeholder sections honestly, and leave no open item without a decision and a named owner.",
@@ -2661,18 +2652,18 @@ const closureModuleDefs: Module[] = [
         sourceIds: ["anao-perf"],
       },
       {
-        heading: "Artefacts and the agreement to close",
-        body: "The artefacts section is an index, and its job is to make the project's outputs findable by someone who does not know they exist. The closure agreement is the act that ends the project, and signing it means the signatories accept that everything listed has in fact transferred — which is why it belongs last, after the sections that say what is being transferred.",
+        heading: "Making the artefacts findable",
+        body: "The deliverables tables record what the project produced. This is the separate question of where any of it now is. An index whose job is to make the project's outputs findable by someone who does not know they exist, three years from now, without asking anyone who was there.",
         bullets: [
           "List each artefact with its location and its owner, not just its name.",
-          "Include the things people forget: architecture decisions, data dictionaries, test evidence, contracts, the benefits plan.",
-          "Say which artefacts are records with a retention obligation, and where they are held.",
-          "The agreement names who signs, what they are attesting to, and the date.",
-          "A signature is an acceptance of the transfers described. If a benefit has no owner, that is on the page above the signature, not hidden.",
+          "Include the things people forget: architecture decisions, data dictionaries, test evidence, contracts, the benefits realisation plan.",
+          "Say which artefacts are Commonwealth records with a retention obligation, and where they are held.",
+          "A location is a system, a repository or a records series — not a team name, which changes.",
+          "Where an artefact was never produced, record that. A gap in the index is read as an oversight in compiling it.",
         ],
         example:
-          "'Signed by the Senior Responsible Officer, confirming that the benefits, risks and obligations recorded in sections 6 to 9 have been accepted by the owners named there.' That sentence makes signing mean something. 'Signed to confirm project closure' means the project has stopped, which everybody already knew.",
-        sourceIds: ["rmg106", "archives"],
+          "'Integration design decisions — Confluence space PLAT, page tree Provider Status — owner AD Integration Services' is findable. 'Design documentation — with the platform team' is not, and will not be after the next reorganisation.",
+        sourceIds: ["dewr-template", "archives"],
       },
     ],
     questions: [
