@@ -246,9 +246,9 @@ export function IllusDvf({ className }: Props) {
       </g>
       <path d="M269 140 l8 8 15 -16" stroke="#fff" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
 
-      <text x="60" y="196" className="illus-caption-dim">two without the third</text>
+      <text x="60" y="192" className="illus-caption-dim">two without the third</text>
       <text x="60" y="216" className="illus-caption-dim">always has a name —</text>
-      <text x="60" y="236" className="illus-caption-dim">and an evidence debt</text>
+      <text x="60" y="240" className="illus-caption-dim">and an evidence debt</text>
     </Frame>
   );
 }
@@ -359,8 +359,8 @@ export function IllusLayers({ className }: Props) {
                 stroke={filled ? "none" : "var(--line-strong)"}
               />
             </g>
-            <text x={60 + i * 14} y={y + 26} className={filled ? "illus-on-accent-label" : "illus-label"}>{layer.name}</text>
-            <text x={60 + i * 14} y={y + 46} className={filled ? "illus-on-accent-sub" : "illus-caption-dim"}>{layer.q}</text>
+            <text x={60 + i * 14} y={y + 24} className={filled ? "illus-on-accent-label" : "illus-label"}>{layer.name}</text>
+            <text x={60 + i * 14} y={y + 48} className={filled ? "illus-on-accent-sub" : "illus-caption-dim"}>{layer.q}</text>
             <text x={492 - i * 14} y={y + 26} textAnchor="end" className={filled ? "illus-on-accent-sub" : "illus-caption-dim"}>{layer.owns}</text>
             {[0, 1, 2].map((d) => (
               <circle
@@ -521,7 +521,7 @@ export function IllusEmptyResults({ className }: Props) {
 /* ------------------------------------------------------------------ *
  * Closure Reports
  *
- * The second package shipped with none of these, so eleven stages of dense
+ * The second package shipped with none of these, so twelve stages of dense
  * prose opened with nothing but a heading. Same visual system as above: one
  * idea per diagram, colour inherited from the stage accent, ids namespaced.
  * ------------------------------------------------------------------ */
@@ -634,7 +634,7 @@ function IllusHandoverTest({ className }: Props) {
       <text x="266" y="110" textAnchor="middle" className="illus-on-accent-sub">team</text>
       <path d="M128 94h96" stroke="var(--stage)" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="5 6" />
       <path d="M160 78l32 32M192 78l-32 32" stroke="var(--stage)" strokeWidth="3" strokeLinecap="round" opacity="0.55" />
-      <text x="185" y="164" textAnchor="middle" className="illus-caption">run · change · diagnose</text>
+      <text x="185" y="160" textAnchor="middle" className="illus-caption">run · change · diagnose</text>
       <text x="185" y="184" textAnchor="middle" className="illus-caption-dim">without calling anyone who has left</text>
     </Frame>
   );
@@ -647,13 +647,13 @@ function IllusCapitalise({ className }: Props) {
     <Frame id={id} className={className} viewBox="0 0 370 210" label="Some spend produces an asset; the rest is expensed">
       <rect x="24" y="48" width="150" height="120" rx="10" fill={`url(#${id}-a)`} filter={`url(#${id}-shadow)`} />
       <text x="99" y="76" textAnchor="middle" className="illus-on-accent">Capitalise</text>
-      <text x="99" y="102" textAnchor="middle" className="illus-on-accent-sub">the delivered build</text>
-      <text x="99" y="122" textAnchor="middle" className="illus-on-accent-sub">an asset you control</text>
+      <text x="99" y="100" textAnchor="middle" className="illus-on-accent-sub">the delivered build</text>
+      <text x="99" y="124" textAnchor="middle" className="illus-on-accent-sub">an asset you control</text>
       <rect x="196" y="48" width="150" height="120" rx="10" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.45" strokeDasharray="5 5" />
-      <text x="271" y="76" textAnchor="middle" className="illus-caption-strong">Expense</text>
+      <text x="271" y="74" textAnchor="middle" className="illus-caption-strong">Expense</text>
       <text x="271" y="100" textAnchor="middle" className="illus-caption-dim">abandoned options</text>
-      <text x="271" y="118" textAnchor="middle" className="illus-caption-dim">training and change</text>
-      <text x="271" y="136" textAnchor="middle" className="illus-caption-dim">post-release fixes</text>
+      <text x="271" y="124" textAnchor="middle" className="illus-caption-dim">training and change</text>
+      <text x="271" y="148" textAnchor="middle" className="illus-caption-dim">post-release fixes</text>
       <text x="185" y="192" textAnchor="middle" className="illus-caption-dim">an asset is what you have, not the thinking that led to it</text>
     </Frame>
   );
@@ -748,8 +748,8 @@ function IllusOnePage({ className }: Props) {
       <rect x="50" y="76" width="96" height="8" rx="4" className="illus-on-accent-lg" opacity="0.85" />
       <rect x="50" y="92" width="96" height="8" rx="4" className="illus-on-accent-lg" opacity="0.7" />
       <rect x="50" y="108" width="72" height="8" rx="4" className="illus-on-accent-lg" opacity="0.55" />
-      <text x="98" y="146" textAnchor="middle" className="illus-on-accent-sub">promised</text>
-      <text x="98" y="164" textAnchor="middle" className="illus-on-accent-sub">delivered · gap</text>
+      <text x="98" y="144" textAnchor="middle" className="illus-on-accent-sub">promised</text>
+      <text x="98" y="168" textAnchor="middle" className="illus-on-accent-sub">delivered · gap</text>
       {[0, 1, 2].map((i) => (
         <rect key={i} x={196 + i * 18} y={54 + i * 6} width="120" height="112" rx="8" fill={`url(#${id}-soft)`} stroke="var(--stage)" strokeOpacity="0.28" />
       ))}
@@ -802,8 +802,8 @@ function IllusClosureProcess({ className }: Props) {
         </g>
       ))}
       <rect x="218" y="62" width="126" height="80" rx="9" fill={`url(#${id}-a)`} filter={`url(#${id}-shadow)`} />
-      <text x="281" y="96" textAnchor="middle" className="illus-on-accent">the report</text>
-      <text x="281" y="116" textAnchor="middle" className="illus-on-accent-sub">evidences them</text>
+      <text x="281" y="94" textAnchor="middle" className="illus-on-accent">the report</text>
+      <text x="281" y="118" textAnchor="middle" className="illus-on-accent-sub">evidences them</text>
       <text x="185" y="196" textAnchor="middle" className="illus-caption-dim">written last, because it records what happened</text>
     </Frame>
   );
@@ -850,7 +850,7 @@ function IllusTwoDeliverables({ className }: Props) {
           <rect x="66" y={71 + i * 22} width="88" height="6" rx="3" fill="var(--stage)" opacity={0.32 - i * 0.05} />
         </g>
       ))}
-      <text x="100" y="176" textAnchor="middle" className="illus-caption-dim">plans, registers, profiles</text>
+      <text x="100" y="170" textAnchor="middle" className="illus-caption-dim">plans, registers, profiles</text>
 
       <rect x="196" y="30" width="148" height="132" rx="9" fill={`url(#${id}-a)`} filter={`url(#${id}-shadow)`} />
       <text x="270" y="52" textAnchor="middle" className="illus-on-accent">the business got</text>

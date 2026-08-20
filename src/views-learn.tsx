@@ -325,7 +325,7 @@ export function Dashboard({
         <div className="section-heading">
           <div>
             <span className="eyebrow">The complete reasoning chain</span>
-            <h2>From user need to measured value</h2>
+            <h2>{manifest.arc}</h2>
           </div>
           <button className="text-button" onClick={() => navigate("path")}>
             View full path <ChevronRight size={16} aria-hidden="true" />
@@ -358,7 +358,7 @@ export function LearningPath({ progress, navigate }: { progress: ProgressMap; na
     <div className="page">
       <PageIntro
         eyebrow={`${modules.length}-stage curriculum`}
-        title="Build the whole product-management chain"
+        title="Build the complete capability chain"
         body={`Each stage names a capability, not just a topic. Mastery requires reading the lesson, scoring at least ${MASTERY_QUIZ_THRESHOLD}% on the knowledge check, and answering both decision scenarios correctly.`}
       />
       <p className="path-total">

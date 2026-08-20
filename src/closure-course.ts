@@ -2,10 +2,9 @@
  * Closure Reports — course content.
  *
  * The second training package, and the first one not built from a slide deck.
- * Its spine is the Commonwealth assurance and performance framework: the
- * Gateway Gate 6 closure review, the PGPA Act performance requirements, and
- * the benefits-management practice the Department of Finance and the ANAO
- * both assess against.
+ * Its spine is the departmental closure set: the full and Tier 3 report
+ * templates, the closure factsheet and the P3M framework. Commonwealth
+ * assurance and performance guidance tests and extends that spine.
  *
  * Deliberately not a template-filling course. Closure reports are written
  * badly for a structural reason — they are produced by the people with the
@@ -16,7 +15,7 @@
 
 import type { Module, Source } from "./course";
 
-export const CLOSURE_REVIEWED = "16 August 2026";
+export const CLOSURE_REVIEWED = "20 August 2026";
 
 export const closureSources: Source[] = [
   /*
@@ -74,7 +73,7 @@ export const closureSources: Source[] = [
     title: "Guidance on the Assurance Reviews Process (RMG 106)",
     publisher: "Australian Government / Department of Finance",
     url: "https://www.finance.gov.au/publications/resource-management-guides/guidance-assurance-reviews-process-rmg-106",
-    note: "The operating guidance for Gateway. Defines the gates, including Gate 6 (Benefits Realisation), and what a Senior Responsible Officer is accountable for at each.",
+    note: "The operating guidance for Gateway. Defines the six project reviews from Gate 0 to Gate 5, including the final Benefits Realisation review, and explains the Senior Responsible Officer's accountability.",
     checked: CLOSURE_REVIEWED,
   },
   {
@@ -145,7 +144,7 @@ export const closureSources: Source[] = [
     id: "cprs",
     title: "Commonwealth Procurement Rules",
     publisher: "Australian Government / Department of Finance",
-    url: "https://www.finance.gov.au/government/procurement/buying-australian-government/commonwealth-procurement-rules",
+    url: "https://www.finance.gov.au/government/procurement/commonwealth-procurement-rules",
     note: "The procurement framework the contract sits inside. Relevant at closure for final acceptance, warranty and defects liability, retentions, and obligations that survive termination.",
     checked: CLOSURE_REVIEWED,
   },
@@ -246,15 +245,15 @@ const closureModuleDefs: Module[] = [
       },
       {
         heading: "Larger projects get an external review as well",
-        body: "Departmental closure is one regime. Above certain values a Commonwealth project also faces the Department of Finance's Gateway Review Process — independent checkpoints numbered Gate 0 to Gate 6, the last of which reviews benefits realisation. It applies alongside the departmental process rather than instead of it, and only above the thresholds, so most projects never meet it.",
+        body: "Departmental closure is one regime. A high-risk Commonwealth project that meets the financial thresholds may also face the Department of Finance's Gateway Review Process — six independent checkpoints from Gate 0 to Gate 5. The final checkpoint is the Benefits Realisation review. Gateway applies alongside the departmental process rather than instead of it, and most projects never meet its risk and value tests.",
         bullets: [
           "Thresholds for non-corporate Commonwealth entities: $30m procurement or infrastructure, $30m where the ICT component is at least $10m, $50m for programs.",
-          "Gate 6 assesses whether the investment delivered its purpose and benefits — not whether the scope was built.",
+          "The Benefits Realisation review assesses whether the investment delivered its purpose, benefits and value for money — not merely whether the scope was built.",
           "It looks for benefits that are identified, owned, and still being measured after the team has gone.",
-          "The Senior Responsible Officer is accountable at the gate, as they are for departmental closure.",
+          "The Senior Responsible Officer remains accountable; Gateway provides independent assurance rather than transferring that accountability.",
         ],
         example:
-          "The question a Gate 6 review asks is the same one the departmental benefits section asks: who owns this benefit in eighteen months. If the answer is 'the project', there is no answer.",
+          "The question a Benefits Realisation review asks is the same one the departmental benefits section asks: who owns this benefit in eighteen months. If the answer is 'the project', there is no answer.",
         sourceIds: ["gateway", "rmg106"],
       },
       {
@@ -308,25 +307,25 @@ const closureModuleDefs: Module[] = [
         moduleId: "purpose",
         prompt: "A program has a total cost of $46m, of which the ICT component is $8m. On the financial thresholds alone, is it in scope for Gateway?",
         options: [
-          "Yes — it exceeds neither ICT test but is a program under the program threshold of $50m... no, it is below that threshold",
+          "No — it is below the $50m program threshold",
           "Yes, because any program over $30m is captured",
-          "No on the ICT test, and no on the program threshold — $46m is below $50m",
-          "Yes, because the ICT component exceeds $5m",
+          "Yes, because the total exceeds the threshold for an ICT-enabled project",
+          "No — Gateway cannot apply to anything below $50m",
         ],
-        answer: 2,
+        answer: 0,
         rationale:
           "Programs are captured above $50m; this is $46m. The $30m-with-$10m-ICT test is a projects test and the ICT component here is $8m in any case. Note that Finance may still recommend a review for a high-risk proposal — the thresholds are a trigger, not a ceiling.",
         optionNotes: [
-          "This option contradicts itself and lands on the wrong answer.",
-          "The $30m figure is the projects threshold, not the programs threshold.",
           "",
-          "There is no $5m ICT test. The ICT figure is $10m, and it sits alongside a $30m project total.",
+          "The $30m figure is the projects threshold, not the programs threshold.",
+          "The ICT-enabled threshold applies to projects, and it also requires an ICT component of at least $10m.",
+          "Finance can still recommend assurance for a high-risk proposal; this answer overstates what the financial threshold means.",
         ],
       },
       {
         id: "cl-p3",
         moduleId: "purpose",
-        prompt: "What does a Gate 6 review primarily assess?",
+        prompt: "What does the Gateway Benefits Realisation review primarily assess?",
         options: [
           "Whether the investment delivered its purpose and benefits, and who owns them",
           "Whether the agreed scope was delivered within the revised budget and schedule",
@@ -335,12 +334,12 @@ const closureModuleDefs: Module[] = [
         ],
         answer: 0,
         rationale:
-          "Gate 6 is the Benefits Realisation gate. Scope, method and asset recognition all matter elsewhere; the gate exists to test whether the investment achieved its purpose and whether benefit harvesting survives closure.",
+          "The review tests whether the investment achieved its purpose, benefits and value for money, and whether benefit management survives the project team. Scope, method and asset recognition matter elsewhere but do not answer that question.",
         optionNotes: [
           "",
-          "Scope against revised budget is the question a project reports on itself. Gate 6 exists because that question is not sufficient.",
-          "Methodology compliance is an internal assurance matter, not the purpose of Gate 6.",
-          "Asset recognition is a Finance and financial-statements concern, covered in the closure guidance rather than the gate.",
+          "Scope against revised budget is part of the project's own account. It is not sufficient evidence of realised benefits.",
+          "Methodology compliance is an internal assurance matter, not the purpose of the Benefits Realisation review.",
+          "Asset recognition is a financial-statements concern, covered in closure guidance rather than the purpose of this review.",
         ],
       },
       {
@@ -755,7 +754,7 @@ const closureModuleDefs: Module[] = [
           "Assurance findings are also a source of lessons, and the standard expects the lessons section to draw on them.",
         ],
         example:
-          "'Gate 4 review conducted 12 March; Gate 6 review conducted 4 June' is a record of attendance. 'Gate 4 recommended splitting the integration release; adopted, and the second release absorbed the identity broker change without a further slip. Gate 6 recommended a benefits owner for B6; not resolved at closure and carried as R4' tells a reader whether the money spent on assurance bought anything.",
+          "'Readiness for Service review conducted 12 March; Benefits Realisation review conducted 4 June' is a record of attendance. 'The Readiness for Service review recommended splitting the integration release; adopted, and the second release absorbed the identity broker change without a further slip. The Benefits Realisation review recommended a benefits owner for B6; not resolved at closure and carried as R4' tells a reader whether the money spent on assurance bought anything.",
         sourceIds: ["aga-standard", "rmg106", "anao-gateway"],
       },
     ],

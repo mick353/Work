@@ -7,7 +7,7 @@ Two packages ship today.
 | Package | Stages | Questions | Cards | Built from |
 |---|---|---|---|---|
 | **Product Management Fundamentals** | 9 | 122 | 92 | The 98-slide *Product Management Fundamentals* deck by Simon Morris, DEWR Digital Experience and Solutions |
-| **Closure Reports** | 12 | 119 | 98 | The DEWR Project Closure Report Template, the Tier 3 form, the Project Closure Factsheet and the P3M Framework |
+| **Closure Reports** | 12 | 119 | 98 | The DEWR Project Closure Report Template, Tier 3 form, Project Closure Factsheet and closure announcement |
 
 A source artefact supplies the subject matter and nothing else. Everything the learner interacts with — the staged lessons, the questions and their per-option feedback, the flashcards, the cases, the capstone, the templates and the player itself — was built around that source, and the app says "built from" rather than "by" throughout so the two are never conflated.
 
@@ -89,7 +89,7 @@ npx playwright install chromium   # once, before the first QA run
 npm run build      # writes both builds
 npm run dev        # rebuild on change
 npm run typecheck  # tsc --noEmit
-npm run qa         # 281-check verification suite
+npm run qa         # comprehensive browser verification suite
 npm run verify     # typecheck + build + qa
 ```
 
@@ -108,8 +108,11 @@ Pages serves **`/docs` on `main`**. To publish:
 
 ```bash
 npm run verify
-git add -A && git commit -m "..."
-git push
+git status --short
+git add -- <exact-source-files> Product-Management-Learning-System.html docs
+git diff --cached
+git commit -m "..."
+git push origin HEAD
 ```
 
 Pages redeploys within a minute or two. Installed home-screen copies pick up the new version the next time they open with signal.
@@ -145,7 +148,7 @@ public/                Assets copied into docs/ at build time
 docs/                  GENERATED — the GitHub Pages build. Do not edit by hand.
 scripts/
   build.mjs            esbuild bundle; emits both builds
-  qa.mjs               The 281-check verification suite
+  qa.mjs               The browser verification suite
   import-slides.py     Deck → slides.ts + public/slides (see above)
   walkthrough.mjs      Completes a course end to end as a learner; not part of qa
   add-notes.py         One-off content migrations, already applied. Retained for
@@ -166,7 +169,7 @@ src/
                        glossary, contrasts, divergences, diagnostic pool
   slides.ts            GENERATED — deck metadata. Do not edit.
 
-  closure-course.ts    Package 2 — eleven stages
+  closure-course.ts    Package 2 — twelve stages
   closure-reference.ts Package 2 — cards, glossary, cases, capstone, templates
   closure-exemplar.ts  Package 2 — the complete worked closure report
 
@@ -194,7 +197,7 @@ src/
 
 ## Provenance
 
-Product Management Fundamentals is built from Simon Morris's deck, which supplies the subject matter and the nine-part structure. Closure Reports is built on the DTA project closure reporting standard and the Commonwealth assurance and performance frameworks. In both cases the source is the spine; the assessment, practice, worked material and player around it are separate work.
+Product Management Fundamentals is built from Simon Morris's deck, which supplies the subject matter and the nine-part structure. Closure Reports is built from the DEWR Project Closure Report Template, Tier 3 form, Project Closure Factsheet and closure announcement. DTA closure material is a whole-of-government comparator; Finance, ANAO and National Archives sources add assurance, performance and records obligations; the UK Teal Book is comparator practice. In both packages the named source material is the spine, while the assessment, practice, worked material and player around it are separate work.
 
 `PackageManifest` carries `sourceAuthor` for whoever wrote the artefact a package was built from. There is deliberately no matching field for whoever built the package: the separation is carried by the wording "built from", and a QA check fails the build if a personal name appears as a package credit.
 

@@ -296,7 +296,7 @@ kbd { display: inline-block; border: 1px solid var(--line-strong); border-bottom
   The stage list scrolls inside itself.
 
   Moving it up under Study is right — it is the course, and it was sitting
-  below four groups of activities. But eleven stages at 40px each pushed
+  below four groups of activities. But twelve stages at 40px each pushed
   Practise, Apply and Reference off the bottom of every laptop, which is the
   exact fault the grouping was introduced to fix. A long sub-list gets its own
   overflow so the headers below it stay reachable; the active stage is
@@ -1973,7 +1973,7 @@ p { color: var(--muted); line-height: 1.65; }
 .metric-strip > div { background: linear-gradient(165deg, color-mix(in srgb, var(--accent) 5%, transparent), transparent 60%), var(--paper); }
 .metric-strip > div strong { color: var(--accent); }
 
-/* Stage colour on the dashboard and path. Eleven colours were defined and
+/* Stage colour on the dashboard and path. Twelve colours were defined and
    the landing page used none of them. */
 .metric-strip > div:nth-child(1) { --tile: var(--stage-1); }
 .metric-strip > div:nth-child(2) { --tile: var(--stage-3); }

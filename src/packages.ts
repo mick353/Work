@@ -235,7 +235,7 @@ const closureReports: TrainingPackage = {
     title: "Closure Reports",
     subtitle: "Evidence, benefits and handover at the end of delivery",
     publisher: "DEWR Digital Experience and Solutions",
-    source: "Commonwealth assurance and performance frameworks",
+    source: "the DEWR Project Closure Report Template, Tier 3 form, Project Closure Factsheet and closure announcement",
     reviewed: CLOSURE_REVIEWED,
     status: "available",
     summary:

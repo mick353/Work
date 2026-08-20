@@ -12,6 +12,10 @@ function wordCount(value: string) {
   return trimmed ? trimmed.split(/\s+/).length : 0;
 }
 
+function templateNoun(title: string) {
+  return title.replace(/^the\s+/i, "").toLowerCase();
+}
+
 export function Toolkit({
   values,
   setValues,
@@ -22,9 +26,9 @@ export function Toolkit({
   return (
     <div className="page">
       <PageIntro
-        eyebrow="Reusable product toolkit"
+        eyebrow="Reusable toolkit"
         title="Turn concepts into working artefacts"
-        body="These are prompts for thinking, not compliance templates. Complete only the detail needed to improve the next decision. Where a template differs from the source deck, the note says so and why."
+        body="These are prompts for thinking, not compliance templates. Complete only the detail needed to improve the next decision. Where a prompt deliberately extends or differs from the source material, its note says so and why."
       />
       <div className="toolkit-list">
         {toolkitTemplates.map((template, index) => (
@@ -41,12 +45,12 @@ export function Toolkit({
                 <p>{template.example}</p>
               </details>
               <label>
-                <span className="visually-hidden">Your {template.title.toLowerCase()}</span>
+                <span className="visually-hidden">Your {templateNoun(template.title)}</span>
                 <textarea
                   rows={6}
                   value={values[template.id] ?? ""}
                   onChange={(event) => setValues((current) => ({ ...current, [template.id]: event.target.value }))}
-                  placeholder={`Draft your ${template.title.toLowerCase()}…`}
+                  placeholder={`Draft your ${templateNoun(template.title)}…`}
                 />
               </label>
             </div>

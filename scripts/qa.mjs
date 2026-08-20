@@ -86,6 +86,37 @@ const bank = await import(
 
 const allQuestions = [...bank.practiceQuestions, ...bank.diagnosticQuestions];
 
+/*
+ * Government Gateway has six project reviews, numbered Gate 0 to Gate 5.
+ * A previous content pass invented a Gate 6 and then assessed recall of it.
+ * Test the packaged learner-facing data rather than comments or generated HTML.
+ */
+const packagedContent = JSON.stringify(bank.trainingPackages);
+check(
+  "No package teaches the non-existent Gateway Gate 6",
+  !/Gate 6|Gate6/i.test(packagedContent),
+);
+const closurePackage = bank.trainingPackages.find((entry) => entry.manifest.id === "closure-reports");
+const gatewayGuide = closurePackage?.content.fieldGuide.find((entry) => entry.id === "gates");
+check(
+  "Gateway reference lists the six current project reviews",
+  gatewayGuide?.items.length === 6 && gatewayGuide.items.at(-1)?.term.startsWith("Gate 5"),
+  gatewayGuide?.items.map((item) => item.term).join(" | ") ?? "Gateway guide missing",
+);
+const numberedGatePrompts = closurePackage
+  ? [
+      ...closurePackage.content.practiceQuestions.map((item) => item.prompt),
+      ...closurePackage.content.diagnosticQuestions.map((item) => item.prompt),
+      ...closurePackage.content.supplementaryQuestions.map((item) => item.prompt),
+      ...closurePackage.content.flashcards.map((item) => item.front),
+    ].filter((text) => /\bGate [0-9]\b/i.test(text))
+  : ["Closure package missing"];
+check(
+  "Gateway assessment tests purpose and application rather than gate-number recall",
+  numberedGatePrompts.length === 0,
+  numberedGatePrompts.join(" | "),
+);
+
 /* ---------------------------------------------------------------- *
  * Slide citation integrity
  *
@@ -758,7 +789,7 @@ check(
   /*
     Every stage needs a diagram. The second package shipped with none at all,
     because illustrations are keyed by module id and a missing key renders
-    nothing rather than failing — so eleven stages of dense prose opened with
+    nothing rather than failing — so twelve stages of dense prose opened with
     a heading and a wall of text.
   */
   const stageCount = await page.locator(".sidebar-modules nav button").count();
@@ -1334,7 +1365,7 @@ check("Nine stages listed in the sidebar", stageButtons === 9, `found ${stageBut
 }
 
 await page.getByRole("button", { name: "Learning path", exact: true }).click();
-await page.getByRole("heading", { name: "Build the whole product-management chain" }).waitFor();
+await page.getByRole("heading", { name: "Build the complete capability chain" }).waitFor();
 const pathItems = await page.locator(".path-item").count();
 check("Nine stages on the learning path", pathItems === 9, `found ${pathItems}`);
 
@@ -1364,13 +1395,12 @@ const correctByQuestion = [];
 for (let index = 0; index < quizCount; index += 1) {
   const text = await quiz.nth(index).locator(".answer-option.correct .answer-text").first().textContent();
   correctByQuestion.push((text ?? "").trim());
-  const chosenWasCorrect = await quiz.nth(index).locator(".answer-option").first().evaluate((el) =>
-    el.classList.contains("correct"),
+  const chosenClass = await quiz.nth(index).locator(".answer-option").first().getAttribute("class") ?? "";
+  check(
+    `Q${index + 1} marks the chosen answer`,
+    /\b(correct|incorrect)\b/.test(chosenClass),
+    chosenClass,
   );
-  if (!chosenWasCorrect) {
-    const hasIncorrect = await quiz.nth(index).locator(".answer-option.incorrect").count();
-    check(`Q${index + 1} marks the chosen wrong answer`, hasIncorrect === 1, `found ${hasIncorrect}`);
-  }
 }
 
 const expectedFirstScore = Math.round(
@@ -1518,7 +1548,7 @@ const openNavGroup = async (label) => {
   await page.waitForTimeout(120);
 };
 await openNavGroup("Apply");
-await page.getByRole("button", { name: "Product toolkit", exact: true }).click();
+await page.getByRole("button", { name: "Toolkit", exact: true }).click();
 const toolkitCount = await page.locator(".toolkit-item").count();
 check("Ten toolkit templates", toolkitCount === 10, `found ${toolkitCount}`);
 
@@ -1785,6 +1815,8 @@ check(
       // counts and started failing the moment they did.
       firstStage:
         document.querySelector(".sidebar-modules nav button span:nth-child(2)")?.textContent?.trim() ?? "",
+      position: document.querySelector(".package-switch small")?.textContent?.trim() ?? "",
+      title: document.title,
     }));
 
   const before = await read();
@@ -1821,6 +1853,31 @@ check(
       "No view still renders the previous package's name",
       !after.h1.includes(before.brand) && !after.brand.includes(before.brand),
       `after switch: brand="${after.brand}" h1="${after.h1}"`,
+    );
+    await check(
+      "Package switch reports the active package position",
+      before.position.endsWith("1 of 2") && after.position.endsWith("2 of 2"),
+      `${before.position} -> ${after.position}`,
+    );
+    await check(
+      "Browser title follows the active package",
+      after.title.includes(after.brand),
+      after.title,
+    );
+
+    await swapPage.evaluate(() => { window.location.hash = "sources"; });
+    await swapPage.waitForSelector(".source-list");
+    const closureSourcesText = await swapPage.locator("#main-content").innerText();
+    await check(
+      "Closure provenance names its departmental spine",
+      /DEWR Project Closure Report Template/i.test(closureSourcesText) &&
+        /departmental closure requirements/i.test(closureSourcesText),
+      closureSourcesText.slice(0, 220),
+    );
+    await check(
+      "Closure provenance does not inherit Product Management framework copy",
+      !/Scrum definitions|SAFe prioritisation|source-deck teaching/i.test(closureSourcesText),
+      closureSourcesText.slice(0, 220),
     );
   }
   await swap.close();
@@ -2634,7 +2691,7 @@ await page.getByText("Backup restored", { exact: false }).waitFor();
 await page.evaluate(() => {
   window.location.hash = "path";
 });
-await page.getByRole("heading", { name: "Build the whole product-management chain" }).waitFor();
+await page.getByRole("heading", { name: "Build the complete capability chain" }).waitFor();
 const masteredLabels = await page.locator(".mastered-label").count();
 check("Imported backup restores mastery", masteredLabels >= 1, `found ${masteredLabels}`);
 
@@ -2900,6 +2957,12 @@ await page.waitForTimeout(250);
 check("Search reaches contrasts and cases", (await page.locator(".search-result").count()) > 0);
 
 /* -- accessibility ------------------------------------------------- */
+
+// Stage sections enter with a short opacity animation. Axe can otherwise run
+// while text is half-faded and report transient contrast failures that vanish
+// a fraction of a second later. Motion itself is tested above; accessibility
+// scans run in the stable reduced-motion state.
+await page.emulateMedia({ reducedMotion: "reduce" });
 
 const axeViews = [
   ["dashboard", "dashboard"],

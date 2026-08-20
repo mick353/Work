@@ -154,7 +154,7 @@ const NAV_GROUPS: NavGroup[] = [
     id: "apply",
     label: "Apply",
     items: [
-      { id: "toolkit", label: "Product toolkit", icon: <Wrench size={18} aria-hidden="true" /> },
+      { id: "toolkit", label: "Toolkit", icon: <Wrench size={18} aria-hidden="true" /> },
       { id: "cases", label: "Worked cases", icon: <BookOpen size={18} aria-hidden="true" /> },
       { id: "capstone", label: "Capstone", icon: <Target size={18} aria-hidden="true" /> },
     ],
@@ -390,6 +390,10 @@ export default function App() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
+
+  useEffect(() => {
+    document.title = `Product Practice — ${pack.manifest.title}`;
+  }, [pack.manifest.title]);
 
   useEffect(() => {
     // Only react to hashes that name a view. An in-page fragment — the skip
@@ -678,6 +682,7 @@ export default function App() {
       collapsedNav={collapsedNav}
       toggleNavGroup={toggleNavGroup}
       packageTitle={pack.manifest.title}
+      packagePosition={trainingPackages.findIndex((entry) => entry.manifest.id === packageId) + 1}
       packageCount={trainingPackages.length}
     >
       {content}
@@ -702,6 +707,7 @@ function Shell({
   collapsedNav,
   toggleNavGroup,
   packageTitle,
+  packagePosition,
   packageCount,
 }: {
   children: React.ReactNode;
@@ -719,6 +725,7 @@ function Shell({
   collapsedNav: Record<string, boolean>;
   toggleNavGroup: (id: string) => void;
   packageTitle: string;
+  packagePosition: number;
   packageCount: number;
 }) {
   const isMobile = useMediaQuery(MOBILE_QUERY);
@@ -847,7 +854,7 @@ function Shell({
         <button className="package-switch" onClick={() => navigate("library")}>
           <Layers size={16} aria-hidden="true" />
           <span>
-            <small>{packageCount === 1 ? "Training package" : `Training package · 1 of ${packageCount}`}</small>
+            <small>{packageCount === 1 ? "Training package" : `Training package · ${packagePosition} of ${packageCount}`}</small>
             <strong>{packageTitle}</strong>
           </span>
           <span className="package-switch-action">Library</span>
@@ -984,7 +991,7 @@ const SHORTCUTS: { key: string; label: string }[] = [
   { key: "R", label: "Review" },
   { key: "P", label: "Mixed practice" },
   { key: "G", label: "Results" },
-  { key: "T", label: "Product toolkit" },
+  { key: "T", label: "Toolkit" },
   { key: "C", label: "Worked cases" },
   { key: "K", label: "Capstone" },
   { key: "F", label: "DES field guide" },

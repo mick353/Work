@@ -51,9 +51,9 @@ export const closureFlashcards: Flashcard[] = [
   { id: "cf-m6", moduleId: "milestones", kind: "definition", front: "What does section 12 ask you to attach?", back: "The Change Register. The section summarises how change was managed; the register is the evidence." },
 
   { id: "cf1", moduleId: "purpose", kind: "definition", front: "What is a closure report for?", back: "To provide the first evidence about whether an investment was worth making, and to transfer every obligation that outlives the project to a named owner." },
-  { id: "cf2", moduleId: "purpose", kind: "definition", front: "What does Gateway Gate 6 assess?", back: "Benefits realisation: whether the purpose and benefits of the investment were delivered, and whether benefit harvesting survives the project's closure." },
+  { id: "cf2", moduleId: "purpose", kind: "definition", front: "What does the Gateway Benefits Realisation review assess?", back: "Whether the investment delivered the benefits and value for money identified in the business case and benefits realisation plans, and what must happen next." },
   { id: "cf3", moduleId: "purpose", kind: "definition", front: "Gateway financial thresholds", back: "$30m for procurement or infrastructure projects; $30m where the ICT component is at least $10m; $50m for programs. Non-corporate Commonwealth entities." },
-  { id: "cf4", moduleId: "purpose", kind: "discrimination", front: "Project manager or SRO — who is accountable at Gate 6?", back: "The Senior Responsible Officer. Gateway provides assurance to the SRO, who remains accountable for benefits across the lifecycle." },
+  { id: "cf4", moduleId: "purpose", kind: "discrimination", front: "Project manager or SRO — who remains accountable during a Gateway review?", back: "The Senior Responsible Officer. Gateway provides independent assurance to the SRO; it does not take over accountability for delivery or benefits." },
   { id: "cf5", moduleId: "purpose", kind: "application", front: "Which closure-report reader has no alternative source of information?", back: "The next delivery team. The SRO can ask, Finance has the ledger, audit can test — only the next team depends entirely on what was written down." },
   { id: "cf6", moduleId: "purpose", kind: "discrimination", front: "Why is a structural conflict, not carelessness, the reason closure reports are weak?", back: "The author's own record is the subject, written at the point of least time and least incentive to be candid, for readers who cannot verify." },
 
@@ -181,7 +181,7 @@ export const closureGlossary: GlossaryEntry[] = [
   { term: "Estimated claim", origin: "General", moduleId: "evidence", definition: "A figure derived from a model rather than measured. Sound practice when the assumptions it depends on are stated, so a reader can judge whether they still hold." },
   { term: "Evidence chain", origin: "General", moduleId: "accountability", definition: "Claim, method, data, definition, approval. What an auditor follows from a reported figure until they reach primary data or run out." },
   { term: "Forecast error", origin: "General", moduleId: "benefits", definition: "A shortfall caused by the original estimate being wrong rather than by delivery failing. Distinguishing the two is what makes a shortfall useful to the next business case." },
-  { term: "Gate 6", origin: "Government", moduleId: "purpose", definition: "The Benefits Realisation gate in the Gateway process. Assesses whether the investment delivered its purpose and benefits, and whether benefit harvesting continues after closure." },
+  { term: "Benefits Realisation review (Gateway Gate 5)", origin: "Government", moduleId: "purpose", definition: "The final Gateway review for projects. It assesses whether the investment is delivering the benefits and value for money identified in the business case and benefits plans, usually after an internal post-implementation review." },
   { term: "Gateway Review Process", origin: "Government", moduleId: "purpose", definition: "The Department of Finance process of independent reviews at critical points across a high-risk proposal's lifecycle, for non-corporate Commonwealth entities above defined financial thresholds." },
   { term: "Handover", origin: "General", moduleId: "handover", definition: "The transfer of operational support, change authority, run costs, residual risks, benefits measurement and records obligations from delivery to the receiving parts of the business." },
   { term: "Known fragility", origin: "General", moduleId: "handover", definition: "The parts of a delivered system the team knows are weak — timing dependencies, retry loops, unexplained configuration. Rarely documented, because recording it reads as confession." },
@@ -189,7 +189,7 @@ export const closureGlossary: GlossaryEntry[] = [
   { term: "Measured claim", origin: "General", moduleId: "evidence", definition: "A figure from data collected before and after, using the same definition both times. The only kind of claim that supports itself without qualification." },
   { term: "New Policy Proposal", origin: "Government", moduleId: "purpose", definition: "A proposal put to Government for funding. Where high risk and above the financial thresholds, Finance may recommend it be subject to the Gateway Review Process." },
   { term: "PGPA Act", origin: "Government", moduleId: "accountability", definition: "The Public Governance, Performance and Accountability Act 2013, which establishes the Commonwealth performance framework requiring entities to measure and report performance against their purposes." },
-  { term: "Post-implementation review", origin: "Government", moduleId: "benefits", definition: "A review conducted after delivery — typically 6 to 12 months post-closure — to assess whether benefits are being realised and to capture findings for future work." },
+  { term: "Post-implementation review", origin: "Government", moduleId: "benefits", definition: "An internal review after implementation that tests performance, benefits and lessons. Its findings may inform a later Gateway Benefits Realisation review; the two reviews are not the same." },
   { term: "Capitalisation", origin: "Government", moduleId: "financial", definition: "Recording spend as an asset rather than an expense. Requires an identifiable asset the entity controls and will benefit from — which abandoned options, training and most post-go-live defect work are not." },
   { term: "Commonwealth record", origin: "Government", moduleId: "handover", definition: "Information created or received in the course of Australian Government business, including data inside a business system. Governed by the Archives Act 1983; cannot be destroyed without authority." },
   { term: "Continuing access", origin: "Government", moduleId: "handover", definition: "The obligation to keep retained records readable for the prescribed period — not merely stored. A backup requiring software the entity no longer licenses does not satisfy it." },
@@ -386,7 +386,7 @@ export const closureDiagnostic: Question[] = [
   {
     id: "cd1",
     moduleId: "purpose",
-    prompt: "What is the primary purpose of a Gateway Gate 6 review?",
+    prompt: "What is the primary purpose of the Gateway Benefits Realisation review?",
     options: [
       "Whether the investment delivered its purpose and benefits",
       "To confirm the project delivered agreed scope within the revised budget",
@@ -394,7 +394,7 @@ export const closureDiagnostic: Question[] = [
       "To finalise asset recognition in the financial statements",
     ],
     answer: 0,
-    rationale: "Gate 6 is the Benefits Realisation gate. It exists because self-reported scope delivery was found not to be a reliable indicator of whether an investment achieved its purpose.",
+    rationale: "The Benefits Realisation review tests outcomes, benefits and value for money. Self-reported scope delivery is not enough to show that an investment achieved its purpose.",
   },
   {
     id: "cd2",
@@ -958,7 +958,7 @@ export const closureSupplementary: Question[] = [
   {
     id: "cs25",
     moduleId: "accountability",
-    prompt: "A closure report lists the dates of the Gate 4 and Gate 6 reviews and nothing further. How does that rate on the assurance criterion?",
+    prompt: "A closure report lists the dates of its Readiness for Service and Benefits Realisation reviews and nothing further. How does that rate on the assurance criterion?",
     options: [
       "Nil — completion is recorded but no findings or outcomes are captured",
       "Emerging — the activities in the Assurance Plan are recorded as complete",
@@ -1575,16 +1575,15 @@ export const closureFieldGuide: FieldGuideEntry[] = [
     id: "gates",
     title: "The Gateway gates",
     summary:
-      "Gateway runs a series of short independent reviews across a proposal's lifecycle. Gate 6 is the one closure work is written for, but knowing where it sits explains what it is checking against.",
+      "Gateway runs short independent reviews at key decisions in a project's lifecycle. Use the names to understand what each review is trying to establish; memorising the gate numbers is not a learning objective.",
     sourceIds: ["rmg106", "gateway"],
     items: [
       { term: "Gate 0 — Business need", detail: "Strategic assessment. Whether the proposal addresses a real need and fits the entity's direction." },
-      { term: "Gate 1 — Business case", detail: "Whether the preferred option is deliverable and the benefits are credible. The benefits claimed here are what Gate 6 tests." },
-      { term: "Gate 2 — Procurement strategy", detail: "Whether the approach to market will deliver the intended outcome." },
+      { term: "Gate 1 — Business case", detail: "Whether the preferred option is deliverable and the benefits are credible. The final Benefits Realisation review returns to these claims." },
+      { term: "Gate 2 — Delivery strategy", detail: "Whether the delivery and procurement strategy defines the project, aligns benefits to delivery and is ready to approach the market." },
       { term: "Gate 3 — Investment decision", detail: "Readiness to commit. Whether the arrangements to deliver and to realise benefits are in place." },
       { term: "Gate 4 — Readiness for service", detail: "Whether the organisation is ready to operate what is being delivered — including the receiving business." },
-      { term: "Gate 5 — Benefits realisation", detail: "Operational review after service commencement, checking benefits are beginning to appear." },
-      { term: "Gate 6 — Closure", detail: "Close-out of delivery into operations, and assessment of whether the purpose and benefits of the investment were delivered and continue to be harvested." },
+      { term: "Gate 5 — Benefits realisation", detail: "Usually six to twelve months after commissioning and after an internal post-implementation review. Tests benefits, value for money, future expectations and any remedial action." },
     ],
   },
   {

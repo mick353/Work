@@ -225,12 +225,20 @@ export function SearchView({ navigate }: { navigate: Navigate }) {
  * ------------------------------------------------------------------ */
 
 export function Sources({ navigate }: { navigate: Navigate }) {
+  const builtFromDeck = slides.length > 0;
+  const frameworkBoundary = builtFromDeck
+    ? "This course distinguishes source-deck teaching, Scrum definitions, SAFe prioritisation guidance and Australian Government standards. They can work together, but they are not interchangeable and none of them is a single mandated method. In particular: epics, features and Program Increments are not Scrum terms, and the DES delivery phases are not the DTA service phases."
+    : "This course distinguishes the departmental closure requirements that form its spine from whole-of-government comparators and assurance guidance. The DEWR templates, factsheet and P3M framework govern the departmental process; DTA material tests digital closure quality, Finance and ANAO sources add assurance and performance expectations, National Archives guidance governs records, and the UK Teal Book is explicitly comparator practice.";
+  const currencyNote = builtFromDeck
+    ? `All sources checked and content reviewed ${CONTENT_REVIEWED}. This is an internal learning aid built from the departmental deck — not an official Australian Government publication, and not a substitute for departmental guidance or the Digital Service Standard. Where this and any official source disagree, the official source governs.`
+    : `All sources checked and content reviewed ${CONTENT_REVIEWED}. This is an internal learning aid built from departmental closure documents — not an official Australian Government publication, a controlled template or a substitute for current departmental, Finance or DTA guidance. Where this and an official or controlled source disagree, that source governs.`;
+
   return (
     <div className="page">
       <PageIntro
         eyebrow="Research and provenance"
         title="What the system is built on"
-        body={`${manifest.source} supplies the course spine. Primary and authoritative sources clarify framework boundaries, update government guidance and explain the learning method.`}
+        body={`This course is built from ${manifest.source}. Primary and authoritative sources clarify framework boundaries, update government guidance and explain the learning method.`}
       />
 
       <section className="method-note">
@@ -242,30 +250,20 @@ export function Sources({ navigate }: { navigate: Navigate }) {
           <p>
             Practice testing improves later retention, while distributed practice spreads learning across time. The
             same research rates rereading and highlighting as low-utility — which is why lessons here include forced
-            recall, mixed scenarios and a review queue instead of relying on slide rereading.
+            recall, mixed scenarios and a review queue instead of relying on rereading alone.
           </p>
         </div>
       </section>
 
       <section className="boundary-note">
         <strong>Framework boundary</strong>
-        <p>
-          This course distinguishes source-deck teaching, Scrum definitions, SAFe prioritisation guidance and
-          Australian Government standards. They can work together, but they are not interchangeable and none of them is
-          a single mandated method. In particular: epics, features and Program Increments are not Scrum terms, and the
-          DES delivery phases are not the DTA service phases.
-        </p>
+        <p>{frameworkBoundary}</p>
         <button className="text-button" onClick={() => navigate("divergences")}>
-          See what this course adds to the deck <ChevronRight size={16} aria-hidden="true" />
+          See what this course adds to its source material <ChevronRight size={16} aria-hidden="true" />
         </button>
       </section>
 
-      <p className="currency-note">
-        All sources checked and content reviewed {CONTENT_REVIEWED}. This is an internal learning aid built from the
-        departmental deck — not an official Australian Government publication, and not a substitute for departmental
-        guidance or the Digital Service Standard. Where this and any official source disagree, the official source
-        governs.
-      </p>
+      <p className="currency-note">{currencyNote}</p>
 
       <div className="source-list">
         {sources.map((source, index) => (
