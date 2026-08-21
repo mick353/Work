@@ -25,6 +25,7 @@ Each document has one job. Start with the one that matches what you are doing.
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | You are changing the player rather than the content |
 | **[ROADMAP.md](ROADMAP.md)** | You want to know what is deliberately not built yet, and why |
 | **[NOTICE.md](NOTICE.md)** | Provenance, status and takedown contact |
+| **[CODEX-HANDOFF-2026-08-20.md](CODEX-HANDOFF-2026-08-20.md)** | You need the evidence and authority-sensitive corrections behind the current release |
 
 If you are an AI agent picking this up cold: read AUTHORING.md end to end before changing any content, and STANDARDS.md before writing any assessment item. Both are written to be followed without further context.
 
@@ -131,9 +132,9 @@ The script reads the stage-to-slide mapping out of `course.ts`, so the two canno
 
 ### QA
 
-`scripts/qa.mjs` runs **281 checks** against the real built artefact in a real browser, and writes `qa-report.json`. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` runs the comprehensive suite against the real built artefact in a real browser and writes the exact result to `qa-report.json`. The committed report for the current release records **294/294 checks passed**. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
 
-It covers question-bank integrity, scoring arithmetic, mastery gating, backup round-trip including rejection of malformed files, package switching **through the control a learner clicks**, contrast on all 40 stage-page/theme combinations, axe-core WCAG 2.1 A/AA across every view in both packages and both themes, line measure and horizontal overflow from 320 px to 2560 px, target sizes, keyboard and focus behaviour, reduced motion, and console hygiene.
+It covers question-bank integrity, scoring arithmetic, mastery gating, backup round-trip including rejection of malformed files, package switching **through the control a learner clicks**, contrast on all 40 stage-page/theme combinations, axe-core rules tagged to WCAG 2.0/2.1 A/AA with serious and critical impacts, line measure and horizontal overflow from 320 px to 2560 px, the project's 24 px target-size rule, keyboard and focus behaviour, reduced motion, and console hygiene. These checks are regression evidence, not a claim of complete WCAG conformance.
 
 The rules governing additions to the suite are in [STANDARDS.md](STANDARDS.md#10-rules-for-the-check-suite-itself).
 

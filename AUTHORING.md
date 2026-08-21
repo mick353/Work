@@ -20,11 +20,16 @@ Everything a learner sees comes through `src/content.ts`, which resolves the act
 
 **Nothing else starts until this is done.** A course teaches people to do something that exists at work. Find the thing that governs it.
 
-1. Ask the course owner whether their area has a template, form, standard or guidance for this. Their answer outranks everything below — it is the document people actually open.
-2. Search `architecture.digital.gov.au` for a whole-of-government standard or design.
-3. Search `finance.gov.au` for a Resource Management Guide, `anao.gov.au` for the audit view.
-4. Search `site:.gov.au "<artefact name>" template`.
-5. Only then reach for PRINCE2, PMBOK, IPA or overseas material — as **comparators**, labelled as such, never as the spine.
+Build an authority map rather than treating one person's answer as the hierarchy. Highest to lowest:
+
+1. Applicable law, regulations, directions and mandatory government policy.
+2. Current controlled departmental policy, standards, templates and approved procedures.
+3. Applicable whole-of-government standards and official guidance, including material from `architecture.digital.gov.au`, `finance.gov.au` and `anao.gov.au`.
+4. The course owner's current local process and conventions. These establish what people actually do, but cannot silently override levels 1–3.
+5. Professional standards and research syntheses.
+6. PRINCE2, PMBOK, IPA or overseas material used as **comparators**, labelled as such rather than substituted for the spine.
+
+Ask the course owner to identify the local artefact and how it is used, then verify its status and currency. Search `site:.gov.au "<artefact name>" template` when the governing source is unclear. If sources conflict, record the conflict and obtain an accountable decision; do not silently choose the convenient answer.
 
 **Produce:** the governing document(s), stored locally outside the repository if internal. A list of every section, table, field, rating scale and fixed vocabulary they contain.
 
@@ -46,7 +51,7 @@ Decide the stages. The structure follows the artefact and the process around it,
 
 **Produce:** an id-to-title map, and a table mapping every artefact section to the stage that owns it.
 
-**Gate:** every section of the governing artefact appears in the map exactly once. No two stages cover the same ground.
+**Gate:** every section of the governing artefact has exactly one primary owning stage. A supporting concept may recur for deliberate retrieval, application or integration, but the recurrence is labelled and does not introduce a competing definition or unexplained duplication.
 
 ---
 
@@ -94,9 +99,9 @@ Four pools, each with a different job. Keep them separate.
 
 Item-writing rules — every one is enforced by a check:
 
-1. Exactly four options.
+1. Exactly four options because that is the current player and QA contract. This is a project format, not a universal item-writing law.
 2. `optionNotes` has four entries; the correct one is `""`, the other three explain why that option is wrong.
-3. **The correct answer must not be the longest option** more often than chance. Measure after every batch.
+3. **The correct answer must not be systematically identifiable by length.** Measure the batch rather than rejecting an otherwise sound item merely because its key happens to be longest.
 4. Options approximately equal in length. Mean key/distractor ratio under the threshold.
 5. Distractors must be plausible and wrong for a stateable reason.
 6. Every stage needs at least one diagnostic question. The diagnostic draws one per stage; a stage absent from the pool is silently excluded from the recommendation.
@@ -110,25 +115,25 @@ Item-writing rules — every one is enforced by a check:
 
 ## Phase 4 — Reference content
 
-Every one of these is keyed by `moduleId` and **renders nothing on a miss**. Every stage needs coverage in each.
+These arrays do not share one keying or coverage rule. Where an entry carries `moduleId`, an invalid id can make it unreachable or mis-grouped without a useful error. Package-level arrays must instead be checked for relevance, source resolution and deliberate empty-state handling.
 
-| Array | Shape | Per stage |
+| Array | Shape | Coverage rule |
 |---|---|---|
-| `flashcards` | `id`, `moduleId`, `kind` (definition / application / discrimination), `front`, `back` | 5+ |
-| `glossary` | `term`, `definition`, `origin`, `moduleId` | Every term the course uses that a learner would not know |
-| `contrasts` | `moduleId`, `good`, `usual`, `tell` | 1+ |
-| `fieldGuide` | `id`, `title`, `summary`, `sourceIds`, `items[{term, detail}]` | Lookup material for use at work |
-| `toolkitTemplates` | `id`, `title`, `prompt`, `example`, `note` | One per artefact the learner must produce |
-| `sources` | `id`, `title`, `publisher`, `url?`, `note`, `checked` | Governing documents first; comparators labelled as comparators |
-| `divergences` | `id`, `topic`, `slides`, `deck`, `here`, `why` | Anything the course teaches that the source does not |
+| `flashcards` | `id`, `moduleId`, `kind` (definition / application / discrimination), `front`, `back` | Current full-package profile: 5+ per stage |
+| `glossary` | `term`, `definition`, `origin`, optional `moduleId` | Every term the course uses that its learner may not know; any supplied stage id must resolve |
+| `contrasts` | `moduleId`, `good`, `usual`, `tell` | Current full-package profile: 1+ per stage |
+| `fieldGuide` | `id`, `title`, `summary`, `sourceIds`, `items[{term, detail}]` | Package-level lookup material; all source ids resolve |
+| `toolkitTemplates` | `id`, `title`, `prompt`, `example`, `note` | Package-level; one per artefact the learner must produce |
+| `sources` | `id`, `title`, `publisher`, `url?`, `note`, `checked` | Package-level; governing documents first and comparators labelled |
+| `divergences` | `id`, `topic`, `slides`, `deck`, `here`, `why` | Package-level; one entry for each material addition or deliberate departure, otherwise an empty array |
 
 The `tell` in a contrast must be an **observable check** the learner can run, not a restatement of the good practice.
 
 `divergences` is not optional housekeeping. Anything the course adds beyond its source is declared here, so a learner knows which wording is the department's and which is the course's.
 
-**Produce:** all seven arrays.
+**Produce:** all seven arrays required by `PackageContent`. Use `[]` where an optional section genuinely does not apply; do not manufacture filler merely to make an array non-empty.
 
-**Gate:** no stage missing from any array; no `moduleId` referring to a stage that does not exist.
+**Gate:** every required stage-level array meets its declared coverage rule; no `moduleId` refers to a stage that does not exist; every `sourceId` resolves; every empty package-level array is intentional and its view/navigation behaviour has been checked.
 
 ---
 

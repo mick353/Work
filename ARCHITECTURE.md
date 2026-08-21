@@ -117,16 +117,16 @@ Behaviours that produce no error and no visible symptom until someone reports on
 
 ## 6. Verification
 
-`scripts/qa.mjs` — **281 checks** against the real built artefact in a real Chromium, writing `qa-report.json`. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` runs the comprehensive suite against the real built artefact in a real Chromium, writing the exact result to `qa-report.json`. The current committed report records **294/294 checks passed**. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
 
-Coverage: question-bank integrity and item-writing statistics, scoring arithmetic, mastery gating, backup round-trip including malformed-file rejection, package switching *through the button*, contrast across all 40 stage-page/theme combinations, axe-core WCAG 2.1 A/AA on every view in both packages and both themes, line measure and horizontal overflow from 320 px to 2560 px, target sizes, keyboard and focus, reduced motion, and console hygiene.
+Coverage: question-bank integrity and item-writing statistics, scoring arithmetic, mastery gating, backup round-trip including malformed-file rejection, package switching *through the button*, contrast across all 40 stage-page/theme combinations, axe-core rules tagged to WCAG 2.0/2.1 A/AA with serious and critical impacts, line measure and horizontal overflow from 320 px to 2560 px, the project's 24 px target-size rule, keyboard and focus, reduced motion, and console hygiene. This is regression evidence rather than complete accessibility certification.
 
 Two rules govern additions to it:
 
 1. **Test through the control the user touches.** Seeding `localStorage` and reloading proves the content layer resolved and nothing else. That is exactly how a broken package switch shipped.
 2. **After writing a check, break the thing deliberately and confirm the check fails.** Three checks in this suite were once passing while measuring nothing.
 
-The count varies by one between runs. That is expected: one check only fires when the harness's first-option click lands on a wrong answer, and option order is salted.
+Use `qa-report.json.totalChecks` as the result for a run. The suite's shuffled-question paths were made deterministic for the current release; an unexplained change in the total should be investigated rather than dismissed as normal variation.
 
 [AUTHORING.md](AUTHORING.md) is the procedure for adding or revising a course. [STANDARDS.md](STANDARDS.md) holds every threshold this suite enforces.
 

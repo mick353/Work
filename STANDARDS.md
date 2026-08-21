@@ -10,7 +10,7 @@ Run the suite with `npm run qa`. It takes two to three minutes and runs against 
 
 | Rule | Threshold | Why it exists |
 |---|---|---|
-| Options per question | Exactly 4 | Four is the minimum that makes a 75% mastery threshold meaningful |
+| Options per question | Exactly 4 | Current player and QA contract; a consistent format and chance baseline, not a universal item-writing law |
 | "Always click the longest option" strategy | Scores **≤ 40%** | Chance is 25% and the mastery threshold is 75%. Above 40% the strategy starts to substitute for knowing the material |
 | Correct-answer-longest rate | Target **under 30%** when measuring a batch | Chance is 25% |
 | Mean key/distractor length ratio | Target **under 1.20** | |
@@ -102,14 +102,16 @@ SVG text does not wrap or reflow. Position labels in **fixed columns**. A label 
 
 ## 7. Accessibility
 
-| Standard | Requirement |
+| Check | Requirement |
 |---|---|
-| WCAG 2.1 A/AA | Zero serious or critical axe violations, every view, both packages, both themes |
+| Automated accessibility scan | Zero serious or critical axe violations from rules tagged WCAG 2.0/2.1 A/AA, across the views and themes exercised by the suite |
 | Text contrast | 4.5:1 normal, 3:1 large — checked on **every stage page**, both themes |
-| Target size (SC 2.5.8) | 24 × 24 CSS pixels minimum |
+| Target size | Project rule: every measured button and link is at least 24 × 24 CSS pixels. This is deliberately stricter than [WCAG 2.2 SC 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html), which also permits spacing and four other exceptions |
 | Keyboard | Closed mobile drawer is `inert`; opening moves focus in; Escape closes and returns focus |
-| Reduced motion | Every animation off under `prefers-reduced-motion`, including JavaScript `scrollIntoView` |
-| Disabled states | Real colour tokens, never `opacity` — `opacity` composites the element *and* its background toward the page |
+| Reduced motion | Project usability rule: every animation off under `prefers-reduced-motion`, including JavaScript `scrollIntoView` |
+| Disabled states | Project design rule: use explicit colour tokens rather than blanket opacity, so the composited result remains predictable and testable |
+
+The automated scan and the project-specific checks are regression gates, not a claim of complete WCAG conformance. Accessibility also requires applicable manual testing and review of axe results outside the serious/critical impact filter.
 
 `--stage-N` is a bright **fill**. `--accent-N` aliases `--stage-N-ink`, a darker variant, used for **text**. They are not interchangeable.
 
@@ -154,4 +156,4 @@ SVG text does not wrap or reflow. Position labels in **fixed columns**. A label 
 4. **Run against every package and every theme.** A check that opens one page cannot see a fault bound per stage.
 5. **Budgets scale with content.** A fixed ceiling that has to be raised on every addition asserts nothing.
 
-The check count varies by one or two between runs: some checks are generated per item and depend on which options a shuffled sample presented. That is expected. A drop of more than two means a check stopped running.
+The committed report for the current release records **294/294 checks passed**. Use `qa-report.json.totalChecks` for the exact run result. An unexplained change in the total should be investigated rather than treated as expected shuffle variation.
