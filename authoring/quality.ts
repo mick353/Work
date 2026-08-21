@@ -1,0 +1,239 @@
+import type { Question, TrainingPackage } from "../src/package-model";
+import { validateTrainingPackage } from "../src/package-validation";
+import { packageForExport } from "./draft";
+
+export type IssueSeverity = "error" | "warning" | "note";
+export type IssueArea = "setup" | "stages" | "supports" | "review";
+
+export type AuthoringIssue = {
+  id: string;
+  severity: IssueSeverity;
+  area: IssueArea;
+  title: string;
+  detail: string;
+  stageId?: string;
+};
+
+function words(value: string | undefined): number {
+  return (value ?? "").trim().split(/\s+/).filter(Boolean).length;
+}
+
+function questionTextIssues(
+  question: Question,
+  label: string,
+  area: IssueArea,
+  stageId: string,
+  add: (issue: Omit<AuthoringIssue, "id">) => void,
+) {
+  const untouched =
+    !question.prompt.trim() &&
+    question.options.every((option) => !option.trim()) &&
+    !question.rationale.trim() &&
+    (question.optionNotes ?? []).every((note) => !note.trim());
+  if (untouched) {
+    add({ severity: "error", area, stageId, title: `${label} is not written`, detail: "Write the prompt, four choices, rationale and feedback for each wrong option." });
+    return;
+  }
+  if (!question.prompt.trim()) {
+    add({ severity: "error", area, stageId, title: `${label} needs a prompt`, detail: "Write the decision or knowledge question the learner must answer." });
+  }
+  if (question.options.length !== 4 || question.options.some((option) => !option.trim())) {
+    add({ severity: "error", area, stageId, title: `${label} needs four complete options`, detail: "The current learner player uses exactly four non-empty choices." });
+  }
+  const normalised = question.options.map((option) => option.trim().toLowerCase()).filter(Boolean);
+  if (new Set(normalised).size !== normalised.length) {
+    add({ severity: "error", area, stageId, title: `${label} repeats an option`, detail: "Every choice must be meaningfully distinct." });
+  }
+  if (!question.rationale.trim()) {
+    add({ severity: "error", area, stageId, title: `${label} needs a rationale`, detail: "Explain why the keyed answer is correct after the learner submits." });
+  }
+  const notes = question.optionNotes ?? [];
+  if (notes.length !== 4) {
+    add({ severity: "error", area, stageId, title: `${label} needs option feedback`, detail: "Provide one feedback entry per option; leave the correct option's entry empty." });
+  } else {
+    notes.forEach((note, index) => {
+      if (index === question.answer && note.trim()) {
+        add({ severity: "error", area, stageId, title: `${label} reveals its answer`, detail: "The correct option's feedback entry must be empty." });
+      }
+      if (index !== question.answer && !note.trim()) {
+        add({ severity: "error", area, stageId, title: `${label} has unexplained distractors`, detail: "Each wrong option needs feedback explaining the specific misconception." });
+      }
+    });
+  }
+  if (question.options.length === 4 && question.options.every((option) => option.trim())) {
+    const lengths = question.options.map((option) => words(option));
+    const keyLength = lengths[question.answer] ?? 0;
+    const distractorMean = lengths
+      .filter((_, index) => index !== question.answer)
+      .reduce((sum, length) => sum + length, 0) / 3;
+    if (distractorMean > 0 && keyLength / distractorMean > 1.45) {
+      add({ severity: "warning", area, stageId, title: `${label}'s answer stands out by length`, detail: "Shorten the key or strengthen the distractors so length does not reveal the answer." });
+    }
+  }
+}
+
+export function evaluateCourse(source: TrainingPackage): AuthoringIssue[] {
+  const issues: AuthoringIssue[] = [];
+  let sequence = 0;
+  const add = (issue: Omit<AuthoringIssue, "id">) => {
+    sequence += 1;
+    issues.push({ ...issue, id: `issue-${sequence}` });
+  };
+
+  let entry: TrainingPackage;
+  try {
+    entry = packageForExport(source);
+    for (const message of validateTrainingPackage(entry)) {
+      add({ severity: "error", area: "review", title: "Package structure is invalid", detail: message });
+    }
+  } catch (error) {
+    add({
+      severity: "error",
+      area: "review",
+      title: "Course data cannot be read",
+      detail: error instanceof Error ? error.message : String(error),
+    });
+    return issues;
+  }
+
+  const requiredManifest: Array<[keyof typeof entry.manifest, string]> = [
+    ["title", "course title"],
+    ["subtitle", "course subtitle"],
+    ["publisher", "publisher or owning team"],
+    ["source", "governing source description"],
+    ["reviewed", "content review date"],
+    ["summary", "course summary"],
+    ["arc", "learning arc"],
+  ];
+  for (const [key, label] of requiredManifest) {
+    if (!String(entry.manifest[key] ?? "").trim()) {
+      add({ severity: "error", area: "setup", title: `Add the ${label}`, detail: "This appears in the learner overview and the exported package record." });
+    }
+  }
+
+  if (!entry.content.sources.length) {
+    add({ severity: "error", area: "setup", title: "Add at least one source", detail: "A course needs an identifiable governing document or evidence base." });
+  }
+  for (const [index, sourceItem] of entry.content.sources.entries()) {
+    if (!sourceItem.id.trim() || !sourceItem.title.trim() || !sourceItem.publisher.trim() || !sourceItem.note.trim()) {
+      add({ severity: "error", area: "setup", title: `Complete source ${index + 1}`, detail: "Each source needs an id, title, publisher and note explaining how it is used." });
+    }
+    if (!sourceItem.checked?.trim()) {
+      add({ severity: "warning", area: "setup", title: `Record when source ${index + 1} was checked`, detail: "A verification date makes future review and version decisions possible." });
+    }
+  }
+
+  const allQuestionIds: string[] = [];
+  for (const stage of entry.content.modules) {
+    const stageLabel = `Stage ${stage.number}`;
+    if (!stage.id.trim() || !stage.title.trim() || !stage.subtitle.trim()) {
+      add({ severity: "error", area: "stages", stageId: stage.id, title: `${stageLabel} needs its identity`, detail: "Add a stable id, learner-facing title and subtitle." });
+    }
+    if (!stage.outcome.trim() || !stage.coreIdea.trim()) {
+      add({ severity: "error", area: "stages", stageId: stage.id, title: `${stageLabel} needs an outcome and core idea`, detail: "State what the learner can do, then the single idea they should retain." });
+    }
+    if (stage.sections.length < 2) {
+      add({ severity: "error", area: "stages", stageId: stage.id, title: `${stageLabel} needs at least two lesson sections`, detail: "One section rarely establishes and then applies an idea." });
+    }
+    const bodyWords = stage.sections.reduce((sum, section) => sum + words(section.body), 0);
+    if (bodyWords < 300) {
+      add({ severity: "error", area: "stages", stageId: stage.id, title: `${stageLabel} is still a stub`, detail: `${bodyWords} of the minimum 300 body words are present.` });
+    }
+    stage.sections.forEach((section, index) => {
+      if (!section.heading.trim() || !section.body.trim()) {
+        add({ severity: "error", area: "stages", stageId: stage.id, title: `${stageLabel}, section ${index + 1} is incomplete`, detail: "Every lesson section needs a heading and an explanation." });
+      }
+      if (!(section.sourceIds?.length)) {
+        add({ severity: "error", area: "stages", stageId: stage.id, title: `${stageLabel}, section ${index + 1} has no source`, detail: "Select the source that supports the teaching claim." });
+      }
+    });
+
+    if (stage.questions.length < 4) {
+      add({ severity: "error", area: "stages", stageId: stage.id, title: `${stageLabel} needs four knowledge questions`, detail: "Four is the minimum for the current mastery threshold to be meaningful." });
+    }
+    if (stage.scenarios.length !== 2) {
+      add({ severity: "error", area: "stages", stageId: stage.id, title: `${stageLabel} needs exactly two scenarios`, detail: "The learner workflow requires both applied decisions to be solved." });
+    }
+    stage.questions.forEach((question, index) => {
+      allQuestionIds.push(question.id);
+      questionTextIssues(question, `${stageLabel} question ${index + 1}`, "stages", stage.id, add);
+    });
+    stage.scenarios.forEach((scenario, index) => {
+      allQuestionIds.push(scenario.id);
+      if (!scenario.context.trim()) {
+        add({ severity: "error", area: "stages", stageId: stage.id, title: `${stageLabel} scenario ${index + 1} needs context`, detail: "Give the learner the situation and decision constraints before asking the question." });
+      }
+      questionTextIssues(scenario, `${stageLabel} scenario ${index + 1}`, "stages", stage.id, add);
+    });
+
+    const assignment = stage.assignment;
+    if (!assignment.title.trim() || !assignment.instruction.trim() || !assignment.prompts.length || assignment.prompts.some((prompt) => !prompt.trim())) {
+      add({ severity: "error", area: "stages", stageId: stage.id, title: `${stageLabel} needs a complete assignment`, detail: "Add a title, instruction and at least one concrete writing prompt." });
+    }
+    if (words(assignment.modelAnswer) < 100) {
+      add({ severity: "error", area: "stages", stageId: stage.id, title: `${stageLabel}'s worked answer is too thin`, detail: `${words(assignment.modelAnswer)} of the minimum 100 words are present.` });
+    }
+    if ((assignment.criteria ?? []).filter((item) => item.trim()).length < 2) {
+      add({ severity: "error", area: "stages", stageId: stage.id, title: `${stageLabel} needs at least two review criteria`, detail: "Criteria let learners judge their response against observable qualities." });
+    }
+
+    const diagnostics = entry.content.diagnosticQuestions.filter((item) => item.moduleId === stage.id);
+    if (!diagnostics.length) {
+      add({ severity: "error", area: "supports", stageId: stage.id, title: `${stageLabel} is absent from the diagnostic`, detail: "Add at least one independent diagnostic question for this stage." });
+    }
+    diagnostics.forEach((question, index) => {
+      allQuestionIds.push(question.id);
+      questionTextIssues(question, `${stageLabel} diagnostic ${index + 1}`, "supports", stage.id, add);
+    });
+
+    const cards = entry.content.flashcards.filter((item) => item.moduleId === stage.id);
+    for (const kind of ["definition", "application", "discrimination"] as const) {
+      const matching = cards.filter((item) => item.kind === kind);
+      if (!matching.length) {
+        add({ severity: "error", area: "supports", stageId: stage.id, title: `${stageLabel} needs a ${kind} card`, detail: "The review deck needs definition, transfer and discrimination prompts." });
+      }
+      if (matching.some((item) => !item.front.trim() || !item.back.trim())) {
+        add({ severity: "error", area: "supports", stageId: stage.id, title: `${stageLabel} has an incomplete ${kind} card`, detail: "Write both the retrieval prompt and its answer." });
+      }
+    }
+    const terms = entry.content.glossary.filter((item) => item.moduleId === stage.id);
+    if (!terms.length || terms.some((item) => !item.term.trim() || !item.definition.trim() || !item.origin.trim())) {
+      add({ severity: "error", area: "supports", stageId: stage.id, title: `${stageLabel} needs a complete glossary entry`, detail: "Define at least one term the learner should not be expected to know already." });
+    }
+    const contrasts = entry.content.contrasts.filter((item) => item.moduleId === stage.id);
+    if (!contrasts.length || contrasts.some((item) => !item.good.trim() || !item.usual.trim() || !item.tell.trim())) {
+      add({ severity: "error", area: "supports", stageId: stage.id, title: `${stageLabel} needs a complete practice contrast`, detail: "State good practice, the common substitute and an observable way to tell them apart." });
+    }
+  }
+
+  for (const question of entry.content.supplementaryQuestions) {
+    allQuestionIds.push(question.id);
+    questionTextIssues(question, `Supplementary question ${question.id}`, "supports", question.moduleId, add);
+  }
+  if (new Set(allQuestionIds).size !== allQuestionIds.length) {
+    add({ severity: "error", area: "review", title: "Question ids are not unique", detail: "Every question, scenario and diagnostic item needs a unique id across the course." });
+  }
+
+  if (!entry.content.caseStudies.length) {
+    add({ severity: "warning", area: "review", title: "No worked case is included", detail: "The core course will work, but learners will not see the stages connected in one realistic example." });
+  }
+  if (!entry.content.capstoneSteps.length || !entry.content.capstoneBriefs.length) {
+    add({ severity: "warning", area: "review", title: "No capstone is included", detail: "The course can be exported, but it has no integrated final application." });
+  }
+  if (!entry.content.fieldGuide.length) {
+    add({ severity: "note", area: "review", title: "No field guide is included", detail: "This is optional; lesson and support content remain available through search and the complete guide." });
+  }
+  if (!entry.content.exemplars.length) {
+    add({ severity: "note", area: "review", title: "No worked document is included", detail: "Add one later if the course teaches learners to produce a formal artefact." });
+  }
+
+  return issues;
+}
+
+export function issueCounts(issues: AuthoringIssue[]) {
+  return {
+    errors: issues.filter((issue) => issue.severity === "error").length,
+    warnings: issues.filter((issue) => issue.severity === "warning").length,
+    notes: issues.filter((issue) => issue.severity === "note").length,
+  };
+}

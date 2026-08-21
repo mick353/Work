@@ -1,38 +1,37 @@
 # Roadmap
 
-What is deliberately not built yet, and what it would take. Recorded so the reasoning does not have to be rediscovered.
-
-Nothing here is in progress. Do not start any of it without asking.
+The implemented product boundary and the remaining work. New work still requires an explicit decision; this file records the current destination without relying on chat history.
 
 ---
 
 ## Self-service course authoring
 
-**The goal.** A training team adds their own courses without needing the developer, and takes delivery of the result to run in-house — no repository, no build tooling, no hosting.
+**The goal.** A training team authors and reviews its own courses without needing a developer for ordinary content work. It can distribute one offline learner file directly; a release custodian uses the copied repository only when a course must join the catalogue or receive a managed web address.
 
 **Two artefacts, not one.** This split is the useful part of the design:
 
-- **The authoring package**, which the training team keeps. Guidance, worked instructions, and per-part areas to type or upload each piece of a course, walking an author from an empty course to a complete one. It ends in an **Export training** action.
+- **Course Workshop**, available from the copied repository and its separate Pages address. It guides the author through the course, live checks, human release record and delivery choice.
 - **The exported course**, which learners receive. Authoring and admin functions stripped out entirely. This is essentially the standalone build that already exists.
 
-So the learner-facing product does not change. The work is confined to a new layer that emits an artefact already being produced.
+The learner-facing product does not change. Course Workshop embeds the existing single-course player and inserts validated package data into it.
 
-**Default delivery shape.** One course per export is the expected case. The current two-course build remains useful as a combined demonstration and development surface, but a future authoring flow should export one learner course unless the author deliberately chooses otherwise. A single-course export must show no library shell, package-position count or switcher chrome. Course assets, including imported slides, also need per-course containment rather than one flat numbering scheme.
+**Default delivery shape.** One course per export is the expected case. The current two-course build remains the combined demonstration and development surface. Course Workshop exports one learner course with no library shell, package-position count or switcher chrome.
 
-**The delivery foundation now exists.** `npm run export:course -- <course-id>` produces a standalone HTML file and a web folder containing only the selected course. The catalogue is replaced at bundle time, assets live under `public/courses/<course-id>/`, and a one-course player omits the library and switcher. `npm run qa:exports` verifies that boundary for every course. The future editor should call this export path rather than invent another learner format.
+**The delivery foundation exists.** `npm run export:course -- <course-id>` produces a standalone HTML file and a web folder containing only a selected repository course. Course Workshop uses the same player for browser-generated courses. Its repository package can be inspected, added to the combined catalogue and/or installed as an individual `training/<course-id>/` route through overwrite-safe commands. The export, authoring and release suites verify these paths.
 
-**Interim before an editor.** Trial a structured course specification that a trainer can complete without code, with the quality rules expressed as instructions and self-checks, then convert that specification to `PackageContent`. This tests the authoring model and makes its quality controls human-readable before committing to an editor or runtime course format.
+**Current authoring profile.** Course identity and sources, lesson stages, assessment items, assignments, diagnostics, review cards, glossary terms and contrasts are editable. The tool provides local autosave, JSON draft portability, live minimum checks, preview, standalone learner export, a hosted-course ZIP and a controlled repository ZIP. The browser never writes into the repository. The Workshop itself is published under `course-workshop/` without user draft data.
 
-**The player and export boundary exist.** The single-file build is the in-house delivery mechanism — one HTML file, works offline, no hosting. `TrainingPackage` is a versioned, data-only shape proven across two structurally different courses, with runtime boundary validation. The remaining gap is trainer-facing authoring, validation feedback and non-developer asset import.
+**Release authority remains human.** Final outputs require a clean encoded profile, **Available** status and a recorded subject-matter, course-flow, audience/handling and release checklist. These are declarations, not independent review evidence. A custodian still inspects the package/diff and runs full verification before publication.
 
-**What the work actually is, hardest first:**
+**Remaining work, in priority order:**
 
-1. **Quality control, not the editor.** The existing courses are good partly because `scripts/qa.mjs` enforces things an author will not think about — answer-length balance, the current four-option format, feedback on each option, an illustration per stage, valid slide citations, no heading that assumes what it teaches, and prose that opens on what good looks like. Self-authored courses will be measurably worse unless those rules move from a CI script into feedback the author sees while writing. **This is the piece that decides whether the idea is worth doing.**
-2. **Trainer input must become validated package data.** Courses are compiled from TypeScript today. Self-service needs a form/specification that emits the existing `TrainingPackage` shape, plus an author-facing wrapper around the existing bundler so the trainer installs no development toolchain.
-3. **Illustrations are React components keyed by package and module id.** The namespacing problem is solved, but a self-authored course still cannot ship custom React. It needs a picker over a generic diagram set, or image upload.
-4. **Slides** are base64-inlined in the standalone build. A course with slides needs an import path that does not involve running a Python script.
-5. **Define a minimum viable course.** Worked example, case studies, capstone rubric, field guide, glossary, contrasts and divergences are all optional. Decide what a course *must* have versus what it *may* have, or the authoring flow will overwhelm the first person who opens it.
-6. **Version policy needs an author-facing workflow.** The package already carries semantic `version` metadata. The editor still needs release notes, migration choices for breaking curriculum changes, and a safe way to retain or deliberately reset learner progress.
+1. **Trainer usability testing with real material.** Observe where field guidance, sequencing and terminology are unclear before expanding the form.
+2. **Advanced learning elements.** Add editors for worked cases, capstone, toolkit, field guide, divergences and worked documents without making the core path overwhelming.
+3. **Images and slides.** Add browser-based image and slide import that writes only into the exported course namespace. The generic illustration is the current safe default.
+4. **Release history.** Add retained/datable release archives and release notes around the implemented approval record.
+5. **Version migration.** Provide deliberate retain/reset choices when a curriculum revision breaks learner-progress compatibility.
+
+The detailed implemented boundary is in [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md).
 
 ---
 

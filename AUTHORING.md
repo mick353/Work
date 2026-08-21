@@ -2,6 +2,8 @@
 
 The end-to-end procedure for adding a new course to this system, or revising an existing one. Follow it in order. Each phase ends in a gate that must pass before the next begins.
 
+For a trainer-authored core course, `Course-Authoring-Studio.html` provides the guided form and encoded minimum checks described in [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md). This document remains the release procedure and the authority for human content review, advanced package content and repository integration.
+
 This document says **what to do**. [STANDARDS.md](STANDARDS.md) says **what "good" means** in measurable terms, and every rule referenced here is defined there. [ARCHITECTURE.md](ARCHITECTURE.md) says how the code is put together.
 
 ---
@@ -218,6 +220,27 @@ Then, by hand:
 6. `scripts/walkthrough.mjs <packageId>` automates 3 and 4 across every stage.
 
 **Gate:** the full suite green, and every item above done by hand at least once.
+
+---
+
+## Installing a Course Workshop package
+
+For a trainer-generated core course, do not copy ZIP contents by hand. From a clean repository, inspect the approved repository package first:
+
+```bash
+npm run course:inspect -- path/to/<course-id>-course-package.zip
+```
+
+Choose the required delivery surface:
+
+```bash
+npm run course:install -- path/to/<course-id>-course-package.zip # combined catalogue
+npm run course:host -- path/to/<course-id>-course-package.zip    # separate training/<id>/ URL
+```
+
+Both may be used for the same course. The first creates the namespaced course source/assets and one catalogue entry. The second creates an isolated learner page and release record under `public/training/<course-id>/`. Both reject existing targets, so a revision to an already released id is a deliberate developer/custodian change rather than a silent replacement.
+
+Run the Phase 8 gate against the resulting repository. The exported approval record is a declaration to inspect, not a substitute for the human course read or repository verification.
 
 ---
 

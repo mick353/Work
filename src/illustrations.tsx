@@ -885,6 +885,33 @@ function IllusBaselineVariance({ className }: Props) {
   );
 }
 
+/**
+ * Course-neutral fallback used by packages generated outside the repository.
+ * It preserves the stage visual rhythm without pretending a generic diagram
+ * carries subject-specific meaning. Curated courses can replace it by adding a
+ * package-and-stage key to `stageIllustrations` below.
+ */
+export function GenericStageIllustration({ className }: Props) {
+  const id = useId().replace(/:/g, "");
+  return (
+    <Frame id={id} label="A learning path from evidence through judgement to action" viewBox="0 0 720 250" className={className}>
+      <path d="M110 132 H610" stroke="var(--stage)" strokeOpacity="0.25" strokeWidth="10" strokeLinecap="round" />
+      {[
+        { x: 120, label: "Evidence", note: "what is known" },
+        { x: 360, label: "Judgement", note: "what it means" },
+        { x: 600, label: "Action", note: "what happens next" },
+      ].map((item, index) => (
+        <g key={item.label}>
+          <circle cx={item.x} cy="132" r="42" fill={index === 1 ? `url(#${id}-a)` : `url(#${id}-soft)`} stroke="var(--stage)" strokeWidth="2" />
+          <text x={item.x} y="128" textAnchor="middle" className={index === 1 ? "illus-on-accent" : "illus-label"}>{item.label}</text>
+          <text x={item.x} y="150" textAnchor="middle" className={index === 1 ? "illus-on-accent-sub" : "illus-caption-dim"}>{item.note}</text>
+        </g>
+      ))}
+      <text x="360" y="214" textAnchor="middle" className="illus-caption-dim">connect the lesson to a decision the learner can make</text>
+    </Frame>
+  );
+}
+
 /** Package id + stage id → illustration. Stage ids only need to be unique inside a course. */
 export const stageIllustrations: Record<string, (props: Props) => React.ReactElement> = {
   "pm-fundamentals:thinking": IllusProductVsProject,

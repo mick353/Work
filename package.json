@@ -5,16 +5,26 @@
   "type": "module",
   "description": "Offline, single-file player for self-directed training packages.",
   "scripts": {
-    "build": "node scripts/build.mjs",
+    "build": "npm run build:learner && npm run build:authoring",
+    "build:learner": "node scripts/build.mjs",
+    "build:authoring": "node scripts/build-authoring.mjs",
     "export:course": "node scripts/build.mjs --course",
     "export:all": "node scripts/export-all.mjs",
     "dev": "node scripts/build.mjs --watch",
     "typecheck": "tsc --noEmit",
+    "typecheck:authoring": "tsc -p tsconfig.authoring.json --noEmit",
+    "qa:authoring": "node scripts/qa-authoring.mjs",
+    "qa:release": "node scripts/qa-release.mjs",
     "qa": "node scripts/qa.mjs",
     "qa:exports": "node scripts/qa-exports.mjs",
-    "verify": "npm run typecheck && npm run build && npm run qa && npm run qa:exports"
+    "course:inspect": "node scripts/install-course-package.mjs --inspect",
+    "course:install": "node scripts/install-course-package.mjs --install",
+    "course:host": "node scripts/install-course-package.mjs --host",
+    "verify:authoring": "npm run typecheck:authoring && npm run build:authoring && npm run qa:authoring",
+    "verify": "npm run typecheck && npm run typecheck:authoring && npm run build && npm run qa && npm run qa:exports && npm run qa:authoring && npm run qa:release"
   },
   "dependencies": {
+    "fflate": "^0.8.3",
     "lucide-react": "^0.468.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

@@ -15,6 +15,10 @@ qa-report.json
 shot-*.png
 .qa-backup.json
 .qa-bad.json
+.qa-authoring/
+.qa-release/
+.qa-release-run-*/
+.package-player-check-*/
 
 # Editor and OS
 .vscode/

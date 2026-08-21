@@ -19,6 +19,8 @@
 
 const VERSION = "__BUILD_VERSION__";
 const CACHE = `product-practice-${VERSION}`;
+const SCOPE_URL = new URL(self.registration.scope);
+const ROOT_PATH = SCOPE_URL.pathname.endsWith("/") ? SCOPE_URL.pathname : `${SCOPE_URL.pathname}/`;
 const SHELL = [
   "./",
   "./index.html",
@@ -57,14 +59,27 @@ self.addEventListener("fetch", (event) => {
   const isDocument = request.mode === "navigate" || request.destination === "document";
 
   if (isDocument) {
+    const isRootDocument = url.pathname === ROOT_PATH || url.pathname === `${ROOT_PATH}index.html`;
+    const cacheKey = isRootDocument ? "./index.html" : request;
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE).then((cache) => cache.put("./index.html", copy));
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE).then((cache) => cache.put(cacheKey, copy));
+          }
           return response;
         })
-        .catch(() => caches.match("./index.html").then((cached) => cached ?? caches.match("./"))),
+        .catch(() =>
+          caches.match(cacheKey).then((cached) => {
+            if (cached) return cached;
+            if (isRootDocument) return caches.match("./");
+            return new Response("This page has not been cached for offline use yet.", {
+              status: 503,
+              headers: { "Content-Type": "text/plain; charset=utf-8" },
+            });
+          }),
+        ),
     );
     return;
   }

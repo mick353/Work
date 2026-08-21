@@ -30,7 +30,7 @@ courses/<id>/index.ts ──▶ package-catalog.ts ──▶ packages.ts
 single export: build.mjs replaces package-catalog.ts with [selected course]
 ```
 
-The package shape contains data only. Course sources are TypeScript today, but the boundary is deliberately JSON-compatible so a future form can emit the same structure and pass through `package-validation.ts` before export.
+The package shape contains data only. Curated course sources are TypeScript; Course Workshop emits the same shape as JSON and passes it through `package-validation.ts` before export.
 
 ### Why switching packages does a full page reload
 
@@ -81,9 +81,17 @@ This is compile-time isolation, not a runtime filter: the other course's content
 
 Both asset behaviours are asserted in QA, because getting them backwards is invisible until someone is on mobile data or receives an emailed file.
 
-The service worker's cache name is stamped with a hash of the built HTML (`__BUILD_VERSION__`), so each release invalidates the last.
+The service worker's cache name is stamped with a hash of the built HTML (`__BUILD_VERSION__`), so each release invalidates the last. Its document cache is route-specific: the learner home, Course Workshop and any `training/<course-id>/` page retain separate responses. A nested navigation must never replace the cached root `index.html`.
 
 **`docs/` is generated. Never edit it by hand.** GitHub Pages is configured to serve `/docs` on `main`, which is why the build lands there.
+
+### Course Workshop build
+
+`scripts/build-authoring.mjs` creates `Course-Authoring-Studio.html` as a separate standalone browser application and writes the identical bytes to `docs/course-workshop/index.html`. During the build it also bundles the existing player against a JSON package supplied at runtime, then embeds that inert player template inside Course Workshop. **Export training HTML** inserts one validated package into that template in the browser.
+
+This is reuse of the real player, not a second learner implementation. Generated courses inherit the same storage namespacing, navigation, mastery behaviour and single-course UI. Course Workshop itself uses a separate storage key; the published copy contains no draft state and makes no network request while authoring.
+
+The repository ZIP is an output boundary, not a repository mutation. It carries canonical package data, the target course folder, an isolated hosted page, encoded-check results and the declared human release record. `scripts/install-course-package.mjs` independently rechecks it and supports two explicit mutations: `--install` adds the course folder/assets plus one catalogue entry; `--host` adds only `public/training/<course-id>/`. Both refuse overwrites and never commit or push.
 
 ---
 
@@ -128,7 +136,7 @@ Behaviours that produce no error and no visible symptom until someone reports on
 
 ## 6. Verification
 
-`scripts/qa.mjs` runs the comprehensive suite against the real combined artefact in Chromium, writing the exact result to `qa-report.json`. `scripts/qa-exports.mjs` builds every course separately and checks content/asset isolation, single-course routes and chrome, browser/runtime errors, accessibility and capstone filenames/content. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` runs the comprehensive suite against the real combined artefact in Chromium, writing the exact result to `qa-report.json`. `scripts/qa-exports.mjs` builds every course separately and checks content/asset isolation, single-course routes and chrome, browser/runtime errors, accessibility and capstone filenames/content. `scripts/qa-authoring.mjs` verifies Course Workshop, its release gate, safe ZIP layouts and generated learner course. `scripts/qa-release.mjs` exercises package inspection, catalogue installation, individual hosting, overwrite/tamper refusal and route-specific offline document caching. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
 
 Coverage: question-bank integrity and item-writing statistics, scoring arithmetic, mastery gating, backup round-trip including malformed-file rejection, package switching *through the button*, contrast across all 40 stage-page/theme combinations, axe-core rules tagged to WCAG 2.0/2.1 A/AA with serious and critical impacts, line measure and horizontal overflow from 320 px to 2560 px, the project's 24 px target-size rule, keyboard and focus, reduced motion, and console hygiene. This is regression evidence rather than complete accessibility certification.
 

@@ -21,7 +21,7 @@ import {
   type ProgressMap,
 } from "./state";
 import { LessonBody, Feedback, LessonTableView, MasteryRing, PageIntro, QuestionCard, SourceChips } from "./components";
-import { stageIllustrations } from "./illustrations";
+import { GenericStageIllustration, stageIllustrations } from "./illustrations";
 
 /** Questions per stage attempt, sampled from that stage's pool of 8-9. */
 const QUIZ_LENGTH = 5;
@@ -514,7 +514,7 @@ export function ModuleView({
       )
     : null;
 
-  const StageIllustration = stageIllustrations[`${manifest.id}:${module.id}`];
+  const StageIllustration = stageIllustrations[`${manifest.id}:${module.id}`] ?? GenericStageIllustration;
   const activeSection = useActiveSection(module.sections.map((_, index) => sectionId(module.id, index)));
   const readingProgress = useReadingProgress();
   const stageState = masteryState(progress, module.scenarios.length);
@@ -597,11 +597,9 @@ export function ModuleView({
         </div>
       </header>
 
-      {StageIllustration && (
-        <figure className="stage-illustration">
-          <StageIllustration />
-        </figure>
-      )}
+      <figure className="stage-illustration">
+        <StageIllustration />
+      </figure>
 
       <section className="core-idea" aria-label="The core idea of this stage">
         <span className="eyebrow">The idea to keep</span>

@@ -87,9 +87,8 @@ Verification for this correction release:
 - `npm run verify`: passed
 - TypeScript and both production builds: passed
 - Browser, content-integrity, interaction, responsive, print and accessibility
-  suite: **294/294 checks passed**
-- Standalone build: 4.49 MB with 98 slides inlined
-- GitHub Pages build: 1,105.2 KB with 98 slides fetched on demand
+  suite: passed; use check names and the generated report rather than a fixed count
+- Standalone and GitHub Pages builds: passed
 - `npm audit --audit-level=moderate`: **0 vulnerabilities**
 
 ## Earlier corrections in this release line
@@ -150,9 +149,9 @@ Authoritative checks used:
 `npm run verify` passed on 20 August 2026:
 
 - TypeScript: passed
-- Standalone build: passed, 4.47 MB with 98 slides inlined
+- Standalone build: passed with all declared slides inlined
 - GitHub Pages build: passed, 98 slides fetched on demand
-- Browser QA: **290/290 checks passed**
+- Browser QA: passed; the suite is identified by check names rather than a fixed total
 - npm audit: **0 vulnerabilities**
 
 The committed `Product-Management-Learning-System.html` and `docs/` outputs were

@@ -24,7 +24,8 @@ Each document has one job. Start with the one that matches what you are doing.
 | **[STANDARDS.md](STANDARDS.md)** | You need the measurable definition of "good" — every threshold the check suite enforces |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | You are changing the player rather than the content |
 | **[COURSE-PACKAGE-FORMAT.md](COURSE-PACKAGE-FORMAT.md)** | You need the folder contract, package schema, versioning rules or export commands |
-| **[ROADMAP.md](ROADMAP.md)** | You want to know what is deliberately not built yet, and why |
+| **[COURSE-WORKSHOP.md](COURSE-WORKSHOP.md)** | You are using or maintaining the separate trainer-facing course authoring tool |
+| **[ROADMAP.md](ROADMAP.md)** | You want to know what remains beyond the implemented player, exports and authoring profile |
 | **[NOTICE.md](NOTICE.md)** | Provenance, status and takedown contact |
 | **[CODEX-HANDOFF-2026-08-20.md](CODEX-HANDOFF-2026-08-20.md)** | You need the evidence and authority-sensitive corrections behind the current release |
 
@@ -33,6 +34,8 @@ If you are an AI agent picking this up cold: read AUTHORING.md end to end before
 ## Use it
 
 **On the web:** <https://mick353.github.io/Work/>
+
+**For trainers creating a course:** <https://mick353.github.io/Work/course-workshop/>. Its first page is the complete author/review/release guide. Drafts remain in that browser; using the published tool does not add anything to the learner site.
 
 **On your phone:** open that link, then add it to your home screen — *Share → Add to Home Screen* on iOS, or *⋮ → Install app* on Android. It installs with its own icon, opens without browser chrome, and works offline afterwards.
 
@@ -88,14 +91,20 @@ Requires Node 18+.
 npm install
 npx playwright install chromium   # once, before the first QA run
 
-npm run build      # writes both builds
+npm run build      # learner builds plus offline and published Course Workshop
 npm run export:course -- pm-fundamentals  # isolated standalone + web export
 npm run export:all # isolated exports for every registered course
+npm run build:authoring  # rebuilds both identical Course Workshop copies
+npm run course:inspect -- path/to/course-package.zip # read-only release inspection
+npm run course:install -- path/to/course-package.zip # add to combined catalogue
+npm run course:host -- path/to/course-package.zip    # add an individual URL
 npm run dev        # rebuild on change
 npm run typecheck  # tsc --noEmit
 npm run qa         # combined-site browser verification
 npm run qa:exports # build and verify every isolated course export
-npm run verify     # all type, build, combined-site and export checks
+npm run qa:authoring # browser and generated-output verification for Course Workshop
+npm run qa:release # package install/host, tamper and nested-cache checks
+npm run verify     # all learner, export, Workshop and release checks
 ```
 
 ### Build
@@ -108,6 +117,8 @@ npm run verify     # all type, build, combined-site and export checks
 `npm run export:course -- <course-id>` builds the same two delivery forms under `exports/<course-id>/`, but replaces the catalogue at bundle time. The other course's content and assets are not present. In a one-course build the library route returns to the overview, and the library/switcher chrome is omitted. `exports/` is generated and ignored by Git; copy the required file or site folder to the delivery location.
 
 The PWA pieces are deliberately kept out of the standalone file: a service worker registration that can never succeed on `file://` would only log errors. The service worker's cache name is stamped with a hash of the built HTML, so each release invalidates the last.
+
+`npm run build:authoring` writes the same self-contained Workshop to **`Course-Authoring-Studio.html`** for a copied/offline repository and **`docs/course-workshop/index.html`** for its separate Pages URL. The published tool contains no user draft and still performs all authoring locally. See [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md) for the trainer instructions, output choices and controlled install/host commands.
 
 ### Deploying
 
@@ -138,7 +149,7 @@ The script reads the stage-to-slide mapping from `src/courses/<course-id>/course
 
 ### QA
 
-`scripts/qa.mjs` runs the comprehensive suite against the real combined artefact in a real browser and writes the exact result to `qa-report.json`. `scripts/qa-exports.mjs` builds each course separately and verifies bundle isolation, asset isolation, single-course navigation, accessibility and course-scoped capstone downloads. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` runs the comprehensive suite against the real combined artefact in a real browser and writes the exact result to `qa-report.json`. `scripts/qa-exports.mjs` builds each course separately and verifies bundle isolation, asset isolation, single-course navigation, accessibility and course-scoped capstone downloads. `scripts/qa-authoring.mjs` verifies the separate authoring tool, its release gate and generated outputs. `scripts/qa-release.mjs` proves controlled inspection/installation/hosting, overwrite and tamper refusal, and distinct service-worker caching for nested pages. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
 
 It covers question-bank integrity, scoring arithmetic, mastery gating, backup round-trip including rejection of malformed files, package switching **through the control a learner clicks**, contrast on all 40 stage-page/theme combinations, axe-core rules tagged to WCAG 2.0/2.1 A/AA with serious and critical impacts, line measure and horizontal overflow from 320 px to 2560 px, the project's 24 px target-size rule, keyboard and focus behaviour, reduced motion, and console hygiene. These checks are regression evidence, not a claim of complete WCAG conformance.
 
@@ -154,13 +165,21 @@ public/                Assets copied into web builds at build time
   courses/
     pm-fundamentals/
       slides/           This course's rendered deck slides
+  training/             Approved individually hosted course routes
 docs/                  GENERATED — the GitHub Pages build. Do not edit by hand.
+  course-workshop/      GENERATED separate trainer-facing authoring URL
 exports/               GENERATED, ignored — one folder per isolated course
+authoring/              Separate Course Workshop React source
 scripts/
   build.mjs            Combined or selected-course bundle
+  build-authoring.mjs  Course Workshop + embedded generic learner template
+  authored-player.mjs  Trusted generated-course player shared by build/inspection
+  install-course-package.mjs  Inspect/install/host an approved Workshop ZIP
   export-all.mjs       Runs a selected-course build for every course folder
   qa.mjs               Combined-catalogue browser verification
   qa-exports.mjs       Individual-export isolation and behaviour verification
+  qa-authoring.mjs     Authoring, ZIP-boundary and generated-learner verification
+  qa-release.mjs       Release-command, tamper and nested-page cache verification
   import-slides.py     Course deck → course metadata + course assets
   walkthrough.mjs      Completes a course end to end as a learner; not part of qa
   add-notes.py         One-off content migrations, already applied. Retained for

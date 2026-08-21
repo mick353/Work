@@ -12,7 +12,7 @@ TrainingPackage
 └── content    stages, assessment, practice, applied work, references and assets
 ```
 
-The canonical TypeScript contract is `src/package-model.ts`. `src/package-validation.ts` checks the structure at runtime before the player starts. Course source is TypeScript today, but the contract contains data only: no functions, React components or storage objects belong inside a package. This makes the same boundary suitable for JSON produced by a future authoring form.
+The canonical TypeScript contract is `src/package-model.ts`. `src/package-validation.ts` checks the structure at runtime before the player starts. Curated repository courses use TypeScript, but the contract contains data only: no functions, React components or storage objects belong inside a package. Course Workshop emits the same boundary as JSON.
 
 `schemaVersion` and `version` answer different questions:
 
@@ -91,7 +91,8 @@ npm run build
 Outputs:
 
 - `Product-Management-Learning-System.html`
-- `docs/`
+- `Course-Authoring-Studio.html`
+- `docs/`, including the learner home and `course-workshop/`
 
 One course:
 
@@ -114,6 +115,16 @@ The individual build replaces the catalogue during bundling, so the other course
 
 `exports/` is ignored by Git because it is generated delivery output. The combined root file and `docs/` remain committed because the root file is the shareable demonstration and GitHub Pages serves `docs/` directly.
 
+An approved Course Workshop repository ZIP has two controlled repository routes:
+
+```bash
+npm run course:inspect -- path/to/course-package.zip
+npm run course:install -- path/to/course-package.zip # combined catalogue
+npm run course:host -- path/to/course-package.zip    # individual training/<id>/ page
+```
+
+`course:inspect` is read-only. `course:install` writes the package-owned source/assets and one catalogue entry. `course:host` writes only the route-owned learner page and release record under `public/training/<id>/`. The normal build copies that route to `docs/training/<id>/`. Both write commands refuse existing targets and never commit or push.
+
 ## 7. Verification contract
 
 Run:
@@ -131,20 +142,27 @@ This includes:
 - single-course route and chrome checks;
 - accessibility checks on each isolated overview;
 - course-scoped capstone download filename and heading checks;
-- browser console and runtime error checks.
+- browser console and runtime error checks;
+- Course Workshop output and release-gate checks;
+- controlled inspect/install/host, tamper refusal and nested-route cache checks.
 
 No documentation records a fixed total number of QA checks. The suite changes with the product; checks are identified by name and the generated `qa-report.json` records the combined result for a particular run.
 
-## 8. Future authoring tool boundary
+## 8. Course Workshop boundary
 
-A trainer-facing form should emit this contract, call the same validator, and invoke the same selected-course export. It should not introduce a second learner format.
+`Course-Authoring-Studio.html` and `docs/course-workshop/index.html` are identical builds of the trainer tool. It emits this contract, calls the same structural validator and embeds the package in the existing single-course player. It does not introduce a second learner format.
 
-Work that remains outside this repository's current capability:
+The browser tool can produce a self-contained learner HTML file, an isolated hosted-course ZIP, an editable draft or a repository package ZIP. It cannot write into the repository. Final learner/repository outputs require a structurally clean package, **Available** status and the recorded subject-matter, learning-flow, audience/handling and release declarations.
 
-- author-facing field guidance and staged validation feedback;
-- browser-based slide conversion and image handling;
-- a generic illustration picker or image upload;
-- review/approval workflow and retained release archives;
+The repository ZIP carries the intended `src/courses/<course-id>/` folder, canonical JSON, entry module, hosted page, validation report and declared release record. `scripts/install-course-package.mjs` treats those records as untrusted input: it rejects unsafe paths or mismatched identities, recalculates structural and authoring checks and refuses incomplete approvals before any write.
+
+The implemented authoring profile covers course identity and sources, stages and lesson sections, questions and scenarios, assignments, diagnostic questions, review cards, glossary terms and contrasts. A generic course-neutral illustration prevents a generated stage from rendering a silent blank.
+
+Work that remains outside the current browser authoring profile:
+
+- cases, capstone, toolkit, field-guide, divergence and exemplar editors;
+- browser-based slide conversion and course-owned image handling;
+- retained/datable release archives and release notes;
 - explicit migrations for breaking course revisions.
 
-The player, package boundary, course isolation and delivery mechanism are already implemented. The future work is the controlled authoring and release experience around them.
+See [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md) for the tool workflow, validation boundary and distribution decision.

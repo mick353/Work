@@ -1,4 +1,21 @@
-import { capstoneBriefs, divergences, exemplars, findModule, flashcards, manifest, modules, slides } from "./content";
+import {
+  capstoneBriefs,
+  capstoneSteps,
+  caseStudies,
+  diagnosticQuestions,
+  divergences,
+  exemplars,
+  fieldGuide,
+  findModule,
+  flashcards,
+  glossary,
+  manifest,
+  modules,
+  practiceQuestions,
+  slides,
+  sources,
+  toolkitTemplates,
+} from "./content";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Brain,
@@ -221,6 +238,15 @@ const NUMBER_WORDS = [
  * The empty states still exist for anyone arriving by URL or search.
  */
 function navItemApplies(item: { id: string }): boolean {
+  if (item.id === "diagnostic") return diagnosticQuestions.length > 0;
+  if (item.id === "review") return flashcards.length > 0;
+  if (item.id === "practice") return practiceQuestions.length > 0;
+  if (item.id === "toolkit") return toolkitTemplates.length > 0;
+  if (item.id === "cases") return caseStudies.length > 0;
+  if (item.id === "capstone") return capstoneBriefs.length > 0 && capstoneSteps.length > 0;
+  if (item.id === "fieldguide") return fieldGuide.length > 0;
+  if (item.id === "glossary") return glossary.length > 0;
+  if (item.id === "sources") return sources.length > 0;
   if (item.id === "deck") return slides.length > 0;
   if (item.id === "divergences") return divergences.length > 0;
   if (item.id === "example") return exemplars.length > 0;
