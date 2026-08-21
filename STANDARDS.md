@@ -156,4 +156,4 @@ The automated scan and the project-specific checks are regression gates, not a c
 4. **Run against every package and every theme.** A check that opens one page cannot see a fault bound per stage.
 5. **Budgets scale with content.** A fixed ceiling that has to be raised on every addition asserts nothing.
 
-The committed report for the current release records **294/294 checks passed**. Use `qa-report.json.totalChecks` for the exact run result. An unexplained change in the total should be investigated rather than treated as expected shuffle variation.
+Use `qa-report.json` for the exact run result. Investigate missing or changed checks by name rather than maintaining a hard-coded expected total in documentation.

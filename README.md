@@ -132,7 +132,7 @@ The script reads the stage-to-slide mapping out of `course.ts`, so the two canno
 
 ### QA
 
-`scripts/qa.mjs` runs the comprehensive suite against the real built artefact in a real browser and writes the exact result to `qa-report.json`. The committed report for the current release records **294/294 checks passed**. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` runs the comprehensive suite against the real built artefact in a real browser and writes the exact result to `qa-report.json`. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
 
 It covers question-bank integrity, scoring arithmetic, mastery gating, backup round-trip including rejection of malformed files, package switching **through the control a learner clicks**, contrast on all 40 stage-page/theme combinations, axe-core rules tagged to WCAG 2.0/2.1 A/AA with serious and critical impacts, line measure and horizontal overflow from 320 px to 2560 px, the project's 24 px target-size rule, keyboard and focus behaviour, reduced motion, and console hygiene. These checks are regression evidence, not a claim of complete WCAG conformance.
 

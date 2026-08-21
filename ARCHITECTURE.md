@@ -117,7 +117,7 @@ Behaviours that produce no error and no visible symptom until someone reports on
 
 ## 6. Verification
 
-`scripts/qa.mjs` runs the comprehensive suite against the real built artefact in a real Chromium, writing the exact result to `qa-report.json`. The current committed report records **294/294 checks passed**. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` runs the comprehensive suite against the real built artefact in a real Chromium, writing the exact result to `qa-report.json`. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
 
 Coverage: question-bank integrity and item-writing statistics, scoring arithmetic, mastery gating, backup round-trip including malformed-file rejection, package switching *through the button*, contrast across all 40 stage-page/theme combinations, axe-core rules tagged to WCAG 2.0/2.1 A/AA with serious and critical impacts, line measure and horizontal overflow from 320 px to 2560 px, the project's 24 px target-size rule, keyboard and focus, reduced motion, and console hygiene. This is regression evidence rather than complete accessibility certification.
 
@@ -126,7 +126,7 @@ Two rules govern additions to it:
 1. **Test through the control the user touches.** Seeding `localStorage` and reloading proves the content layer resolved and nothing else. That is exactly how a broken package switch shipped.
 2. **After writing a check, break the thing deliberately and confirm the check fails.** Three checks in this suite were once passing while measuring nothing.
 
-Use `qa-report.json.totalChecks` as the result for a run. The suite's shuffled-question paths were made deterministic for the current release; an unexplained change in the total should be investigated rather than dismissed as normal variation.
+Use `qa-report.json` as the result for a run. The suite's shuffled-question paths were made deterministic for the current release; investigate missing or changed checks by name rather than maintaining a hard-coded expected total in documentation.
 
 [AUTHORING.md](AUTHORING.md) is the procedure for adding or revising a course. [STANDARDS.md](STANDARDS.md) holds every threshold this suite enforces.
 
