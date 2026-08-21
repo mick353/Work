@@ -6,8 +6,8 @@
  * hash of the generated HTML, so a new release always busts the cache rather
  * than leaving someone stuck on an old copy of the course.
  *
- * The 98 deck slides are deliberately NOT precached. Pushing 2.5 MB of images
- * at every visitor on first load — most of whom will never open a slide — is
+ * Course slide assets are deliberately NOT precached. Pushing every image at
+ * every visitor on first load — most of whom will never open a slide — is
  * exactly what the separate-files build was for. They fall through to the
  * cache-first rule below instead, so each one is stored the first time it is
  * actually viewed and is available offline from then on.

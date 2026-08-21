@@ -6,10 +6,13 @@
   "description": "Offline, single-file player for self-directed training packages.",
   "scripts": {
     "build": "node scripts/build.mjs",
+    "export:course": "node scripts/build.mjs --course",
+    "export:all": "node scripts/export-all.mjs",
     "dev": "node scripts/build.mjs --watch",
     "typecheck": "tsc --noEmit",
     "qa": "node scripts/qa.mjs",
-    "verify": "npm run typecheck && npm run build && npm run qa"
+    "qa:exports": "node scripts/qa-exports.mjs",
+    "verify": "npm run typecheck && npm run build && npm run qa && npm run qa:exports"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

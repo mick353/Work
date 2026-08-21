@@ -23,6 +23,7 @@ Each document has one job. Start with the one that matches what you are doing.
 | **[AUTHORING.md](AUTHORING.md)** | You are adding a course or revising one. The end-to-end procedure, in order, with a gate at each phase |
 | **[STANDARDS.md](STANDARDS.md)** | You need the measurable definition of "good" — every threshold the check suite enforces |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | You are changing the player rather than the content |
+| **[COURSE-PACKAGE-FORMAT.md](COURSE-PACKAGE-FORMAT.md)** | You need the folder contract, package schema, versioning rules or export commands |
 | **[ROADMAP.md](ROADMAP.md)** | You want to know what is deliberately not built yet, and why |
 | **[NOTICE.md](NOTICE.md)** | Provenance, status and takedown contact |
 | **[CODEX-HANDOFF-2026-08-20.md](CODEX-HANDOFF-2026-08-20.md)** | You need the evidence and authority-sensitive corrections behind the current release |
@@ -88,18 +89,23 @@ npm install
 npx playwright install chromium   # once, before the first QA run
 
 npm run build      # writes both builds
+npm run export:course -- pm-fundamentals  # isolated standalone + web export
+npm run export:all # isolated exports for every registered course
 npm run dev        # rebuild on change
 npm run typecheck  # tsc --noEmit
-npm run qa         # comprehensive browser verification suite
-npm run verify     # typecheck + build + qa
+npm run qa         # combined-site browser verification
+npm run qa:exports # build and verify every isolated course export
+npm run verify     # all type, build, combined-site and export checks
 ```
 
 ### Build
 
-`scripts/build.mjs` bundles `src/main.tsx` with esbuild and inlines the JS and CSS into `index.html`. One bundle, two outputs:
+`scripts/build.mjs` bundles `src/main.tsx` with esbuild and inlines the JS and CSS into `index.html`. The default command preserves the published combined catalogue:
 
-1. **`Product-Management-Learning-System.html`** — 4.4 MB, pure single file, zero external references, all 98 slides inlined as base64.
-2. **`docs/`** — about 1 MB plus a web manifest, icons, a service worker and the slides as separate files. This is what GitHub Pages serves.
+1. **`Product-Management-Learning-System.html`** — a pure single file, with every required slide inlined.
+2. **`docs/`** — the web/PWA build with course assets kept as separate lazy-loaded files. This is what GitHub Pages serves.
+
+`npm run export:course -- <course-id>` builds the same two delivery forms under `exports/<course-id>/`, but replaces the catalogue at bundle time. The other course's content and assets are not present. In a one-course build the library route returns to the overview, and the library/switcher chrome is omitted. `exports/` is generated and ignored by Git; copy the required file or site folder to the delivery location.
 
 The PWA pieces are deliberately kept out of the standalone file: a service worker registration that can never succeed on `file://` would only log errors. The service worker's cache name is stamped with a hash of the built HTML, so each release invalidates the last.
 
@@ -120,19 +126,19 @@ Pages redeploys within a minute or two. Installed home-screen copies pick up the
 
 ### Re-importing the deck
 
-`src/slides.ts` and `public/slides/` are generated, and the outputs are committed — a normal build never regenerates them. If the source deck changes:
+Course slide metadata and images are generated and committed under that course's own folders — a normal build never regenerates them. If a source deck changes:
 
 ```bash
 apt-get install libreoffice poppler-utils
 pip install python-pptx pillow
-python3 scripts/import-slides.py path/to/deck.pptx
+python3 scripts/import-slides.py pm-fundamentals path/to/deck.pptx
 ```
 
-The script reads the stage-to-slide mapping out of `course.ts`, so the two cannot drift. The QA suite then asserts every cited slide exists and that the stage ranges cover all 98 with no overlap.
+The script reads the stage-to-slide mapping from `src/courses/<course-id>/course.ts`, writes metadata beside it, and writes images to `public/courses/<course-id>/slides/`. The QA suite then asserts that the declared slides and citations resolve.
 
 ### QA
 
-`scripts/qa.mjs` runs the comprehensive suite against the real built artefact in a real browser and writes the exact result to `qa-report.json`. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` runs the comprehensive suite against the real combined artefact in a real browser and writes the exact result to `qa-report.json`. `scripts/qa-exports.mjs` builds each course separately and verifies bundle isolation, asset isolation, single-course navigation, accessibility and course-scoped capstone downloads. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
 
 It covers question-bank integrity, scoring arithmetic, mastery gating, backup round-trip including rejection of malformed files, package switching **through the control a learner clicks**, contrast on all 40 stage-page/theme combinations, axe-core rules tagged to WCAG 2.0/2.1 A/AA with serious and critical impacts, line measure and horizontal overflow from 320 px to 2560 px, the project's 24 px target-size rule, keyboard and focus behaviour, reduced motion, and console hygiene. These checks are regression evidence, not a claim of complete WCAG conformance.
 
@@ -141,16 +147,21 @@ The rules governing additions to the suite are in [STANDARDS.md](STANDARDS.md#10
 ### Source layout
 
 ```
-public/                Assets copied into docs/ at build time
+public/                Assets copied into web builds at build time
   manifest.webmanifest
   sw.js                Offline service worker (version stamped at build)
   icon-*.png
-  slides/              The 98 rendered deck slides (slide-01.webp ...)
+  courses/
+    pm-fundamentals/
+      slides/           This course's rendered deck slides
 docs/                  GENERATED — the GitHub Pages build. Do not edit by hand.
+exports/               GENERATED, ignored — one folder per isolated course
 scripts/
-  build.mjs            esbuild bundle; emits both builds
-  qa.mjs               The browser verification suite
-  import-slides.py     Deck → slides.ts + public/slides (see above)
+  build.mjs            Combined or selected-course bundle
+  export-all.mjs       Runs a selected-course build for every course folder
+  qa.mjs               Combined-catalogue browser verification
+  qa-exports.mjs       Individual-export isolation and behaviour verification
+  import-slides.py     Course deck → course metadata + course assets
   walkthrough.mjs      Completes a course end to end as a learner; not part of qa
   add-notes.py         One-off content migrations, already applied. Retained for
   add-reasoning.py     provenance only: not part of the build and not safe to
@@ -158,21 +169,27 @@ scripts/
   rebalance.py
   *.json               Payloads those migrations consumed
 src/
-  packages.ts          THE REGISTRY. Manifests, the PackageContent interface,
-                       and both packages. Start here.
+  package-model.ts     Versioned, course-neutral data contract
+  package-validation.ts Runtime validation at the package boundary
+  package-utils.ts     Shared derivation/assembly helpers
+  package-catalog.ts   The combined catalogue; registers course entry modules
+  packages.ts          Validated catalogue and active-package helpers
   content.ts           Resolves the active package and re-exports its content,
                        so views never import a course directly
   main.tsx             Entry point
   App.tsx              Shell, routing, navigation groups, mobile drawer
 
-  course.ts            Package 1 — stages, lessons, tables, questions, scenarios
-  reference.ts         Package 1 — flashcards, templates, capstone, field guide,
-                       glossary, contrasts, divergences, diagnostic pool
-  slides.ts            GENERATED — deck metadata. Do not edit.
-
-  closure-course.ts    Package 2 — twelve stages
-  closure-reference.ts Package 2 — cards, glossary, cases, capstone, templates
-  closure-exemplar.ts  Package 2 — the complete worked closure report
+  courses/
+    pm-fundamentals/   Self-contained course source
+      index.ts         Manifest and complete TrainingPackage assembly
+      course.ts        Stages, lessons, questions and scenarios
+      reference.ts     Cards, cases, capstone, field guide and sources
+      slides.ts        GENERATED deck metadata
+    closure-reports/   Same boundary for Closure Reports
+      index.ts
+      course.ts
+      reference.ts
+      exemplar.ts
 
   lib.ts               Routing, local-time dates, guarded storage, seeded
                        shuffle, SM-2 scheduling, backup filenames
@@ -181,7 +198,7 @@ src/
 
   components.tsx       Shared UI: question cards, feedback, tables, source chips
   charts.tsx           Hand-rolled SVG charts, each with a hidden data table
-  illustrations.tsx    Original conceptual SVG diagrams, keyed by module id
+  illustrations.tsx    Conceptual SVG diagrams, keyed by package id + stage id
 
   views-learn.tsx      Dashboard, learning path, stage view, diagnostic
   views-practice.tsx   Spaced review, mixed practice

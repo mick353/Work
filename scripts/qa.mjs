@@ -65,12 +65,25 @@ function watchPage(page, label) {
 const bankModule = await esbuild({
   stdin: {
     contents: `
-      export { practiceQuestions, modules, sources } from ${JSON.stringify(path.join(projectDir, "src/course.ts"))};
-      export { diagnosticQuestions, flashcards, toolkitTemplates, supplementaryQuestions, divergences, glossary, caseStudies } from ${JSON.stringify(path.join(projectDir, "src/reference.ts"))};
-      export { trainingPackages } from ${JSON.stringify(path.join(projectDir, "src/packages.ts"))};
+      import { trainingPackages } from ${JSON.stringify(path.join(projectDir, "src/packages.ts"))};
+      import { validateTrainingPackage } from ${JSON.stringify(path.join(projectDir, "src/package-validation.ts"))};
+      const product = trainingPackages.find((entry) => entry.manifest.id === "pm-fundamentals");
+      if (!product) throw new Error("Product Management package is missing");
+      export { trainingPackages, validateTrainingPackage };
+      export const modules = product.content.modules;
+      export const sources = product.content.sources;
+      export const practiceQuestions = product.content.practiceQuestions;
+      export const diagnosticQuestions = product.content.diagnosticQuestions;
+      export const flashcards = product.content.flashcards;
+      export const toolkitTemplates = product.content.toolkitTemplates;
+      export const supplementaryQuestions = product.content.supplementaryQuestions;
+      export const divergences = product.content.divergences;
+      export const glossary = product.content.glossary;
+      export const caseStudies = product.content.caseStudies;
+      export const slides = product.content.slides;
+      export const SLIDE_COUNT = product.content.slideCount;
       export { spreadAcrossStages } from ${JSON.stringify(path.join(projectDir, "src/views-practice.tsx"))};
       export { presentOptions } from ${JSON.stringify(path.join(projectDir, "src/lib.ts"))};
-      export { slides, SLIDE_COUNT } from ${JSON.stringify(path.join(projectDir, "src/slides.ts"))};
     `,
     resolveDir: projectDir,
     loader: "ts",
@@ -85,6 +98,13 @@ const bank = await import(
 );
 
 const allQuestions = [...bank.practiceQuestions, ...bank.diagnosticQuestions];
+
+const packageContractErrors = bank.trainingPackages.flatMap(bank.validateTrainingPackage);
+check(
+  "Every catalogue entry satisfies the versioned package contract",
+  packageContractErrors.length === 0,
+  packageContractErrors.join(" | "),
+);
 
 /*
  * Government Gateway has six project reviews, numbered Gate 0 to Gate 5.
@@ -259,7 +279,7 @@ check("Question bank is substantially larger than one practice set", allQuestion
 /* ---------------------------------------------------------------- *
  * Per-package content coverage.
  *
- * Reference content is keyed by module id and resolved by lookup, so a stage
+ * Reference content is keyed by stage id inside its package and resolved by lookup, so a stage
  * with no flashcards, no glossary term or no diagnostic question renders an
  * empty section and reports nothing. The diagnostic is the sharpest case: it
  * draws one question per stage, so a stage absent from the pool is silently
@@ -712,7 +732,7 @@ if (!existsSync(docsDir)) {
 
     It was per package, at a flat allowance each, which assumed packages are
     roughly the same size. They are not: one course has nine stages and the
-    other fifteen, so adding four stages of legitimate prose to one package
+    other twelve, so adding stages of legitimate prose to one package
     failed a budget that had no way to know the package had grown. A budget
     that fails on ordinary content and has to be raised each time is the
     fixed-ceiling problem in a different costume.
@@ -738,7 +758,7 @@ if (!existsSync(docsDir)) {
   check(
     "All 98 slide images ship with the Pages build",
     Array.from({ length: 98 }, (_, i) => `slide-${String(i + 1).padStart(2, "0")}.webp`)
-      .every((name) => existsSync(path.join(docsDir, "slides", name))),
+      .every((name) => existsSync(path.join(docsDir, "courses", "pm-fundamentals", "slides", name))),
   );
 }
 
@@ -843,7 +863,7 @@ check(
   );
   /*
     Every stage needs a diagram. The second package shipped with none at all,
-    because illustrations are keyed by module id and a missing key renders
+    because illustrations are keyed by package id plus stage id and a missing key renders
     nothing rather than failing — so twelve stages of dense prose opened with
     a heading and a wall of text.
   */
@@ -1404,7 +1424,7 @@ check("Nine stages listed in the sidebar", stageButtons === 9, `found ${stageBut
   contrast.
 */
 {
-  const source = await readFile(path.join(projectDir, "src", "closure-course.ts"), "utf8");
+  const source = await readFile(path.join(projectDir, "src", "courses", "closure-reports", "course.ts"), "utf8");
   const openers = [...source.matchAll(/body:\s*\n?\s*"((?:[^"\\]|\\.)*)"/g)]
     .map((m) => m[1].split(". ")[0])
     .filter((s) => s.length > 30);
@@ -1760,7 +1780,7 @@ check(
  * A structural check rather than a behavioural one, because this invariant
  * cannot be observed by clicking. The player must read content ONLY through
  * the active package. Views used to import `modules` and `flashcards` straight
- * from course.ts and reference.ts, which hard-wired the player to one course
+ * from an individual course folder, which would hard-wire the player to one course
  * and made "adding a package is a data operation" untrue.
  *
  * Types may still be imported from the content files — a type is the same

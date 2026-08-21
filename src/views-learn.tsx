@@ -8,7 +8,7 @@ import {
   Printer,
   RefreshCw,
 } from "lucide-react";
-import { type Module, type Question } from "./course";
+import type { Module, Question } from "./package-model";
 import { SlideRangeLink } from "./slide-viewer";
 import { daysAgoKey, estimateHours, prefersReducedMotion, scrollBehavior, scrollToSection, shuffle, type View } from "./lib";
 import { sectionsToRevisit } from "./recall";
@@ -514,7 +514,7 @@ export function ModuleView({
       )
     : null;
 
-  const StageIllustration = stageIllustrations[module.id];
+  const StageIllustration = stageIllustrations[`${manifest.id}:${module.id}`];
   const activeSection = useActiveSection(module.sections.map((_, index) => sectionId(module.id, index)));
   const readingProgress = useReadingProgress();
   const stageState = masteryState(progress, module.scenarios.length);

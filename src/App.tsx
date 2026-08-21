@@ -1,4 +1,4 @@
-import { divergences, exemplars, findModule, flashcards, manifest, modules, slides } from "./content";
+import { capstoneBriefs, divergences, exemplars, findModule, flashcards, manifest, modules, slides } from "./content";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Brain,
@@ -27,8 +27,8 @@ import {
   Wrench,
   X,
 } from "lucide-react";
-import { type Question } from "./course";
-import { PM_FUNDAMENTALS_ID, activePackage, trainingPackages } from "./packages";
+import type { Question } from "./package-model";
+import { DEFAULT_PACKAGE_ID, activePackage, trainingPackages } from "./packages";
 import { bringForward, cardsToResurface } from "./recall";
 import {
   clearStored,
@@ -292,8 +292,10 @@ export default function App() {
    * without moving what is already there would present as a total reset.
    */
   const [packageId] = useState<string>(() => {
-    migrateToPackageNamespace(PM_FUNDAMENTALS_ID);
-    let stored = PM_FUNDAMENTALS_ID;
+    if (trainingPackages.some((entry) => entry.manifest.id === "pm-fundamentals")) {
+      migrateToPackageNamespace("pm-fundamentals");
+    }
+    let stored = DEFAULT_PACKAGE_ID;
     try {
       const raw = window.localStorage.getItem("product-practice-v2:active-package");
       if (raw) stored = JSON.parse(raw);
@@ -302,7 +304,7 @@ export default function App() {
     }
     const resolved = trainingPackages.some((entry) => entry.manifest.id === stored)
       ? stored
-      : PM_FUNDAMENTALS_ID;
+      : DEFAULT_PACKAGE_ID;
     setActivePackageId(resolved);
     return resolved;
   });
@@ -322,7 +324,7 @@ export default function App() {
   const [practiceBest, setPracticeBest, overwritePracticeBest] = useStoredState<number>("practice-best", 0);
   const [studyDays, setStudyDays, overwriteStudyDays] = useStoredState<string[]>("study-days", []);
   const [history, setHistory, overwriteHistory] = useStoredState<HistoryEntry[]>("history", []);
-  const [briefId, setBriefId] = useStoredState<string>("capstone-brief", "provider");
+  const [briefId, setBriefId] = useStoredState<string>("capstone-brief", capstoneBriefs[0]?.id ?? "");
   const [itemStats, setItemStats, overwriteItemStats] = useStoredState<ItemStatMap>("item-stats", {});
   const [collapsedNav, setCollapsedNav] = useStoredState<Record<string, boolean>>(
     NAV_STATE_KEY,
@@ -565,7 +567,7 @@ export default function App() {
   }, []);
 
   let content: React.ReactNode;
-  if (view === "dashboard") {
+  if (view === "dashboard" || (view === "library" && trainingPackages.length === 1)) {
     content = (
       <Dashboard
         completion={completion}
@@ -851,14 +853,16 @@ function Shell({
           there is more than one — and gives a way back to the library that is
           not the browser's back button.
         */}
-        <button className="package-switch" onClick={() => navigate("library")}>
-          <Layers size={16} aria-hidden="true" />
-          <span>
-            <small>{packageCount === 1 ? "Training package" : `Training package · ${packagePosition} of ${packageCount}`}</small>
-            <strong>{packageTitle}</strong>
-          </span>
-          <span className="package-switch-action">Library</span>
-        </button>
+        {packageCount > 1 && (
+          <button className="package-switch" onClick={() => navigate("library")}>
+            <Layers size={16} aria-hidden="true" />
+            <span>
+              <small>{`Training package · ${packagePosition} of ${packageCount}`}</small>
+              <strong>{packageTitle}</strong>
+            </span>
+            <span className="package-switch-action">Library</span>
+          </button>
+        )}
 
         {/*
           Overview is a destination, not a category. It sat inside a group

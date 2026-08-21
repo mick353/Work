@@ -3,6 +3,7 @@ node_modules/
 .build/
 .parcel-cache/
 dist/
+exports/
 
 # Build output is committed deliberately:
 #   - Product-Management-Learning-System.html so it can be shared without a toolchain
@@ -21,6 +22,8 @@ shot-*.png
 .DS_Store
 Thumbs.db
 *.tsbuildinfo
+__pycache__/
+*.pyc
 
 # Walkthrough artefacts — generated PDFs, screenshots and findings
 .walkthrough/

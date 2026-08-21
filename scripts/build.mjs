@@ -1,21 +1,19 @@
 /**
- * Build.
+ * Build the combined catalogue or one isolated course package.
  *
- * Emits two things from one bundle:
+ * Default output (the published multi-course site):
+ *   Product-Management-Learning-System.html
+ *   docs/
  *
- *   1. Product-Management-Learning-System.html
- *      Pure single file. No external references at all — it works from a USB
- *      stick, an email attachment or a network share.
+ * Single-course output:
+ *   exports/<course-id>/<course-id>.html
+ *   exports/<course-id>/site/
  *
- *   2. docs/
- *      The same app plus a web manifest, icons and a service worker, for
- *      GitHub Pages. Pages is configured to serve from the `docs` folder on
- *      `main`, which is why the built page lands there as index.html.
- *
- * The PWA bits are deliberately kept OUT of the standalone file: a service
- * worker registration that can never succeed on file:// would just log errors.
- *
- * Usage:  node scripts/build.mjs [--watch]
+ * Usage:
+ *   node scripts/build.mjs
+ *   node scripts/build.mjs --course pm-fundamentals
+ *   node scripts/build.mjs --course closure-reports
+ *   node scripts/build.mjs --watch [--course <course-id>]
  */
 
 import { build, context } from "esbuild";
@@ -28,12 +26,63 @@ import { fileURLToPath } from "node:url";
 const projectDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const tempDir = path.join(projectDir, ".build");
 const publicDir = path.join(projectDir, "public");
-const docsDir = path.join(projectDir, "docs");
-const standaloneFile = path.join(projectDir, "Product-Management-Learning-System.html");
 const templateFile = path.join(projectDir, "index.html");
-
 const watch = process.argv.includes("--watch");
 
+function optionValue(name) {
+  const position = process.argv.indexOf(name);
+  if (position < 0) return null;
+  const value = process.argv[position + 1];
+  if (!value || value.startsWith("--")) throw new Error(`${name} requires a value.`);
+  return value;
+}
+
+const selectedCourseId = optionValue("--course");
+if (selectedCourseId && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(selectedCourseId)) {
+  throw new Error("Course id must be a lowercase URL-safe slug.");
+}
+
+const selectedCourseIndex = selectedCourseId
+  ? path.join(projectDir, "src", "courses", selectedCourseId, "index.ts")
+  : null;
+if (selectedCourseIndex && !existsSync(selectedCourseIndex)) {
+  const available = (await readdir(path.join(projectDir, "src", "courses"), { withFileTypes: true }))
+    .filter((entry) => entry.isDirectory() && existsSync(path.join(projectDir, "src", "courses", entry.name, "index.ts")))
+    .map((entry) => entry.name)
+    .sort();
+  throw new Error(`Unknown course '${selectedCourseId}'. Available: ${available.join(", ")}`);
+}
+
+const outputRoot = selectedCourseId
+  ? path.join(projectDir, "exports", selectedCourseId)
+  : projectDir;
+const siteDir = selectedCourseId ? path.join(outputRoot, "site") : path.join(projectDir, "docs");
+const standaloneFile = selectedCourseId
+  ? path.join(outputRoot, `${selectedCourseId}.html`)
+  : path.join(projectDir, "Product-Management-Learning-System.html");
+
+/** Replace the catalogue at bundle time so an individual export contains one course only. */
+function selectedCoursePlugin() {
+  if (!selectedCourseIndex) return null;
+  return {
+    name: "selected-course-catalogue",
+    setup(builder) {
+      builder.onResolve({ filter: /^\.\/package-catalog$/ }, (args) => {
+        if (!args.importer.endsWith(`${path.sep}packages.ts`)) return null;
+        return { path: "selected-course-catalogue", namespace: "course-export" };
+      });
+      builder.onLoad({ filter: /.*/, namespace: "course-export" }, () => ({
+        loader: "ts",
+        resolveDir: projectDir,
+        contents:
+          `import selectedPackage from ${JSON.stringify(selectedCourseIndex)};\n` +
+          "export const catalogPackages = [selectedPackage];\n",
+      }));
+    },
+  };
+}
+
+const cataloguePlugin = selectedCoursePlugin();
 const buildOptions = {
   entryPoints: [path.join(projectDir, "src/main.tsx")],
   bundle: true,
@@ -47,43 +96,45 @@ const buildOptions = {
   outdir: tempDir,
   entryNames: "app",
   logLevel: "info",
+  plugins: cataloguePlugin ? [cataloguePlugin] : [],
 };
 
 function escapeForScript(source) {
-  // Stop an accidental </script> inside a string literal closing the tag early.
-  return source.replace(/<\/script/gi, "<\\/script");
+  return source.replace(/[ \t]+$/gm, "").replace(/<\/script/gi, "<\\/script");
 }
 
-/**
- * The 98 source slides, and the one real difference between the two builds.
- *
- * Standalone has to stay a single file — a folder of images beside it would be
- * lost the first time anyone emailed it on — so every slide goes in as a data
- * URI. That is a few megabytes, which is the honest price of "one file that
- * contains everything".
- *
- * Pages must NOT do that. A phone should download a small page and then fetch
- * only the slides actually opened, which is what `loading="lazy"` and the
- * service worker's cache-first rule give us. So the placeholder is simply
- * dropped, and the app falls back to `slides/slide-NN.webp` paths.
- *
- * The payload is a JSON script tag rather than a JS assignment so it costs
- * nothing until something asks for a slide — see `slideSrc` in slide-viewer.tsx.
- * Base64 is [A-Za-z0-9+/=] and the keys are digits, so nothing in here can
- * close the tag early.
- */
-async function slideDataTag() {
-  const dir = path.join(publicDir, "slides");
-  if (!existsSync(dir)) return { tag: "", bytes: 0, count: 0 };
+async function slideFiles() {
+  const coursesDir = path.join(publicDir, "courses");
+  if (!existsSync(coursesDir)) return [];
+  const courseIds = selectedCourseId
+    ? [selectedCourseId]
+    : (await readdir(coursesDir, { withFileTypes: true }))
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => entry.name)
+        .sort();
 
-  const files = (await readdir(dir)).filter((name) => /^slide-\d+\.webp$/.test(name)).sort();
+  const files = [];
+  for (const courseId of courseIds) {
+    const slidesDir = path.join(coursesDir, courseId, "slides");
+    if (!existsSync(slidesDir)) continue;
+    const names = (await readdir(slidesDir))
+      .filter((name) => /^slide-\d+\.webp$/.test(name))
+      .sort();
+    for (const name of names) files.push(path.join(slidesDir, name));
+  }
+  return files;
+}
+
+/** Inline only the slides belonging to the catalogue being built. */
+async function slideDataTag() {
+  const files = await slideFiles();
   if (!files.length) return { tag: "", bytes: 0, count: 0 };
 
   const entries = {};
   for (const file of files) {
-    const n = Number(file.match(/\d+/)[0]);
-    const data = await readFile(path.join(dir, file));
-    entries[n] = `data:image/webp;base64,${data.toString("base64")}`;
+    const key = path.relative(publicDir, file).split(path.sep).join("/");
+    const data = await readFile(file);
+    entries[key] = `data:image/webp;base64,${data.toString("base64")}`;
   }
 
   const json = JSON.stringify(entries);
@@ -95,11 +146,6 @@ async function slideDataTag() {
   };
 }
 
-/**
- * Replacements use FUNCTIONS, never strings: a minified bundle contains `$&`
- * and `$1`, which String.replace would otherwise treat as substitution
- * patterns and splice the original tag back into the output.
- */
 function inline(template, css, js, slideTag) {
   const html = template
     .replace("<!--INLINE_STYLES-->", () => `<style>\n${css}\n</style>`)
@@ -138,6 +184,28 @@ const PWA_SCRIPT = `
       }
     </script>`;
 
+/** Copy shared PWA files and only the course assets present in this build. */
+async function copyPublicFiles(target) {
+  const entries = await readdir(publicDir, { withFileTypes: true });
+  for (const entry of entries) {
+    if (entry.name === "courses") continue;
+    await cp(path.join(publicDir, entry.name), path.join(target, entry.name), { recursive: true });
+  }
+
+  const sourceCourses = path.join(publicDir, "courses");
+  if (!existsSync(sourceCourses)) return;
+  const targetCourses = path.join(target, "courses");
+  if (!selectedCourseId) {
+    await cp(sourceCourses, targetCourses, { recursive: true });
+    return;
+  }
+  const selectedAssets = path.join(sourceCourses, selectedCourseId);
+  if (existsSync(selectedAssets)) {
+    await mkdir(targetCourses, { recursive: true });
+    await cp(selectedAssets, path.join(targetCourses, selectedCourseId), { recursive: true });
+  }
+}
+
 async function assemble() {
   const [template, js, css] = await Promise.all([
     readFile(templateFile, "utf8"),
@@ -148,48 +216,38 @@ async function assemble() {
   ]);
 
   const slideData = await slideDataTag();
-
-  // 1. Standalone, fully self-contained — slides inlined.
   const standalone = inline(template, css, js, slideData.tag);
+  await mkdir(outputRoot, { recursive: true });
   await writeFile(standaloneFile, standalone, "utf8");
 
-  // 2. Pages — same bundle, slides left as separate lazy-loaded files.
   const pagesBase = inline(template, css, js, "");
-
   const version = createHash("sha256").update(pagesBase).digest("hex").slice(0, 12);
   const pagesHtml = pagesBase
     .replace("</head>", () => `${PWA_HEAD}\n  </head>`)
     .replace("</body>", () => `${PWA_SCRIPT}\n  </body>`);
 
-  await rm(docsDir, { recursive: true, force: true });
-  await mkdir(docsDir, { recursive: true });
-  await writeFile(path.join(docsDir, "index.html"), pagesHtml, "utf8");
-  // Stops GitHub Pages running the output through Jekyll.
-  await writeFile(path.join(docsDir, ".nojekyll"), "", "utf8");
+  await rm(siteDir, { recursive: true, force: true });
+  await mkdir(siteDir, { recursive: true });
+  await writeFile(path.join(siteDir, "index.html"), pagesHtml, "utf8");
+  await writeFile(path.join(siteDir, ".nojekyll"), "", "utf8");
+  await copyPublicFiles(siteDir);
 
-  await cp(publicDir, docsDir, { recursive: true });
-
-  // replaceAll, not replace: the token also appears in sw.js's own doc comment,
-  // and replacing only the first occurrence left the real constant unstamped —
-  // which would have pinned every visitor to the first cached release.
   const swSource = await readFile(path.join(publicDir, "sw.js"), "utf8");
   const swOut = swSource.replaceAll("__BUILD_VERSION__", version);
-  if (swOut.includes("__BUILD_VERSION__")) {
-    throw new Error("Service worker version placeholder was not fully substituted.");
+  if (swOut.includes("__BUILD_VERSION__") || !swOut.includes(version)) {
+    throw new Error("Service worker version was not fully stamped.");
   }
-  if (!swOut.includes(version)) {
-    throw new Error("Service worker version was not stamped.");
-  }
-  await writeFile(path.join(docsDir, "sw.js"), swOut, "utf8");
+  await writeFile(path.join(siteDir, "sw.js"), swOut, "utf8");
 
   const standaloneMb = (Buffer.byteLength(standalone, "utf8") / 1024 / 1024).toFixed(2);
   const pagesKb = (Buffer.byteLength(pagesHtml, "utf8") / 1024).toFixed(1);
   const slideMb = (slideData.bytes / 1024 / 1024).toFixed(2);
   console.log(
-    `\nBuilt:\n  ${path.relative(projectDir, standaloneFile)} — ${standaloneMb} MB, self-contained` +
+    `\nBuilt ${selectedCourseId ?? "combined catalogue"}:` +
+      `\n  ${path.relative(projectDir, standaloneFile)} — ${standaloneMb} MB, self-contained` +
       ` (${slideData.count} slides inlined, ${slideMb} MB)` +
-      `\n  docs/index.html — ${pagesKb} KB, ${slideData.count} slides fetched on demand` +
-      `\n  docs/ — GitHub Pages build, cache version ${version}\n`,
+      `\n  ${path.relative(projectDir, path.join(siteDir, "index.html"))} — ${pagesKb} KB` +
+      `\n  ${path.relative(projectDir, siteDir)} — web build, cache version ${version}\n`,
   );
 }
 
@@ -199,19 +257,19 @@ if (watch) {
   const ctx = await context({
     ...buildOptions,
     plugins: [
+      ...buildOptions.plugins,
       {
         name: "assemble",
         setup(builder) {
           builder.onEnd(async (result) => {
-            if (result.errors.length) return;
-            await assemble();
+            if (!result.errors.length) await assemble();
           });
         },
       },
     ],
   });
   await ctx.watch();
-  console.log("Watching for changes. Reload the HTML after each rebuild.");
+  console.log(`Watching ${selectedCourseId ?? "combined catalogue"}. Reload the HTML after each rebuild.`);
 } else {
   await build(buildOptions);
   await assemble();

@@ -228,7 +228,7 @@ export function onStorageStatusChange(listener: (status: StorageStatus) => void)
  */
 const GLOBAL_KEYS = new Set(["theme", "salt", "nav-collapsed-v2", "active-package"]);
 
-let activePackageId = "pm-fundamentals";
+let activePackageId = "";
 
 export function setActivePackageId(id: string) {
   activePackageId = id;

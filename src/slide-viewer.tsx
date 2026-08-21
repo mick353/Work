@@ -22,10 +22,10 @@
  * one way only.
  */
 
-import { manifest, modules, SLIDE_COUNT, slides } from "./content";
+import { manifest, modules, slideAssetBase, SLIDE_COUNT, slides } from "./content";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Images, Maximize2, X } from "lucide-react";
-import { type Slide } from "./slides";
+import type { Slide } from "./package-model";
 
 /* ------------------------------------------------------------------ *
  * Where the picture comes from
@@ -55,7 +55,8 @@ export function slideSrc(n: number): string {
       inlined = null;
     }
   }
-  return inlined?.[String(n)] ?? `slides/slide-${String(n).padStart(2, "0")}.webp`;
+  const relative = `${slideAssetBase}/slide-${String(n).padStart(2, "0")}.webp`;
+  return inlined?.[relative] ?? relative;
 }
 
 export function findSlide(n: number): Slide | undefined {

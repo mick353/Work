@@ -1,5 +1,5 @@
 /**
- * Complete worked closure reports, one per departmental template.
+ * Closure Reports — complete worked reports, one per departmental template.
  *
  * A course about producing a document has to show the finished document. Both
  * examples cover the same project so the two forms can be compared directly,
@@ -8,33 +8,7 @@
  * worked example of the easy case teaches nothing.
  */
 
-import type { LessonTable } from "./course";
-
-export type ExemplarSection = {
-  /** Numbered or named as it appears in the form. */
-  heading: string;
-  /** The report text, as paragraphs. */
-  body?: string[];
-  table?: LessonTable;
-  /** Paragraphs after the table, where a section argues from its own figures. */
-  body2?: string[];
-  /** Fixed-width block — a statement, register extract or list. */
-  artefact?: string;
-  /** Why it is written this way. Not part of the report. */
-  note: string;
-};
-
-export type Exemplar = {
-  /** Short label for the switcher. */
-  id: string;
-  tab: string;
-  title: string;
-  subtitle: string;
-  intro: string;
-  meta: { label: string; value: string }[];
-  sections: ExemplarSection[];
-  closing: string;
-};
+import type { Exemplar } from "../../package-model";
 
 const CASE_INTRO =
   "One report, end to end, for a project that broadly succeeded and missed several things. The grey notes beside each section are commentary for you, not part of the document. Read the report first and ignore them; then read them and see what each section is doing.";

@@ -8,7 +8,7 @@ This document says **what to do**. [STANDARDS.md](STANDARDS.md) says **what "goo
 
 ## The model
 
-A course is **data**. The player is **code**. They meet at one interface: `PackageContent` in `src/packages.ts`.
+A course is **data**. The player is **code**. They meet at the versioned `TrainingPackage` contract in `src/package-model.ts`. Runtime boundary checks live in `src/package-validation.ts`; the complete folder and versioning contract is in [COURSE-PACKAGE-FORMAT.md](COURSE-PACKAGE-FORMAT.md).
 
 Adding a course means authoring arrays and registering a manifest. It does not mean editing a view. If you find yourself editing a view to accommodate a course, either the course is wrong or the interface needs extending — decide which, and say so.
 
@@ -172,10 +172,13 @@ Each case step names the decision on the table **before** saying what the team d
 
 ## Phase 7 — Wire it up
 
-1. Add the manifest: `id`, `title`, `subtitle`, `publisher`, `sourceAuthor?`, `source`, `reviewed`, `status`, `summary`, `arc`.
-2. Register in `trainingPackages`.
-3. **Add an illustration for every stage** in `illustrations.tsx` and register it under the stage id. A missing key renders nothing and reports no error.
-4. Derive `minutes` for every stage via `stageMinutes()`.
+1. Create `src/courses/<course-id>/`. Keep the course's `course.ts`, `reference.ts`, optional `slides.ts` and optional `exemplar.ts` inside it.
+2. Add `index.ts`, assemble a complete `TrainingPackage`, and export it as both a named and default export.
+3. Add the manifest: `schemaVersion`, semantic `version`, stable `id`, `title`, `subtitle`, `publisher`, `sourceAuthor?`, `source`, `reviewed`, `status`, `summary`, `arc`.
+4. Register that entry module once in `src/package-catalog.ts`.
+5. **Add an illustration for every stage** in `illustrations.tsx` and register it under `<package-id>:<stage-id>`. A missing key renders nothing and reports no error.
+6. Derive `minutes` for every stage via `withDerivedMinutes()`.
+7. Put binary assets under `public/courses/<course-id>/`; never add them to another course's folder.
 
 Illustration rules:
 
@@ -184,7 +187,7 @@ Illustration rules:
 - Text is fixed in user units and does not reflow. Position labels in **fixed columns**, never from a variable such as a bar width or an end anchor, or they collide when the string grows.
 - Minimum 4 user units of leading between stacked labels.
 
-**Gate:** the package appears in the library, switches by clicking, and every stage renders a diagram.
+**Gate:** the package satisfies `package-validation.ts`, appears in the combined library, switches by clicking, exports alone without another course's content/assets, and every stage renders a diagram.
 
 ---
 
@@ -195,7 +198,8 @@ Run in this order. Do not skip to the end.
 ```bash
 npm run typecheck
 npm run build
-npm run qa          # the full suite
+npm run qa          # combined catalogue
+npm run qa:exports  # every isolated course export
 ```
 
 Then, by hand:
@@ -220,8 +224,11 @@ Then, by hand:
 ## Phase 9 — Publish
 
 ```bash
-npm run verify      # typecheck + build + qa
-git add -A && git commit -m "..."
+npm run verify      # typecheck + combined build/QA + every individual export
+git status --short
+git add -- <exact source files> Product-Management-Learning-System.html docs
+git diff --cached
+git commit -m "..."
 git push
 ```
 
@@ -269,15 +276,15 @@ Whenever you fix something the suite did not catch, add a check for it. Then **b
 
 ## Importing a source deck
 
-`src/slides.ts` and `public/slides/` are generated and committed. A normal build never regenerates them.
+Each deck's metadata and images are generated and committed inside that course's namespace. A normal build never regenerates them.
 
 ```bash
 apt-get install libreoffice poppler-utils
 pip install python-pptx pillow
-python3 scripts/import-slides.py path/to/deck.pptx
+python3 scripts/import-slides.py <course-id> path/to/deck.pptx
 ```
 
-The script reads the stage-to-slide mapping out of the course file, so the two cannot drift. Every slide the course cites must exist, and the stage ranges must cover the deck with no overlap.
+The script reads the stage-to-slide mapping from `src/courses/<course-id>/course.ts`, writes `slides.ts` beside it, and writes images to `public/courses/<course-id>/slides/`. Every slide the course cites must exist, and the stage ranges must cover the deck with no overlap.
 
 A citation the learner cannot follow is an assertion. Either the source travels with the package or the citation goes.
 
@@ -289,7 +296,7 @@ Committed to memory or checked deliberately — nothing in this list produces an
 
 | Fault | Symptom |
 |---|---|
-| Missing illustration for a stage | Blank space where the diagram belongs |
+| Missing `<packageId>:<moduleId>` illustration | Blank space where the diagram belongs |
 | `moduleId` naming a stage that does not exist | Content unreachable |
 | A stage missing from the diagnostic pool | Excluded from the recommendation |
 | Course name or stage count hardcoded in a view | Wrong package's name after switching |

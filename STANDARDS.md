@@ -88,7 +88,7 @@ Contrastive definition — "an ownership model, not merely software" — states 
 
 | Rule | Bound |
 |---|---|
-| Coverage | Every stage has one, registered under its stage id |
+| Coverage | Every stage has one, registered under `<packageId>:<stageId>` |
 | Label collision | None — no text overlaps other text |
 | Frame spill | None — no text outside the SVG box |
 | Leading between stacked labels | **≥ 4 user units** |
@@ -123,11 +123,13 @@ The automated scan and the project-specific checks are regression gates, not a c
 |---|---|
 | `Product-Management-Learning-System.html` | Single file, zero external references, all slides inlined as data URIs |
 | `docs/` | Pages build; slides as separate lazy-loaded files; service worker; web manifest |
-| Pages size budget | `500 KB + 30 KB per stage` — scales with content, so ordinary authoring does not fail it |
+| `exports/<course-id>/<course-id>.html` | Contains exactly one course; its slides are inlined; no library/switcher chrome |
+| `exports/<course-id>/site/` | Contains exactly one course and only that course's public asset folder |
+| Pages size budget | `500 KB + 31 KB per stage` — scales with content, so ordinary authoring does not fail it |
 | Service worker cache | Stamped with a hash of the built HTML |
 | Console | Zero uncaught page or console errors across every view |
 
-`docs/` is generated and committed because Pages serves it directly. Committing source without rebuilding means the live site does not match the code.
+`docs/` is generated and committed because Pages serves it directly. `exports/` is generated and ignored; it is a delivery output, not repository source. `npm run qa:exports` rebuilds every individual export and verifies content/asset isolation, single-course navigation, accessibility and capstone export identity.
 
 ---
 

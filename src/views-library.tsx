@@ -50,16 +50,15 @@ export function Library({
       </ul>
 
       {/*
-        An empty second slot would be a lie, and hiding the fact that this is
-        built for more than one package would waste the architecture. Say what
-        is true: one package today, and adding another is a data operation.
+        The combined build demonstrates the catalogue. Individual exports omit
+        this view entirely because there is no package choice to make.
       */}
       <section className="library-note">
         <h2>Adding another package</h2>
         <p>
           A package is a manifest plus its content — stages, questions, cards, glossary, worked cases, source slides
-          and references. Nothing in the player is specific to product management, so a second package is authored
-          rather than built: it appears here, keeps its own progress, and shares nothing with this one except the
+          and references. Nothing in the player is specific to product management, so a new package is authored
+          rather than built: it appears here, keeps its own progress, and shares nothing with another course except the
           person using it.
         </p>
         <button className="text-button" onClick={() => navigate("sources")}>

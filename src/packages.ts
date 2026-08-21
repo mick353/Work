@@ -1,291 +1,35 @@
 /**
- * Training packages.
+ * Validated package registry.
  *
- * This started as one course with its content exported as flat top-level
- * arrays, which was correct while there was one of them and wrong the moment
- * there would be more. A second course would have had to either overwrite the
- * first or be bolted alongside it, sharing one progress record, one review
- * queue and one set of results — so finishing Product Management would have
- * looked like partly finishing whatever came next.
- *
- * The model here is the one the e-learning standards settled on. SCORM and
- * cmi5 both treat a course as a self-contained package with a manifest: the
- * content travels together, the player runs whichever package is active, and
- * progress belongs to the package rather than to the player. That is exactly
- * the shape this needed, and it costs nothing to adopt while there is still
- * only one package.
- *
- * What a package owns:
- *   - a manifest (identity, provenance, currency)
- *   - all of its content
- *   - its own namespace in storage, so progress can never bleed between them
- *
- * Adding a second package is a data operation, not a rewrite: author the
- * content, add a manifest, register it below.
+ * Courses live in self-contained folders under `src/courses`. The ordinary
+ * build imports the combined catalogue; an individual export replaces that
+ * catalogue at build time and therefore bundles only the selected course.
  */
 
-import {
-  CONTENT_REVIEWED,
-  modules,
-  practiceQuestions,
-  sources,
-  stageMinutes,
-  totalMinutes,
-  type Module,
-  type PracticeQuestion,
-  type Question,
-  type Source,
-} from "./course";
-import { CLOSURE_REVIEWED, closureModules, closureSources } from "./closure-course";
-import {
-  closureCapstoneBriefs,
-  closureCapstoneRubric,
-  closureCapstoneSteps,
-  closureCaseStudies,
-  closureContrasts,
-  closureDiagnostic,
-  closureDivergences,
-  closureFieldGuide,
-  closureFlashcards,
-  closureGlossary,
-  closureSupplementary,
-  closureToolkit,
-} from "./closure-reference";
-import {
-  capstoneBriefs,
-  capstoneRubric,
-  capstoneSteps,
-  caseStudies,
-  contrasts,
-  diagnosticQuestions,
-  divergences,
-  fieldGuide,
-  flashcards,
-  glossary,
-  supplementaryQuestions,
-  toolkitTemplates,
-  type CapstoneBrief,
-  type CapstoneStep,
-  type CaseStudy,
-  type Contrast,
-  type Divergence,
-  type FieldGuideEntry,
-  type Flashcard,
-  type GlossaryEntry,
-  type ToolkitTemplate,
-} from "./reference";
-import { SLIDE_COUNT, slides, type Slide } from "./slides";
-import { closureExemplars, type Exemplar } from "./closure-exemplar";
+import { catalogPackages } from "./package-catalog";
+import type { TrainingPackage } from "./package-model";
+import { assertValidPackageCatalog } from "./package-validation";
 
-export type PackageStatus = "available" | "in-development";
+export type {
+  PackageContent,
+  PackageManifest,
+  PackageStatus,
+  TrainingPackage,
+} from "./package-model";
 
-export type PackageManifest = {
-  /** Stable, and used as the storage namespace — never rename in place. */
-  id: string;
-  title: string;
-  subtitle: string;
-  /** Who owns the material, not who built the player. */
-  publisher: string;
-  /**
-   * Who wrote the SOURCE ARTEFACT — the deck, standard or document this
-   * package was built from. Not the author of the package.
-   *
-   * The distinction is the point. An earlier version of this field was called
-   * `author` and rendered as "Course written by X" under the title, which
-   * credited the person who wrote the source deck with the questions, cards,
-   * cases, capstone and everything else in the package. Optional, because a
-   * package built from published frameworks has no single source author.
-   *
-   * There is deliberately no matching field for whoever built the package.
-   * The separation is carried by wording — "built from" — rather than by a
-   * second name, because the package author does not want to be named.
-   */
-  sourceAuthor?: string;
-  /** The artefact the package was built from, for provenance. */
-  source: string;
-  /** When the content was last checked against its sources. */
-  reviewed: string;
-  status: PackageStatus;
-  /** One-line description for the library card. */
-  summary: string;
-  /**
-   * The curriculum arc, in four or five words — shown beside the stage count.
-   * Was hardcoded as "From need to measured value", which is true of exactly
-   * one course and was being shown on both.
-   */
-  arc: string;
-};
+export const trainingPackages: TrainingPackage[] = assertValidPackageCatalog(catalogPackages);
 
-/**
- * Everything a package owns.
- *
- * The player reads content through this and nothing else, so a second package
- * is authored rather than built: write the arrays, add a manifest, register it.
- */
-export type PackageContent = {
-  modules: Module[];
-  sources: Source[];
-  totalMinutes: number;
-  practiceQuestions: PracticeQuestion[];
-  diagnosticQuestions: Question[];
-  supplementaryQuestions: Question[];
-  flashcards: Flashcard[];
-  glossary: GlossaryEntry[];
-  caseStudies: CaseStudy[];
-  contrasts: Contrast[];
-  divergences: Divergence[];
-  toolkitTemplates: ToolkitTemplate[];
-  capstoneSteps: CapstoneStep[];
-  capstoneBriefs: CapstoneBrief[];
-  capstoneRubric: typeof capstoneRubric;
-  fieldGuide: FieldGuideEntry[];
-  /** Worked documents. One per form the package teaches; empty where it teaches none. */
-  exemplars: Exemplar[];
-  slides: Slide[];
-  slideCount: number;
-  contentReviewed: string;
-};
+if (!trainingPackages.length) throw new Error("The training package catalogue is empty.");
 
-export type TrainingPackage = {
-  manifest: PackageManifest;
-  content: PackageContent;
-};
-
-/* ------------------------------------------------------------------ *
- * The registry
- * ------------------------------------------------------------------ */
-
-export const PM_FUNDAMENTALS_ID = "pm-fundamentals";
-
-const pmFundamentals: TrainingPackage = {
-  manifest: {
-    id: PM_FUNDAMENTALS_ID,
-    title: "Product Management Fundamentals",
-    subtitle: "Product management for Australian Government service delivery",
-    publisher: "DEWR Digital Experience and Solutions",
-    sourceAuthor: "Simon Morris",
-    source: "Product Management Fundamentals — 12AUG2026",
-    reviewed: CONTENT_REVIEWED,
-    status: "available",
-    summary:
-      "Nine stages from user need to measured value, built from the departmental deck and turned into something you practise rather than sit through.",
-    arc: "From user need to measured value",
-  },
-  content: {
-    modules,
-    sources,
-    totalMinutes,
-    practiceQuestions,
-    diagnosticQuestions,
-    supplementaryQuestions,
-    flashcards,
-    glossary,
-    caseStudies,
-    contrasts,
-    divergences,
-    toolkitTemplates,
-    capstoneSteps,
-    capstoneBriefs,
-    capstoneRubric,
-    fieldGuide,
-    exemplars: [],
-    slides,
-    slideCount: SLIDE_COUNT,
-    contentReviewed: CONTENT_REVIEWED,
-  },
-};
-
-/* ------------------------------------------------------------------ *
- * Closure Reports
- *
- * The first package not built from a slide deck, which is why it is a real
- * test of the container rather than a second copy of the first one: no slides,
- * no divergence register, its own sources, its own stage count. Everything the
- * player does with it, it does because the content says so.
- * ------------------------------------------------------------------ */
-
-export const CLOSURE_REPORTS_ID = "closure-reports";
-
-/*
-  Derive stage length from the writing, exactly as the first package does —
-  authored `minutes` values are guesses and were wrong by an order of magnitude
-  the last time anyone trusted them.
-*/
-for (const module of closureModules) {
-  module.minutes = stageMinutes(module);
-}
-
-const closurePractice: PracticeQuestion[] = closureModules.flatMap((module) => [
-  ...module.questions,
-  ...module.scenarios.map((scenario) => ({
-    id: scenario.id,
-    moduleId: scenario.moduleId,
-    prompt: scenario.prompt,
-    options: scenario.options,
-    answer: scenario.answer,
-    rationale: scenario.rationale,
-    optionNotes: scenario.optionNotes,
-    context: scenario.context,
-  })),
-]);
-
-const closureReports: TrainingPackage = {
-  manifest: {
-    id: CLOSURE_REPORTS_ID,
-    title: "Closure Reports",
-    subtitle: "Evidence, benefits and handover at the end of delivery",
-    publisher: "DEWR Digital Experience and Solutions",
-    source: "the DEWR Project Closure Report Template, Tier 3 form, Project Closure Factsheet and closure announcement",
-    reviewed: CLOSURE_REVIEWED,
-    status: "available",
-    summary:
-      "Writing a closure report that survives an audit — marked claims, transferred benefits, lessons that change behaviour, a settled financial and records position, and a handover that works once the team has gone.",
-    arc: "From evidence to signed handover",
-  },
-  content: {
-    modules: closureModules,
-    sources: closureSources,
-    totalMinutes: closureModules.reduce((sum, module) => sum + module.minutes, 0),
-    practiceQuestions: closurePractice,
-    diagnosticQuestions: closureDiagnostic,
-    supplementaryQuestions: closureSupplementary,
-    flashcards: closureFlashcards,
-    glossary: closureGlossary,
-    caseStudies: closureCaseStudies,
-    contrasts: closureContrasts,
-    divergences: closureDivergences,
-    toolkitTemplates: closureToolkit,
-    capstoneSteps: closureCapstoneSteps,
-    capstoneBriefs: closureCapstoneBriefs,
-    capstoneRubric: closureCapstoneRubric,
-    fieldGuide: closureFieldGuide,
-    exemplars: closureExemplars,
-    slides: [],
-    slideCount: 0,
-    contentReviewed: CLOSURE_REVIEWED,
-  },
-};
-
-export const trainingPackages: TrainingPackage[] = [pmFundamentals, closureReports];
+export const DEFAULT_PACKAGE_ID = trainingPackages[0].manifest.id;
 
 export function findPackage(id: string): TrainingPackage | undefined {
   return trainingPackages.find((entry) => entry.manifest.id === id);
 }
 
-/**
- * The package currently being studied.
- *
- * There is one today. The point of routing every read through here is that
- * there does not have to be one tomorrow, and nothing downstream has to change
- * when that happens.
- */
 export function activePackage(id: string): TrainingPackage {
-  return findPackage(id) ?? pmFundamentals;
+  return findPackage(id) ?? trainingPackages[0];
 }
-
-/* ------------------------------------------------------------------ *
- * Package-scoped counts, for the library card
- * ------------------------------------------------------------------ */
 
 export function packageStats(entry: TrainingPackage) {
   const c = entry.content;

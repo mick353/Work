@@ -1,7 +1,7 @@
 /**
  * Closure Reports — course content.
  *
- * The second training package, and the first one not built from a slide deck.
+ * A training package not built from a slide deck.
  * Its spine is the departmental closure set: the full and Tier 3 report
  * templates, the closure factsheet and the P3M framework. Commonwealth
  * assurance and performance guidance tests and extends that spine.
@@ -13,7 +13,7 @@
  * problem rather than around the document.
  */
 
-import type { Module, Source } from "./course";
+import type { Module, Source } from "../../package-model";
 
 export const CLOSURE_REVIEWED = "20 August 2026";
 

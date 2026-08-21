@@ -1,7 +1,7 @@
-import { capstoneBriefs, capstoneRubric, capstoneSteps, caseStudies, fieldGuide, glossary, modules, toolkitTemplates } from "./content";
+import { capstoneBriefs, capstoneRubric, capstoneSteps, caseStudies, fieldGuide, glossary, manifest, modules, toolkitTemplates } from "./content";
 import { AlertTriangle, Check, ChevronRight, Download, Printer, Search } from "lucide-react";
 import { useMemo, useState } from "react";
-import { CAPSTONE_MIN_WORDS, type GlossaryEntry } from "./reference";
+import { CAPSTONE_MIN_WORDS, type GlossaryEntry } from "./package-model";
 import { downloadFile, scrollToSection, type View } from "./lib";
 import type { RubricMap, TextMap } from "./state";
 import { EmptyState, LessonBody, PageIntro, ProgressBar, SourceChips } from "./components";
@@ -78,7 +78,8 @@ export function Capstone({
 }) {
   const brief = capstoneBriefs.find((b) => b.id === briefId) ?? capstoneBriefs[0];
   const hasCapstone = capstoneBriefs.length > 0 && capstoneSteps.length > 0;
-  const key = (stepId: string) => `${briefId}:${stepId}`;
+  const selectedBriefId = brief?.id ?? "";
+  const key = (stepId: string) => `${selectedBriefId}:${stepId}`;
   const drafted = capstoneSteps.filter((step) => wordCount(values[key(step.id)] ?? "") >= CAPSTONE_MIN_WORDS).length;
   const totalChecks = capstoneSteps.length * capstoneRubric.length;
   const confirmedChecks = capstoneSteps.reduce((sum, step) => sum + (rubric[key(step.id)]?.length ?? 0), 0);
@@ -97,7 +98,7 @@ export function Capstone({
 
   const exportBrief = () => {
     const lines = [
-      "PRODUCT MANAGEMENT CAPSTONE",
+      `${manifest.title.toUpperCase()} CAPSTONE`,
       brief.title,
       `Exported: ${new Date().toLocaleString("en-AU")}`,
       `Sections drafted: ${drafted} of ${capstoneSteps.length}`,
@@ -128,7 +129,7 @@ export function Capstone({
     });
     lines.push("SELF-REVIEW RUBRIC", "");
     capstoneRubric.forEach((item) => lines.push(`${item.title}: ${item.detail}`));
-    downloadFile(`product-management-capstone-${briefId}.txt`, lines.join("\r\n"), "text/plain;charset=utf-8");
+    downloadFile(`${manifest.id}-capstone-${selectedBriefId}.txt`, lines.join("\r\n"), "text/plain;charset=utf-8");
   };
 
   if (!hasCapstone) {
@@ -146,8 +147,8 @@ export function Capstone({
           <span className="eyebrow">Integrated assessment</span>
           <h1>{brief.title}</h1>
           <p>
-            Demonstrate the full chain from user evidence to sustained service value. Your answers are kept per brief,
-            so switching does not overwrite work.
+            Complete the course's full decision and evidence chain in one coherent response. Your answers are kept per
+            brief, so switching does not overwrite work.
           </p>
         </div>
         <div className="capstone-progress">
@@ -167,8 +168,8 @@ export function Capstone({
           <button
             key={b.id}
             role="tab"
-            aria-selected={briefId === b.id}
-            className={briefId === b.id ? "active" : ""}
+            aria-selected={selectedBriefId === b.id}
+            className={selectedBriefId === b.id ? "active" : ""}
             onClick={() => setBriefId(b.id)}
           >
             <strong>{b.title}</strong>

@@ -15,8 +15,8 @@
  * add a hook call to every view to solve a problem the reload already solves.
  */
 
-import { activePackage } from "./packages";
-import { getActivePackageId, readStored, STORAGE_PREFIX } from "./lib";
+import { activePackage, DEFAULT_PACKAGE_ID } from "./packages";
+import { readStored, STORAGE_PREFIX } from "./lib";
 
 /**
  * Resolved at module load, before React renders.
@@ -33,7 +33,7 @@ function resolveActiveId(): string {
   } catch {
     /* fall through to the default */
   }
-  return getActivePackageId();
+  return DEFAULT_PACKAGE_ID;
 }
 
 const pack = activePackage(resolveActiveId());
@@ -59,6 +59,7 @@ export const {
   fieldGuide, exemplars,
   slides,
   slideCount,
+  slideAssetBase = "",
   contentReviewed,
 } = pack.content;
 

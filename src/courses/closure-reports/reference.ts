@@ -1,7 +1,7 @@
 /**
  * Closure Reports — reference content.
  *
- * Everything the package owns beyond the seven stages: retrieval cards, the
+ * Everything the package owns beyond its twelve stages: retrieval cards, the
  * glossary, worked cases, the capstone, templates and the field guide.
  *
  * This package has no `divergences` — that concept belongs to a course built
@@ -11,9 +11,9 @@
  * shows its empty state rather than an invented section.
  */
 
-import type { Question } from "./course";
 import type {
   CapstoneBrief,
+  CapstoneRubricItem,
   CapstoneStep,
   CaseStudy,
   Contrast,
@@ -21,8 +21,9 @@ import type {
   FieldGuideEntry,
   Flashcard,
   GlossaryEntry,
+  Question,
   ToolkitTemplate,
-} from "./reference";
+} from "../../package-model";
 
 /* ------------------------------------------------------------------ *
  * Retrieval cards
@@ -1582,7 +1583,7 @@ export const closureCapstoneSteps: CapstoneStep[] = [
   },
 ];
 
-export const closureCapstoneRubric = [
+export const closureCapstoneRubric: CapstoneRubricItem[] = [
   { id: "testable", title: "Testable", detail: "Every claim can be traced to primary data, or is marked as estimated or asserted." },
   { id: "baselined", title: "Baselined", detail: "Performance is reported against the original approved position, with revisions disclosed." },
   { id: "owned", title: "Owned", detail: "Every benefit, risk, cost and obligation that outlives the project has accepted accountability at the level local governance requires; stronger course practice identifies an accountable role-holder as well." },

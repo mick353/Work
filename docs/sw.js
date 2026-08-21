@@ -2,12 +2,12 @@
  * Offline service worker for the GitHub Pages build.
  *
  * The shell is one HTML file, so the precache is tiny: the document, the
- * manifest and the icons. 78e2aae6cfb2 is replaced at build time with a
+ * manifest and the icons. 5e46f56de0de is replaced at build time with a
  * hash of the generated HTML, so a new release always busts the cache rather
  * than leaving someone stuck on an old copy of the course.
  *
- * The 98 deck slides are deliberately NOT precached. Pushing 2.5 MB of images
- * at every visitor on first load — most of whom will never open a slide — is
+ * Course slide assets are deliberately NOT precached. Pushing every image at
+ * every visitor on first load — most of whom will never open a slide — is
  * exactly what the separate-files build was for. They fall through to the
  * cache-first rule below instead, so each one is stored the first time it is
  * actually viewed and is available offline from then on.
@@ -17,7 +17,7 @@
  * fallback whenever the network is unavailable.
  */
 
-const VERSION = "78e2aae6cfb2";
+const VERSION = "5e46f56de0de";
 const CACHE = `product-practice-${VERSION}`;
 const SHELL = [
   "./",

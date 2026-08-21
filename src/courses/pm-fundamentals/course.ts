@@ -1,5 +1,5 @@
 /**
- * Course content.
+ * Product Management Fundamentals — course content.
  *
  * The nine stages map 1:1 onto the nine sections of the source deck
  * (slides 4, 21, 36, 47, 58, 71, 75, 86, 93). That mapping is deliberate and
@@ -7,91 +7,12 @@
  * the deck without translation.
  *
  * Where this course goes further than the deck, the addition is recorded in
- * `divergences` (src/reference.ts) and surfaced in the app as "Course additions",
+ * `divergences` (./reference.ts) and surfaced in the app as "Course additions",
  * framed as depth a briefing has no room for rather than as corrections, so nobody quotes
  * this material in a meeting and gets contradicted by the slides.
  */
 
-export type Question = {
-  id: string;
-  moduleId: string;
-  prompt: string;
-  options: string[];
-  /** Index into `options`. Display order is permuted per learner at render. */
-  answer: number;
-  rationale: string;
-  /** Optional per-option feedback, shown for the option the learner chose. */
-  optionNotes?: string[];
-};
-
-export type Scenario = Question & { context: string };
-
-export type LessonTable = {
-  caption?: string;
-  head: string[];
-  rows: string[][];
-};
-
-export type LessonSection = {
-  heading: string;
-  body: string;
-  bullets?: string[];
-  example?: string;
-  table?: LessonTable;
-  /** Sources for this section. Load-bearing claims also carry inline markers. */
-  sourceIds?: string[];
-};
-
-export type Module = {
-  id: string;
-  number: number;
-  title: string;
-  subtitle: string;
-  minutes: number;
-  slides: string;
-  outcome: string;
-  coreIdea: string;
-  sections: LessonSection[];
-  questions: Question[];
-  scenarios: Scenario[];
-  assignment: {
-    title: string;
-    instruction: string;
-    prompts: string[];
-    /**
-     * A worked answer, revealed only after the learner commits their own.
-     *
-     * The assignments asked for exactly the writing this course is about —
-     * problem statements, key results, decision rights — and nothing checked
-     * any of it. Marking free text is not possible in a single offline HTML
-     * file; showing a model answer after commitment, against explicit
-     * criteria, is. That is weaker than marking and far stronger than the
-     * blank textarea it replaces.
-     */
-    modelAnswer?: string;
-    /** What a good answer must contain — ticked by the learner, not scored. */
-    criteria?: string[];
-  };
-};
-
-export type Source = {
-  id: string;
-  title: string;
-  publisher: string;
-  url?: string;
-  /**
-   * An alternative format of the SAME document — a PDF of a web page, say.
-   *
-   * The Digital Service Standard was listed twice, once as the web version and
-   * once as the PDF, which reads as two sources and is one. A format is not a
-   * reference.
-   */
-  altUrl?: string;
-  altLabel?: string;
-  note: string;
-  /** Shown on the Sources page so currency is visible rather than implied. */
-  checked?: string;
-};
+import type { Module, Source } from "../../package-model";
 
 export const CONTENT_REVIEWED = "15 August 2026";
 
@@ -2297,103 +2218,3 @@ export const modules: Module[] = [
     },
   },
 ];
-
-/* ------------------------------------------------------------------ *
- * Derived collections
- * ------------------------------------------------------------------ */
-
-import { supplementaryQuestions } from "./reference";
-
-export type PracticeQuestion = Question & { context?: string };
-
-/** Every question that can appear in mixed practice. */
-export const practiceQuestions: PracticeQuestion[] = modules.flatMap((module) => [
-  ...module.questions,
-  ...module.scenarios.map((scenario) => ({
-    id: scenario.id,
-    moduleId: scenario.moduleId,
-    prompt: scenario.prompt,
-    options: scenario.options,
-    answer: scenario.answer,
-    rationale: scenario.rationale,
-    optionNotes: scenario.optionNotes,
-    /** Scenarios keep their setup so mixed practice still reads correctly. */
-    context: scenario.context,
-  })),
-]).concat(
-  // Supplementary items deepen mixed practice without lengthening the stage
-  // quizzes, so the 75% mastery threshold keeps its meaning.
-  supplementaryQuestions,
-);
-
-/**
- * Stage length, derived rather than declared.
- *
- * The `minutes` written against each stage were guesses, and they were wildly
- * out: the course advertised "about 8 hours" against 5,852 words of lesson
- * prose — roughly 27 minutes of reading. Stage 6 claimed 40 minutes for 190
- * words. A hand-typed number cannot survive the content changing underneath it,
- * and this one had not.
- *
- * So compute it. Reading at 220 words per minute for considered non-fiction,
- * plus a minute for each knowledge-check question and two for each decision
- * scenario — answering is deliberate work, and the per-option feedback is where
- * most of the teaching happens. Rounded to five minutes, because the inputs do
- * not justify more precision than that.
- */
-const WORDS_PER_MINUTE = 220;
-const MINUTES_PER_QUESTION = 1;
-const MINUTES_PER_SCENARIO = 2;
-
-function countWords(text: string | undefined): number {
-  if (!text) return 0;
-  return text.trim().split(/\s+/).filter(Boolean).length;
-}
-
-export function stageMinutes(module: Module): number {
-  let words = countWords(module.outcome) + countWords(module.coreIdea);
-  for (const section of module.sections) {
-    words += countWords(section.heading) + countWords(section.body) + countWords(section.example);
-    for (const bullet of section.bullets ?? []) words += countWords(bullet);
-    if (section.table) {
-      for (const head of section.table.head) words += countWords(head);
-      for (const row of section.table.rows) for (const cell of row) words += countWords(cell);
-    }
-  }
-  const raw =
-    words / WORDS_PER_MINUTE +
-    module.questions.length * MINUTES_PER_QUESTION +
-    module.scenarios.length * MINUTES_PER_SCENARIO;
-  return Math.max(5, Math.round(raw / 5) * 5);
-}
-
-// Overwrite the authored figures at load. Keeping the field means every view
-// that already reads `module.minutes` keeps working, and there is now exactly
-// one place the number can come from.
-for (const module of modules) {
-  module.minutes = stageMinutes(module);
-}
-
-export const totalMinutes = modules.reduce((sum, module) => sum + module.minutes, 0);
-
-/**
- * The pool a stage's knowledge check samples from.
- *
- * Previously the check rendered `module.questions` directly, so every retake
- * showed the identical 4-5 items in the identical order — which tested memory
- * of which option was right rather than the idea, on the one surface where
- * retaking matters most (75% unlocks the Recall requirement).
- */
-export function quizPoolFor(moduleId: string): Question[] {
-  const module = modules.find((item) => item.id === moduleId);
-  if (!module) return [];
-  return [...module.questions, ...supplementaryQuestions.filter((q) => q.moduleId === moduleId)];
-}
-
-export function findModule(id: string): Module | undefined {
-  return modules.find((module) => module.id === id);
-}
-
-export function findSource(id: string): Source | undefined {
-  return sources.find((source) => source.id === id);
-}

@@ -18,8 +18,7 @@
  */
 
 import { flashcards } from "./content";
-import { type Flashcard } from "./reference";
-import type { Module, Question } from "./course";
+import type { Flashcard, Module, Question } from "./package-model";
 import { NEW_SCHEDULE, type ReviewSchedule } from "./lib";
 
 /** Words too common to carry topic signal. */

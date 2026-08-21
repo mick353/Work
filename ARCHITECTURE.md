@@ -2,7 +2,7 @@
 
 How this repository fits together, for someone arriving with only the code.
 
-The short version: it is a React app with no backend, no accounts and no network calls, which renders one **training package** at a time out of a registry, and builds into two artefacts — a single self-contained HTML file and a GitHub Pages site.
+The short version: it is a React app with no backend, no accounts and no network calls, which renders one **training package** at a time out of a registry. It can build the combined catalogue or replace that catalogue at build time with one isolated course, and each mode emits a standalone HTML file and a web/PWA folder.
 
 ---
 
@@ -10,22 +10,27 @@ The short version: it is a React app with no backend, no accounts and no network
 
 **A course is data. The player is code. They meet at exactly one interface.**
 
-`src/packages.ts` defines two types and holds the registry:
+`src/package-model.ts` defines the versioned, course-neutral contract:
 
-- `PackageManifest` — identity and provenance. Id, title, subtitle, publisher, source artefact, `sourceAuthor` (optional — whoever wrote that artefact), review date, status, summary, curriculum arc.
+- `PackageManifest` — schema version, course version, stable id and provenance. It also carries title, subtitle, publisher, source artefact, `sourceAuthor` (optional — whoever wrote that artefact), review date, status, summary and curriculum arc.
 - `PackageContent` — everything a course owns: modules, sources, questions in four separate pools, flashcards, glossary, case studies, contrasts, divergences, toolkit templates, capstone steps and briefs, field guide, an optional worked-example document, slides.
 
-`trainingPackages` is the registry. Adding a course means authoring the arrays, writing a manifest and appending to that array. It does not mean touching a view.
+Each `src/courses/<course-id>/index.ts` assembles one complete `TrainingPackage` and default-exports it. `src/package-catalog.ts` is the combined registry. `src/packages.ts` validates that catalogue at startup and exposes `trainingPackages`. Adding a course means adding one self-contained course folder and one catalogue import; it does not mean touching a view.
 
 **Nothing in `views-*` imports a course file.** Everything goes through `src/content.ts`, which resolves the active package once at module load and re-exports its content under stable names. This indirection is the whole reason the claim "adding a package is a data operation" is true; before it existed, every view named its content directly and the claim was false.
 
 ```
-packages.ts  ──registry──▶  content.ts  ──named exports──▶  every view
-     ▲                          │
-     │                          └── reads localStorage for the active package id
-course.ts, reference.ts, slides.ts                    (before React renders)
-closure-course.ts, closure-reference.ts, closure-exemplar.ts
+courses/<id>/index.ts ──▶ package-catalog.ts ──▶ packages.ts
+                                                   │
+                                                   ▼
+                                              content.ts ──▶ every view
+                                                   │
+                                                   └── active package id from localStorage
+
+single export: build.mjs replaces package-catalog.ts with [selected course]
 ```
+
+The package shape contains data only. Course sources are TypeScript today, but the boundary is deliberately JSON-compatible so a future form can emit the same structure and pass through `package-validation.ts` before export.
 
 ### Why switching packages does a full page reload
 
@@ -54,13 +59,12 @@ Person-level settings sit outside any package on purpose: re-randomising someone
 
 ---
 
-## 3. The two builds
+## 3. Combined and individual builds
 
-`scripts/build.mjs` runs one esbuild bundle and emits two things:
+With no selector, `scripts/build.mjs` emits the published combined catalogue:
 
 | | `Product-Management-Learning-System.html` | `docs/` |
 |---|---|---|
-| Size | ~4.4 MB | ~1 MB + assets |
 | Slides | All 98 inlined as base64 data URIs | Separate `.webp` files, lazy-loaded |
 | Service worker | **No** | Yes, network-first |
 | Web manifest, icons | No | Yes |
@@ -68,7 +72,14 @@ Person-level settings sit outside any package on purpose: re-randomising someone
 
 The PWA pieces are kept out of the standalone file because a service worker registration that can never succeed on `file://` would only log errors. The slides are inlined there for the opposite reason: a single file that loses its images the first time someone emails it on is not a single file.
 
-Both behaviours are asserted in QA, because getting them backwards is invisible until someone is on mobile data.
+With `--course <course-id>`, an esbuild catalogue plugin imports only that course and emits:
+
+- `exports/<course-id>/<course-id>.html`
+- `exports/<course-id>/site/`
+
+This is compile-time isolation, not a runtime filter: the other course's content is absent from the JavaScript bundle, and its asset folder is not copied. The single-course UI omits the switcher and package-position count; a `#library` route returns to the course overview. `scripts/qa-exports.mjs` verifies these properties for every course folder.
+
+Both asset behaviours are asserted in QA, because getting them backwards is invisible until someone is on mobile data or receives an emailed file.
 
 The service worker's cache name is stamped with a hash of the built HTML (`__BUILD_VERSION__`), so each release invalidates the last.
 
@@ -101,7 +112,7 @@ Behaviours that produce no error and no visible symptom until someone reports on
 
 **Colour and background travel together.** A rule that restyles a background without setting `color` leaves whatever the previous rule set. Because stage hue is bound per stage via `[data-stage]`, the result can be legible on one stage and invisible on another, so contrast is checked on every stage page in both themes rather than on a sample.
 
-**Anything keyed by module id renders nothing on a miss, and reports nothing.** `illustrations.tsx` is `Record<moduleId, Component>`; flashcards, glossary terms, contrasts and questions resolve the same way. A stage absent from any of them shows an empty section.
+**Anything keyed by stage id renders nothing on a miss, and reports nothing.** Flashcards, glossary terms, contrasts and questions resolve within their package. Illustrations use `<packageId>:<moduleId>` so two courses may reuse an ordinary stage id without colliding. A stage absent from any required mapping shows an empty section.
 
 **Optional manifest and content fields need handling at every render site.** `sourceAuthor`, `exemplars` and `slides` are each absent from one package. A missing optional field must produce no output rather than a label with nothing after it.
 
@@ -117,7 +128,7 @@ Behaviours that produce no error and no visible symptom until someone reports on
 
 ## 6. Verification
 
-`scripts/qa.mjs` runs the comprehensive suite against the real built artefact in a real Chromium, writing the exact result to `qa-report.json`. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` runs the comprehensive suite against the real combined artefact in Chromium, writing the exact result to `qa-report.json`. `scripts/qa-exports.mjs` builds every course separately and checks content/asset isolation, single-course routes and chrome, browser/runtime errors, accessibility and capstone filenames/content. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
 
 Coverage: question-bank integrity and item-writing statistics, scoring arithmetic, mastery gating, backup round-trip including malformed-file rejection, package switching *through the button*, contrast across all 40 stage-page/theme combinations, axe-core rules tagged to WCAG 2.0/2.1 A/AA with serious and critical impacts, line measure and horizontal overflow from 320 px to 2560 px, the project's 24 px target-size rule, keyboard and focus, reduced motion, and console hygiene. This is regression evidence rather than complete accessibility certification.
 

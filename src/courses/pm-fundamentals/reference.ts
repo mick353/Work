@@ -1,5 +1,5 @@
 /**
- * Reference material: flashcards, templates, the capstone, the DES field guide,
+ * Product Management Fundamentals reference material: flashcards, templates, the capstone, the DES field guide,
  * the course additions and the diagnostic pool.
  *
  * The diagnostic pool is deliberately SEPARATE from the module and practice
@@ -9,27 +9,23 @@
  * mistake recognition for knowledge.
  */
 
-import type { Question } from "./course";
+import type {
+  CapstoneBrief,
+  CapstoneRubricItem,
+  CapstoneStep,
+  CaseStudy,
+  Contrast,
+  Divergence,
+  FieldGuideEntry,
+  Flashcard,
+  GlossaryEntry,
+  Question,
+  ToolkitTemplate,
+} from "../../package-model";
 
 /* ------------------------------------------------------------------ *
  * Flashcards
  * ------------------------------------------------------------------ */
-
-export type FlashcardKind = "definition" | "application" | "discrimination";
-
-export type Flashcard = {
-  id: string;
-  moduleId: string;
-  front: string;
-  back: string;
-  kind: FlashcardKind;
-};
-
-export const FLASHCARD_KIND_LABEL: Record<FlashcardKind, string> = {
-  definition: "Definition",
-  application: "Application",
-  discrimination: "Tell apart",
-};
 
 export const flashcards: Flashcard[] = [
   /* Stage 1 — thinking */
@@ -148,14 +144,6 @@ export const flashcards: Flashcard[] = [
  * Toolkit templates
  * ------------------------------------------------------------------ */
 
-export type ToolkitTemplate = {
-  id: string;
-  title: string;
-  prompt: string;
-  example: string;
-  note?: string;
-};
-
 export const toolkitTemplates: ToolkitTemplate[] = [
   {
     id: "vision",
@@ -245,17 +233,6 @@ export const toolkitTemplates: ToolkitTemplate[] = [
 /* ------------------------------------------------------------------ *
  * Capstone
  * ------------------------------------------------------------------ */
-
-export type CapstoneStep = {
-  id: string;
-  title: string;
-  prompt: string;
-  /** What a substantive response needs to contain — used for self-assessment. */
-  checks: string[];
-};
-
-/** Words, not characters. The previous 40-character gate was met by one short sentence. */
-export const CAPSTONE_MIN_WORDS = 60;
 
 export const capstoneSteps: CapstoneStep[] = [
   {
@@ -354,7 +331,7 @@ export const capstoneSteps: CapstoneStep[] = [
   },
 ];
 
-export const capstoneRubric = [
+export const capstoneRubric: CapstoneRubricItem[] = [
   { id: "traceable", title: "Traceable", detail: "Every action connects to evidence and an outcome." },
   { id: "testable", title: "Testable", detail: "Critical assumptions have credible tests and predefined thresholds." },
   { id: "balanced", title: "Balanced", detail: "User, policy, operational and technical constraints are all visible." },
@@ -365,15 +342,6 @@ export const capstoneRubric = [
 /* ------------------------------------------------------------------ *
  * DES field guide — reference, not assessed
  * ------------------------------------------------------------------ */
-
-export type FieldGuideEntry = {
-  id: string;
-  title: string;
-  summary: string;
-  slides?: string;
-  sourceIds: string[];
-  items: { term: string; detail: string }[];
-};
 
 export const fieldGuide: FieldGuideEntry[] = [
   {
@@ -501,15 +469,6 @@ export const fieldGuide: FieldGuideEntry[] = [
  * the entry says so and defers to the deck, because that is the artefact
  * people are asked for at work.
  * ------------------------------------------------------------------ */
-
-export type Divergence = {
-  id: string;
-  topic: string;
-  slides: string;
-  deck: string;
-  here: string;
-  why: string;
-};
 
 export const divergences: Divergence[] = [
   {
@@ -977,14 +936,6 @@ export const diagnosticQuestions: Question[] = [
  * answer, including which framework the term belongs to.
  * ------------------------------------------------------------------ */
 
-export type GlossaryEntry = {
-  term: string;
-  definition: string;
-  /** Which body of practice the term belongs to. */
-  origin: "Deck" | "Scrum" | "SAFe" | "Government" | "General";
-  moduleId?: string;
-};
-
 export const glossary: GlossaryEntry[] = [
   { term: "Acceptance criteria", origin: "General", moduleId: "delivery", definition: "The observable conditions that must hold for a story or feature to be considered done. They answer 'is it built', not 'should we build it'." },
   { term: "Alpha", origin: "Government", moduleId: "lifecycle", definition: "The DTA phase for exploring and testing several approaches through prototypes and research, before committing to a Beta service." },
@@ -1385,39 +1336,6 @@ export const supplementaryQuestions: Question[] = [
  *     mistake, or they only ever see the method endorsing itself.
  * ------------------------------------------------------------------ */
 
-export type CaseStep = {
-  moduleId: string;
-  stage: number;
-  heading: string;
-  /**
-   * The decision actually on the table at this point.
-   *
-   * Cases used to read as narrative — what the team did, then what to notice.
-   * That is a story, and a story is easy to nod along to without ever making a
-   * judgement. Naming the decision first turns each step into something the
-   * reader can answer before reading on.
-   */
-  decision?: string;
-  /** The plausible wrong move, and why it is tempting rather than stupid. */
-  tempting?: string;
-  /** What the team actually did, written as narrative. */
-  body: string;
-  /** The concrete artefact produced — shown in a monospace panel. */
-  artefact?: string;
-  /** What a learner should notice. */
-  insight: string;
-};
-
-export type CaseStudy = {
-  id: string;
-  title: string;
-  subtitle: string;
-  outcome: "worked" | "corrected";
-  summary: string;
-  steps: CaseStep[];
-  closing: string;
-};
-
 export const caseStudies: CaseStudy[] = [
   {
     id: "provider-status",
@@ -1709,14 +1627,6 @@ export const caseStudies: CaseStudy[] = [
  * obvious solution is actively harmful.
  * ------------------------------------------------------------------ */
 
-export type CapstoneBrief = {
-  id: string;
-  title: string;
-  short: string;
-  brief: string;
-  twist: string;
-};
-
 export const capstoneBriefs: CapstoneBrief[] = [
   {
     id: "provider",
@@ -1759,13 +1669,6 @@ export const capstoneBriefs: CapstoneBrief[] = [
  * `tell` is the diagnostic — the observable sign you are in the failure
  * column right now. That is the part learners can actually check.
  * ------------------------------------------------------------------ */
-
-export type Contrast = {
-  moduleId: string;
-  good: string;
-  usual: string;
-  tell: string;
-};
 
 export const contrasts: Contrast[] = [
   {
