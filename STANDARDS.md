@@ -125,7 +125,10 @@ The automated scan and the project-specific checks are regression gates, not a c
 | `docs/` | Pages build; slides as separate lazy-loaded files; service worker; web manifest |
 | `exports/<course-id>/<course-id>.html` | Contains exactly one course; its slides are inlined; no library/switcher chrome |
 | `exports/<course-id>/site/` | Contains exactly one course and only that course's public asset folder |
-| Pages size budget | `500 KB + 31 KB per stage` — scales with content, so ordinary authoring does not fail it |
+| `Course-Authoring-Studio.html` | Self-contained; no network request while authoring; byte-identical to `docs/course-workshop/index.html` |
+| Workshop course output | Exactly one course; advanced content and embedded media preserved; no authoring or package-switcher chrome |
+| Workshop media | PNG/JPEG/WebP only; 50 MB per selected source, 150 PDF pages, 1,600 px maximum edge, 80 MB embedded-data ceiling, alternative text required |
+| Pages size budget | `500 KB + 32 KB per stage` — scales with content, so ordinary authoring does not fail it |
 | Service worker cache | Stamped with a hash of the built HTML |
 | Console | Zero uncaught page or console errors across every view |
 
@@ -139,6 +142,7 @@ The automated scan and the project-specific checks are regression gates, not a c
 |---|---|
 | Per package | `product-practice-v2:<packageId>:<key>` — progress, reviews, drafts, study days, item stats |
 | Per person | `product-practice-v2:<key>` — theme, shuffle salt, sidebar state, active package |
+| Course Workshop | IndexedDB `product-practice-course-workshop` / `drafts` / `current`; small legacy-compatible drafts may also use the Workshop-specific `localStorage` key |
 
 | Property | Rule |
 |---|---|

@@ -238,6 +238,7 @@ export const modules: Module[] = [
           "If the answer names a behaviour, a group and a cost, you have a problem statement. If it names a feature, keep going.",
         ],
         example: "The dashboard was built — and so were submission-time expectations and a status notification. Avoidable calls fell 41%. The dashboard accounted for less of that than anyone predicted, which is only knowable because the measure was the calls and not the dashboard.",
+        sourceIds: ["deck", "ideo", "perri"],
       },
     ],
     questions: [
@@ -493,6 +494,7 @@ export const modules: Module[] = [
           "'The sample is too small' is usually the wrong critique. 'The sample cannot contain the people we are asking about' is the right one.",
         ],
         example: "The redesign the team almost shipped would have addressed roughly a third of the drop-out. Naming the other two causes moved the conversation to the register data owner, who had the actual fix and no idea the problem existed.",
+        sourceIds: ["deck", "cdh", "lean"],
       },
     ],
     questions: [
@@ -709,6 +711,7 @@ export const modules: Module[] = [
           "A guardrail is chosen at the same time as the measure, because after the fact you will pick one that is already satisfied.",
         ],
         example: "The finding was not 'the change failed'. It was 'the change works for people who can complete it online, and we have made the service worse for those who cannot' — which is a different and far more useful thing to take to a governance forum.",
+        sourceIds: ["deck", "dss", "svpg"],
       },
     ],
     questions: [
@@ -947,6 +950,7 @@ export const modules: Module[] = [
           "If you cannot name the result that would stop the work, you are not running a test.",
         ],
         example: "Contact data reached 71% of active providers, and the failures clustered in the smallest organisations. The service still went ahead — but with an assisted-channel fallback designed in from the start rather than discovered at Beta.",
+        sourceIds: ["deck", "lean", "cdh"],
       },
     ],
     questions: [
@@ -1220,6 +1224,7 @@ export const modules: Module[] = [
           "Removing an approach while keeping its outcome shows the work is being steered, not abandoned.",
         ],
         example: "The sponsor's actual concern turned out to be a Ministerial commitment tied to the outcome, not the feature. Once that was on the table the team could propose a different route to the same outcome — which the date-defence conversation had been hiding for two months.",
+        sourceIds: ["deck", "pichler", "svpg"],
       },
     ],
     questions: [
@@ -1407,6 +1412,7 @@ export const modules: Module[] = [
           "The Beta-to-Live handover is where ownership is either named or lost; everything above follows from which one happened.",
         ],
         example: "The fix was a wording change and took a day. Finding it took four months, because there was no owner, no measure being watched, and no cadence at which anyone would have looked.",
+        sourceIds: ["deck", "dss", "cdh"],
       },
     ],
     questions: [
@@ -1630,6 +1636,7 @@ export const modules: Module[] = [
           "If decision rights are unstated they default to whoever is most persistent or most available — neither of which is a design.",
         ],
         example: "Of 31 questions raised in one fortnight, 24 were reversible and local. The team had been treating all 31 the same way because nobody had ever said they could decide anything.",
+        sourceIds: ["deck", "scrum", "svpg"],
       },
     ],
     questions: [
@@ -1903,6 +1910,7 @@ export const modules: Module[] = [
           "Take friction data to the owner as a finding. An exemption request invites a no; a finding invites a conversation.",
         ],
         example: "The mandated sentence stayed, in a plain-language frame explaining what it meant and why. Comprehension went from 31% to 78% in testing, and the policy owner used the result to revise the standard wording department-wide.",
+        sourceIds: ["deck", "dss"],
       },
     ],
     questions: [
@@ -2101,6 +2109,7 @@ export const modules: Module[] = [
           "Say what you need to establish and by when. A finding without a next step reads as either panic or excuse.",
         ],
         example: "The board approved a four-week extension rather than the scale-up. The cause was a single component that had never been tested with a screen reader, and it was fixed inside that window — which a cancelled programme would not have been.",
+        sourceIds: ["deck", "dss"],
       },
     ],
     questions: [

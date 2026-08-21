@@ -597,7 +597,7 @@ export const slides: Slide[] = [
   {
     n: 98,
     stage: "integration",
-    title: "",
-    text: "",
+    title: "Questions and discussion",
+    text: "Questions and discussion",
   },
 ];

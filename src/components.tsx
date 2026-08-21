@@ -1,9 +1,9 @@
 import { findSource } from "./content";
 import { useId, useMemo } from "react";
 import { ExternalLink } from "lucide-react";
-import type { LessonTable, Question } from "./package-model";
+import type { LessonTable, Question, SourceReference } from "./package-model";
 import { presentOptions } from "./lib";
-import { SlideCaption } from "./slide-viewer";
+import { findSlide, SlideCaption, useSlideViewer } from "./slide-viewer";
 
 export function PageIntro({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) {
   return (
@@ -118,24 +118,33 @@ export function LessonTableView({ table }: { table: LessonTable }) {
   );
 }
 
-export function SourceChips({ ids }: { ids: string[] }) {
-  const list = [...new Set(ids)].map(findSource).filter(Boolean);
+export function SourceChips({ ids, references = [] }: { ids: string[]; references?: SourceReference[] }) {
+  const { open } = useSlideViewer();
+  const bySource = new Map<string, SourceReference>();
+  ids.forEach((sourceId) => bySource.set(sourceId, { sourceId }));
+  references.forEach((reference) => bySource.set(reference.sourceId, reference));
+  const list = [...bySource.values()].map((reference) => ({ reference, source: findSource(reference.sourceId) })).filter((item) => item.source);
   if (!list.length) return null;
   return (
     <div className="source-chips">
-      {list.map(
-        (source) =>
-          source &&
-          (source.url ? (
+      {list.map(({ source, reference }) => {
+        if (!source) return null;
+        const locator = reference.locator?.trim();
+        const firstSlide = reference.slideNumbers?.find((number) => findSlide(number));
+        const label = `${source.title}${locator ? ` · ${locator}` : ""}`;
+        if (firstSlide) {
+          return <button type="button" key={source.id} onClick={() => open(firstSlide)}>{label}<span className="visually-hidden"> — open slide {firstSlide}</span></button>;
+        }
+        return source.url ? (
             <a key={source.id} href={source.url} target="_blank" rel="noreferrer">
-              {source.title}
+              {label}
               <ExternalLink size={13} aria-hidden="true" />
               <span className="visually-hidden"> (opens in a new tab)</span>
             </a>
           ) : (
-            <span key={source.id}>{source.title}</span>
-          )),
-      )}
+            <span key={source.id}>{label}</span>
+          );
+      })}
     </div>
   );
 }

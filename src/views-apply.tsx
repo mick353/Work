@@ -311,7 +311,7 @@ export function FieldGuide() {
                 </div>
               ))}
             </dl>
-            <SourceChips ids={entry.sourceIds} />
+            <SourceChips ids={entry.sourceIds} references={entry.sourceReferences} />
           </section>
         ))}
       </div>

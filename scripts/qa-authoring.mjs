@@ -52,6 +52,31 @@ function question(id, moduleId, prompt) {
   };
 }
 
+function minimalPdf(text = "Source deck verification slide") {
+  const stream = `BT /F1 24 Tf 72 720 Td (${text.replace(/[()\\]/g, "")}) Tj ET`;
+  const objects = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+    "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>",
+    `<< /Length ${Buffer.byteLength(stream)} >>\nstream\n${stream}\nendstream`,
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+  ];
+  let result = "%PDF-1.4\n";
+  const offsets = [0];
+  objects.forEach((body, index) => {
+    offsets.push(Buffer.byteLength(result));
+    result += `${index + 1} 0 obj\n${body}\nendobj\n`;
+  });
+  const xref = Buffer.byteLength(result);
+  result += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  result += offsets.slice(1).map((offset) => `${String(offset).padStart(10, "0")} 00000 n \n`).join("");
+  result += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  return Buffer.from(result);
+}
+
+const tinyPng = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=", "base64");
+const tinyPngDataUrl = `data:image/png;base64,${tinyPng.toString("base64")}`;
+
 function validPackage() {
   const moduleId = "evidence-to-action";
   const questions = Array.from({ length: 4 }, (_, index) => question(`knowledge-${index + 1}`, moduleId, `Which response best handles evidence question ${index + 1}?`));
@@ -131,6 +156,31 @@ function validPackage() {
   };
 }
 
+function richPackage() {
+  const entry = validPackage();
+  const moduleId = entry.content.modules[0].id;
+  entry.manifest.id = "rich-workshop-fixture";
+  entry.manifest.title = "Rich Evidence to Action";
+  entry.content.modules[0].visualAssetId = "stage-evidence-visual";
+  entry.content.modules[0].slides = "1";
+  entry.content.modules[0].sections[0].sourceReferences = [{ sourceId: "practice-guide", locator: "slide 1", slideNumbers: [1] }];
+  entry.content.assets = [
+    { id: "stage-evidence-visual", kind: "image", fileName: "stage-evidence.png", mimeType: "image/png", dataUrl: tinyPngDataUrl, alt: "Evidence marker connecting a source to a decision.", caption: "A course-owned stage visual." },
+    { id: "slide-001", kind: "slide", fileName: "slide-01.png", mimeType: "image/png", dataUrl: tinyPngDataUrl, alt: "Slide 1: evidence connected to an accountable decision.", sourceId: "practice-guide" },
+  ];
+  entry.content.slides = [{ n: 1, stage: moduleId, title: "Evidence connected to a decision", text: "Source deck verification text", assetId: "slide-001" }];
+  entry.content.slideCount = 1;
+  entry.content.caseStudies = [{ id: "decision-case", title: "The time-bound recommendation", subtitle: "Mixed evidence and an accountable owner", outcome: "worked", summary: "A team must make a transparent decision.", steps: [{ moduleId, stage: 1, heading: "Frame the choice", decision: "Proceed with a bounded trial", tempting: "Wait for certainty", body: "The team separates observed evidence from inference.", artefact: "A one-page decision record", insight: "Visible uncertainty is more useful than false confidence." }], closing: "The decision remains reviewable because the evidence chain is explicit." }];
+  entry.content.toolkitTemplates = [{ id: "decision-record", title: "Decision record", prompt: "Record the decision, evidence, inference, uncertainty, owner and next action.", example: "Proceed with a bounded trial because current evidence supports learning at controlled risk.", note: "Use the smallest record that preserves the reasoning." }];
+  entry.content.capstoneBriefs = [{ id: "service-choice", title: "Service choice", short: "Service", brief: "Recommend a next step for a service with incomplete evidence.", twist: "The accountable owner needs an answer today." }];
+  entry.content.capstoneSteps = [{ id: "frame-capstone", title: "Frame the decision", prompt: "Write the decision and evidence chain.", checks: ["Decision and owner are named", "Evidence and inference are separated"] }];
+  entry.content.capstoneRubric = [{ id: "traceability", title: "Traceability", detail: "A reviewer can reproduce how the recommendation follows from the named source." }];
+  entry.content.fieldGuide = [{ id: "decision-evidence", title: "Decision evidence", summary: "Connect source material to a named decision.", slides: "1", sourceIds: ["practice-guide"], sourceReferences: [{ sourceId: "practice-guide", locator: "slide 1", slideNumbers: [1] }], items: [{ term: "Evidence chain", detail: "The visible path from source to inference, decision and action." }] }];
+  entry.content.divergences = [{ id: "certainty-language", topic: "Certainty language", slides: "1", deck: "The source shows the decision pattern.", here: "The course makes uncertainty explicit in the written record.", why: "Learners need an observable way to apply the pattern." }];
+  entry.content.exemplars = [{ id: "decision-note", tab: "Decision note", title: "Worked decision note", subtitle: "A transparent recommendation", intro: "This example shows the whole artefact.", meta: [{ label: "Owner", value: "Service director" }], sections: [{ heading: "Recommendation", body: ["Proceed with a bounded trial while collecting the missing evidence."], note: "The recommendation states both action and uncertainty." }], closing: "The note is concise because each claim has a visible role." }];
+  return entry;
+}
+
 const approvedRelease = {
   subjectMatterChecked: true,
   learningFlowChecked: true,
@@ -170,6 +220,95 @@ const instructionAxe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2
 const instructionSerious = instructionAxe.violations.filter((item) => item.impact === "serious" || item.impact === "critical");
 check("Workshop instructions have no serious or critical automated accessibility violations", instructionSerious.length === 0, instructionSerious.map((item) => `${item.id}: ${item.nodes[0]?.html ?? ""}`).join(" | "));
 
+let templateProfilesClean = true;
+for (const templateTitle of ["Product Management Fundamentals", "Closure Reports"]) {
+  const templateContext = await browser.newContext();
+  const templatePage = await templateContext.newPage();
+  await templatePage.goto(pathToFileURL(studioFile).href);
+  templatePage.once("dialog", (dialog) => void dialog.accept());
+  await templatePage.locator(".template-grid article").filter({ hasText: templateTitle }).getByRole("button", { name: "Clone as new course" }).click();
+  await templatePage.getByRole("button", { name: /Review & export/ }).click();
+  const blockingTitles = await templatePage.locator(".issue.error strong").allInnerTexts();
+  templateProfilesClean &&= blockingTitles.length === 1 && blockingTitles[0] === "Add the content review date";
+  await templateContext.close();
+}
+check("Every maintained course template satisfies the Workshop profile before fresh review", templateProfilesClean);
+
+const featureContext = await browser.newContext({ acceptDownloads: true, viewport: { width: 1440, height: 1000 } });
+const featurePage = await featureContext.newPage();
+const featureErrors = [];
+featurePage.on("console", (message) => { if (message.type() === "error") featureErrors.push(message.text()); });
+await featurePage.goto(pathToFileURL(studioFile).href);
+const pmTemplate = featurePage.locator(".template-grid article").filter({ hasText: "Product Management Fundamentals" });
+check("Published Product Management is offered as an editable template", await pmTemplate.count() === 1);
+featurePage.once("dialog", (dialog) => void dialog.accept());
+await pmTemplate.getByRole("button", { name: "Clone as new course" }).click();
+await featurePage.waitForSelector("text=Created a separate draft from Product Management Fundamentals");
+check("Cloning creates a visibly separate draft", /Adapted Product Management Fundamentals/i.test(await featurePage.locator(".topbar").innerText()));
+
+await featurePage.getByRole("button", { name: /Apply & reference/ }).click();
+check("Advanced course elements have dedicated editors", await featurePage.getByRole("heading", { name: "Worked cases" }).count() === 1 && await featurePage.getByRole("heading", { name: "Toolkit templates" }).count() === 1 && await featurePage.getByRole("heading", { name: "Capstone" }).count() === 1 && await featurePage.getByRole("heading", { name: "Field guide" }).count() === 1 && await featurePage.getByRole("heading", { name: "Source differences" }).count() === 1 && await featurePage.getByRole("heading", { name: "Worked documents and exemplars" }).count() === 1);
+check("The Product Management template brings its maintained advanced content", await featurePage.locator(".advanced-editor").count() > 5);
+await featurePage.getByRole("button", { name: "Add exemplar" }).click();
+check("A trainer can add a worked-document exemplar", await featurePage.locator(".advanced-editor").filter({ hasText: "Untitled exemplar" }).count() === 1);
+const advancedAxe = await new AxeBuilder({ page: featurePage }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
+const advancedSerious = advancedAxe.violations.filter((item) => item.impact === "serious" || item.impact === "critical");
+check("Advanced editors have no serious or critical automated accessibility violations", advancedSerious.length === 0, advancedSerious.map((item) => item.id).join(", "));
+
+await featurePage.getByRole("button", { name: /Media & source deck/ }).click();
+check("Cloned Product Management includes its complete 98-slide deck", await featurePage.locator(".slide-editor").count() === 98);
+const firstVisual = featurePage.locator(".visual-editor").first();
+await firstVisual.locator('input[type="file"]').setInputFiles({ name: "stage-visual.png", mimeType: "image/png", buffer: tinyPng });
+await firstVisual.locator("img").waitFor();
+await firstVisual.getByLabel("Image description").fill("A single evidence marker used to verify an embedded stage visual.");
+check("Stage images can be embedded and described", await firstVisual.locator("img").count() === 1);
+
+await featurePage.getByRole("button", { name: /Teach/ }).click();
+await featurePage.getByLabel("Page, section or locator").first().fill("slides 1–2");
+await featurePage.getByLabel("Imported slide numbers").first().fill("1–2");
+await featurePage.waitForTimeout(500);
+const indexedDraft = await featurePage.evaluate(() => new Promise((resolve, reject) => {
+  const request = indexedDB.open("product-practice-course-workshop", 1);
+  request.onerror = () => reject(request.error);
+  request.onsuccess = () => {
+    const read = request.result.transaction("drafts", "readonly").objectStore("drafts").get("current");
+    read.onerror = () => reject(read.error);
+    read.onsuccess = () => resolve(read.result);
+  };
+}));
+check("Asset-rich drafts autosave in IndexedDB", indexedDraft?.package?.content?.assets?.length === 99 && indexedDraft.package.content.modules[0].visualAssetId);
+
+const [cloneDownload] = await Promise.all([
+  featurePage.waitForEvent("download"),
+  featurePage.locator(".sidebar-actions").getByRole("button", { name: "Save draft" }).click(),
+]);
+const cloneFile = path.join(qaDir, "adapted-pm-course-draft.json");
+await cloneDownload.saveAs(cloneFile);
+const cloneDraft = JSON.parse(await readFile(cloneFile, "utf8"));
+check("Clone resets identity, version, status and approvals", cloneDraft.package.manifest.id === "pm-fundamentals-adapted" && cloneDraft.package.manifest.version === "0.1.0" && cloneDraft.package.manifest.status === "draft" && cloneDraft.release.releaseApproved === false);
+check("Clone preserves advanced course content and embeds the source deck", cloneDraft.package.content.caseStudies.length > 0 && cloneDraft.package.content.toolkitTemplates.length > 0 && cloneDraft.package.content.capstoneSteps.length > 0 && cloneDraft.package.content.fieldGuide.length > 0 && cloneDraft.package.content.slides.length === 98 && cloneDraft.package.content.assets.length === 99);
+check("Precise lesson citations survive the editable draft", cloneDraft.package.content.modules.some((module) => module.sections.some((section) => section.sourceReferences?.some((reference) => reference.locator === "slides 1–2" && reference.slideNumbers?.join(",") === "1,2"))));
+await featurePage.setViewportSize({ width: 390, height: 844 });
+await featurePage.getByRole("button", { name: /Apply & reference/ }).click();
+const advancedMobileOverflow = await featurePage.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1);
+await featurePage.getByRole("button", { name: /Media & source deck/ }).click();
+const mediaMobileOverflow = await featurePage.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1);
+check("Advanced and media editors fit a phone/tablet-width browser", advancedMobileOverflow && mediaMobileOverflow);
+check("Advanced and media authoring produced no console errors", featureErrors.length === 0, featureErrors[0] ?? "clean console");
+await featureContext.close();
+
+const pdfContext = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+const pdfPage = await pdfContext.newPage();
+const pdfErrors = [];
+pdfPage.on("console", (message) => { if (message.type() === "error") pdfErrors.push(message.text()); });
+await pdfPage.goto(pathToFileURL(studioFile).href);
+await pdfPage.getByRole("button", { name: /Media & source deck/ }).click();
+await pdfPage.locator('.media-import-actions input[accept*="pdf"]').setInputFiles({ name: "source-deck.pdf", mimeType: "application/pdf", buffer: minimalPdf() });
+await pdfPage.waitForSelector(".slide-editor");
+check("A PDF source deck is rendered into editable embedded slides", await pdfPage.locator(".slide-editor").count() === 1 && /Source deck verification slide/i.test(await pdfPage.locator(".slide-editor").innerText()));
+check("PDF import produces no browser console errors", pdfErrors.length === 0, pdfErrors[0] ?? "clean console");
+await pdfContext.close();
+
 await page.getByRole("button", { name: /Review & export/ }).click();
 check("Learner export is disabled for an incomplete draft", await page.getByRole("button", { name: "Export training HTML" }).isDisabled());
 check("Repository export is disabled for an incomplete draft", await page.getByRole("button", { name: "Export repository ZIP" }).isDisabled());
@@ -194,6 +333,19 @@ await page.waitForSelector("text=Loaded deliberately-broken-course-draft.json");
 await page.getByRole("button", { name: /Review & export/ }).click();
 await page.waitForSelector(".readiness.blocked");
 check("A deliberately broken distractor-feedback rule blocks export", await page.getByRole("button", { name: "Export training HTML" }).isDisabled());
+
+const unsafeMediaFixture = richPackage();
+unsafeMediaFixture.content.assets[0].alt = "";
+unsafeMediaFixture.content.modules[0].sections[0].sourceReferences[0].slideNumbers = [999];
+await page.locator('input[type="file"]').setInputFiles({
+  name: "unsafe-media-course-draft.json",
+  mimeType: "application/json",
+  buffer: Buffer.from(JSON.stringify({ draftSchemaVersion: 1, savedAt: new Date().toISOString(), package: unsafeMediaFixture, release: approvedRelease })),
+});
+await page.waitForSelector("text=Loaded unsafe-media-course-draft.json");
+await page.getByRole("button", { name: /Review & export/ }).click();
+await page.waitForSelector(".readiness.blocked");
+check("Missing image descriptions and broken slide citations block export", await page.getByRole("button", { name: "Export training HTML" }).isDisabled() && /alternative text|missing slide 999/i.test(await page.locator(".issue-list").innerText()));
 
 await page.locator('input[type="file"]').setInputFiles({
   name: "workshop-fixture-under-review.json",
@@ -279,6 +431,33 @@ check("Exported learner course produces no console errors", learnerErrors.length
 const learnerAxe = await new AxeBuilder({ page: learner }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
 const learnerSerious = learnerAxe.violations.filter((item) => item.impact === "serious" || item.impact === "critical");
 check("Generated learner course has no serious or critical automated accessibility violations", learnerSerious.length === 0, learnerSerious.map((item) => `${item.id}: ${item.nodes[0]?.html ?? ""} ${item.nodes[0]?.failureSummary ?? ""}`).join(" | "));
+
+const richFixture = richPackage();
+await page.locator('input[type="file"]').setInputFiles({
+  name: "rich-workshop-fixture-course-draft.json",
+  mimeType: "application/json",
+  buffer: Buffer.from(JSON.stringify({ draftSchemaVersion: 1, savedAt: new Date().toISOString(), package: richFixture, release: approvedRelease })),
+});
+await page.waitForSelector("text=Loaded rich-workshop-fixture-course-draft.json");
+await page.getByRole("button", { name: /Review & export/ }).click();
+await page.waitForSelector(".readiness.ready");
+check("A complete advanced and media-rich course clears blocking checks", await page.locator(".issue.error").count() === 0);
+const [richDownload] = await Promise.all([
+  page.waitForEvent("download"),
+  page.getByRole("button", { name: "Export training HTML" }).click(),
+]);
+const richLearnerFile = path.join(qaDir, "rich-workshop-fixture.html");
+await richDownload.saveAs(richLearnerFile);
+const richLearner = await context.newPage();
+await richLearner.goto(pathToFileURL(richLearnerFile).href);
+await richLearner.evaluate(() => { window.location.hash = "module/evidence-to-action"; });
+await richLearner.waitForSelector(".stage-illustration img");
+check("Embedded stage visuals render in the standalone learner course", await richLearner.locator('.stage-illustration img[alt*="Evidence marker"]').count() === 1);
+await richLearner.locator(".source-chips button").first().click();
+await richLearner.waitForSelector('.slide-lightbox[role="dialog"]');
+check("Precise source citations open the embedded source slide", /Evidence connected to a decision/i.test(await richLearner.locator(".slide-lightbox").innerText()) && await richLearner.locator('.slide-lightbox img[alt*="Slide 1"]').count() === 1);
+const richSource = await readFile(richLearnerFile, "utf8");
+check("Advanced content and media remain self-contained in learner output", richSource.includes("decision-case") && richSource.includes("decision-record") && richSource.includes(tinyPngDataUrl) && !/<script[^>]+src=|<link[^>]+href=/i.test(richSource));
 
 await page.setViewportSize({ width: 390, height: 844 });
 await page.waitForTimeout(100);

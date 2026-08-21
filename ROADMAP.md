@@ -19,17 +19,20 @@ The learner-facing product does not change. Course Workshop embeds the existing 
 
 **The delivery foundation exists.** `npm run export:course -- <course-id>` produces a standalone HTML file and a web folder containing only a selected repository course. Course Workshop uses the same player for browser-generated courses. Its repository package can be inspected, added to the combined catalogue and/or installed as an individual `training/<course-id>/` route through overwrite-safe commands. The export, authoring and release suites verify these paths.
 
-**Current authoring profile.** Course identity and sources, lesson stages, assessment items, assignments, diagnostics, review cards, glossary terms and contrasts are editable. The tool provides local autosave, JSON draft portability, live minimum checks, preview, standalone learner export, a hosted-course ZIP and a controlled repository ZIP. The browser never writes into the repository. The Workshop itself is published under `course-workshop/` without user draft data.
+**Current authoring profile.** The complete package profile is editable: identity and sources; lesson stages; assessment, scenarios and assignments; diagnostics, cards, glossary and contrasts; worked cases; toolkit; capstone; field guide; source differences; worked-document exemplars; precise source/slide references; a PDF or image source deck; and course-owned stage visuals. Asset-rich drafts autosave in IndexedDB and remain portable as downloaded JSON. The Workshop provides live checks, preview, standalone learner export, a hosted-course ZIP and a controlled repository ZIP. The browser never writes into the repository. The Workshop itself is published under `course-workshop/` without user draft data.
+
+**Safe reuse exists.** Every maintained catalogue course is embedded as an editable template. Cloning makes a separate Draft, resets identity/version/review/release state and preserves the complete content and deck. It never updates the released source course in place.
 
 **Release authority remains human.** Final outputs require a clean encoded profile, **Available** status and a recorded subject-matter, course-flow, audience/handling and release checklist. These are declarations, not independent review evidence. A custodian still inspects the package/diff and runs full verification before publication.
 
 **Remaining work, in priority order:**
 
 1. **Trainer usability testing with real material.** Observe where field guidance, sequencing and terminology are unclear before expanding the form.
-2. **Advanced learning elements.** Add editors for worked cases, capstone, toolkit, field guide, divergences and worked documents without making the core path overwhelming.
-3. **Images and slides.** Add browser-based image and slide import that writes only into the exported course namespace. The generic illustration is the current safe default.
-4. **Release history.** Add retained/datable release archives and release notes around the implemented approval record.
-5. **Version migration.** Provide deliberate retain/reset choices when a curriculum revision breaks learner-progress compatibility.
+2. **Release history.** Add retained/datable release archives and release notes around the implemented approval record.
+3. **Version migration.** Provide deliberate retain/reset choices when a curriculum revision breaks learner-progress compatibility.
+4. **Direct office-file ingestion only if trainers need it.** Current browser import accepts PDF or PNG/JPEG/WebP. Do not add PowerPoint parsing merely for technical completeness.
+
+Arbitrary multi-course bundle composition remains parked. One course per learner export is the agreed default; the combined catalogue remains a controlled repository release surface.
 
 The detailed implemented boundary is in [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md).
 

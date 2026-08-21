@@ -503,8 +503,8 @@ p { color: var(--muted); line-height: 1.65; }
 .section-sources { margin-top: 20px; padding-top: 14px; border-top: 1px dashed var(--line-strong); }
 .section-sources-label { display: block; margin-bottom: 8px; color: var(--muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.07em; }
 .source-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.source-chips a, .source-chips > span { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line-strong); border-radius: 99px; padding: 5px 12px; color: var(--accent); font-size: 12px; text-decoration: none; background: var(--paper); }
-.source-chips a:hover { border-color: var(--accent); background: var(--accent-soft); }
+.source-chips a, .source-chips > span, .source-chips > button { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line-strong); border-radius: 99px; padding: 5px 12px; color: var(--accent); font-size: 12px; text-decoration: none; background: var(--paper); }
+.source-chips a:hover, .source-chips > button:hover { border-color: var(--accent); background: var(--accent-soft); }
 
 .reflection-panel, .knowledge-check, .scenario-panel, .assignment-panel { margin: 44px 0 0 90px; max-width: 900px; padding: 28px; background: var(--paper); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
 .reflection-panel h2, .scenario-panel h2, .assignment-panel h2 { margin: 8px 0 10px; }
@@ -958,6 +958,8 @@ p { color: var(--muted); line-height: 1.65; }
    ================================================================== */
 .stage-illustration { margin: 26px 0 10px 90px; max-width: 900px; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); overflow: hidden; }
 .stage-illustration .illus { display: block; width: 100%; height: auto; }
+.stage-illustration > img { display: block; width: 100%; max-height: 560px; object-fit: contain; border-radius: 15px; }
+.stage-illustration > figcaption { padding: 10px 14px 8px; color: var(--muted); font-size: .78rem; line-height: 1.45; text-align: center; }
 .illus text { font-family: "Segoe UI", Arial, sans-serif; }
 
 .illus-kicker { fill: var(--stage); font-size: 13.5px; font-weight: 800; letter-spacing: 0.14em; }

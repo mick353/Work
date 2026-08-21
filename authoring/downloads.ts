@@ -92,7 +92,7 @@ Nothing in this ZIP has modified the learning-system repository. A release custo
 - \`release-record.json\` — human review and approval declarations captured at export.
 - \`CATALOGUE-ENTRY.txt\` — the manual catalogue equivalent, retained for transparency.
 - \`validation-report.json\` — the automated checks visible at export time.
-- \`public/courses/${id}/README.md\` — reserved location for this course's binary assets.
+- \`public/courses/${id}/README.md\` — reserved location for a future external-asset route; Workshop media is embedded in the package.
 
 ## Controlled release commands
 
@@ -172,7 +172,7 @@ export function packageZip(entry: TrainingPackage, issues: AuthoringIssue[], rel
     [`${root}/CATALOGUE-ENTRY.txt`]: strToU8(catalogueSnippet(id)),
     [`${root}/validation-report.json`]: strToU8(report),
     [`${root}/public/courses/${id}/README.md`]: strToU8(
-      "Put only this course's approved images or source-slide assets in this folder. Do not use another course's asset namespace.\n",
+      "Course Workshop media is embedded in course-package.json and needs no external files. Reserve this namespace for a future controlled external-asset route; never use another course's asset namespace.\n",
     ),
   };
   return zipSync(files, { level: 6 });

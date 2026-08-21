@@ -516,6 +516,17 @@ const closureModuleDefs: Module[] = [
           "The instruction to keep every heading and justify omissions is doing something specific: it makes a deliberate decision visible and an oversight obvious. A missing section reads as an error; a section saying 'not applicable because the project procured nothing' reads as a decision.",
         sourceIds: ["dewr-template", "dewr-tier3", "dewr-factsheet"],
       },
+      {
+        heading: "Worked reasoning: the report that was ready before closure was",
+        body: "A project manager arrives at the final board meeting with a polished report and every checklist item marked complete. The benefits table names a branch, the handover paragraph says BAU accepted the service, and the lessons section says the register was updated. The weak move is to treat the finished document as evidence that closure happened. A quick check finds no acceptance from the branch, no named benefit owner, and a draft lessons entry that has not been submitted. The sentences describe intended end states, not completed activities.\n\nWork backwards from each claim to the act and the person who can evidence it. Ask the BAU owner to accept or reject the handover; ask the responsible business area to accept the benefit accountability; confirm the lessons register entry and reference; then update the report. If an activity cannot finish before the board, do not disguise it as prose. Record it as an open closure action with an owner, due date and approval consequence. The board can then decide whether the remaining gap prevents closure or can transfer under governance.\n\nThe useful distinction is not draft versus final. It is assertion versus evidenced completion. A report may be nearly finished early, but it becomes a closure record only when its claims follow the underlying work.",
+        bullets: [
+          "For every completed statement, identify the activity, acceptance and record behind it.",
+          "A named branch is not the same thing as an accountable person accepting ownership.",
+          "An honest open action gives governance a decision; past-tense intention removes that decision from view.",
+        ],
+        example: "The board deferred formal closure for five working days. In that period BAU accepted the service, the benefit owner accepted the measure and cadence, and the lessons reference was added. Nothing new was written; three claims became true.",
+        sourceIds: ["dewr-factsheet", "dewr-template"],
+      },
     ],
     questions: [
       {
@@ -988,6 +999,17 @@ const closureModuleDefs: Module[] = [
           "Processing time fell 41 per cent between Q2 and Q3. Q2 covered the annual re-registration peak; Q3 did not. Against Q3 of the previous year the improvement is 12 per cent. Both figures are real, only one is about the system, and the report that gives only the first is not lying.",
         sourceIds: ["anao-perf", "rmg134"],
       },
+      {
+        heading: "Worked reasoning: the improvement that disappeared under comparison",
+        body: "A closure draft says processing time improved by 18 per cent after release. The figure is real: an analyst compared the three months after launch with the three months before it. The weak move is to accept the calculation because the query can be rerun. Reproducible arithmetic does not make the comparison decision sound. The pre-launch period included the annual renewal peak, the post-launch period did not, and a policy change removed the simplest cases from the service halfway through the baseline window.\n\nReframe the claim in layers. First, keep the direct before-and-after result and label both periods. Second, run a like-for-like comparison against the same months in the previous year. Third, show volume and case mix so a reader can see whether the population changed. Here the like-for-like improvement is 6 per cent, while the raw 18 per cent remains useful as an operational observation. Neither number is deleted; each is given the question it can answer.\n\nThe final report says measured processing time fell 18 per cent across the adjacent windows and 6 per cent year on year, with the seasonal and policy differences stated. The value is not the smaller number. It is that a future reader can reproduce both and decide which is relevant to the decision they are making.",
+        bullets: [
+          "A reproducible query can still encode a misleading comparison window.",
+          "Show the raw result, the like-for-like result and the reason they differ.",
+          "Do not collapse a qualified finding into one preferred headline.",
+        ],
+        example: "The SRO approved the qualified 6 per cent benefit claim and retained the 18 per cent adjacent-window result in the evidence note. Audit could trace both figures to the same extract and see why they answered different questions.",
+        sourceIds: ["anao-perf", "rmg134"],
+      },
     ],
     questions: [
       {
@@ -1132,7 +1154,7 @@ const closureModuleDefs: Module[] = [
         "The assertion is labelled as such rather than dressed as a finding",
       ],
       modelAnswer:
-        "Measured: median lodgement-to-decision time fell from 14 days to 9 days, comparing Jan–Mar 2026 (n=3,880) with Jul–Sep 2026 (n=4,102), source: case management system extract CMS-RPT-114, definition unchanged across both periods. Estimated: approximately 11,500 support contacts avoided per year, assuming the Q3 2026 contact-per-application rate persists and application volumes remain within 5 per cent of forecast; if volumes grow as the department projects, the figure rises. Asserted: caseworkers report lower frustration with the status screen. Basis: three team-lead debriefs and unsolicited feedback in the September release retro. Not measured, and no survey instrument was in place.",
+        "Measured: median lodgement-to-decision time fell from 14 days to 9 days, comparing Jan–Mar 2026 (n=3,880) with Jul–Sep 2026 (n=4,102), source: case management system extract CMS-RPT-114, definition unchanged across both periods. Estimated: approximately 11,500 support contacts avoided per year, assuming the Q3 2026 contact-per-application rate persists and application volumes remain within 5 per cent of forecast; if volumes grow as the department projects, the figure rises. Asserted: caseworkers report lower frustration with the status screen. Basis: three team-lead debriefs and unsolicited feedback in the September release retro. Not measured, and no survey instrument was in place. Confidence is high for the measured timing result, conditional for the contact estimate, and low for the unmeasured frustration claim.",
     },
   },
 
@@ -1195,6 +1217,17 @@ const closureModuleDefs: Module[] = [
         example:
           "Two rows, same project. 'Participant-facing status view — Not achieved — withdrawn from scope by the Project Board, November 2025, on privacy assessment advice.' And: 'Bulk export — Not achieved — dependency on the provider gateway roadmap, no committed date.' The first is a decision. The second is an open item that needs an owner.",
         sourceIds: ["dewr-tier3", "dewr-template"],
+      },
+      {
+        heading: "Worked reasoning: delivered is not the same as accepted and usable",
+        body: "A project lists a reporting dashboard as achieved because the production link works and the delivery team demonstrated it. The business area has not accepted ownership, two required data feeds still arrive through a manual workaround, and the only administrator account belongs to a contractor whose engagement ends Friday. The weak move is to mark the deliverable achieved and move the operational gaps into lessons. That confuses the existence of an artefact with completion of the commitment.\n\nReturn to the approved deliverable and separate four tests: does the thing exist; does it meet the agreed acceptance criteria; has the receiving owner accepted it; and can that owner operate it after the project team leaves? The dashboard passes only the first. If the board had approved a staged handover, the report could cite that decision and describe the remaining transfer. Without it, the honest status is partially achieved or not achieved, depending on the wording of the original commitment.\n\nThis does not punish the team for being transparent. It tells governance what decision remains: fund and own the manual feeds, extend the contractor long enough to transfer administration, or accept a reduced deliverable through formal change. Calling it achieved would remove all three choices from view and hand the consequence to BAU.",
+        bullets: [
+          "Test existence, acceptance, ownership and operability separately.",
+          "A demonstration by the delivery team is not acceptance by the receiving owner.",
+          "Use the original approved wording to choose achieved, partially achieved or not achieved.",
+        ],
+        example: "The board accepted a two-week transfer action and approved the dashboard as partially achieved until the feeds and administrator access were owned. The final report then cited the completed acceptance record rather than the project demonstration.",
+        sourceIds: ["dewr-template", "dewr-tier3", "dewr-factsheet"],
       },
     ],
     questions: [
@@ -1412,6 +1445,17 @@ const closureModuleDefs: Module[] = [
         ],
         example:
           "'On schedule against the revised baseline; twenty-two months later than the original approved date, following two rebaselines approved by the Project Board in March 2024 and August 2025.' Both true, and together they are informative in a way either alone is not.",
+        sourceIds: ["dewr-template", "rmg134"],
+      },
+      {
+        heading: "Worked reasoning: the milestone that became on time after it was late",
+        body: "A project reports every milestone as met because the board approved two rebaselines. Against the latest schedule, the statement is correct. Against the original approved plan, delivery is twenty-two months late. The weak move is to choose one baseline and argue that it is the legitimate one. The current baseline shows whether the project held its most recent control position; the original shows what happened to the commitment used to approve funding. Governance needs both.\n\nBuild the chronology instead of a verdict. List the original milestone, each approved change, the authority and reason, and the final actual date. Then calculate variance against the original and current baselines. Separate approved scope or dependency changes from execution delay: approval makes a movement authorised, not invisible. If a milestone definition narrowed without change control, report what was achieved under the narrower definition and name the unapproved movement as a finding.\n\nThe final table can therefore say ‘met against the August 2025 rebaseline; twenty-two months later than original approval; movements approved in March 2024 and August 2025 for named scope and dependency changes’. That sentence is neither blame nor spin. It lets a reader assess whether later management stabilised delivery and whether the original planning assumptions were credible.",
+        bullets: [
+          "Current-baseline variance and original-baseline variance answer different governance questions.",
+          "Approval legitimises a change; it does not erase the change from project history.",
+          "A changed milestone definition needs the same visible decision trail as a changed date.",
+        ],
+        example: "The SRO could see that the final nine months were controlled even though the original estimate failed badly. The lesson became an evidence-based planning correction, not a generic statement about optimism.",
         sourceIds: ["dewr-template", "rmg134"],
       },
     ],
@@ -2428,6 +2472,17 @@ const closureModuleDefs: Module[] = [
         example:
           "'Delivered $3.1m under budget' reads as good news and may mean the scope was cut by a third. The honest line names both: what was not built, and what was genuinely cheaper than forecast.",
         sourceIds: ["closure", "rmg134"],
+      },
+      {
+        heading: "Worked reasoning: the tidy ledger with an untidy obligation",
+        body: "Finance shows the project at budget and asks for closure. A supplier's final invoice has not arrived, a warranty begins on acceptance next week, and a recurring licence will move to BAU next month. The weak move is to treat the current ledger balance as the final financial position. It records what has posted, not everything the entity has incurred or will have to own after the project.\n\nReconcile the obligations rather than the balance alone. Confirm whether the supplier work has been received and therefore needs an accrual; check the executed contract before signing acceptance and record what acceptance triggers; name the person who will hold the warranty and its end date; transfer the licence to a funded BAU cost centre; then close or retain each purchase order with a reason. Review capitalised costs against the asset that actually exists and ask Finance to resolve any training, research or repair costs that do not meet the applicable recognition treatment.\n\nOnly then does the table describe a closed position. The report can state the actual expenditure, remaining accrual, transferred recurring cost and surviving contractual rights separately. Netting them into one favourable variance would hide who must act next and when.",
+        bullets: [
+          "A zero balance difference is not evidence that every obligation has been settled or transferred.",
+          "Acceptance, warranty and retention consequences come from the executed contract.",
+          "Recurring costs need a funded BAU owner, not merely a note that they continue.",
+        ],
+        example: "The final invoice was accrued, the warranty diary moved to the service owner, and the licence transferred to the operational budget. Finance closed the project ledger with each surviving obligation visible rather than rediscovering it after the team left.",
+        sourceIds: ["closure", "cprs", "rmg109", "aasb138"],
       },
     ],
     questions: [

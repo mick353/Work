@@ -1,4 +1,4 @@
-import { caseStudies, contrasts, diagnosticQuestions, manifest, modules, quizPoolFor, supplementaryQuestions, totalMinutes } from "./content";
+import { assets, caseStudies, contrasts, diagnosticQuestions, manifest, modules, quizPoolFor, supplementaryQuestions, totalMinutes } from "./content";
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
@@ -515,6 +515,7 @@ export function ModuleView({
     : null;
 
   const StageIllustration = stageIllustrations[`${manifest.id}:${module.id}`] ?? GenericStageIllustration;
+  const authoredVisual = module.visualAssetId ? assets.find((asset) => asset.id === module.visualAssetId) : undefined;
   const activeSection = useActiveSection(module.sections.map((_, index) => sectionId(module.id, index)));
   const readingProgress = useReadingProgress();
   const stageState = masteryState(progress, module.scenarios.length);
@@ -598,7 +599,12 @@ export function ModuleView({
       </header>
 
       <figure className="stage-illustration">
-        <StageIllustration />
+        {authoredVisual ? (
+          <>
+            <img src={authoredVisual.dataUrl} alt={authoredVisual.alt} />
+            {authoredVisual.caption && <figcaption>{authoredVisual.caption}</figcaption>}
+          </>
+        ) : <StageIllustration />}
       </figure>
 
       <section className="core-idea" aria-label="The core idea of this stage">
@@ -661,7 +667,7 @@ export function ModuleView({
               {section.sourceIds && section.sourceIds.length > 0 && (
                 <div className="section-sources">
                   <span className="section-sources-label">Sources for this section</span>
-                  <SourceChips ids={section.sourceIds} />
+                  <SourceChips ids={section.sourceIds} references={section.sourceReferences} />
                 </div>
               )}
             </div>

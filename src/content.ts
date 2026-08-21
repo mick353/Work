@@ -60,6 +60,7 @@ export const {
   slides,
   slideCount,
   slideAssetBase = "",
+  assets = [],
   contentReviewed,
 } = pack.content;
 

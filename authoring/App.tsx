@@ -15,6 +15,7 @@ import {
   GraduationCap,
   Info,
   Layers3,
+  Library,
   Plus,
   RotateCcw,
   Save,
@@ -54,14 +55,19 @@ import {
   readJsonFile,
 } from "./downloads";
 import { evaluateCourse, issueCounts, type AuthoringIssue } from "./quality";
+import { AdvancedEditor } from "./AdvancedEditor";
+import { MediaEditor } from "./MediaEditor";
+import { readBrowserDraft, writeBrowserDraft } from "./storage";
 
-type View = "instructions" | "setup" | "stages" | "supports" | "review";
+type View = "instructions" | "setup" | "stages" | "supports" | "advanced" | "media" | "review";
 
 const NAV: Array<{ id: View; label: string; description: string; icon: typeof Settings2 }> = [
   { id: "instructions", label: "How it works", description: "Author, review and release safely", icon: Info },
   { id: "setup", label: "Course setup", description: "Identity, ownership and sources", icon: Settings2 },
   { id: "stages", label: "Teach", description: "Lessons, questions and assignments", icon: Layers3 },
   { id: "supports", label: "Reinforce", description: "Diagnostic, cards and reference aids", icon: GraduationCap },
+  { id: "advanced", label: "Apply & reference", description: "Cases, capstone, tools and exemplars", icon: Library },
+  { id: "media", label: "Media & source deck", description: "Stage images and cited slides", icon: FileText },
   { id: "review", label: "Review & export", description: "Checks and controlled outputs", icon: ShieldCheck },
 ];
 
@@ -90,6 +96,23 @@ function nextNumericId(prefix: string, used: Iterable<string>): string {
   let number = 1;
   while (existing.has(`${prefix}-${number}`)) number += 1;
   return `${prefix}-${number}`;
+}
+
+function parseNumberRanges(value: string): number[] {
+  const numbers = new Set<number>();
+  for (const token of value.split(/[,;\s]+/).filter(Boolean)) {
+    const range = token.match(/^(\d+)[-–](\d+)$/);
+    if (range) {
+      const first = Number(range[1]);
+      const last = Number(range[2]);
+      if (last >= first && last - first <= 200) for (let number = first; number <= last; number += 1) numbers.add(number);
+    } else if (/^\d+$/.test(token)) numbers.add(Number(token));
+  }
+  return [...numbers].filter((number) => number > 0).sort((a, b) => a - b);
+}
+
+function formatNumberRanges(numbers: number[] | undefined): string {
+  return (numbers ?? []).join(", ");
 }
 
 function InputField({
@@ -252,6 +275,7 @@ export function App() {
   const [activeStage, setActiveStage] = useState(entry.content.modules[0]?.id ?? "");
   const [saveLabel, setSaveLabel] = useState("Saved locally");
   const [message, setMessage] = useState("");
+  const [browserReady, setBrowserReady] = useState(false);
   const importRef = useRef<HTMLInputElement>(null);
 
   const issues = useMemo(() => evaluateCourse(entry), [entry]);
@@ -268,17 +292,37 @@ export function App() {
   const releaseReady = contentReady && entry.manifest.status === "available" && releaseChecksComplete;
 
   useEffect(() => {
+    let cancelled = false;
+    void readBrowserDraft()
+      .then((stored) => {
+        if (cancelled || !stored) return;
+        const draft = readDraft(stored);
+        packageForExport(draft.package);
+        setEntry(draft.package);
+        setRelease(draft.release);
+        setActiveStage(draft.package.content.modules[0]?.id ?? "");
+      })
+      .catch(() => undefined)
+      .finally(() => { if (!cancelled) setBrowserReady(true); });
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    if (!browserReady) return;
     setSaveLabel("Saving…");
     const timer = window.setTimeout(() => {
-      try {
-        window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(makeDraft(entry, release)));
-        setSaveLabel("Saved locally");
-      } catch {
-        setSaveLabel("Browser storage unavailable — download a draft");
-      }
+      const draft = makeDraft(entry, release);
+      void writeBrowserDraft(draft).then(() => {
+        const compact = JSON.stringify(draft);
+        try {
+          if (compact.length < 1_500_000) window.localStorage.setItem(DRAFT_STORAGE_KEY, compact);
+          else window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+        } catch { /* IndexedDB remains the asset-capable primary store. */ }
+        setSaveLabel("Saved in this browser");
+      }).catch(() => setSaveLabel("Browser storage unavailable — download a draft"));
     }, 250);
     return () => window.clearTimeout(timer);
-  }, [entry, release]);
+  }, [browserReady, entry, release]);
 
   useEffect(() => {
     if (!entry.content.modules.some((stage) => stage.id === activeStage)) {
@@ -362,6 +406,25 @@ export function App() {
     setMessage("Started a new local draft.");
   };
 
+  const cloneTemplate = (template: TrainingPackage) => {
+    if (!window.confirm(`Start a new editable course from “${template.manifest.title}”? Your current draft will be replaced, so download it first if needed.`)) return;
+    const clone = structuredClone(template);
+    clone.manifest = {
+      ...clone.manifest,
+      id: `${template.manifest.id}-adapted`,
+      title: `Adapted ${template.manifest.title}`,
+      version: "0.1.0",
+      status: "draft",
+      reviewed: "",
+    };
+    clone.content.contentReviewed = "";
+    setEntry(clone);
+    setRelease({ ...EMPTY_RELEASE_CHECKLIST });
+    setActiveStage(clone.content.modules[0]?.id ?? "");
+    setView("setup");
+    setMessage(`Created a separate draft from ${template.manifest.title}. The published original was not changed. Give this adaptation its own stable id and complete a fresh review.`);
+  };
+
   const preview = () => {
     if (!contentReady) return;
     const url = URL.createObjectURL(new Blob([learnerHtml(entry)], { type: "text/html" }));
@@ -389,14 +452,21 @@ export function App() {
         </div>
       </div>
 
-      <Card title="The complete workflow" eyebrow="Five controlled steps">
+      <Card title="The complete workflow" eyebrow="Seven controlled steps">
         <ol className="workflow-list">
           <li><span>1</span><div><strong>Set up the course</strong><p>Name the owner, version and governing sources. Keep the status as Draft while the shape is changing.</p></div></li>
           <li><span>2</span><div><strong>Teach the subject</strong><p>Write stages in learner order, then add knowledge checks, applied scenarios and a worked assignment.</p></div></li>
           <li><span>3</span><div><strong>Reinforce it</strong><p>Add an independent diagnostic, review cards, glossary terms and observable practice contrasts.</p></div></li>
-          <li><span>4</span><div><strong>Review the whole course</strong><p>Clear the automated checks, preview the real learner player and complete the human release checklist.</p></div></li>
-          <li><span>5</span><div><strong>Choose the delivery route</strong><p>Share one offline HTML course, host it at its own URL, or install its package into the combined catalogue.</p></div></li>
+          <li><span>4</span><div><strong>Connect it to practice</strong><p>Add the cases, toolkit, capstone, field guide, source differences and exemplars the subject needs.</p></div></li>
+          <li><span>5</span><div><strong>Add useful media</strong><p>Import a source deck and stage visuals. Describe every image and connect precise citations to relevant slides.</p></div></li>
+          <li><span>6</span><div><strong>Review the whole course</strong><p>Clear the automated checks, preview the real learner player and complete the human release checklist.</p></div></li>
+          <li><span>7</span><div><strong>Choose the delivery route</strong><p>Share one offline HTML course, host it at its own URL, or install its package into the combined catalogue.</p></div></li>
         </ol>
+      </Card>
+
+      <Card title="Start from an existing published course" eyebrow="Safe editable copies">
+        <p className="section-intro">Cloning copies the complete maintained course—including cases, toolkit, capstone, reference content, exemplars and any source deck—into a new local draft. It resets the version, status and approvals. The published course remains untouched.</p>
+        <div className="template-grid">{__COURSE_TEMPLATES__.map((template) => <article key={template.manifest.id}><span className="pill">Published template</span><h3>{template.manifest.title}</h3><p>{template.manifest.summary}</p><dl><div><dt>Stages</dt><dd>{template.content.modules.length}</dd></div><div><dt>Deck</dt><dd>{template.content.slides.length ? `${template.content.slides.length} slides` : "None"}</dd></div><div><dt>Version</dt><dd>{template.manifest.version}</dd></div></dl><button type="button" className="secondary" onClick={() => cloneTemplate(template)}><Library size={17} />Clone as new course</button></article>)}</div>
       </Card>
 
       <div className="instruction-grid">
@@ -536,13 +606,33 @@ npm run verify`}</code></pre>
                 <TextAreaField label="Worked example (optional)" value={section.example ?? ""} onChange={(value) => updateStage(stage.id, (item) => {
                   const sections = [...item.sections]; sections[index] = { ...section, example: value || undefined }; return { ...item, sections };
                 })} rows={3} />
-                <fieldset className="source-picker"><legend>Sources for this section</legend>{entry.content.sources.map((sourceItem) => <label key={sourceItem.id}><input type="checkbox" checked={(section.sourceIds ?? []).includes(sourceItem.id)} onChange={(event) => updateStage(stage.id, (item) => {
-                  const sections = [...item.sections];
-                  const current = section.sourceIds ?? [];
-                  const sourceIds = event.target.checked ? [...current, sourceItem.id] : current.filter((id) => id !== sourceItem.id);
-                  sections[index] = { ...section, sourceIds };
-                  return { ...item, sections };
-                })} /><span>{sourceItem.title || sourceItem.id}</span></label>)}</fieldset>
+                <fieldset className="source-picker"><legend>Sources for this section</legend><p>Selecting a source displays its attribution in the lesson. Add a locator when the claim comes from a particular page, section or imported slide.</p>{entry.content.sources.map((sourceItem) => {
+                  const selected = (section.sourceIds ?? []).includes(sourceItem.id);
+                  const reference = section.sourceReferences?.find((item) => item.sourceId === sourceItem.id);
+                  return <div className="source-reference-editor" key={sourceItem.id}><label><input type="checkbox" checked={selected} onChange={(event) => updateStage(stage.id, (item) => {
+                    const sections = [...item.sections];
+                    const currentSection = sections[index];
+                    const currentIds = currentSection.sourceIds ?? [];
+                    const sourceIds = event.target.checked ? [...currentIds, sourceItem.id] : currentIds.filter((id) => id !== sourceItem.id);
+                    const sourceReferences = event.target.checked ? currentSection.sourceReferences : (currentSection.sourceReferences ?? []).filter((item) => item.sourceId !== sourceItem.id);
+                    sections[index] = { ...currentSection, sourceIds, sourceReferences };
+                    return { ...item, sections };
+                  })} /><span>{sourceItem.title || sourceItem.id}</span></label>{selected && <div className="form-grid"><InputField label="Page, section or locator" value={reference?.locator ?? ""} onChange={(value) => updateStage(stage.id, (item) => {
+                    const sections = [...item.sections];
+                    const currentSection = sections[index];
+                    const references = (currentSection.sourceReferences ?? []).filter((item) => item.sourceId !== sourceItem.id);
+                    references.push({ sourceId: sourceItem.id, locator: value || undefined, slideNumbers: reference?.slideNumbers });
+                    sections[index] = { ...currentSection, sourceReferences: references };
+                    return { ...item, sections };
+                  })} /><InputField label="Imported slide numbers" value={formatNumberRanges(reference?.slideNumbers)} hint="For example: 6, 9–11. These become openable citations." onChange={(value) => updateStage(stage.id, (item) => {
+                    const sections = [...item.sections];
+                    const currentSection = sections[index];
+                    const references = (currentSection.sourceReferences ?? []).filter((item) => item.sourceId !== sourceItem.id);
+                    references.push({ sourceId: sourceItem.id, locator: reference?.locator, slideNumbers: parseNumberRanges(value) });
+                    sections[index] = { ...currentSection, sourceReferences: references };
+                    return { ...item, sections };
+                  })} /></div>}</div>;
+                })}</fieldset>
               </section>
             ))}
           </div>
@@ -604,7 +694,7 @@ npm run verify`}</code></pre>
 
   const renderReview = () => (
     <div className="workspace-stack">
-      <div className="page-heading"><span className="eyebrow">5 · Review and export</span><h1>Separate machine checks from release judgement</h1><p>The Workshop can reject malformed or visibly incomplete packages. People remain responsible for subject-matter accuracy, instructional quality, handling and release.</p></div>
+      <div className="page-heading"><span className="eyebrow">7 · Review and export</span><h1>Separate machine checks from release judgement</h1><p>The Workshop can reject malformed or visibly incomplete packages. People remain responsible for subject-matter accuracy, instructional quality, handling and release.</p></div>
       <section className={`readiness ${releaseReady ? "ready" : contentReady ? "pending" : "blocked"}`}>
         <div className="readiness-icon">{releaseReady ? <Check size={30} /> : contentReady ? <ShieldCheck size={30} /> : <AlertTriangle size={30} />}</div>
         <div>
@@ -670,7 +760,7 @@ npm run verify`}</code></pre>
       <main id="studio-main" className="studio-main" tabIndex={-1}>
         <header className="topbar"><div><span className="course-kicker">Current draft</span><strong>{entry.manifest.title || "Untitled training course"}</strong></div><div className="topbar-meta"><span>v{entry.manifest.version}</span><span>{entry.content.modules.length} stage{entry.content.modules.length === 1 ? "" : "s"}</span><span>{packageForExport(entry).content.totalMinutes} min</span></div></header>
         {message && <div className="notice" role="status"><CircleHelp size={18} /><span>{message}</span><button type="button" aria-label="Dismiss message" onClick={() => setMessage("")}>×</button></div>}
-        <div className="studio-workspace">{view === "instructions" ? renderInstructions() : view === "setup" ? renderSetup() : view === "stages" ? renderStages() : view === "supports" ? renderSupports() : renderReview()}</div>
+        <div className="studio-workspace">{view === "instructions" ? renderInstructions() : view === "setup" ? renderSetup() : view === "stages" ? renderStages() : view === "supports" ? renderSupports() : view === "advanced" ? <AdvancedEditor entry={entry} setEntry={setEntry} /> : view === "media" ? <MediaEditor entry={entry} setEntry={setEntry} setMessage={setMessage} /> : renderReview()}</div>
         <footer className="step-footer">
           <button type="button" className="secondary" disabled={currentIndex === 0} onClick={() => setView(NAV[currentIndex - 1]?.id ?? "instructions")}><ChevronLeft size={17} />Previous</button>
           <span>{viewIssues ? `${viewIssues} blocking issue${viewIssues === 1 ? "" : "s"} in this step` : "This step has no blocking issues"}</span>

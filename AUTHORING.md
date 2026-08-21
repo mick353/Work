@@ -2,7 +2,7 @@
 
 The end-to-end procedure for adding a new course to this system, or revising an existing one. Follow it in order. Each phase ends in a gate that must pass before the next begins.
 
-For a trainer-authored core course, `Course-Authoring-Studio.html` provides the guided form and encoded minimum checks described in [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md). This document remains the release procedure and the authority for human content review, advanced package content and repository integration.
+For a trainer-authored course, `Course-Authoring-Studio.html` provides the guided form and encoded minimum checks described in [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md). It now covers the complete package profile, including advanced learning elements, embedded media and source decks. This document remains the release procedure and the authority for human content review and repository integration.
 
 This document says **what to do**. [STANDARDS.md](STANDARDS.md) says **what "good" means** in measurable terms, and every rule referenced here is defined there. [ARCHITECTURE.md](ARCHITECTURE.md) says how the code is put together.
 

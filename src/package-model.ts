@@ -31,6 +31,14 @@ export type LessonTable = {
   rows: string[][];
 };
 
+export type SourceReference = {
+  sourceId: string;
+  /** Human-readable locator such as "page 7", "section 3.2" or "slides 12–14". */
+  locator?: string;
+  /** Slide numbers make a deck reference openable in the shared slide viewer. */
+  slideNumbers?: number[];
+};
+
 export type LessonSection = {
   heading: string;
   body: string;
@@ -38,6 +46,7 @@ export type LessonSection = {
   example?: string;
   table?: LessonTable;
   sourceIds?: string[];
+  sourceReferences?: SourceReference[];
 };
 
 export type Assignment = {
@@ -59,6 +68,8 @@ export type Module = {
   slides: string;
   outcome: string;
   coreIdea: string;
+  /** Optional course-owned visual. Curated packages can still use registered SVG illustrations. */
+  visualAssetId?: string;
   sections: LessonSection[];
   questions: Question[];
   scenarios: Scenario[];
@@ -127,6 +138,7 @@ export type FieldGuideEntry = {
   summary: string;
   slides?: string;
   sourceIds: string[];
+  sourceReferences?: SourceReference[];
   items: { term: string; detail: string }[];
 };
 
@@ -199,6 +211,20 @@ export type Slide = {
   stage: string;
   title: string;
   text: string;
+  /** Course-owned embedded slide image; curated packages may instead use slideAssetBase. */
+  assetId?: string;
+};
+
+export type CourseAsset = {
+  id: string;
+  kind: "image" | "slide";
+  fileName: string;
+  mimeType: "image/png" | "image/jpeg" | "image/webp";
+  /** Self-contained authored packages use a validated image data URL. */
+  dataUrl: string;
+  alt: string;
+  caption?: string;
+  sourceId?: string;
 };
 
 export type PackageStatus = "draft" | "in-development" | "available" | "retired";
@@ -243,6 +269,8 @@ export type PackageContent = {
   slideCount: number;
   /** Relative public path containing slide-NN.webp, without a trailing slash. */
   slideAssetBase?: string;
+  /** Optional embedded, course-owned media used by trainer-authored packages. */
+  assets?: CourseAsset[];
   contentReviewed: string;
 };
 

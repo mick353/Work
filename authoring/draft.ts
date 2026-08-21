@@ -164,6 +164,7 @@ export function createStarterPackage(): TrainingPackage {
       exemplars: [],
       slides: [],
       slideCount: 0,
+      assets: [],
       contentReviewed: today,
     },
   };
@@ -189,6 +190,18 @@ export function addStage(entry: TrainingPackage): TrainingPackage {
 }
 
 export function removeStage(entry: TrainingPackage, moduleId: string): TrainingPackage {
+  const removed = entry.content.modules.find((module) => module.id === moduleId);
+  const retainedSlides = entry.content.slides.filter((slide) => slide.stage !== moduleId);
+  const retainedAssetIds = new Set([
+    ...entry.content.modules.filter((module) => module.id !== moduleId).map((module) => module.visualAssetId),
+    ...retainedSlides.map((slide) => slide.assetId),
+  ].filter(Boolean));
+  const removedSlideAssetIds = new Set(
+    entry.content.slides.filter((slide) => slide.stage === moduleId).map((slide) => slide.assetId).filter(Boolean),
+  );
+  const removedAssetIds = new Set(
+    [removed?.visualAssetId, ...removedSlideAssetIds].filter((assetId) => assetId && !retainedAssetIds.has(assetId)),
+  );
   const modules = entry.content.modules
     .filter((module) => module.id !== moduleId)
     .map((module, index) => ({ ...module, number: index + 1 }));
@@ -207,6 +220,9 @@ export function removeStage(entry: TrainingPackage, moduleId: string): TrainingP
         ...study,
         steps: study.steps.filter(keepQuestion),
       })),
+      slides: retainedSlides,
+      slideCount: retainedSlides.length,
+      assets: entry.content.assets?.filter((asset) => !removedAssetIds.has(asset.id)),
     },
   };
 }
@@ -261,12 +277,21 @@ export function renameSourceId(entry: TrainingPackage, oldId: string, proposed: 
         sections: module.sections.map((section) => ({
           ...section,
           sourceIds: section.sourceIds?.map((sourceId) => sourceId === oldId ? newId : sourceId),
+          sourceReferences: section.sourceReferences?.map((reference) =>
+            reference.sourceId === oldId ? { ...reference, sourceId: newId } : reference,
+          ),
         })),
       })),
       fieldGuide: entry.content.fieldGuide.map((guide) => ({
         ...guide,
         sourceIds: guide.sourceIds.map((sourceId) => sourceId === oldId ? newId : sourceId),
+        sourceReferences: guide.sourceReferences?.map((reference) =>
+          reference.sourceId === oldId ? { ...reference, sourceId: newId } : reference,
+        ),
       })),
+      assets: entry.content.assets?.map((asset) =>
+        asset.sourceId === oldId ? { ...asset, sourceId: newId } : asset,
+      ),
     },
   };
 }
@@ -311,6 +336,13 @@ export function packageForExport(source: TrainingPackage): TrainingPackage {
     entry.content.supplementaryQuestions,
   );
   entry.content.slideCount = entry.content.slides.length;
+  entry.content.assets = entry.content.assets?.map((asset) => ({
+    ...asset,
+    id: slugify(asset.id),
+    fileName: cleanText(asset.fileName),
+    alt: cleanText(asset.alt),
+    caption: asset.caption ? cleanText(asset.caption) : undefined,
+  }));
   entry.content.contentReviewed = entry.manifest.reviewed;
   return entry;
 }

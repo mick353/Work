@@ -5,7 +5,7 @@ The trainer-facing authoring tool for Product Practice courses.
 - **Online:** <https://mick353.github.io/Work/course-workshop/>
 - **From a copied repository:** open `Course-Authoring-Studio.html` in a modern browser.
 
-Both are the same self-contained application. No account or server is required for authoring. Drafts autosave under a Workshop-specific key in that browser and are not uploaded. Use **Download draft** to move work to another computer or retain a deliberate backup.
+Both are the same self-contained application. No account or server is required for authoring. Drafts autosave to a Workshop-specific IndexedDB store in that browser, which has enough capacity for embedded decks and images, and are not uploaded. Small legacy drafts are also mirrored to the original Workshop `localStorage` key for compatibility. Use **Download draft** to move work to another computer or retain a deliberate backup.
 
 The online Workshop is public, but it contains no draft or course content from its users. A course becomes public only when its approved output is deliberately added to a public repository or public host.
 
@@ -14,16 +14,18 @@ The online Workshop is public, but it contains no draft or course content from i
 The first page in the Workshop is the trainer instruction page. The controlled path is:
 
 1. **Course setup** — record stable identity, ownership, version, status and governing sources.
-2. **Teach** — write stages in learner order, with explanations, checks, scenarios and an assignment.
+2. **Teach** — write stages in learner order, with explanations, checks, scenarios, an assignment and precise source locators.
 3. **Reinforce** — add a diagnostic, recall cards, glossary terms and observable practice contrasts.
-4. **Review** — clear encoded checks and preview the course in the real learner player.
-5. **Release** — record the subject-matter, learning-flow, audience/handling and release decisions; set the course status to **Available**; choose an output.
+4. **Apply and reference** — add the worked cases, toolkit, capstone, field guide, source differences and exemplars the course needs.
+5. **Media and source deck** — import a PDF or ordered slide images, assign slides to stages, and add course-owned stage visuals with text alternatives.
+6. **Review** — clear encoded checks and preview the course in the real learner player.
+7. **Release** — record the subject-matter, learning-flow, audience/handling and release decisions; set the course status to **Available**; choose an output.
 
 Status alone does not release a course. Final outputs unlock only when the course has no blocking content errors, the complete release checklist is recorded and status is **Available**. Preview and editable draft remain separate from release.
 
 ## Current authoring scope
 
-The core profile includes:
+The complete editable profile includes:
 
 - course identity, ownership, semantic version and source register;
 - ordered stages with outcomes, core ideas and sourced lesson sections;
@@ -33,9 +35,43 @@ The core profile includes:
 - a separate diagnostic pool;
 - definition, application and discrimination review cards;
 - glossary terms and observable practice contrasts;
-- local autosave, draft backup/restore, live checks and the shared learner preview.
+- worked cases, including stage-linked decisions, tempting alternatives, artefacts and teaching insights;
+- toolkit templates with reusable prompts and worked examples;
+- capstone briefs, production steps, completion checks and a rubric;
+- field-guide entries with precise source and slide references;
+- explicit source differences where the course deliberately explains or applies a source differently;
+- complete worked documents and exemplars, including metadata, paragraphs, tables, artefact blocks and coaching notes;
+- a complete source deck imported from PDF or ordered PNG/JPEG/WebP images;
+- one optional PNG/JPEG/WebP visual per course stage, with required alternative text and optional caption/source;
+- asset-capable local autosave, draft backup/restore, live checks and the shared learner preview.
 
-Worked cases, capstone, field guide, toolkit templates, divergences, worked documents and image/slide import remain outside the browser editor. They stay optional in the package contract and are reported honestly as warnings or notes rather than invented.
+Direct PowerPoint parsing is deliberately not built into the browser. Save the deck as PDF, or export its slides as PNG/JPEG/WebP, before import. SVG upload is excluded because the exported package treats media as inert images and does not accept script-capable image content.
+
+## Starting from an existing course
+
+The Workshop carries editable templates for every maintained course in the published catalogue. **Clone as new course** makes a deep local copy and preserves its lessons, assessments, advanced learning content and embedded source deck. It then:
+
+- gives the copy a new course id and an “Adapted” title;
+- resets its version to `0.1.0` and status to **Draft**;
+- clears the review date and every release declaration;
+- leaves the published source course unchanged.
+
+The trainer must give the adaptation its own permanent id, review its inherited and changed content, and make a fresh release decision. A clone is never an in-place update to an existing released course.
+
+## Source attribution and deck links
+
+The **Sources for this section** checkbox is meaningful even without a deck: it displays a source attribution chip under the lesson section. The adjacent fields make that attribution precise:
+
+- **Page, section or locator** records human-readable detail such as `page 7`, `section 3.2` or `slides 12–14`.
+- **Imported slide numbers** links that attribution to slide records in the course. In the learner player, the source chip becomes a button that opens the cited slide.
+
+Field-guide entries use the same source-reference model. Source ids are renamed consistently across lessons, field-guide entries and course-owned media.
+
+## Media handling
+
+Imported media is resized to a maximum 1,600-pixel edge and embedded as validated image data inside the draft/package. This keeps tablet authoring, standalone learner HTML and repository handoff self-contained. Limits are 50 MB per selected source file, 150 PDF pages and 80 MB of embedded package data.
+
+PDF import renders each page, extracts searchable text where available, and creates editable slide title, stage, text and alternative-text fields. Image import uses natural filename order. The Workshop recalculates each stage's slide range whenever slides are added, removed or reassigned.
 
 ## Outputs and what happens next
 
@@ -80,6 +116,8 @@ The controlled handoff for adding the course to the combined catalogue, giving i
     README.md
 ```
 
+Workshop-imported media is embedded in `course-package.json` and the generated learner page. The public asset folder is reserved for a future controlled external-asset route; it is not required for Workshop images or slides.
+
 The ZIP never installs, commits or publishes itself.
 
 ## Releasing from a copied repository
@@ -122,7 +160,7 @@ A release custodian reviews the course and exact diff, commits the intended file
 
 ## Validation and authority boundary
 
-The automated profile checks package structure, source links, lesson depth, assessment counts, distractor feedback, worked-answer depth, diagnostics, review-card kinds, glossary coverage and contrasts. Warnings identify optional elements and detectable item risks.
+The automated profile checks package structure, source and slide links, asset type/safety/alternative text, lesson depth, assessment counts, distractor feedback, worked-answer depth, diagnostics, review-card kinds, glossary coverage, contrasts and the completeness of any case, toolkit, capstone, field-guide, divergence or exemplar added. Warnings identify omitted optional elements and detectable item risks.
 
 Those checks do not establish factual correctness or teaching effectiveness. The release record captures declarations made by reviewers; it is not independent review evidence. Release still requires an accountable person to verify the subject matter, read the course in learner order, confirm audience/handling and approve the exact version.
 
@@ -139,8 +177,8 @@ The normal `npm run build` builds the learner site first and then writes the ide
 
 ## Remaining product work
 
-- trainer usability testing with real material;
-- optional advanced-element editors;
-- browser-based image and slide import within the course namespace;
+- trainer usability testing with real material, including tablet file handling and terminology;
 - retained/datable release archives and release notes;
 - explicit migration choices when a breaking revision changes learner progress.
+
+Arbitrary multi-course bundle composition is deliberately parked. One course per export remains the default delivery shape; the maintained combined catalogue remains a developer/release-custodian surface.

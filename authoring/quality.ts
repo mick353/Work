@@ -3,7 +3,7 @@ import { validateTrainingPackage } from "../src/package-validation";
 import { packageForExport } from "./draft";
 
 export type IssueSeverity = "error" | "warning" | "note";
-export type IssueArea = "setup" | "stages" | "supports" | "review";
+export type IssueArea = "setup" | "stages" | "supports" | "advanced" | "media" | "review";
 
 export type AuthoringIssue = {
   id: string;
@@ -84,7 +84,8 @@ export function evaluateCourse(source: TrainingPackage): AuthoringIssue[] {
   try {
     entry = packageForExport(source);
     for (const message of validateTrainingPackage(entry)) {
-      add({ severity: "error", area: "review", title: "Package structure is invalid", detail: message });
+      const area: IssueArea = /asset|slide/i.test(message) ? "media" : /case|capstone|field-guide|exemplar|divergence|toolkit/i.test(message) ? "advanced" : "review";
+      add({ severity: "error", area, title: "Package structure is invalid", detail: message });
     }
   } catch (error) {
     add({
@@ -214,18 +215,52 @@ export function evaluateCourse(source: TrainingPackage): AuthoringIssue[] {
     add({ severity: "error", area: "review", title: "Question ids are not unique", detail: "Every question, scenario and diagnostic item needs a unique id across the course." });
   }
 
-  if (!entry.content.caseStudies.length) {
-    add({ severity: "warning", area: "review", title: "No worked case is included", detail: "The core course will work, but learners will not see the stages connected in one realistic example." });
+  if (!entry.content.caseStudies.length) add({ severity: "warning", area: "advanced", title: "No worked case is included", detail: "The core course will work, but learners will not see the stages connected in one realistic example." });
+  entry.content.caseStudies.forEach((study, index) => {
+    if (!study.id.trim() || !study.title.trim() || !study.subtitle.trim() || !study.summary.trim() || !study.closing.trim() || !study.steps.length) {
+      add({ severity: "error", area: "advanced", title: `Complete worked case ${index + 1}`, detail: "A case needs its identity, opening, at least one stage-linked step and closing lesson." });
+    }
+    if (study.steps.some((step) => !step.moduleId.trim() || !step.heading.trim() || !step.body.trim() || !step.insight.trim())) {
+      add({ severity: "error", area: "advanced", title: `${study.title || `Case ${index + 1}`} has an incomplete step`, detail: "Every case step needs a course stage, heading, event and teaching insight." });
+    }
+  });
+
+  entry.content.toolkitTemplates.forEach((tool, index) => {
+    if (!tool.id.trim() || !tool.title.trim() || !tool.prompt.trim() || !tool.example.trim()) {
+      add({ severity: "error", area: "advanced", title: `Complete toolkit item ${index + 1}`, detail: "Every tool needs an id, title, reusable prompt or structure and worked example." });
+    }
+  });
+
+  const anyCapstone = Boolean(entry.content.capstoneBriefs.length || entry.content.capstoneSteps.length || entry.content.capstoneRubric.length);
+  if (!anyCapstone) {
+    add({ severity: "warning", area: "advanced", title: "No capstone is included", detail: "The course can be exported, but it has no integrated final application." });
+  } else {
+    if (!entry.content.capstoneBriefs.length || !entry.content.capstoneSteps.length || !entry.content.capstoneRubric.length) {
+      add({ severity: "error", area: "advanced", title: "The capstone is only partly built", detail: "A capstone needs at least one brief, one production step and one rubric criterion." });
+    }
+    if (entry.content.capstoneBriefs.some((item) => !item.id.trim() || !item.title.trim() || !item.short.trim() || !item.brief.trim() || !item.twist.trim())) add({ severity: "error", area: "advanced", title: "A capstone brief is incomplete", detail: "Complete every brief identity, situation and complication." });
+    if (entry.content.capstoneSteps.some((item) => !item.id.trim() || !item.title.trim() || !item.prompt.trim() || !item.checks.length || item.checks.some((check) => !check.trim()))) add({ severity: "error", area: "advanced", title: "A capstone production step is incomplete", detail: "Every step needs a prompt and at least one completion check." });
+    if (entry.content.capstoneRubric.some((item) => !item.id.trim() || !item.title.trim() || !item.detail.trim())) add({ severity: "error", area: "advanced", title: "A capstone rubric item is incomplete", detail: "Every criterion needs a title and observable evidence description." });
   }
-  if (!entry.content.capstoneSteps.length || !entry.content.capstoneBriefs.length) {
-    add({ severity: "warning", area: "review", title: "No capstone is included", detail: "The course can be exported, but it has no integrated final application." });
-  }
-  if (!entry.content.fieldGuide.length) {
-    add({ severity: "note", area: "review", title: "No field guide is included", detail: "This is optional; lesson and support content remain available through search and the complete guide." });
-  }
-  if (!entry.content.exemplars.length) {
-    add({ severity: "note", area: "review", title: "No worked document is included", detail: "Add one later if the course teaches learners to produce a formal artefact." });
-  }
+
+  if (!entry.content.fieldGuide.length) add({ severity: "note", area: "advanced", title: "No field guide is included", detail: "This is optional; lesson and support content remain available through search and the complete guide." });
+  entry.content.fieldGuide.forEach((guide, index) => {
+    if (!guide.id.trim() || !guide.title.trim() || !guide.summary.trim() || !guide.items.length || guide.items.some((item) => !item.term.trim() || !item.detail.trim())) {
+      add({ severity: "error", area: "advanced", title: `Complete field-guide entry ${index + 1}`, detail: "A guide entry needs its identity, summary and at least one complete term-detail pair." });
+    }
+  });
+  entry.content.divergences.forEach((item, index) => {
+    if (!item.id.trim() || !item.topic.trim() || !item.deck.trim() || !item.here.trim() || !item.why.trim()) add({ severity: "error", area: "advanced", title: `Complete source difference ${index + 1}`, detail: "State the topic, source position, course position and reason for the difference." });
+  });
+  if (!entry.content.exemplars.length) add({ severity: "note", area: "advanced", title: "No worked document is included", detail: "Add one if the course teaches learners to produce a formal artefact." });
+  entry.content.exemplars.forEach((item, index) => {
+    if (!item.id.trim() || !item.tab.trim() || !item.title.trim() || !item.subtitle.trim() || !item.intro.trim() || !item.closing.trim() || !item.sections.length) add({ severity: "error", area: "advanced", title: `Complete exemplar ${index + 1}`, detail: "A worked document needs its identity, introduction, at least one section and closing note." });
+    if (item.sections.some((section) => !section.heading.trim() || !section.note.trim() || (!(section.body?.length) && !(section.body2?.length) && !section.artefact?.trim() && !(section.table?.rows.length)))) add({ severity: "error", area: "advanced", title: `${item.title || `Exemplar ${index + 1}`} has an incomplete section`, detail: "Each section needs a heading, content and coaching note." });
+  });
+
+  const assets = entry.content.assets ?? [];
+  if (entry.content.slides.some((slide) => !slide.title.trim())) add({ severity: "error", area: "media", title: "A source slide has no title", detail: "Give every slide a concise title so learners and citations can identify it." });
+  if (assets.some((asset) => !asset.alt.trim())) add({ severity: "error", area: "media", title: "An image has no text alternative", detail: "Describe the useful information in every imported slide and stage visual." });
 
   return issues;
 }

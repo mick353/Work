@@ -745,10 +745,10 @@ if (!existsSync(docsDir)) {
   */
   const packageCount = (standaloneHtml.match(/"status":\s*"(available|in-development)"/g) ?? []).length || 2;
   const stageCountAll = (standaloneHtml.match(/"coreIdea":/g) ?? []).length || 20;
-  // Allow 31 KB per stage: the authority notes and worked explanations added
-  // in the subject-matter audit took the measured bundle just above 30 KB per
-  // stage after the shared shell. This still catches asset/dependency bloat.
-  const budgetKb = 500 + 31 * stageCountAll;
+  // Allow 32 KB per stage: the authority notes and required worked-reasoning
+  // passages take the measured bundle just above 31 KB per stage after the
+  // shared shell. This still catches asset/dependency bloat.
+  const budgetKb = 500 + 32 * stageCountAll;
   const pagesKb = Buffer.byteLength(pagesHtml, "utf8") / 1024;
   check(
     "Pages build stays small for the content it carries",

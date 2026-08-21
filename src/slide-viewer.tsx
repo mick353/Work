@@ -22,7 +22,7 @@
  * one way only.
  */
 
-import { manifest, modules, slideAssetBase, SLIDE_COUNT, slides } from "./content";
+import { assets, manifest, modules, slideAssetBase, SLIDE_COUNT, slides } from "./content";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Images, Maximize2, X } from "lucide-react";
 import type { Slide } from "./package-model";
@@ -47,6 +47,9 @@ import type { Slide } from "./package-model";
 let inlined: Record<string, string> | null | undefined;
 
 export function slideSrc(n: number): string {
+  const embeddedAssetId = slides.find((slide) => slide.n === n)?.assetId;
+  const embeddedAsset = embeddedAssetId ? assets.find((asset) => asset.id === embeddedAssetId) : undefined;
+  if (embeddedAsset) return embeddedAsset.dataUrl;
   if (inlined === undefined) {
     const element = document.getElementById("slide-data");
     try {
@@ -78,6 +81,8 @@ export function slideLabel(slide: Slide): string {
  * in an attribute only a screen reader reaches.
  */
 export function slideAlt(slide: Slide): string {
+  const embeddedAsset = slide.assetId ? assets.find((asset) => asset.id === slide.assetId) : undefined;
+  if (embeddedAsset?.alt.trim()) return embeddedAsset.alt;
   return slide.title
     ? `Slide ${slide.n}: ${slide.title}`
     : `Slide ${slide.n}: an illustration with no text on it`;

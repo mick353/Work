@@ -10,7 +10,7 @@
 import { build } from "esbuild";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { buildAuthoredPlayerTemplate } from "./authored-player.mjs";
 
 const projectDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -19,7 +19,7 @@ const authoringDir = path.join(projectDir, "authoring");
 const outputFile = path.join(projectDir, "Course-Authoring-Studio.html");
 const publishedDir = path.join(projectDir, "docs", "course-workshop");
 const publishedFile = path.join(publishedDir, "index.html");
-const studioVersion = "0.2.0";
+const studioVersion = "0.3.0";
 
 function escapeForScript(source) {
   return source.replace(/[ \t]+$/gm, "").replace(/<\/script/gi, "<\\/script");
@@ -39,6 +39,47 @@ await rm(tempDir, { recursive: true, force: true });
 await mkdir(tempDir, { recursive: true });
 
 const playerTemplate = await buildAuthoredPlayerTemplate(projectDir, path.join(tempDir, "player"));
+const pdfWorkerSource = await readFile(path.join(projectDir, "node_modules", "pdfjs-dist", "build", "pdf.worker.min.mjs"), "utf8");
+
+// Bundle the maintained course catalogue as data, then embed safe editable
+// copies in the Workshop. Product Management's public slide images are folded
+// into its template so cloning it never depends on repository-relative files.
+const catalogueFile = path.join(tempDir, "catalogue.mjs");
+await build({
+  entryPoints: [path.join(projectDir, "src", "package-catalog.ts")],
+  bundle: true,
+  platform: "node",
+  format: "esm",
+  target: "node18",
+  outfile: catalogueFile,
+  logLevel: "warning",
+});
+const { catalogPackages } = await import(`${pathToFileURL(catalogueFile).href}?built=${Date.now()}`);
+const courseTemplates = [];
+for (const sourcePackage of catalogPackages) {
+  const template = structuredClone(sourcePackage);
+  const assets = [...(template.content.assets ?? [])];
+  if (template.content.slideAssetBase && template.content.slides.length) {
+    for (const slide of template.content.slides) {
+      const fileName = `slide-${String(slide.n).padStart(2, "0")}.webp`;
+      const sourceFile = path.join(projectDir, "public", template.content.slideAssetBase, fileName);
+      const data = await readFile(sourceFile);
+      const assetId = `slide-${String(slide.n).padStart(3, "0")}`;
+      assets.push({
+        id: assetId,
+        kind: "slide",
+        fileName,
+        mimeType: "image/webp",
+        dataUrl: `data:image/webp;base64,${data.toString("base64")}`,
+        alt: `Slide ${slide.n}: ${slide.title}`,
+      });
+      slide.assetId = assetId;
+    }
+    template.content.slideAssetBase = undefined;
+  }
+  template.content.assets = assets;
+  courseTemplates.push(template);
+}
 
 // Bundle Course Workshop, embedding the already-built player as an inert string.
 await build({
@@ -54,6 +95,8 @@ await build({
     "process.env.NODE_ENV": '"production"',
     __PLAYER_TEMPLATE__: JSON.stringify(playerTemplate),
     __STUDIO_VERSION__: JSON.stringify(studioVersion),
+    __PDF_WORKER_SOURCE__: JSON.stringify(pdfWorkerSource),
+    __COURSE_TEMPLATES__: JSON.stringify(courseTemplates),
   },
   outdir: path.join(tempDir, "studio"),
   entryNames: "app",

@@ -68,9 +68,9 @@ The catalogue is validated before `trainingPackages` is exported. A package that
 
 Views never import a course folder. `src/content.ts` resolves the active package and exposes stable names to the shared player.
 
-## 5. Assets and cross-course keys
+## 5. Assets, source references and cross-course keys
 
-Asset paths are relative to `public/` and must stay under the owning course's namespace. Source decks are imported with:
+Curated repository courses may keep asset paths relative to `public/`; those paths must stay under the owning course's namespace. Their source decks are imported by a developer with:
 
 ```bash
 python3 scripts/import-slides.py <course-id> path/to/deck.pptx
@@ -78,7 +78,16 @@ python3 scripts/import-slides.py <course-id> path/to/deck.pptx
 
 Slide data in a standalone export is keyed by the same relative path used by the web build, for example `courses/pm-fundamentals/slides/slide-01.webp`.
 
-Stage ids only need to be unique inside one course. Shared-player mappings that sit outside a package must therefore use both identities. Illustrations are registered as `<package-id>:<stage-id>`.
+Course Workshop uses the same player through a different, self-contained asset route:
+
+- `PackageContent.assets` contains PNG, JPEG or WebP data URLs only;
+- `Module.visualAssetId` selects an embedded image for a stage;
+- `Slide.assetId` selects an embedded source-slide image;
+- `LessonSection.sourceReferences` and `FieldGuideEntry.sourceReferences` add human locators and optional slide numbers to an existing source id.
+
+The runtime validator rejects unknown asset/source ids, duplicate slide numbers, unsafe filenames, unsupported/SVG media, mismatched data-URL types, missing alternative text, missing cited slides and packages above the embedded-media limit. An embedded package needs no public binary-asset folder: standalone, hosted and repository outputs carry the same canonical data and remain self-contained.
+
+Stage ids only need to be unique inside one course. Shared-player mappings that sit outside a package must therefore use both identities. Curated illustrations are registered as `<package-id>:<stage-id>`; an authored `visualAssetId` takes precedence, and a course-neutral SVG remains the fallback.
 
 ## 6. Export modes
 
@@ -156,13 +165,12 @@ The browser tool can produce a self-contained learner HTML file, an isolated hos
 
 The repository ZIP carries the intended `src/courses/<course-id>/` folder, canonical JSON, entry module, hosted page, validation report and declared release record. `scripts/install-course-package.mjs` treats those records as untrusted input: it rejects unsafe paths or mismatched identities, recalculates structural and authoring checks and refuses incomplete approvals before any write.
 
-The implemented authoring profile covers course identity and sources, stages and lesson sections, questions and scenarios, assignments, diagnostic questions, review cards, glossary terms and contrasts. A generic course-neutral illustration prevents a generated stage from rendering a silent blank.
+The implemented authoring profile covers course identity and sources; stages and sourced lesson sections; questions, scenarios and assignments; diagnostics, review cards, glossary and contrasts; worked cases; toolkit templates; complete capstones; field-guide entries; explicit source differences; worked-document exemplars; precise source/slide references; PDF or ordered-image source-deck import; and course-owned stage visuals.
 
-Work that remains outside the current browser authoring profile:
+Course Workshop embeds every maintained catalogue course as a safe editable template during its build. A clone carries the complete course and its deck, then receives a new id/title, version `0.1.0`, Draft status and empty review/release state. The maintained original is not edited.
 
-- cases, capstone, toolkit, field-guide, divergence and exemplar editors;
-- browser-based slide conversion and course-owned image handling;
-- retained/datable release archives and release notes;
-- explicit migrations for breaking course revisions.
+Asset-rich drafts use browser IndexedDB, with downloaded draft JSON as the portable source. Final outputs still carry one course only. Arbitrary multi-course composition is not part of the current product boundary.
+
+Work that remains outside the browser profile is release history/notes, deliberate migration choices for breaking revisions, and findings from trainer usability testing. Direct PowerPoint parsing also remains outside: save a deck as PDF or slide images for browser import.
 
 See [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md) for the tool workflow, validation boundary and distribution decision.

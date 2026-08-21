@@ -35,13 +35,13 @@ If you are an AI agent picking this up cold: read AUTHORING.md end to end before
 
 **On the web:** <https://mick353.github.io/Work/>
 
-**For trainers creating a course:** <https://mick353.github.io/Work/course-workshop/>. Its first page is the complete author/review/release guide. Drafts remain in that browser; using the published tool does not add anything to the learner site.
+**For trainers creating a course:** <https://mick353.github.io/Work/course-workshop/>. Its first page is the complete author/review/release guide. A trainer can start blank or safely clone a maintained course, edit the complete learning package, import a PDF/image source deck and stage visuals, preview it, and export one learner course. Drafts remain in that browser; using the published tool does not add anything to the learner site.
 
 **On your phone:** open that link, then add it to your home screen — *Share → Add to Home Screen* on iOS, or *⋮ → Install app* on Android. It installs with its own icon, opens without browser chrome, and works offline afterwards.
 
 **Anywhere else:** download **`Product-Management-Learning-System.html`** and open it in any modern browser. That one file is everything — both courses, all 98 slides, no installation, no server, no network. It works from a USB stick, an email attachment or a network share.
 
-Progress is stored in the browser's local storage and never leaves the device. There is no account, no login, no server and no telemetry of any kind. That also means progress does **not** follow you between machines — use **Settings → Download a backup** and **Restore from a backup** to move it.
+Learner progress is stored in the browser's local storage and never leaves the device. Course Workshop drafts use a separate local IndexedDB store so decks and images fit. There is no account, no login, no server and no telemetry of any kind. That also means progress and drafts do **not** follow you between machines — use **Settings → Download a backup** for learner progress and **Download draft** in Course Workshop for authoring work.
 
 The recommended loop:
 
@@ -118,7 +118,7 @@ npm run verify     # all learner, export, Workshop and release checks
 
 The PWA pieces are deliberately kept out of the standalone file: a service worker registration that can never succeed on `file://` would only log errors. The service worker's cache name is stamped with a hash of the built HTML, so each release invalidates the last.
 
-`npm run build:authoring` writes the same self-contained Workshop to **`Course-Authoring-Studio.html`** for a copied/offline repository and **`docs/course-workshop/index.html`** for its separate Pages URL. The published tool contains no user draft and still performs all authoring locally. See [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md) for the trainer instructions, output choices and controlled install/host commands.
+`npm run build:authoring` writes the same self-contained Workshop to **`Course-Authoring-Studio.html`** for a copied/offline repository and **`docs/course-workshop/index.html`** for its separate Pages URL. It embeds the shared learner player, the PDF import worker and safe editable copies of maintained courses (including the Product Management deck); it contains no user draft and still performs all authoring locally. See [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md) for the trainer instructions, output choices and controlled install/host commands.
 
 ### Deploying
 
@@ -170,9 +170,13 @@ docs/                  GENERATED — the GitHub Pages build. Do not edit by hand
   course-workshop/      GENERATED separate trainer-facing authoring URL
 exports/               GENERATED, ignored — one folder per isolated course
 authoring/              Separate Course Workshop React source
+  AdvancedEditor.tsx   Cases, toolkit, capstone, guide, differences, exemplars
+  MediaEditor.tsx      Source-deck and course-owned image workflow
+  media.ts             PDF/image conversion into inert embedded assets
+  storage.ts           Asset-capable local draft persistence (IndexedDB)
 scripts/
   build.mjs            Combined or selected-course bundle
-  build-authoring.mjs  Course Workshop + embedded generic learner template
+  build-authoring.mjs  Workshop + player, PDF worker and editable course templates
   authored-player.mjs  Trusted generated-course player shared by build/inspection
   install-course-package.mjs  Inspect/install/host an approved Workshop ZIP
   export-all.mjs       Runs a selected-course build for every course folder

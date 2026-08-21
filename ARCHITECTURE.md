@@ -42,7 +42,7 @@ The practical consequence for anyone editing: **the active package is fixed for 
 
 ## 2. Storage
 
-All state is `localStorage`. There is no server, no account, no sync and no telemetry — verified, not assumed.
+Learner state is `localStorage`. Course Workshop uses a separate local IndexedDB store for asset-capable authoring drafts. Neither application has a server, account, sync or telemetry — verified, not assumed.
 
 Two tiers, and the split matters:
 
@@ -87,9 +87,11 @@ The service worker's cache name is stamped with a hash of the built HTML (`__BUI
 
 ### Course Workshop build
 
-`scripts/build-authoring.mjs` creates `Course-Authoring-Studio.html` as a separate standalone browser application and writes the identical bytes to `docs/course-workshop/index.html`. During the build it also bundles the existing player against a JSON package supplied at runtime, then embeds that inert player template inside Course Workshop. **Export training HTML** inserts one validated package into that template in the browser.
+`scripts/build-authoring.mjs` creates `Course-Authoring-Studio.html` as a separate standalone browser application and writes the identical bytes to `docs/course-workshop/index.html`. During the build it bundles the existing player against a JSON package supplied at runtime, embeds that inert player template, embeds the PDF.js worker, and serialises every maintained catalogue course as an editable template. Curated slide files are converted to embedded course assets in that template so a clone never depends on repository-relative media. **Export training HTML** inserts one validated package into the player template in the browser.
 
-This is reuse of the real player, not a second learner implementation. Generated courses inherit the same storage namespacing, navigation, mastery behaviour and single-course UI. Course Workshop itself uses a separate storage key; the published copy contains no draft state and makes no network request while authoring.
+This is reuse of the real player, not a second learner implementation. Generated courses inherit the same storage namespacing, navigation, mastery behaviour and single-course UI. Course Workshop draft state uses a separate IndexedDB database because embedded decks exceed practical `localStorage` limits; small drafts are mirrored to the original Workshop key for compatibility. The published copy contains no draft state and makes no network request while authoring.
+
+Trainer media is course data, not an executable upload. The package contract admits PNG/JPEG/WebP data URLs with a bounded total size, required alternative text and optional source ownership. PDF import renders pages into those inert image assets and extracts searchable text; SVG and arbitrary file types are rejected. `Module.visualAssetId`, `Slide.assetId` and source references connect the data to the existing stage, deck and citation views.
 
 The repository ZIP is an output boundary, not a repository mutation. It carries canonical package data, the target course folder, an isolated hosted page, encoded-check results and the declared human release record. `scripts/install-course-package.mjs` independently rechecks it and supports two explicit mutations: `--install` adds the course folder/assets plus one catalogue entry; `--host` adds only `public/training/<course-id>/`. Both refuse overwrites and never commit or push.
 
