@@ -1,6 +1,6 @@
 # Delivery Assurance & Quality — Course Concept
 
-**Status:** Concept approved for authority mapping and stakeholder research; not yet approved for implementation  
+**Status:** Concept approved by the project owner for authority mapping and stakeholder research; not approved or endorsed by DEWR and not yet approved for implementation<br>
 **Repository:** `mick353/Work`  
 **Context:** Department of Employment and Workplace Relations (DEWR) digital delivery practice  
 **Working title:** **Delivery Assurance & Quality**  
@@ -19,7 +19,7 @@ The next phase is **authority mapping and stakeholder research**. No course pack
 1. the real DEWR release / assurance decision the course is intended to improve;
 2. the departmental artefacts and processes that govern that decision;
 3. the relevant accountabilities and delegations;
-4. which obligations are discretionary, formally risk-acceptible, or mandatory;
+4. which obligations are discretionary, subject to formal acceptance or exception, or mandatory;
 5. which recurring delivery failures matter most in practice;
 6. whether the proposed course stages remain the right structure once those facts are known.
 
@@ -307,7 +307,7 @@ Examples may include:
 
 These may be capable of explicit acceptance by the appropriate authority if the exposure is understood and proportionate.
 
-## 9.2 Controlled or formally acceptible compliance / governance risk
+## 9.2 Compliance / governance risk subject to formal acceptance or exception
 
 Some obligations may permit exceptions, risk acceptance, waivers or formal treatment only through a defined process or authority.
 
@@ -891,7 +891,7 @@ Candidate tools include:
 
 4. **Constraint / Risk Classification Prompt**
    - discretionary;
-   - controlled / formally acceptible;
+   - subject to formal acceptance or exception;
    - mandatory.
 
 5. **Metric Interpretation Checklist**
@@ -1098,7 +1098,7 @@ Before release:
 1. Every load-bearing claim must resolve to an approved source or be clearly identified as course interpretation.
 2. Departmental authority, whole-of-government requirements, comparator practice and course-created tools must remain distinct.
 3. No internal or sensitive material may enter the public repository without explicit approval for public release.
-4. The course must distinguish discretionary risk, formally controlled / acceptible risk, and mandatory constraints.
+4. The course must distinguish discretionary risk, risk subject to formal acceptance or exception, and mandatory constraints.
 5. Scenario outcomes must be deliberately balanced across release, conditional release and delay.
 6. At least one scenario must show that the cautious QA position is disproportionate.
 7. At least one scenario must show that apparently positive evidence is genuinely sufficient.
@@ -1158,7 +1158,7 @@ The next phase should complete the following:
 3. Identify operational-readiness or service-transition guidance.
 4. Identify formal risk-acceptance authorities and escalation paths.
 5. Identify relevant security, privacy, accessibility, data and records obligations.
-6. Determine which of those obligations are mandatory, formally exceptable, or discretionary.
+6. Determine which obligations are mandatory, which are subject to a formal exception or acceptance process, and which are discretionary.
 7. Review relevant whole-of-government standards and guidance.
 8. Review relevant ANAO observations or published assurance lessons where they add useful reference-class context.
 9. Determine whether testing terminology follows an established DEWR standard or local convention.
