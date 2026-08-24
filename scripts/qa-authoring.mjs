@@ -216,6 +216,7 @@ check("A new course is blocked until required content is written", await page.lo
 check("A blank course does not claim a duration before lesson content exists", /Duration pending/i.test(await page.locator(".topbar-meta").innerText()));
 check("The built-in instructional page explains all three learner delivery routes", /offline HTML course.*host it at its own URL.*combined catalogue/is.test(await page.locator("body").innerText()));
 check("The studio makes its local-only boundary visible", /not uploaded/i.test(await page.locator(".privacy-banner").innerText()));
+check("Draft controls disclose portable embedded media and estimated size", /save.share complete draft/i.test(await page.locator(".sidebar-actions").innerText()) && /embedded slides and images.*approximately.*(?:KB|MB)/is.test(await page.locator(".draft-backup-note").innerText()));
 check("The studio makes no network requests", networkRequests.length === 0, networkRequests[0] ?? "offline only");
 const instructionAxe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
 const instructionSerious = instructionAxe.violations.filter((item) => item.impact === "serious" || item.impact === "critical");
@@ -240,6 +241,7 @@ check("Reinforce explains that its content belongs to the active stage", /active
 await page.getByRole("button", { name: /Review & export/ }).click();
 check("Review checks are grouped by step and filterable", await page.locator(".review-step-summary > div").count() === 6 && await page.getByRole("button", { name: /Blockers/ }).count() === 1);
 check("Review explains issue navigation and the human release boundary", /relevant field.*human learning-flow review/is.test(await page.locator(".step-connection").innerText()));
+check("Draft output explains the complete trainer handoff", /Complete editable draft.*another trainer.*embedded slides, images.*approximately.*(?:KB|MB)/is.test(await page.locator("body").innerText()));
 await page.locator(".issue.error").filter({ hasText: "Add the course title" }).click();
 await page.waitForTimeout(50);
 check("A review issue opens and focuses its exact field", await page.evaluate(() => document.activeElement?.id === "manifest-title" && document.activeElement?.scrollIntoView !== undefined));
@@ -311,7 +313,7 @@ check("Asset-rich drafts autosave in IndexedDB", indexedDraft?.package?.content?
 
 const [cloneDownload] = await Promise.all([
   featurePage.waitForEvent("download"),
-  featurePage.locator(".sidebar-actions").getByRole("button", { name: "Save draft" }).click(),
+  featurePage.locator(".sidebar-actions").getByRole("button", { name: "Save/share complete draft" }).click(),
 ]);
 const cloneFile = path.join(qaDir, "adapted-pm-course-draft.json");
 await cloneDownload.saveAs(cloneFile);

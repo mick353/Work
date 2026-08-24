@@ -113,10 +113,10 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .status-pending { color: #f5d681; border-color: #e0a52b; }
 .status-blocked { color: #ffc1b8; border-color: #ff8f80; }
 .sidebar-status small { display: flex; align-items: center; gap: 6px; margin-top: 9px; color: #9fb9af; font-size: .69rem; }
-.sidebar-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.sidebar-actions { display: grid; grid-template-columns: 1fr; gap: 6px; }
 .sidebar-actions button { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; padding: 7px 8px; color: #dce9e4; border: 1px solid rgba(255,255,255,.12); border-radius: 8px; background: rgba(255,255,255,.04); font-size: .71rem; }
-.sidebar-actions button:last-child { grid-column: 1 / -1; }
 .sidebar-actions button:hover { background: rgba(255,255,255,.09); }
+.draft-backup-note { padding: 2px 5px 4px; color: #a9c0b7; font-size: .61rem; line-height: 1.4; text-align: center; }
 
 .studio-main { grid-column: 2; min-width: 0; }
 .topbar {
@@ -441,8 +441,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
   .studio-sidebar nav { display: flex; overflow-x: auto; }
   .studio-sidebar nav > button { flex: 0 0 190px; grid-template-columns: 24px 19px minmax(0,1fr) auto; padding: 9px; }
   .studio-sidebar nav small { display: none; }
-  .sidebar-actions { display: flex; margin-top: 9px; }
-  .sidebar-actions button, .sidebar-actions button:last-child { grid-column: auto; }
+  .sidebar-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 9px; }
+  .sidebar-actions button { grid-column: auto; }
+  .draft-backup-note { grid-column: 1 / -1; max-width: none; text-align: center; }
   .studio-main { min-width: 0; }
   .topbar { top: 0; }
   .step-footer { left: 0; }

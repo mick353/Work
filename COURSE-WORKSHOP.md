@@ -85,7 +85,11 @@ Large decks are retained in full but their editors are displayed in batches of 2
 
 ### Editable draft JSON
 
-The only re-editable Workshop source. It includes the current release checklist and is available even when incomplete. It is not a learner course and cannot be installed into the repository.
+The only re-editable Workshop source. It includes all course content, the current release checklist, imported slide images, stage visuals, image descriptions and source links. The Workshop shows its approximate backup size before download. It remains available even when incomplete and is not a learner course or repository package.
+
+A trainer can send this JSON file to another trainer, who uses **Load draft** and continues from the same editable state. The receiving browser then keeps its own local autosave. This is a deliberate file handoff, not live synchronisation: later changes made by the two trainers are separate and are not automatically merged.
+
+For a PDF source deck, the JSON retains the Workshop's rendered slide images and extracted searchable text, not the original PDF file. Registered source records retain citation details and relationships; they do not contain copies of other source documents. Because the embedded media travels with the JSON, handle the draft according to the sensitivity of the course material.
 
 ### Standalone learner HTML
 

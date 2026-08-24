@@ -92,6 +92,12 @@ function wordCount(value: string | undefined): number {
   return (value ?? "").trim().split(/\s+/).filter(Boolean).length;
 }
 
+function formatFileSize(bytes: number): string {
+  if (bytes < 1_000) return `${bytes} B`;
+  if (bytes < 1_000_000) return `${(bytes / 1_000).toFixed(bytes < 10_000 ? 1 : 0)} KB`;
+  return `${(bytes / 1_000_000).toFixed(1)} MB`;
+}
+
 function nextNumericId(prefix: string, used: Iterable<string>): string {
   const existing = new Set(used);
   let number = 1;
@@ -316,6 +322,7 @@ export function App() {
   const [view, setView] = useState<View>("instructions");
   const [activeStage, setActiveStage] = useState(entry.content.modules[0]?.id ?? "");
   const [saveLabel, setSaveLabel] = useState("Saved locally");
+  const [draftBytes, setDraftBytes] = useState(() => new Blob([JSON.stringify(makeDraft(initialDraft.package, initialDraft.release))]).size);
   const [message, setMessage] = useState("");
   const [browserReady, setBrowserReady] = useState(false);
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("all");
@@ -328,6 +335,7 @@ export function App() {
   const issues = useMemo(() => evaluateCourse(entry), [entry]);
   const counts = useMemo(() => issueCounts(issues), [issues]);
   const currentStage = entry.content.modules.find((stage) => stage.id === activeStage) ?? entry.content.modules[0];
+  const draftSizeLabel = formatFileSize(draftBytes);
   const hasDurationEvidence = entry.content.modules.some((stage) => stage.sections.some((section) => wordCount(section.body) > 0));
   const contentReady = counts.errors === 0;
   const releaseChecksComplete =
@@ -362,6 +370,7 @@ export function App() {
       const draft = makeDraft(entry, release);
       void writeBrowserDraft(draft).then(() => {
         const compact = JSON.stringify(draft);
+        setDraftBytes(new Blob([compact], { type: "application/json" }).size);
         try {
           if (compact.length < 1_500_000) window.localStorage.setItem(DRAFT_STORAGE_KEY, compact);
           else window.localStorage.removeItem(DRAFT_STORAGE_KEY);
@@ -922,7 +931,7 @@ npm run verify`}</code></pre>
           <article><div className="export-icon"><FileText size={24} /></div><h3>Standalone learner course</h3><p>One self-contained offline HTML file. Share it directly; it has no authoring controls, catalogue or switcher.</p><button type="button" className="primary" disabled={!releaseReady} onClick={() => exportLearnerHtml(entry)}><Download size={17} />Export training HTML</button></article>
           <article><div className="export-icon"><FolderGit2 size={24} /></div><h3>Individually hosted course</h3><p>A small ZIP containing an <code>index.html</code> for its own <code>training/&lt;course-id&gt;/</code> web address.</p><button type="button" className="primary" disabled={!releaseReady} onClick={() => exportHostedCourse(entry, release)}><Download size={17} />Export hosted-course ZIP</button></article>
           <article><div className="export-icon"><Archive size={24} /></div><h3>Repository package</h3><p>The canonical course folder, hosted page, release evidence and metadata used by the controlled inspect/install commands.</p><button type="button" className="primary" disabled={!releaseReady} onClick={() => exportDeveloperPackage(entry, issues, release)}><Download size={17} />Export repository ZIP</button></article>
-          <article><div className="export-icon"><FileJson size={24} /></div><h3>Editable draft</h3><p>A portable JSON backup that Course Workshop can load again. It remains available while incomplete and is never a learner course.</p><button type="button" className="secondary" onClick={() => exportDraft(entry, release)}><Save size={17} />Download draft</button></article>
+          <article><div className="export-icon"><FileJson size={24} /></div><h3>Complete editable draft</h3><p>A portable JSON handoff that another trainer can load and continue. It includes embedded slides, images and the current review checklist. Approximately {draftSizeLabel}; it is never a learner course.</p><button type="button" className="secondary" onClick={() => exportDraft(entry, release)}><Save size={17} />Download complete draft</button></article>
         </div>
       </Card>
       <section className="release-boundary"><ShieldCheck size={22} /><div><strong>Repository and publication boundary</strong><p>Exporting downloads files to this computer only. It does not alter a copied repository or publish online. A release custodian uses the commands on How it works, inspects the generated diff, runs the full verification suite and deliberately pushes the approved change.</p></div></section>
@@ -948,7 +957,8 @@ npm run verify`}</code></pre>
         <div className="sidebar-actions">
           <input ref={importRef} className="visually-hidden" type="file" accept="application/json,.json" aria-label="Load a Course Workshop draft" onChange={(event) => void handleImport(event.target.files?.[0])} />
           <button type="button" onClick={() => importRef.current?.click()}><Upload size={16} />Load draft</button>
-          <button type="button" onClick={() => exportDraft(entry, release)}><Download size={16} />Save draft</button>
+          <button type="button" onClick={() => exportDraft(entry, release)}><Download size={16} />Save/share complete draft</button>
+          <small className="draft-backup-note">Includes embedded slides and images · approximately {draftSizeLabel}</small>
           <button type="button" onClick={startAgain}><RotateCcw size={16} />New course</button>
         </div>
       </aside>
