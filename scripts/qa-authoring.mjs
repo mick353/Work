@@ -271,7 +271,12 @@ check("Published Product Management is offered as an editable template", await p
 featurePage.once("dialog", (dialog) => void dialog.accept());
 const cloneClick = pmTemplate.getByRole("button", { name: "Clone as new course" }).click();
 await featurePage.waitForSelector(".operation-overlay");
-check("Large-template cloning shows visible progress before changing the draft", /source slides/i.test(await featurePage.locator(".operation-overlay").innerText()) || /preparing/i.test(await featurePage.locator(".operation-overlay").innerText()));
+const cloneProgressText = await featurePage.locator(".operation-overlay").innerText();
+check(
+  "Large-template cloning shows visible progress before changing the draft",
+  /source slides|preparing/i.test(cloneProgressText),
+  cloneProgressText,
+);
 await cloneClick;
 await featurePage.waitForSelector("text=Created a separate draft from Product Management Fundamentals");
 check("Cloning creates a visibly separate draft", /Adapted Product Management Fundamentals/i.test(await featurePage.locator(".topbar").innerText()));
