@@ -4,7 +4,7 @@ The end-to-end procedure for adding a new course to this system, or revising an 
 
 For a trainer-authored course, `Course-Authoring-Studio.html` provides the guided form and encoded minimum checks described in [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md). It now covers the complete package profile, including advanced learning elements, embedded media and source decks. This document remains the release procedure and the authority for human content review and repository integration.
 
-This document says **what to do**. [STANDARDS.md](STANDARDS.md) says **what "good" means** in measurable terms, and every rule referenced here is defined there. [ARCHITECTURE.md](ARCHITECTURE.md) says how the code is put together.
+This document says **what to do**. [STANDARDS.md](STANDARDS.md) distinguishes the shared package contract, the current Workshop release profile and course-specific regression rules. [ARCHITECTURE.md](ARCHITECTURE.md) says how the code is put together.
 
 ---
 
@@ -77,7 +77,7 @@ Rules that apply to every section — thresholds in [STANDARDS.md](STANDARDS.md)
 
 - Lead with what the practice achieves; use failure as contrast. Roughly 90% of section openers state the positive first.
 - Every load-bearing claim carries `sourceIds`.
-- One worked-reasoning passage per stage: a decision made badly, why that fails, the better move with the thinking exposed.
+- Expose applied reasoning rather than stating conclusions alone: show the decision, the tempting weak move, why it fails and the better move. A separately named substantial `Worked reasoning:` passage in every stage is currently a Product Management course regression, not a universal package requirement.
 - No development history, no version notes, no commentary on colleagues' work. Rationale for design decisions belongs in code comments.
 - Use the governing artefact's own vocabulary. Where the course introduces its own term, it goes in the glossary.
 
@@ -89,7 +89,7 @@ Rules that apply to every section — thresholds in [STANDARDS.md](STANDARDS.md)
 
 ## Phase 3 — Assessment
 
-Four pools, each with a different job. Keep them separate.
+Five assessment collections, each with a different job. Keep them separate.
 
 | Pool | Purpose | Drawn how |
 |---|---|---|
@@ -99,12 +99,12 @@ Four pools, each with a different job. Keep them separate.
 | `diagnosticQuestions` | Recommends a starting stage | One per stage, at random |
 | `practiceQuestions` | Mixed practice | Round-robin across stages |
 
-Item-writing rules — every one is enforced by a check:
+Item-writing rules. The player/Workshop enforce the structural rules; maintained-course suites also measure batch-level patterns. Do not assume one passing item proves the quality of the whole bank:
 
 1. Exactly four options because that is the current player and QA contract. This is a project format, not a universal item-writing law.
 2. `optionNotes` has four entries; the correct one is `""`, the other three explain why that option is wrong.
 3. **The correct answer must not be systematically identifiable by length.** Measure the batch rather than rejecting an otherwise sound item merely because its key happens to be longest.
-4. Options approximately equal in length. Mean key/distractor ratio under the threshold.
+4. Keep options approximately equal in length and measure the mean key/distractor ratio across the bank. The Workshop warns about a conspicuous individual key; the deeper maintained-course suite measures the batch.
 5. Distractors must be plausible and wrong for a stateable reason.
 6. Every stage needs at least one diagnostic question. The diagnostic draws one per stage; a stage absent from the pool is silently excluded from the recommendation.
 7. Ids unique across the whole package.
@@ -121,7 +121,7 @@ These arrays do not share one keying or coverage rule. Where an entry carries `m
 
 | Array | Shape | Coverage rule |
 |---|---|---|
-| `flashcards` | `id`, `moduleId`, `kind` (definition / application / discrimination), `front`, `back` | Current full-package profile: 5+ per stage |
+| `flashcards` | `id`, `moduleId`, `kind` (definition / application / discrimination), `front`, `back` | Workshop profile: all 3 kinds per stage; a maintained course may declare a higher retrieval-card profile |
 | `glossary` | `term`, `definition`, `origin`, optional `moduleId` | Every term the course uses that its learner may not know; any supplied stage id must resolve |
 | `contrasts` | `moduleId`, `good`, `usual`, `tell` | Current full-package profile: 1+ per stage |
 | `fieldGuide` | `id`, `title`, `summary`, `sourceIds`, `items[{term, detail}]` | Package-level lookup material; all source ids resolve |
@@ -131,7 +131,7 @@ These arrays do not share one keying or coverage rule. Where an entry carries `m
 
 The `tell` in a contrast must be an **observable check** the learner can run, not a restatement of the good practice.
 
-`divergences` is not optional housekeeping. Anything the course adds beyond its source is declared here, so a learner knows which wording is the department's and which is the course's.
+Where the course materially adds to, clarifies or departs from its spine, declare that boundary in `divergences` so a learner knows which wording is the source's and which is the course's. Use an intentional empty array where the distinction genuinely does not apply; do not manufacture filler.
 
 **Produce:** all seven arrays required by `PackageContent`. Use `[]` where an optional section genuinely does not apply; do not manufacture filler merely to make an array non-empty.
 
@@ -150,9 +150,9 @@ The `tell` in a contrast must be an **observable check** the learner can run, no
 
 Each case step names the decision on the table **before** saying what the team did. A case where everything went well teaches nothing; at least one case carries `outcome: "corrected"`.
 
-**Produce:** cases covering every stage, and a capstone that walks the learner through producing the real artefact.
+**Produce:** enough cases to exercise the consequential decisions and a capstone that walks the learner through producing the real artefact. Maintain a stage-coverage map so any uncovered stage is deliberate rather than accidental.
 
-**Gate:** every stage appears in at least one case study.
+**Gate:** every case and capstone element included is complete and stage links resolve. Apply the course's declared coverage profile: Product Management currently requires four cases covering every stage; the shared Workshop profile allows optional cases and blocks partially authored ones.
 
 ---
 
@@ -178,7 +178,7 @@ Each case step names the decision on the table **before** saying what the team d
 2. Add `index.ts`, assemble a complete `TrainingPackage`, and export it as both a named and default export.
 3. Add the manifest: `schemaVersion`, semantic `version`, stable `id`, `title`, `subtitle`, `publisher`, `sourceAuthor?`, `source`, `reviewed`, `status`, `summary`, `arc`.
 4. Register that entry module once in `src/package-catalog.ts`.
-5. **Add an illustration for every stage** in `illustrations.tsx` and register it under `<package-id>:<stage-id>`. A missing key renders nothing and reports no error.
+5. For a curated repository course, add a meaningful illustration for every stage in `illustrations.tsx` and register it under `<package-id>:<stage-id>`. Workshop-authored courses may use an embedded stage image or the deliberate course-neutral fallback.
 6. Derive `minutes` for every stage via `withDerivedMinutes()`.
 7. Put binary assets under `public/courses/<course-id>/`; never add them to another course's folder.
 
@@ -195,13 +195,10 @@ Illustration rules:
 
 ## Phase 8 — Verify
 
-Run in this order. Do not skip to the end.
+Run the complete release command. It performs typechecking, both builds, combined learner QA, every isolated export, Workshop QA and release-command QA:
 
 ```bash
-npm run typecheck
-npm run build
-npm run qa          # combined catalogue
-npm run qa:exports  # every isolated course export
+npm run verify
 ```
 
 Then, by hand:
@@ -219,7 +216,7 @@ Then, by hand:
 5. **Print the guide and the completion record** and read them. Measuring the PDF is not reading it.
 6. `scripts/walkthrough.mjs <packageId>` automates 3 and 4 across every stage.
 
-**Gate:** the full suite green, and every item above done by hand at least once.
+**Gate:** the full suite green, the new or changed course's declared profile exercised, and every item above done by hand at least once. A green catalogue total is not a substitute for confirming that course-specific checks actually ran against the changed package.
 
 ---
 
@@ -319,7 +316,7 @@ Committed to memory or checked deliberately — nothing in this list produces an
 
 | Fault | Symptom |
 |---|---|
-| Missing `<packageId>:<moduleId>` illustration | Blank space where the diagram belongs |
+| Missing or wrong `<packageId>:<moduleId>` illustration | A generic fallback or the wrong conceptual diagram appears instead of the intended course visual |
 | `moduleId` naming a stage that does not exist | Content unreachable |
 | A stage missing from the diagnostic pool | Excluded from the recommendation |
 | Course name or stage count hardcoded in a view | Wrong package's name after switching |
@@ -328,6 +325,8 @@ Committed to memory or checked deliberately — nothing in this list produces an
 | `grid-template-columns: 1fr` around a `<pre>` or table | Horizontal overflow, often clipped |
 | Colour changed without its background | Text the same colour as what is behind it |
 | Flat shuffle over a question pool | A practice set drawn from one stage |
+| Source URL using an active or unintended scheme | A published source link becomes unsafe; current structural validation does not yet whitelist schemes |
+| Approval record reused after content changes without a version change | The declaration still matches id/version even though it is not bound to an exact-content digest |
 
 ## What no check will find
 

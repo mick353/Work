@@ -2,7 +2,7 @@
 
 How this repository fits together, for someone arriving with only the code.
 
-The short version: it is a React app with no backend, no accounts and no network calls, which renders one **training package** at a time out of a registry. It can build the combined catalogue or replace that catalogue at build time with one isolated course, and each mode emits a standalone HTML file and a web/PWA folder.
+The short version: it is a React app with no application backend, accounts or telemetry, which renders one **training package** at a time out of a registry. The standalone learner and authoring files work entirely locally; the published PWA naturally fetches its static HTML and assets from its host. The build can preserve the combined catalogue or replace it at bundle time with one isolated course, and each mode emits a standalone HTML file and a web/PWA folder.
 
 ---
 
@@ -42,7 +42,7 @@ The practical consequence for anyone editing: **the active package is fixed for 
 
 ## 2. Storage
 
-Learner state is `localStorage`. Course Workshop uses a separate local IndexedDB store for asset-capable authoring drafts. Neither application has a server, account, sync or telemetry — verified, not assumed.
+Learner state is `localStorage`. Course Workshop uses a separate local IndexedDB store for asset-capable authoring drafts. Neither application has an application server, account, sync or telemetry. This describes data movement, not data sensitivity: learner answers, authoring text and downloaded JSON can still contain personal, sensitive or internal material.
 
 Two tiers, and the split matters:
 
@@ -91,9 +91,9 @@ The service worker's cache name is stamped with a hash of the built HTML (`__BUI
 
 This is reuse of the real player, not a second learner implementation. Generated courses inherit the same storage namespacing, navigation, mastery behaviour and single-course UI. Course Workshop draft state uses a separate IndexedDB database because embedded decks exceed practical `localStorage` limits; small drafts are mirrored to the original Workshop key for compatibility. The published copy contains no draft state and makes no network request while authoring.
 
-Trainer media is course data, not an executable upload. The package contract admits PNG/JPEG/WebP data URLs with a bounded total size, required alternative text and optional source ownership. PDF import renders pages into those inert image assets and extracts searchable text; SVG and arbitrary file types are rejected. `Module.visualAssetId`, `Slide.assetId` and source references connect the data to the existing stage, deck and citation views.
+Trainer media is course data, not an executable upload. The package contract admits PNG/JPEG/WebP data URLs with a bounded total size, required alternative text and optional source ownership. PDF import renders pages into those inert image assets and extracts searchable text; SVG and arbitrary file types are rejected. `Module.visualAssetId`, `Slide.assetId` and source references connect the data to the existing stage, deck and citation views. Imported JSON is checked against the declared data-URL prefix; independent binary-signature validation remains a hardening opportunity.
 
-The repository ZIP is an output boundary, not a repository mutation. It carries canonical package data, the target course folder, an isolated hosted page, encoded-check results and the declared human release record. `scripts/install-course-package.mjs` independently rechecks it and supports two explicit mutations: `--install` adds the course folder/assets plus one catalogue entry; `--host` adds only `public/training/<course-id>/`. Both refuse overwrites and never commit or push.
+The repository ZIP is an output boundary, not a repository mutation. It carries canonical package data, the target course folder, an isolated hosted page, encoded-check results and the declared human release record. `scripts/install-course-package.mjs` independently rechecks it and supports two explicit mutations: `--install` adds the course folder/assets plus one catalogue entry; `--host` adds only `public/training/<course-id>/`. Both refuse overwrites and never commit or push. The release record is currently matched to package id and version rather than a digest of the exact canonical content, so the custodian's review of the inspected package and Git diff remains load-bearing.
 
 ---
 
@@ -140,16 +140,16 @@ Behaviours that produce no error and no visible symptom until someone reports on
 
 `scripts/qa.mjs` runs the comprehensive suite against the real combined artefact in Chromium, writing the exact result to `qa-report.json`. `scripts/qa-exports.mjs` builds every course separately and checks content/asset isolation, single-course routes and chrome, browser/runtime errors, accessibility and capstone filenames/content. `scripts/qa-authoring.mjs` verifies Course Workshop, its release gate, safe ZIP layouts and generated learner course. `scripts/qa-release.mjs` exercises package inspection, catalogue installation, individual hosting, overwrite/tamper refusal and route-specific offline document caching. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
 
-Coverage: question-bank integrity and item-writing statistics, scoring arithmetic, mastery gating, backup round-trip including malformed-file rejection, package switching *through the button*, contrast across all 40 stage-page/theme combinations, axe-core rules tagged to WCAG 2.0/2.1 A/AA with serious and critical impacts, line measure and horizontal overflow from 320 px to 2560 px, the project's 24 px target-size rule, keyboard and focus, reduced motion, and console hygiene. This is regression evidence rather than complete accessibility certification.
+Coverage includes question-bank integrity and item-writing statistics, scoring arithmetic, mastery gating, backup round-trip including malformed-file rejection, package switching *through the button*, contrast across all 40 stage-page/theme combinations, axe-core rules tagged to WCAG 2.0/2.1 A/AA with serious and critical impacts, line measure and horizontal overflow at 390, 768, 1100, 1440 and 1920 px, the project's 24 px target-size rule, keyboard and focus, reduced motion, and console hygiene. Catalogue-contract and selected authority checks run across the registered packages; some deep content and end-to-end learner assertions in `qa.mjs` are deliberately Product-Management-specific. The individual-export suite loops over every package but does not repeat the whole deep-content suite. This is regression evidence rather than complete course validation or accessibility certification.
 
 Two rules govern additions to it:
 
 1. **Test through the control the user touches.** Seeding `localStorage` and reloading proves the content layer resolved and nothing else. That is exactly how a broken package switch shipped.
 2. **After writing a check, break the thing deliberately and confirm the check fails.** Three checks in this suite were once passing while measuring nothing.
 
-Use `qa-report.json` as the result for a run. The suite's shuffled-question paths were made deterministic for the current release; investigate missing or changed checks by name rather than maintaining a hard-coded expected total in documentation.
+Use `qa-report.json` as the result for a run. The suite's shuffled-question paths are deterministic; investigate missing or changed checks by name rather than maintaining a hard-coded expected total in documentation.
 
-[AUTHORING.md](AUTHORING.md) is the procedure for adding or revising a course. [STANDARDS.md](STANDARDS.md) holds every threshold this suite enforces.
+[AUTHORING.md](AUTHORING.md) is the procedure for adding or revising a course. [STANDARDS.md](STANDARDS.md) records the scope of shared, Workshop and course-specific thresholds.
 
 ---
 

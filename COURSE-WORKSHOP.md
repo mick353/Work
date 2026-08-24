@@ -5,7 +5,7 @@ The trainer-facing authoring tool for Product Practice courses.
 - **Online:** <https://mick353.github.io/Work/course-workshop/>
 - **From a copied repository:** open `Course-Authoring-Studio.html` in a modern browser.
 
-Both are the same self-contained application. No account or server is required for authoring. Drafts autosave to a Workshop-specific IndexedDB store in that browser, which has enough capacity for embedded decks and images, and are not uploaded. Small legacy drafts are also mirrored to the original Workshop `localStorage` key for compatibility. Use **Download draft** to move work to another computer or retain a deliberate backup.
+Both are the same self-contained application. No account or application server is required for authoring. Drafts autosave to a Workshop-specific IndexedDB store in that browser, which has enough capacity for embedded decks and images, and are not uploaded by the application. Small legacy drafts are also mirrored to the original Workshop `localStorage` key for compatibility. Use **Save/share complete draft** to move work to another computer or retain a deliberate backup.
 
 The online Workshop is public, but it contains no draft or course content from its users. A course becomes public only when its approved output is deliberately added to a public repository or public host.
 
@@ -24,6 +24,8 @@ The first page in the Workshop is the trainer instruction page. Before entering 
 Status alone does not release a course. Final outputs unlock only when the course has no blocking content errors, the complete release checklist is recorded and status is **Available**. Preview and editable draft remain separate from release.
 
 New courses begin with the content-review and source-checked dates blank. Enter those dates only after the corresponding review has actually occurred. The Review page groups issues by authoring step, filters blockers/warnings/notes, and sends each issue back to its relevant field with keyboard focus. Every step change starts at and focuses the new heading.
+
+An existing browser may still contain a draft saved by an earlier Workshop build. That stored draft is deliberately preserved, including any dates it already contains. Until the planned legacy-draft migration is implemented, reconfirm or clear inherited review dates before relying on them; use **Start new** when the intention is a genuinely blank course.
 
 Each authoring step contains a concise **How this step connects** explanation. Course setup reports where every source is currently used; Teach reports the diagnostic, cards, glossary, contrast, cases and media connected to the active stage; Apply and reference explains the learner destination or stage/source relationship for every optional content type; Media shows the complete register → import → review → cite sequence. These are guidance and live summaries, not extra course fields.
 
@@ -51,6 +53,8 @@ The complete editable profile includes:
 - one optional PNG/JPEG/WebP visual per course stage, with required alternative text and optional caption/source;
 - asset-capable local autosave, draft backup/restore, live checks and the shared learner preview.
 
+This is the current strict authoring profile, not a universal claim that every valid learning intervention needs the same volume. The Workshop currently expects at least 300 body words, four knowledge questions, exactly two scenarios, the three review-card kinds, a glossary entry, a practice contrast and a substantial worked answer for each stage. Whether shorter course profiles should use different gates is a trainer-pilot decision recorded in [ROADMAP.md](ROADMAP.md).
+
 Direct PowerPoint parsing is deliberately not built into the browser. Save the deck as PDF, or export its slides as PNG/JPEG/WebP, before import. SVG upload is excluded because the exported package treats media as inert images and does not accept script-capable image content.
 
 ## Starting from an existing course
@@ -75,7 +79,7 @@ Field-guide entries use the same source-reference model. Source ids are renamed 
 
 ## Media handling
 
-Imported media is resized to a maximum 1,600-pixel edge and embedded as validated image data inside the draft/package. This keeps tablet authoring, standalone learner HTML and repository handoff self-contained. Limits are 50 MB per selected source file, 150 PDF pages and 80 MB of embedded package data.
+Imported media is resized to a maximum 1,600-pixel edge and embedded as validated image data inside the draft/package. This keeps tablet authoring, standalone learner HTML and repository transfer self-contained. Limits are 50 MB per selected source file, 150 PDF pages and 80 MB of embedded package data.
 
 PDF import renders each page, extracts searchable text where available, and creates editable slide title, stage, text and alternative-text fields. Image import uses natural filename order. The Workshop recalculates each stage's slide range whenever slides are added, removed or reassigned.
 
@@ -87,7 +91,7 @@ Large decks are retained in full but their editors are displayed in batches of 2
 
 The only re-editable Workshop source. It includes all course content, the current release checklist, imported slide images, stage visuals, image descriptions and source links. The Workshop shows its approximate backup size before download. It remains available even when incomplete and is not a learner course or repository package.
 
-A trainer can send this JSON file to another trainer, who uses **Load draft** and continues from the same editable state. The receiving browser then keeps its own local autosave. This is a deliberate file handoff, not live synchronisation: later changes made by the two trainers are separate and are not automatically merged.
+A trainer can send this JSON file to another trainer, who uses **Load draft** and continues from the same editable state. The receiving browser then keeps its own local autosave. This is a portable draft transfer, not live synchronisation: later changes made by the two trainers are separate and are not automatically merged. The current draft format records when it was saved but does not yet carry stable draft ownership, revision history, change summaries or merge support.
 
 For a PDF source deck, the JSON retains the Workshop's rendered slide images and extracted searchable text, not the original PDF file. Registered source records retain citation details and relationships; they do not contain copies of other source documents. Because the embedded media travels with the JSON, handle the draft according to the sensitivity of the course material.
 
@@ -110,7 +114,7 @@ This is useful for a non-repository host. When this repository is the host, use 
 
 ### Repository package ZIP
 
-The controlled handoff for adding the course to the combined catalogue, giving it an individual site address, or both:
+The controlled release package for adding the course to the combined catalogue, giving it an individual site address, or both:
 
 ```text
 <course-id>-course-package/
@@ -174,7 +178,9 @@ A release custodian reviews the course and exact diff, commits the intended file
 
 The automated profile checks package structure, source and slide links, asset type/safety/alternative text, lesson depth, assessment counts, distractor feedback, worked-answer depth, diagnostics, review-card kinds, glossary coverage, contrasts and the completeness of any case, toolkit, capstone, field-guide, divergence or exemplar added. Warnings identify omitted optional elements and detectable item risks.
 
-Those checks do not establish factual correctness or teaching effectiveness. The release record captures declarations made by reviewers; it is not independent review evidence. Release still requires an accountable person to verify the subject matter, read the course in learner order, confirm audience/handling and approve the exact version.
+Those checks do not establish factual correctness or teaching effectiveness. The release record captures declarations made by reviewers; it is not independent review evidence. It currently matches the course by id and version rather than by a digest of the exact canonical content. Until exact-content binding is implemented, the release custodian must confirm that the inspected package and repository diff are the content that was reviewed and approved.
+
+Source links are trainer-authored package data. Current validation checks their surrounding source records but does not yet restrict URL schemes. A release custodian must confirm every published source link is an approved web address; automated scheme restriction is recorded as release hardening in [ROADMAP.md](ROADMAP.md).
 
 ## Build and verification
 
@@ -189,8 +195,6 @@ The normal `npm run build` builds the learner site first and then writes the ide
 
 ## Remaining product work
 
-- trainer usability testing with real material, including tablet file handling and terminology;
-- retained/datable release archives and release notes;
-- explicit migration choices when a breaking revision changes learner progress.
+The prioritised current list is maintained in [ROADMAP.md](ROADMAP.md). The immediate items are legacy-draft migration, release/package hardening, course-profile QA, real trainer and manual accessibility testing, release/draft lineage and deliberate curriculum-version migration.
 
 Arbitrary multi-course bundle composition is deliberately parked. One course per export remains the default delivery shape; the maintained combined catalogue remains a developer/release-custodian surface.

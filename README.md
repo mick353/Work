@@ -21,15 +21,24 @@ Each document has one job. Start with the one that matches what you are doing.
 |---|---|
 | **README.md** (this file) | You want to know what the system is, what ships in it, and how to run it |
 | **[AUTHORING.md](AUTHORING.md)** | You are adding a course or revising one. The end-to-end procedure, in order, with a gate at each phase |
-| **[STANDARDS.md](STANDARDS.md)** | You need the measurable definition of "good" — every threshold the check suite enforces |
+| **[STANDARDS.md](STANDARDS.md)** | You need the measurable definition of "good" and the scope of shared, Workshop and course-specific checks |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | You are changing the player rather than the content |
 | **[COURSE-PACKAGE-FORMAT.md](COURSE-PACKAGE-FORMAT.md)** | You need the folder contract, package schema, versioning rules or export commands |
 | **[COURSE-WORKSHOP.md](COURSE-WORKSHOP.md)** | You are using or maintaining the separate trainer-facing course authoring tool |
 | **[ROADMAP.md](ROADMAP.md)** | You want to know what remains beyond the implemented player, exports and authoring profile |
 | **[NOTICE.md](NOTICE.md)** | Provenance, status and takedown contact |
-| **[CODEX-HANDOFF-2026-08-20.md](CODEX-HANDOFF-2026-08-20.md)** | You need the evidence and authority-sensitive corrections behind the current release |
+| **[DELIVERY-ASSURANCE-QUALITY-COURSE-PROPOSAL.md](DELIVERY-ASSURANCE-QUALITY-COURSE-PROPOSAL.md)** | You are reviewing the proposed third course; it is a concept and research brief, not an implemented package |
+| **[RELEASE-NOTES-2026-08-20.md](RELEASE-NOTES-2026-08-20.md)** | You need the historical record of the authority-sensitive corrections released on 20 August 2026 |
 
 If you are an AI agent picking this up cold: read AUTHORING.md end to end before changing any content, and STANDARDS.md before writing any assessment item. Both are written to be followed without further context.
+
+## Current status
+
+- The combined learner site publishes two maintained packages: Product Management Fundamentals and Closure Reports.
+- Both packages can also be built and distributed independently without the catalogue or the other course's content.
+- Course Workshop covers the complete current package shape, including advanced learning content, embedded media and source decks. It is suitable for demonstration and controlled trainer pilots.
+- Repository installation and online publication remain release-custodian actions. Browser authoring never changes Git or publishes a course by itself.
+- The remaining operational work—including legacy-draft migration, exact-content release evidence, course-profile QA, trainer usability testing and manual accessibility testing—is recorded in [ROADMAP.md](ROADMAP.md).
 
 ## Use it
 
@@ -41,7 +50,7 @@ If you are an AI agent picking this up cold: read AUTHORING.md end to end before
 
 **Anywhere else:** download **`Product-Management-Learning-System.html`** and open it in any modern browser. That one file is everything — both courses, all 98 slides, no installation, no server, no network. It works from a USB stick, an email attachment or a network share.
 
-Learner progress is stored in the browser's local storage and never leaves the device. Course Workshop drafts use a separate local IndexedDB store so decks and images fit. There is no account, no login, no server and no telemetry of any kind. That also means progress and drafts do **not** follow you between machines — use **Settings → Download a backup** for learner progress and **Download draft** in Course Workshop for authoring work.
+Learner progress is stored in the browser's local storage and is not transmitted by the application. Course Workshop drafts use a separate local IndexedDB store so decks and images fit. There is no account, login, application server or telemetry. Locally entered learner answers and trainer-authored material can still contain personal, sensitive or internal information, so downloaded backups and draft files must be handled appropriately. Progress and drafts do **not** follow you between machines—use **Settings → Download a backup** for learner progress and **Save/share complete draft** in Course Workshop for authoring work.
 
 The recommended loop:
 
@@ -53,7 +62,7 @@ The recommended loop:
 
 ## What a learner gets
 
-Common to both packages: staged lessons with a worked-reasoning passage each, knowledge checks with feedback on *every* option, decision scenarios, a spaced-repetition card deck, mixed practice, a diagnostic that recommends where to start, worked case studies, a multi-part capstone with a self-assessment rubric, a toolkit of templates, a field guide, a glossary, a printable full-course guide, full-text search, results charts, light and dark themes, JSON backup and restore, and a printable record of completion.
+Common to both packages: substantial staged lessons with worked reasoning and applied examples, knowledge checks with feedback on *every* option, decision scenarios, a spaced-repetition card deck, mixed practice, a diagnostic that recommends where to start, worked case studies, a multi-part capstone with a self-assessment rubric, a toolkit of templates, a field guide, a glossary, a printable full-course guide, full-text search, results charts, light and dark themes, JSON backup and restore, and a printable record of completion.
 
 Per package:
 
@@ -74,8 +83,8 @@ Per package:
 | Course additions | 7 | 7 |
 | Source slides | 98, all in the app | — |
 | Worked documents | — | The full template and the Tier 3 form, each complete with commentary |
-| Sources | 16 | 17 |
-| Reading time | ~1h 55m | ~2h 40m |
+| Sources | 16 | 19 |
+| Reading time | ~1h 55m | ~2h 55m |
 
 Question counts are the assessed items — knowledge checks, scenarios and the diagnostic pool. The mixed-practice pool is separate, so a good diagnostic score means the ideas transfer rather than that you recognise the wording.
 
@@ -149,9 +158,9 @@ The script reads the stage-to-slide mapping from `src/courses/<course-id>/course
 
 ### QA
 
-`scripts/qa.mjs` runs the comprehensive suite against the real combined artefact in a real browser and writes the exact result to `qa-report.json`. `scripts/qa-exports.mjs` builds each course separately and verifies bundle isolation, asset isolation, single-course navigation, accessibility and course-scoped capstone downloads. `scripts/qa-authoring.mjs` verifies the separate authoring tool, its release gate and generated outputs. `scripts/qa-release.mjs` proves controlled inspection/installation/hosting, overwrite and tamper refusal, and distinct service-worker caching for nested pages. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` runs the combined-site browser suite and writes its exact result to `qa-report.json`. Its package-contract and selected authority checks cover the full catalogue; some deep content and learner-journey regressions remain specific to Product Management Fundamentals and are identified as such in [STANDARDS.md](STANDARDS.md). `scripts/qa-exports.mjs` builds each course separately and verifies bundle isolation, asset isolation, single-course navigation, accessibility and course-scoped capstone downloads. `scripts/qa-authoring.mjs` verifies the separate authoring tool, its release gate and generated outputs. `scripts/qa-release.mjs` proves controlled inspection/installation/hosting, overwrite and tamper refusal, and distinct service-worker caching for nested pages. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
 
-It covers question-bank integrity, scoring arithmetic, mastery gating, backup round-trip including rejection of malformed files, package switching **through the control a learner clicks**, contrast on all 40 stage-page/theme combinations, axe-core rules tagged to WCAG 2.0/2.1 A/AA with serious and critical impacts, line measure and horizontal overflow from 320 px to 2560 px, the project's 24 px target-size rule, keyboard and focus behaviour, reduced motion, and console hygiene. These checks are regression evidence, not a claim of complete WCAG conformance.
+It covers question-bank integrity, scoring arithmetic, mastery gating, backup round-trip including rejection of malformed files, package switching **through the control a learner clicks**, contrast on all 40 stage-page/theme combinations, axe-core rules tagged to WCAG 2.0/2.1 A/AA with serious and critical impacts, line measure and horizontal overflow at 390, 768, 1100, 1440 and 1920 px, the project's 24 px target-size rule, keyboard and focus behaviour, reduced motion, and console hygiene. These checks are regression evidence, not a claim of complete WCAG conformance.
 
 The rules governing additions to the suite are in [STANDARDS.md](STANDARDS.md#10-rules-for-the-check-suite-itself).
 

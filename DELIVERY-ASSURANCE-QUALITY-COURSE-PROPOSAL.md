@@ -25,7 +25,7 @@ The next phase is **authority mapping and stakeholder research**. No course pack
 
 ---
 
-# 2. The workplace problem
+## 2. The workplace problem
 
 The proposed course addresses a common delivery problem:
 
@@ -54,7 +54,7 @@ It should teach people how to reason from delivery evidence to a defensible reco
 
 ---
 
-# 3. Primary learner and workplace task
+## 3. Primary learner and workplace task
 
 The primary learner is:
 
@@ -95,7 +95,7 @@ Those domains may provide evidence to the release decision, but this course is a
 
 ---
 
-# 4. Core teaching model
+## 4. Core teaching model
 
 The strongest part of the concept is the reasoning chain:
 
@@ -130,7 +130,7 @@ A defensible recommendation should therefore distinguish among:
 
 ---
 
-# 5. Why this belongs in the existing learning system
+## 5. Why this belongs in the existing learning system
 
 The current Product Practice platform is well suited to this subject because it already supports:
 
@@ -175,7 +175,7 @@ That is the type of professional judgement the existing platform can teach well.
 
 ---
 
-# 6. Relationship to existing DEWR-oriented courses
+## 6. Relationship to existing DEWR-oriented courses
 
 This course should fit naturally between the existing **Product Management Fundamentals** and **Closure Reports** packages.
 
@@ -213,7 +213,7 @@ Potential bridges into Closure Reports include:
 
 ---
 
-# 7. Hard information-handling gate
+## 7. Hard information-handling gate
 
 The repository is currently public. This creates a non-negotiable design constraint.
 
@@ -233,7 +233,7 @@ The information-handling decision should be recorded as part of course release r
 
 ---
 
-# 8. Authority mapping — required before authoring
+## 8. Authority mapping — required before authoring
 
 No implementation should begin until the governing process and authority hierarchy are established.
 
@@ -287,7 +287,7 @@ External material should never be presented as DEWR authority unless it actually
 
 ---
 
-# 9. Risk and compliance model
+## 9. Risk and compliance model
 
 A major design requirement is to distinguish different kinds of exposure before teaching “risk acceptance.”
 
@@ -295,7 +295,7 @@ The course should not imply that every unresolved issue can simply be accepted b
 
 The learner should distinguish at least three categories.
 
-## 9.1 Discretionary delivery risk
+### 9.1 Discretionary delivery risk
 
 Examples may include:
 
@@ -307,13 +307,13 @@ Examples may include:
 
 These may be capable of explicit acceptance by the appropriate authority if the exposure is understood and proportionate.
 
-## 9.2 Compliance / governance risk subject to formal acceptance or exception
+### 9.2 Compliance / governance risk subject to formal acceptance or exception
 
 Some obligations may permit exceptions, risk acceptance, waivers or formal treatment only through a defined process or authority.
 
 The course should teach the learner to identify the governing mechanism rather than assume ordinary project risk acceptance is sufficient.
 
-## 9.3 Mandatory constraint
+### 9.3 Mandatory constraint
 
 Some legal, policy, security, privacy, accessibility, safety or statutory obligations may not be open to ordinary discretionary trade-off at all.
 
@@ -330,7 +330,7 @@ The course should never teach a simplistic rule such as “all risks can be acce
 
 ---
 
-# 10. Evidence quality and independence
+## 10. Evidence quality and independence
 
 The course should teach **credible evidence proportionate to the risk**.
 
@@ -358,7 +358,7 @@ For a high-consequence, contested, supplier-dependent or compliance-sensitive de
 
 ---
 
-# 11. Provisional course architecture
+## 11. Provisional course architecture
 
 The stage structure below is a **design hypothesis**, not a locked curriculum.
 
@@ -368,40 +368,40 @@ The current proposal is nine core stages rather than a predetermined twelve-stag
 
 ---
 
-## Stage 1 — What decision are we trying to support?
+### Stage 1 — What decision are we trying to support?
 
-### Outcome
+#### Outcome
 
 Distinguish testing, quality, assurance, acceptance and release approval, and identify the actual decision the evidence must support.
 
-### Core idea
+#### Core idea
 
 Testing shows what happened under selected conditions. Assurance interprets evidence against the decision. Acceptance and release are accountable decisions, not automatic consequences of test completion.
 
-### Key questions
+#### Key questions
 
 - What is being approved?
 - What does “ready” mean in this context?
 - What evidence is relevant to that decision?
 - Who has authority to decide?
 
-### Typical misconception
+#### Typical misconception
 
 “All planned testing is complete, therefore the service is ready.”
 
 ---
 
-## Stage 2 — Start with outcomes, obligations and failure consequences
+### Stage 2 — Start with outcomes, obligations and failure consequences
 
-### Outcome
+#### Outcome
 
 Identify the highest-value and highest-consequence things that must work before designing assurance activity.
 
-### Core idea
+#### Core idea
 
 Assurance effort should be driven by consequence and obligation, not simply transaction volume or functional count.
 
-### Key concepts
+#### Key concepts
 
 - critical journeys;
 - user harm;
@@ -411,23 +411,23 @@ Assurance effort should be driven by consequence and obligation, not simply tran
 - risk concentration;
 - assumptions that must hold.
 
-### Example
+#### Example
 
 A feature used by 90% of users may be low consequence if it fails temporarily. A pathway used by 1% of users may create significant legal or payment harm if it fails. Usage volume alone does not determine assurance priority.
 
 ---
 
-## Stage 3 — Turn requirements and risks into evidence needs
+### Stage 3 — Turn requirements and risks into evidence needs
 
-### Outcome
+#### Outcome
 
 Determine whether requirements, acceptance criteria and risk statements are clear enough to support meaningful assurance.
 
-### Core idea
+#### Core idea
 
 Ambiguous requirements do not only create build risk; they create evidence risk because the team cannot later distinguish a defect, a misunderstanding and an unstated expectation.
 
-### Key concepts
+#### Key concepts
 
 - testability;
 - acceptance criteria;
@@ -442,17 +442,17 @@ The stage should explicitly avoid turning traceability into document bureaucracy
 
 ---
 
-## Stage 4 — Design proportionate assurance evidence
+### Stage 4 — Design proportionate assurance evidence
 
-### Outcome
+#### Outcome
 
 Choose assurance activities that match the nature and consequence of the uncertainty.
 
-### Core idea
+#### Core idea
 
 A test strategy is a risk-response design, not a catalogue of test types.
 
-### Key concepts
+#### Key concepts
 
 - risk-based testing;
 - representative conditions;
@@ -466,7 +466,7 @@ A test strategy is a risk-response design, not a catalogue of test types.
 - reversibility;
 - confidence under incomplete evidence.
 
-### Example
+#### Example
 
 A team may have 4,000 automated tests but still lack evidence for a critical end-to-end journey under realistic production conditions.
 
@@ -474,17 +474,17 @@ The answer is not automatically “more tests”; it is “what evidence is miss
 
 ---
 
-## Stage 5 — Interpret metrics and defects without being captured by them
+### Stage 5 — Interpret metrics and defects without being captured by them
 
-### Outcome
+#### Outcome
 
 Use test metrics and defect information as evidence without allowing summary labels to replace judgement.
 
-### Core idea
+#### Core idea
 
 Metrics compress information. Defect labels classify issues. Neither is a complete representation of residual risk.
 
-### Candidate metrics
+#### Candidate metrics
 
 - test completion;
 - pass rate;
@@ -498,7 +498,7 @@ Metrics compress information. Defect labels classify issues. Neither is a comple
 - performance thresholds;
 - escaped defects.
 
-### Questions to teach
+#### Questions to teach
 
 - What is the denominator?
 - What important risk is not represented?
@@ -507,7 +507,7 @@ Metrics compress information. Defect labels classify issues. Neither is a comple
 - Does severity reflect actual business consequence?
 - Could a low-severity issue create high aggregate exposure?
 
-### Balance requirement
+#### Balance requirement
 
 The learner must also encounter cases where the green metrics are genuinely reassuring and the correct conclusion is that the evidence is sufficient.
 
@@ -515,17 +515,17 @@ The course must not train learners to assume that every dashboard conceals a hid
 
 ---
 
-## Stage 6 — Business acceptance, UAT and fitness for purpose
+### Stage 6 — Business acceptance, UAT and fitness for purpose
 
-### Outcome
+#### Outcome
 
 Distinguish meaningful business acceptance from ceremonial sign-off.
 
-### Core idea
+#### Core idea
 
 UAT is useful when representative users and owners validate real work, critical rules and intended outcomes. It is weak when users merely repeat technical scripts or sign a document without sufficient evidence.
 
-### Key concepts
+#### Key concepts
 
 - representative users;
 - realistic workflows;
@@ -542,17 +542,17 @@ The course should also include a case where UAT is appropriately scoped and suff
 
 ---
 
-## Stage 7 — Non-functional, data and operational readiness
+### Stage 7 — Non-functional, data and operational readiness
 
-### Outcome
+#### Outcome
 
 Integrate specialist, data and operational evidence into one readiness view without pretending to become a specialist in every discipline.
 
-### Core idea
+#### Core idea
 
 A function can behave correctly and still produce an unacceptable service.
 
-### Domains to integrate where applicable
+#### Domains to integrate where applicable
 
 - security;
 - privacy;
@@ -575,13 +575,13 @@ The learner should be taught when specialist evidence is required, how to interp
 
 ---
 
-## Stage 8 — Make a defensible release recommendation
+### Stage 8 — Make a defensible release recommendation
 
-### Outcome
+#### Outcome
 
 Produce a concise recommendation that distinguishes evidence, uncertainty, controls, constraints, residual risk and accountability.
 
-### Proposed structure
+#### Proposed structure
 
 1. decision sought;
 2. recommendation;
@@ -594,7 +594,7 @@ Produce a concise recommendation that distinguishes evidence, uncertainty, contr
 9. explicit no-go or reconsideration triggers;
 10. post-release monitoring obligations.
 
-### Language discipline
+#### Language discipline
 
 Avoid unsupported statements such as:
 
@@ -608,17 +608,17 @@ Replace them with scoped, evidence-based statements.
 
 ---
 
-## Stage 9 — Validate the decision after release
+### Stage 9 — Validate the decision after release
 
-### Outcome
+#### Outcome
 
 Use production evidence to confirm or challenge the assumptions that supported release.
 
-### Core idea
+#### Core idea
 
 Release approval is not proof that the assurance model was correct. Production evidence is the final test of pre-release assumptions.
 
-### Key concepts
+#### Key concepts
 
 - early-life support;
 - production telemetry;
@@ -635,7 +635,7 @@ This stage should deliberately bridge into the Closure Reports course.
 
 ---
 
-# 12. Scenario design philosophy
+## 12. Scenario design philosophy
 
 The course should train judgement, not pattern recognition.
 
@@ -647,37 +647,37 @@ Learners would quickly learn to distrust all positive evidence and choose the mo
 
 The scenario bank must therefore include a deliberate balance of outcomes.
 
-## Required scenario types
+### Required scenario types
 
-### 1. Justified release
+#### 1. Justified release
 
 Evidence is sufficient, controls are proportionate, no mandatory constraint blocks release, and delay would add little assurance value.
 
-### 2. Conditional release
+#### 2. Conditional release
 
 Release is reasonable if defined controls, monitoring or acceptance conditions are implemented.
 
-### 3. Justified delay / no-go
+#### 3. Justified delay / no-go
 
 Evidence is insufficient against a high-consequence risk or a mandatory constraint is not satisfied.
 
-### 4. Over-cautious assurance
+#### 4. Over-cautious assurance
 
 The QA / test concern is real but disproportionate to the consequence, reversibility and available controls. The learner should recommend release rather than reflexively ask for more testing.
 
-### 5. Correct governance acceptance
+#### 5. Correct governance acceptance
 
 A decision-maker understands the evidence and legitimately accepts a residual discretionary risk.
 
-### 6. Invalid attempted acceptance
+#### 6. Invalid attempted acceptance
 
 A project tries to “accept” something that is actually subject to a mandatory requirement or a different formal exception process.
 
-### 7. Strong positive evidence
+#### 7. Strong positive evidence
 
 A dashboard, test result or specialist assessment is genuinely sufficient and should be trusted.
 
-### 8. Misleading positive evidence
+#### 8. Misleading positive evidence
 
 A headline metric is technically true but does not address the critical risk.
 
@@ -685,11 +685,11 @@ The correct answer distribution should be intentionally varied so learners canno
 
 ---
 
-# 13. Example scenario concepts
+## 13. Example scenario concepts
 
 These are design prompts, not final assessment items.
 
-## A. Green dashboard, material evidence gap
+### A. Green dashboard, material evidence gap
 
 - 98% tests executed;
 - 97% pass rate;
@@ -699,7 +699,7 @@ These are design prompts, not final assessment items.
 
 The learner must decide whether the missing performance evidence is decision-critical.
 
-## B. Fixed date, controlled residual defect
+### B. Fixed date, controlled residual defect
 
 - release date has significant policy consequence;
 - one low-volume defect remains;
@@ -711,7 +711,7 @@ The learner must decide whether the missing performance evidence is decision-cri
 
 The correct recommendation may be to proceed.
 
-## C. Ceremonial UAT
+### C. Ceremonial UAT
 
 - 14 business processes;
 - four users;
@@ -721,7 +721,7 @@ The correct recommendation may be to proceed.
 
 The learner must state exactly what the UAT proves and what it does not.
 
-## D. Strong UAT
+### D. Strong UAT
 
 - representative users;
 - critical workflows;
@@ -733,37 +733,37 @@ The learner must state exactly what the UAT proves and what it does not.
 
 The correct conclusion should be that UAT adds credible business acceptance evidence.
 
-## E. “Minor” defect at scale
+### E. “Minor” defect at scale
 
 A small error has low consequence per transaction but occurs across tens of thousands of transactions.
 
 The learner must assess aggregate exposure.
 
-## F. Vendor reassurance
+### F. Vendor reassurance
 
 The vendor says a failure “cannot occur in production” but provides no reproducible evidence.
 
 The learner should ask what evidence supports the likelihood claim.
 
-## G. Rollback proven
+### G. Rollback proven
 
 The rollback plan has been rehearsed successfully under representative conditions.
 
 The correct conclusion should recognise rollback as a credible control rather than assume all rollback plans are theatre.
 
-## H. Mandatory constraint
+### H. Mandatory constraint
 
 A known issue conflicts with a requirement that cannot be waived through ordinary project risk acceptance.
 
 The learner must identify that the correct next step is to determine the governing authority / exception process rather than simply record residual risk.
 
-## I. Operational gap
+### I. Operational gap
 
 The software passes functional testing, but support teams cannot access the telemetry required to diagnose the highest-consequence production failure.
 
 The learner must consider operational readiness as part of service quality.
 
-## J. QA overreach
+### J. QA overreach
 
 A low-consequence, fully reversible change has strong automated and manual evidence. The QA team requests a week-long delay for an additional test that would add little decision value.
 
@@ -771,11 +771,11 @@ The learner should be able to recommend release and explain why further assuranc
 
 ---
 
-# 14. Capstone concept
+## 14. Capstone concept
 
 The capstone should be one integrated assurance exercise.
 
-## Working title
+### Working title
 
 **Should this service go live?**
 
@@ -820,7 +820,7 @@ The learner produces:
 11. no-go or reconsideration triggers;
 12. post-release monitoring plan.
 
-## Capstone variants
+### Capstone variants
 
 A small number of strong variants is preferable to a large content bank.
 
@@ -833,7 +833,7 @@ Recommended variants:
 
 ---
 
-# 15. Worked exemplar
+## 15. Worked exemplar
 
 If the course teaches learners to produce or challenge a release recommendation, it should include at least one complete exemplar.
 
@@ -868,7 +868,7 @@ Each section should include commentary explaining why it is written that way.
 
 ---
 
-# 16. Toolkit concept
+## 16. Toolkit concept
 
 The toolkit should provide practical judgement aids, not generic compliance forms.
 
@@ -914,7 +914,7 @@ The final set should be determined by learner need and actual DEWR workflow, not
 
 ---
 
-# 17. Assessment and content-volume principle
+## 17. Assessment and content-volume principle
 
 The course should not be designed around large arbitrary content counts.
 
@@ -943,7 +943,7 @@ Pilot results should determine whether the course needs more material.
 
 ---
 
-# 18. Diagnostic design
+## 18. Diagnostic design
 
 The diagnostic should detect reasoning patterns rather than merely missing vocabulary.
 
@@ -967,7 +967,7 @@ The diagnostic should recommend where to start, not label the learner negatively
 
 ---
 
-# 19. Accountability model
+## 19. Accountability model
 
 The course must be explicit about responsibility boundaries.
 
@@ -985,7 +985,7 @@ The exact wording must be aligned to real DEWR delegations and processes.
 
 ---
 
-# 20. Vendor / supplier dimension
+## 20. Vendor / supplier dimension
 
 Supplier-delivered systems create a specific assurance problem because contractual acceptance and service readiness may not be identical.
 
@@ -1004,7 +1004,7 @@ This material should remain within the course only if authority mapping and lear
 
 ---
 
-# 21. AI-assisted assurance — optional course addition
+## 21. AI-assisted assurance — optional course addition
 
 AI should not become the spine of this course.
 
@@ -1035,7 +1035,7 @@ A strong exercise would give the learner a polished AI-generated release summary
 
 ---
 
-# 22. Learning tone
+## 22. Learning tone
 
 The course should sound practical and recognisably connected to delivery work.
 
@@ -1064,7 +1064,7 @@ Avoid:
 
 ---
 
-# 23. Anti-patterns the course should challenge
+## 23. Anti-patterns the course should challenge
 
 The course may use scenarios and contrasts to challenge statements such as:
 
@@ -1089,7 +1089,7 @@ The course must also present positive examples where metrics, UAT, vendor eviden
 
 ---
 
-# 24. Quality criteria for the course itself
+## 24. Quality criteria for the course itself
 
 Because the subject is assurance, the course should be held to a high evidence standard.
 
@@ -1113,7 +1113,7 @@ Before release:
 
 ---
 
-# 25. Stakeholder and SME research
+## 25. Stakeholder and SME research
 
 Before content authoring, research should include people who see different parts of the decision.
 
@@ -1149,7 +1149,7 @@ The research should focus on practical questions:
 
 ---
 
-# 26. Research tasks before authoring
+## 26. Research tasks before authoring
 
 The next phase should complete the following:
 
@@ -1170,9 +1170,9 @@ The next phase should complete the following:
 
 ---
 
-# 27. Implementation approach if the concept survives research
+## 27. Implementation approach if the concept survives research
 
-## Phase A — Authority and information handling
+### Phase A — Authority and information handling
 
 - establish governing sources;
 - classify source sensitivity;
@@ -1180,7 +1180,7 @@ The next phase should complete the following:
 - map obligations, delegations and mandatory constraints;
 - resolve source conflicts.
 
-## Phase B — Capability map
+### Phase B — Capability map
 
 - confirm the primary workplace task;
 - confirm the learner;
@@ -1188,7 +1188,7 @@ The next phase should complete the following:
 - map each important decision / artefact to a stage;
 - define outcomes and core ideas.
 
-## Phase C — Pilot content
+### Phase C — Pilot content
 
 - author the minimum viable teaching content;
 - write a small but varied scenario bank;
@@ -1196,7 +1196,7 @@ The next phase should complete the following:
 - build one worked case and initial capstone;
 - test whether learners can use the reasoning model.
 
-## Phase D — Pilot review
+### Phase D — Pilot review
 
 - run SME review;
 - observe target learners;
@@ -1204,12 +1204,12 @@ The next phase should complete the following:
 - identify whether learners are gaming the answer pattern;
 - measure whether the course improves the quality of release reasoning.
 
-## Phase E — Expand only where justified
+### Phase E — Expand only where justified
 
 - add questions, cards, cases and toolkit material where the pilot reveals a learning need;
 - avoid content-volume targets for their own sake.
 
-## Phase F — Package integration and release
+### Phase F — Package integration and release
 
 - assemble the training package;
 - validate schema and references;
@@ -1222,61 +1222,61 @@ The next phase should complete the following:
 
 ---
 
-# 28. Key risks in building the course
+## 28. Key risks in building the course
 
-## Risk 1 — It becomes generic testing theory
+### Risk 1 — It becomes generic testing theory
 
 **Failure mode:** terminology dominates judgement.  
 **Control:** structure the course around decisions, evidence and accountability.
 
-## Risk 2 — It invents DEWR process
+### Risk 2 — It invents DEWR process
 
 **Failure mode:** generic external practice is presented as local authority.  
 **Control:** complete authority mapping first and label comparators clearly.
 
-## Risk 3 — It leaks internal information through a public repository
+### Risk 3 — It leaks internal information through a public repository
 
 **Failure mode:** real templates, screenshots, project details, vendor material or sensitive examples are committed publicly.  
 **Control:** hard information-handling gate before source ingestion or example authoring.
 
-## Risk 4 — It trains excessive conservatism
+### Risk 4 — It trains excessive conservatism
 
 **Failure mode:** learners discover that “delay and test more” is always the safest quiz answer.  
 **Control:** balanced scenario outcomes, including justified release and QA overreach.
 
-## Risk 5 — It trains excessive risk acceptance
+### Risk 5 — It trains excessive risk acceptance
 
 **Failure mode:** learners treat legal, security, privacy, accessibility or other mandatory obligations as ordinary project risks.  
 **Control:** explicit risk / constraint classification and authority model.
 
-## Risk 6 — It makes QA accountable for everyone
+### Risk 6 — It makes QA accountable for everyone
 
 **Failure mode:** QA “sign-off” becomes implied acceptance of business, operational and specialist risks.  
 **Control:** teach responsibility boundaries and delegated authority.
 
-## Risk 7 — It becomes too broad
+### Risk 7 — It becomes too broad
 
 **Failure mode:** every specialist quality domain becomes a mini-course.  
 **Control:** teach integration of specialist evidence, not specialist methodology.
 
-## Risk 8 — Scenarios become predictable
+### Risk 8 — Scenarios become predictable
 
 **Failure mode:** learners infer that the hidden problem is always the answer.  
 **Control:** deliberately varied scenario outcomes and credible positive evidence.
 
-## Risk 9 — Content inventory becomes the success measure
+### Risk 9 — Content inventory becomes the success measure
 
 **Failure mode:** hundreds of questions and cards are produced before learner value is proven.  
 **Control:** pilot small, expand based on evidence.
 
-## Risk 10 — Authority becomes stale
+### Risk 10 — Authority becomes stale
 
 **Failure mode:** policy, delegations or release processes change after publication.  
 **Control:** dated source review, clear provenance and a defined review cycle.
 
 ---
 
-# 29. Success criteria
+## 29. Success criteria
 
 The course succeeds if a learner moves from asking:
 
@@ -1308,7 +1308,7 @@ A practical indicator of success would be that learner-produced recommendations 
 
 ---
 
-# 30. Recommendation
+## 30. Recommendation
 
 **Approve the concept for authority mapping and stakeholder research. Do not begin full course production yet.**
 
@@ -1329,6 +1329,6 @@ The implementation should remain deliberately provisional until DEWR authority, 
 
 ---
 
-# 31. One-sentence design principle
+## 31. One-sentence design principle
 
 > **Train people to make defensible release decisions under uncertainty — with the right evidence, the right constraints and the right accountability — not merely to complete testing processes.**

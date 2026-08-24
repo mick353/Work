@@ -9,6 +9,8 @@
 
 The source artefacts supply the subject matter and operational context. The lessons, assessment items, practice activities, worked examples and player are separate work built around them.
 
+The repository also contains a concept document for a possible Delivery Assurance & Quality course. It is research/design material only and is not a released training package or DEWR-endorsed proposal.
+
 ## What this is not
 
 - It is **not an official Australian Government publication**.
@@ -27,6 +29,12 @@ The **course content** is an original synthesis, but it summarises and restructu
 This public repository includes rendered images of the Product Management source deck. Publication authority for internal source material must be confirmed by the repository owner with the relevant material owner. If that authority is absent or withdrawn, the affected source assets and any content that cannot remain public should be removed or access-controlled.
 
 Third-party frameworks are cited rather than treated as interchangeable. Scrum Guide definitions, SAFe prioritisation guidance, Australian Government standards, Finance assurance guidance and the learning-science findings are attributed on each package's in-app **Sources** page.
+
+## Local data and exported material
+
+The applications have no login, telemetry or central store for learner progress or Workshop drafts. Learner answers are kept in browser `localStorage`; Workshop drafts, including embedded media, are kept in browser IndexedDB unless a person downloads or distributes them. Local storage does not remove information-handling obligations: typed answers, draft course material and exported JSON/HTML/ZIP files may contain personal, sensitive, internal or copyright material.
+
+The public Course Workshop contains no user draft. A trainer's content becomes available to others only when the trainer distributes an export or a release custodian deliberately publishes it. Anything added to this public repository or its GitHub Pages site should be treated as publicly downloadable.
 
 ## Course additions and source boundaries
 

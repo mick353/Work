@@ -85,7 +85,9 @@ Course Workshop uses the same player through a different, self-contained asset r
 - `Slide.assetId` selects an embedded source-slide image;
 - `LessonSection.sourceReferences` and `FieldGuideEntry.sourceReferences` add human locators and optional slide numbers to an existing source id.
 
-The runtime validator rejects unknown asset/source ids, duplicate slide numbers, unsafe filenames, unsupported/SVG media, mismatched data-URL types, missing alternative text, missing cited slides and packages above the embedded-media limit. An embedded package needs no public binary-asset folder: standalone, hosted and repository outputs carry the same canonical data and remain self-contained.
+The runtime validator rejects unknown asset/source ids, duplicate slide numbers, unsafe filenames, unsupported/SVG media declarations, mismatched data-URL prefixes, missing alternative text, missing cited slides and packages above the embedded-media limit. An embedded package needs no public binary-asset folder: standalone, hosted and repository outputs carry the same canonical data and remain self-contained.
+
+Current hardening boundary: source URLs are not yet restricted to an approved scheme, and imported draft JSON is checked against its declared image data-URL prefix rather than an independent binary signature. Maintained packages use ordinary HTTPS sources and Workshop media passes through browser image/PDF decoding, but a release custodian must still treat an external package as untrusted. Scheme restriction and stronger exact-content evidence are prioritised in [ROADMAP.md](ROADMAP.md).
 
 Stage ids only need to be unique inside one course. Shared-player mappings that sit outside a package must therefore use both identities. Curated illustrations are registered as `<package-id>:<stage-id>`; an authored `visualAssetId` takes precedence, and a course-neutral SVG remains the fallback.
 
@@ -163,14 +165,14 @@ No documentation records a fixed total number of QA checks. The suite changes wi
 
 The browser tool can produce a self-contained learner HTML file, an isolated hosted-course ZIP, an editable draft or a repository package ZIP. It cannot write into the repository. Final learner/repository outputs require a structurally clean package, **Available** status and the recorded subject-matter, learning-flow, audience/handling and release declarations.
 
-The repository ZIP carries the intended `src/courses/<course-id>/` folder, canonical JSON, entry module, hosted page, validation report and declared release record. `scripts/install-course-package.mjs` treats those records as untrusted input: it rejects unsafe paths or mismatched identities, recalculates structural and authoring checks and refuses incomplete approvals before any write.
+The repository ZIP carries the intended `src/courses/<course-id>/` folder, canonical JSON, entry module, hosted page, validation report and declared release record. `scripts/install-course-package.mjs` treats those records as untrusted input: it rejects unsafe paths or mismatched identities, recalculates structural and authoring checks and refuses incomplete approvals before any write. The current human release record is matched by package id and semantic version; it is not yet cryptographically bound to the exact canonical JSON. The custodian therefore still verifies that the inspected diff is the approved content.
 
 The implemented authoring profile covers course identity and sources; stages and sourced lesson sections; questions, scenarios and assignments; diagnostics, review cards, glossary and contrasts; worked cases; toolkit templates; complete capstones; field-guide entries; explicit source differences; worked-document exemplars; precise source/slide references; PDF or ordered-image source-deck import; and course-owned stage visuals.
 
 Course Workshop embeds every maintained catalogue course as a safe editable template during its build. A clone carries the complete course and its deck, then receives a new id/title, version `0.1.0`, Draft status and empty review/release state. The maintained original is not edited.
 
-Asset-rich drafts use browser IndexedDB, with downloaded draft JSON as the portable source. Final outputs still carry one course only. Arbitrary multi-course composition is not part of the current product boundary.
+Asset-rich drafts use browser IndexedDB, with downloaded draft JSON as the portable source. Draft format version 1 records the package, release checklist and save time; it does not provide shared editing, merge support or release history. Final outputs still carry one course only. Arbitrary multi-course composition is not part of the current product boundary.
 
-Work that remains outside the browser profile is release history/notes, deliberate migration choices for breaking revisions, and findings from trainer usability testing. Direct PowerPoint parsing also remains outside: save a deck as PDF or slide images for browser import.
+Work that remains outside the browser profile includes legacy-draft migration, exact-content release evidence, source-link hardening, release history, draft lineage, course-profile QA, deliberate migration choices for breaking revisions and findings from trainer/manual-accessibility testing. Direct PowerPoint parsing also remains outside: save a deck as PDF or slide images for browser import.
 
 See [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md) for the tool workflow, validation boundary and distribution decision.

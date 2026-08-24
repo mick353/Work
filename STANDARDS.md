@@ -1,8 +1,12 @@
 # Standards
 
-The measurable definitions [AUTHORING.md](AUTHORING.md) refers to. Every figure here is enforced by a check in `scripts/qa.mjs` unless marked otherwise. Where this document and the suite disagree, the suite is correct and this document is out of date — fix it.
+The measurable definitions [AUTHORING.md](AUTHORING.md) refers to. A rule has one of three scopes:
 
-Run the suite with `npm run qa`. It takes two to three minutes and runs against the built artefact in a real browser.
+- **Shared contract** — applies to every `TrainingPackage` and is enforced by runtime/package validation or a catalogue-wide check.
+- **Workshop release profile** — applies to courses exported through Course Workshop and is enforced by `authoring/quality.ts` and recalculated by the repository inspector.
+- **Course-specific regression** — protects a deliberate property of a maintained course. It must name that course or its declared profile; it is not automatically a universal teaching law.
+
+Run `npm run verify` for the complete current evidence. `npm run qa` is the combined learner suite, but it does not by itself run every Workshop, release and isolated-export check. Where documentation and implementation disagree, treat the disagreement as a defect to resolve rather than silently declaring either source authoritative.
 
 ---
 
@@ -37,24 +41,31 @@ Run the suite with `npm run qa`. It takes two to three minutes and runs against 
 
 ---
 
-## 3. Content volume
+## 3. Content depth and course profiles
 
-| Measure | Minimum |
+The current Workshop release gate is intentionally strict enough to reject a stub, but it is not evidence that every valid short course needs the same amount of content.
+
+| Scope | Encoded rule |
 |---|---|
-| Lesson prose across the package | 8,000 words |
-| Body words per stage | No stage may be a stub |
-| Worked-reasoning passage per stage | 1, and substantial |
-| Flashcards per stage | 5 |
-| Flashcard kinds present | definition, application, discrimination — 5+ of each across the package |
-| Worked cases | 4 for a full package; every stage appears in at least one |
-| Worked answer per stage assignment | Present, with self-check criteria |
-| Capstone response | 60 words minimum before it counts |
+| Workshop release profile | At least 300 lesson-body words per stage |
+| Workshop release profile | At least 4 knowledge questions and exactly 2 scenarios per stage |
+| Workshop release profile | At least 1 diagnostic question per stage |
+| Workshop release profile | Definition, application and discrimination review cards per stage |
+| Workshop release profile | At least 1 complete glossary entry and 1 observable practice contrast per stage |
+| Workshop release profile | Stage assignment with a worked answer of at least 100 words and at least 2 review criteria |
+| Workshop release profile | Cases, capstone, field guide and exemplars may be omitted; partially authored optional content becomes blocking |
+| Product Management regression | At least 8,000 measured teaching words, a substantial named worked-reasoning passage per stage, 4 worked cases and complete stage coverage across the cases |
+| Learner behaviour | A capstone response needs 60 words before it counts as completed |
 
-Stage `minutes` are **derived** from word count at 220 wpm plus 1 minute per question and 2 per scenario. Never typed.
+Closure Reports currently has three worked cases and uses an explicit `Worked reasoning:` section in five of twelve stages; its remaining stages teach through substantial explanatory sections, scenarios, assignments and applied material. It is not covered by the Product Management-specific four-case/named-passage checks. The roadmap therefore requires either versioned course profiles or course-owned checks before a green suite is described as symmetric pedagogical evidence.
+
+Stage `minutes` are **derived** from word count at 220 wpm plus 1 minute per question and 2 per scenario. Never type them as release evidence.
 
 ---
 
 ## 4. Language
+
+The general language rules apply across courses. The approximate positive-opener percentage is presently a Product Management regression and an authoring target for other packages, not a catalogue-wide measured result.
 
 | Rule | Target |
 |---|---|
@@ -77,8 +88,9 @@ Contrastive definition — "an ownership model, not merely software" — states 
 | Line length | **45–80 characters** at every width; longest measured must be ≤ 80 |
 | Prose measure | `--measure: 58ch`, applied to running text only |
 | Tables and artefacts | Deliberately break out of the measure — a table is scanned, not read |
-| Horizontal overflow | None from 320 px to 2560 px |
-| Widths checked | 390, 768, 1100, 1440, 1920 |
+| Horizontal overflow | None at every exercised width |
+| Combined learner widths checked | 390, 768, 1100, 1440, 1920 px |
+| Workshop phone-width check | 390 px |
 
 **`grid-template-columns: 1fr` means `minmax(auto, 1fr)`, and `auto` will not shrink below its content.** Any track that might hold a `<pre>`, a table or a long token needs `minmax(0, 1fr)`.
 
@@ -88,7 +100,7 @@ Contrastive definition — "an ownership model, not merely software" — states 
 
 | Rule | Bound |
 |---|---|
-| Coverage | Every stage has one, registered under `<packageId>:<stageId>` |
+| Coverage | Every maintained stage renders a meaningful course illustration or an explicitly accepted course-neutral fallback; curated mappings use `<packageId>:<stageId>` |
 | Label collision | None — no text overlaps other text |
 | Frame spill | None — no text outside the SVG box |
 | Leading between stacked labels | **≥ 4 user units** |
@@ -152,6 +164,8 @@ The automated scan and the project-specific checks are regression gates, not a c
 | Reset | Backup is offered and optional; clearing the option warns that nothing will be saved |
 | Package switch | Full page reload — storage keys are namespaced and a reload re-reads all of them |
 
+New and cloned Workshop drafts begin with review evidence blank. Stored drafts from an earlier Workshop build are preserved as user data and may retain values created under the older behaviour; those values must be reconfirmed or cleared until schema migration is implemented.
+
 ---
 
 ## 10. Rules for the check suite itself
@@ -159,7 +173,7 @@ The automated scan and the project-specific checks are regression gates, not a c
 1. **Test through the control the user touches.** Seeding `localStorage` and reloading proves the content layer resolved and nothing else. A broken package switch shipped because it was verified that way.
 2. **After writing a check, break the thing and confirm the check fails.** A check that has never failed has never been tested.
 3. **Check the content, not just the geometry.** A print check that measures overflow and never reads the page will pass while the table of contents is empty.
-4. **Run against every package and every theme.** A check that opens one page cannot see a fault bound per stage.
+4. **Run shared claims against every package and every applicable theme.** If a check intentionally protects one course, name the course/profile in the check and documentation; do not report it as catalogue-wide evidence.
 5. **Budgets scale with content.** A fixed ceiling that has to be raised on every addition asserts nothing.
 
-Use `qa-report.json` for the exact run result. Investigate missing or changed checks by name rather than maintaining a hard-coded expected total in documentation.
+Use `qa-report.json` for the exact combined-suite result and the console/output of the other verification scripts for their results. Some successful `qa-report.json` rows currently retain failure-oriented detail text, so the boolean result and named assertion are authoritative until the report separates `observed`, `expected` and `failureMessage`. Investigate missing or changed checks by name rather than maintaining a hard-coded expected total in documentation.
