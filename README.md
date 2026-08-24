@@ -29,8 +29,6 @@ Each document has one job. Start with the one that matches what you are doing.
 | **[LEARNING-SYSTEM-DIRECTION.md](LEARNING-SYSTEM-DIRECTION.md)** | You need the settled training-managed product and deployment decisions |
 | **[NOTICE.md](NOTICE.md)** | Provenance, status and takedown contact |
 | **[DELIVERY-ASSURANCE-QUALITY-COURSE-PROPOSAL.md](DELIVERY-ASSURANCE-QUALITY-COURSE-PROPOSAL.md)** | You are reviewing the proposed third course; it is a concept and research brief, not an implemented package |
-| **[RELEASE-NOTES-2026-08-24.md](RELEASE-NOTES-2026-08-24.md)** | You need the current readiness and release-hardening record |
-| **[RELEASE-NOTES-2026-08-20.md](RELEASE-NOTES-2026-08-20.md)** | You need the historical record of the authority-sensitive corrections released on 20 August 2026 |
 
 If you are an AI agent picking this up cold: read AUTHORING.md end to end before changing any content, and STANDARDS.md before writing any assessment item. Both are written to be followed without further context.
 

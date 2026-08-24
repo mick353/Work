@@ -25,7 +25,7 @@ The learner-facing product does not change. Course Workshop embeds the existing 
 
 **Release authority remains human.** Final outputs require a clean encoded profile, **Available** status and a recorded subject-matter, course-flow, audience/handling and release checklist. These are declarations, not independent review evidence. A custodian still inspects the package/diff and runs full verification before publication.
 
-**Implemented readiness controls (24 August 2026):**
+**Implemented readiness controls:**
 
 - Draft schema v2 gives a portable draft a stable id, revision, creation/export timestamps and clone/import origin. Version-1 drafts and raw released packages are migrated into Draft status with review dates, source-checked dates and release declarations cleared.
 - Final releases require named reviewer and approver roles, approval scope, reference and date. Source links are restricted to credential-free HTTPS, embedded image bytes are checked against their declared type, and both the release record and validation report carry the SHA-256 digest of the exact canonical package JSON.
