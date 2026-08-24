@@ -1,4 +1,4 @@
-import { useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { FileImage, FileStack, Trash2, Upload } from "lucide-react";
 import type { CourseAsset, Slide, TrainingPackage } from "../src/package-model";
 import { importSlideImages, importSlidePdf, importStageVisual, type ImportedSlides } from "./media";
@@ -36,13 +36,27 @@ function megabytes(assets: CourseAsset[]): string {
   return (assets.reduce((sum, asset) => sum + asset.dataUrl.length, 0) / 1024 / 1024).toFixed(1);
 }
 
+function sourceIsRegistered(source: TrainingPackage["content"]["sources"][number]): boolean {
+  return Boolean(source.id.trim() && source.title.trim() && source.publisher.trim() && source.note.trim());
+}
+
+function sourceLabel(source: TrainingPackage["content"]["sources"][number]): string {
+  if (!sourceIsRegistered(source)) return `${source.title || source.id || "Source"} — incomplete`;
+  return source.checked?.trim() ? source.title : `${source.title} — review date pending`;
+}
+
 export function MediaEditor({ entry, setEntry, setMessage }: Props) {
   const pdfRef = useRef<HTMLInputElement>(null);
   const imagesRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState("");
   const [deckStage, setDeckStage] = useState(entry.content.modules[0]?.id ?? "");
-  const [deckSource, setDeckSource] = useState(entry.content.sources[0]?.id ?? "");
+  const [deckSource, setDeckSource] = useState(entry.content.sources.find(sourceIsRegistered)?.id ?? "");
+  const [visibleSlideCount, setVisibleSlideCount] = useState(20);
   const assets = entry.content.assets ?? [];
+
+  useEffect(() => {
+    if (deckSource && !entry.content.sources.some((source) => source.id === deckSource)) setDeckSource("");
+  }, [deckSource, entry.content.sources]);
 
   const mergeDeck = (imported: ImportedSlides) => {
     setEntry((current) => {
@@ -130,13 +144,20 @@ export function MediaEditor({ entry, setEntry, setMessage }: Props) {
   return (
     <div className="workspace-stack media-page">
       <div className="page-heading"><span className="eyebrow">6 · Media and source deck</span><h1>Bring the source material and stage visuals with the course</h1><p>Imported files are resized, embedded in the draft and carried into every learner export. Nothing is uploaded. PDF pages become slide images; PowerPoint files should first be saved as PDF or exported as images.</p></div>
+      <section className="step-connection" aria-label="How this step connects"><span className="connection-symbol" aria-hidden="true">↔</span><div><strong>How this step connects</strong><p>Register sources and stages first. Imported slides are assigned to both; lesson and field-guide citations then use the slide numbers to open the correct embedded pages for learners.</p></div></section>
       {busy && <div className="media-progress" role="status"><span className="progress-spinner" />{busy}</div>}
 
-      <section className="editor-card">
+      <section id="media-slides" className="editor-card">
         <header className="card-header"><div><span className="eyebrow">Complete source deck</span><h2>Slides learners can open from citations</h2><p>Choose the initial stage and source before import. You can reassign individual slides afterwards.</p></div>{entry.content.slides.length > 0 && <button type="button" className="text-danger" onClick={clearDeck}><Trash2 size={16} />Remove complete deck</button>}</header>
+        <ol className="connection-steps" aria-label="Connect a source deck to course teaching">
+          <li><strong>Register</strong><span>Complete the source in Course setup.</span></li>
+          <li><strong>Import</strong><span>Choose an initial stage and source, then add the PDF or images.</span></li>
+          <li><strong>Review</strong><span>Check every slide title, stage, extracted text and image description.</span></li>
+          <li><strong>Cite</strong><span>In Teach or Field guide, select the source and enter the imported slide numbers.</span></li>
+        </ol>
         <div className="form-grid media-import-settings">
           <label className="field"><span>Initial course stage</span><select value={deckStage} onChange={(event) => setDeckStage(event.target.value)}>{entry.content.modules.map((module) => <option key={module.id} value={module.id}>{module.number}. {module.title || module.id}</option>)}</select><small>Used for all imported pages until you reassign them below.</small></label>
-          <label className="field"><span>Deck source</span><select value={deckSource} onChange={(event) => setDeckSource(event.target.value)}><option value="">No registered source</option>{entry.content.sources.map((source) => <option key={source.id} value={source.id}>{source.title || source.id}</option>)}</select><small>Connects the imported images to the source register.</small></label>
+          <label className="field"><span>Deck source</span><select value={deckSource} onChange={(event) => setDeckSource(event.target.value)}><option value="">No registered source</option>{entry.content.sources.map((source) => <option key={source.id} value={source.id}>{sourceLabel(source)}</option>)}</select><small>Connects the imported images to the source register. Incomplete sources are never selected automatically.</small></label>
         </div>
         <div className="media-import-actions">
           <input ref={pdfRef} className="visually-hidden" type="file" accept="application/pdf,.pdf" onChange={(event) => void importPdf(event.target.files?.[0])} />
@@ -146,17 +167,19 @@ export function MediaEditor({ entry, setEntry, setMessage }: Props) {
           <p>Maximum 50 MB per source file and 150 PDF pages. PNG, JPEG and WebP are accepted; SVG is deliberately excluded.</p>
         </div>
         <div className="asset-summary"><strong>{entry.content.slides.length}</strong><span>slides</span><strong>{megabytes(assets)}</strong><span>MB embedded media</span></div>
-        <div className="slide-editor-list">{entry.content.slides.length === 0 && <p className="empty-copy">No source deck is included. This is valid for a course that does not need one.</p>}{entry.content.slides.map((slide, index) => {
+        {entry.content.slides.length > 20 && <div className="slide-render-status" role="status"><span>Showing {Math.min(visibleSlideCount, entry.content.slides.length)} of {entry.content.slides.length} slides</span><small>Slides are revealed in batches to keep large decks responsive.</small></div>}
+        <div className="slide-editor-list">{entry.content.slides.length === 0 && <p className="empty-copy">No source deck is included. This is valid for a course that does not need one.</p>}{entry.content.slides.slice(0, visibleSlideCount).map((slide, index) => {
           const asset = assets.find((candidate) => candidate.id === slide.assetId);
           return <details className="slide-editor" key={`${slide.n}-${slide.assetId ?? index}`}><summary>{asset && <img src={asset.dataUrl} alt="" />}<span>Slide {slide.n}</span><strong>{slide.title || "Untitled slide"}</strong></summary><div className="slide-editor-body">{asset && <img className="slide-preview" src={asset.dataUrl} alt={asset.alt} />}<div className="form-grid"><Field label="Slide title" value={slide.title} onChange={(value) => setEntry((current) => ({ ...current, content: { ...current.content, slides: updateAt(current.content.slides, index, { ...slide, title: value }) } }))} /><label className="field"><span>Course stage</span><select value={slide.stage} onChange={(event) => setEntry((current) => withSlideRanges(current, updateAt(current.content.slides, index, { ...slide, stage: event.target.value }), current.content.assets ?? []))}>{entry.content.modules.map((module) => <option key={module.id} value={module.id}>{module.number}. {module.title || module.id}</option>)}</select></label>{asset && <Field label="Image description" value={asset.alt} hint="Describe the information, not merely ‘slide image’." onChange={(value) => updateAsset(asset.id, (current) => ({ ...current, alt: value }))} />}</div><Area label="Searchable slide text" value={slide.text} onChange={(value) => setEntry((current) => ({ ...current, content: { ...current.content, slides: updateAt(current.content.slides, index, { ...slide, text: value }) } }))} rows={5} hint="PDF import extracts this automatically. Correct it if needed." /><button type="button" className="text-danger" onClick={() => removeSlide(index)}><Trash2 size={16} />Remove slide</button></div></details>;
         })}</div>
+        {visibleSlideCount < entry.content.slides.length && <button type="button" className="secondary load-more-slides" onClick={() => setVisibleSlideCount((current) => Math.min(current + 20, entry.content.slides.length))}>Show next {Math.min(20, entry.content.slides.length - visibleSlideCount)} slides</button>}
       </section>
 
-      <section className="editor-card">
+      <section id="media-assets" className="editor-card">
         <header className="card-header"><div><span className="eyebrow">Stage visuals</span><h2>One useful image or illustration per stage</h2><p>These replace the generic stage illustration in the learner course. Add an image only when it helps explain or orient the learner.</p></div></header>
         <div className="visual-editor-list">{entry.content.modules.map((module) => {
           const asset = assets.find((candidate) => candidate.id === module.visualAssetId);
-          return <article className="visual-editor" key={module.id}><header><span>{module.number}</span><div><strong>{module.title || module.id}</strong><small>{asset ? asset.fileName : "Using the default course illustration"}</small></div></header>{asset && <img src={asset.dataUrl} alt={asset.alt} />}<label className="secondary upload-label"><Upload size={16} /><span>{asset ? "Replace image" : "Add image"}</span><input className="visually-hidden" type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" onChange={(event) => void uploadVisual(event.target.files?.[0], module.id)} /></label>{asset && <><Field label="Image description" value={asset.alt} hint="Required for learners who cannot see the image." onChange={(value) => updateAsset(asset.id, (current) => ({ ...current, alt: value }))} /><Field label="Caption (optional)" value={asset.caption ?? ""} onChange={(value) => updateAsset(asset.id, (current) => ({ ...current, caption: value || undefined }))} /><label className="field"><span>Image source (optional)</span><select value={asset.sourceId ?? ""} onChange={(event) => updateAsset(asset.id, (current) => ({ ...current, sourceId: event.target.value || undefined }))}><option value="">No registered source</option>{entry.content.sources.map((source) => <option key={source.id} value={source.id}>{source.title || source.id}</option>)}</select></label><button type="button" className="text-danger" onClick={() => setEntry((current) => ({ ...current, content: { ...current.content, assets: (current.content.assets ?? []).filter((candidate) => candidate.id !== asset.id), modules: current.content.modules.map((candidate) => candidate.id === module.id ? { ...candidate, visualAssetId: undefined } : candidate) } }))}><Trash2 size={16} />Remove image</button></>}</article>;
+          return <article className="visual-editor" key={module.id}><header><span>{module.number}</span><div><strong>{module.title || module.id}</strong><small>{asset ? asset.fileName : "Using the default course illustration"}</small></div></header>{asset && <img src={asset.dataUrl} alt={asset.alt} />}<label className="secondary upload-label"><Upload size={16} /><span>{asset ? "Replace image" : "Add image"}</span><input className="visually-hidden" type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" onChange={(event) => void uploadVisual(event.target.files?.[0], module.id)} /></label>{asset && <><Field label="Image description" value={asset.alt} hint="Required for learners who cannot see the image." onChange={(value) => updateAsset(asset.id, (current) => ({ ...current, alt: value }))} /><Field label="Caption (optional)" value={asset.caption ?? ""} onChange={(value) => updateAsset(asset.id, (current) => ({ ...current, caption: value || undefined }))} /><label className="field"><span>Image source (optional)</span><select value={asset.sourceId ?? ""} onChange={(event) => updateAsset(asset.id, (current) => ({ ...current, sourceId: event.target.value || undefined }))}><option value="">No registered source</option>{entry.content.sources.map((source) => <option key={source.id} value={source.id}>{sourceLabel(source)}</option>)}</select></label><button type="button" className="text-danger" onClick={() => setEntry((current) => ({ ...current, content: { ...current.content, assets: (current.content.assets ?? []).filter((candidate) => candidate.id !== asset.id), modules: current.content.modules.map((candidate) => candidate.id === module.id ? { ...candidate, visualAssetId: undefined } : candidate) } }))}><Trash2 size={16} />Remove image</button></>}</article>;
         })}</div>
       </section>
     </div>

@@ -124,11 +124,6 @@ function supportContrast(moduleId: string): Contrast[] {
 
 export function createStarterPackage(): TrainingPackage {
   const stage = createStage(1, []);
-  const today = new Intl.DateTimeFormat("en-AU", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
 
   return {
     manifest: {
@@ -139,14 +134,14 @@ export function createStarterPackage(): TrainingPackage {
       subtitle: "",
       publisher: "",
       source: "",
-      reviewed: today,
+      reviewed: "",
       status: "draft",
       summary: "",
       arc: "",
     },
     content: {
       modules: [stage],
-      sources: [{ id: "source-1", title: "", publisher: "", note: "", checked: today }],
+      sources: [{ id: "source-1", title: "", publisher: "", note: "", checked: "" }],
       totalMinutes: 5,
       practiceQuestions: [],
       diagnosticQuestions: [blankQuestion(stage.id, `${stage.id}-diagnostic-1`)],
@@ -165,7 +160,7 @@ export function createStarterPackage(): TrainingPackage {
       slides: [],
       slideCount: 0,
       assets: [],
-      contentReviewed: today,
+      contentReviewed: "",
     },
   };
 }

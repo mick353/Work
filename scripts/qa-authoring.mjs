@@ -213,12 +213,36 @@ await page.goto(pathToFileURL(studioFile).href);
 await page.waitForSelector(".studio-shell");
 check("Course Workshop opens as a local standalone file", await page.title() === "Course Workshop — Product Practice");
 check("A new course is blocked until required content is written", await page.locator(".status-blocked").count() === 1);
+check("A blank course does not claim a duration before lesson content exists", /Duration pending/i.test(await page.locator(".topbar-meta").innerText()));
 check("The built-in instructional page explains all three learner delivery routes", /offline HTML course.*host it at its own URL.*combined catalogue/is.test(await page.locator("body").innerText()));
 check("The studio makes its local-only boundary visible", /not uploaded/i.test(await page.locator(".privacy-banner").innerText()));
 check("The studio makes no network requests", networkRequests.length === 0, networkRequests[0] ?? "offline only");
 const instructionAxe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
 const instructionSerious = instructionAxe.violations.filter((item) => item.impact === "serious" || item.impact === "critical");
 check("Workshop instructions have no serious or critical automated accessibility violations", instructionSerious.length === 0, instructionSerious.map((item) => `${item.id}: ${item.nodes[0]?.html ?? ""}`).join(" | "));
+
+check("Instructions include a five-part course blueprint", await page.locator(".blueprint-list li").count() === 5);
+check("Instructions explain how sources, stages, review and outputs connect", await page.locator(".connection-map > div").count() === 4);
+await page.getByRole("button", { name: /Course setup/ }).click();
+check("A new draft does not claim review evidence automatically", await page.getByLabel("Content reviewed").inputValue() === "" && await page.getByLabel("Checked").inputValue() === "");
+check("Course setup explains downstream ids and shows live source usage", await page.locator(".step-connection").count() === 1 && /0 lesson sections.*0 guide entries.*0 media items/is.test(await page.locator(".linkage-summary").innerText()));
+await page.getByRole("button", { name: /Media & source deck/ }).click();
+check("An incomplete source is labelled and never selected as the deck source", await page.getByLabel("Deck source").inputValue() === "" && /source-1 — incomplete/i.test(await page.getByLabel("Deck source").innerText()));
+check("Media gives trainers the complete register-import-review-cite sequence", await page.locator(".connection-steps li").count() === 4 && /register.*import.*review.*cite/is.test(await page.locator(".connection-steps").innerText()));
+await page.getByRole("button", { name: /Teach/ }).click();
+check("Teach exposes the active stage's cross-step connections", await page.locator(".stage-linkage-summary").count() === 1 && /diagnostic.*review card.*source slide/is.test(await page.locator(".stage-linkage-summary").innerText()));
+await page.evaluate(() => window.scrollTo(0, 700));
+await page.getByRole("button", { name: /^Next/ }).click();
+await page.waitForTimeout(50);
+const navigationState = await page.evaluate(() => ({ scrollY: window.scrollY, tag: document.activeElement?.tagName, text: document.activeElement?.textContent ?? "", id: document.activeElement?.id }));
+check("Step navigation resets scroll and focuses the new heading", navigationState.scrollY < 5 && navigationState.tag === "H1" && /retrievable and usable/i.test(navigationState.text), JSON.stringify(navigationState));
+check("Reinforce explains that its content belongs to the active stage", /active stage/i.test(await page.locator(".step-connection").innerText()));
+await page.getByRole("button", { name: /Review & export/ }).click();
+check("Review checks are grouped by step and filterable", await page.locator(".review-step-summary > div").count() === 6 && await page.getByRole("button", { name: /Blockers/ }).count() === 1);
+check("Review explains issue navigation and the human release boundary", /relevant field.*human learning-flow review/is.test(await page.locator(".step-connection").innerText()));
+await page.locator(".issue.error").filter({ hasText: "Add the course title" }).click();
+await page.waitForTimeout(50);
+check("A review issue opens and focuses its exact field", await page.evaluate(() => document.activeElement?.id === "manifest-title" && document.activeElement?.scrollIntoView !== undefined));
 
 let templateProfilesClean = true;
 for (const templateTitle of ["Product Management Fundamentals", "Closure Reports"]) {
@@ -227,6 +251,7 @@ for (const templateTitle of ["Product Management Fundamentals", "Closure Reports
   await templatePage.goto(pathToFileURL(studioFile).href);
   templatePage.once("dialog", (dialog) => void dialog.accept());
   await templatePage.locator(".template-grid article").filter({ hasText: templateTitle }).getByRole("button", { name: "Clone as new course" }).click();
+  await templatePage.waitForSelector("text=Created a separate draft from");
   await templatePage.getByRole("button", { name: /Review & export/ }).click();
   const blockingTitles = await templatePage.locator(".issue.error strong").allInnerTexts();
   templateProfilesClean &&= blockingTitles.length === 1 && blockingTitles[0] === "Add the content review date";
@@ -242,12 +267,16 @@ await featurePage.goto(pathToFileURL(studioFile).href);
 const pmTemplate = featurePage.locator(".template-grid article").filter({ hasText: "Product Management Fundamentals" });
 check("Published Product Management is offered as an editable template", await pmTemplate.count() === 1);
 featurePage.once("dialog", (dialog) => void dialog.accept());
-await pmTemplate.getByRole("button", { name: "Clone as new course" }).click();
+const cloneClick = pmTemplate.getByRole("button", { name: "Clone as new course" }).click();
+await featurePage.waitForSelector(".operation-overlay");
+check("Large-template cloning shows visible progress before changing the draft", /source slides/i.test(await featurePage.locator(".operation-overlay").innerText()) || /preparing/i.test(await featurePage.locator(".operation-overlay").innerText()));
+await cloneClick;
 await featurePage.waitForSelector("text=Created a separate draft from Product Management Fundamentals");
 check("Cloning creates a visibly separate draft", /Adapted Product Management Fundamentals/i.test(await featurePage.locator(".topbar").innerText()));
 
 await featurePage.getByRole("button", { name: /Apply & reference/ }).click();
 check("Advanced course elements have dedicated editors", await featurePage.getByRole("heading", { name: "Worked cases" }).count() === 1 && await featurePage.getByRole("heading", { name: "Toolkit templates" }).count() === 1 && await featurePage.getByRole("heading", { name: "Capstone" }).count() === 1 && await featurePage.getByRole("heading", { name: "Field guide" }).count() === 1 && await featurePage.getByRole("heading", { name: "Source differences" }).count() === 1 && await featurePage.getByRole("heading", { name: "Worked documents and exemplars" }).count() === 1);
+check("Every advanced editor explains how its content reaches the learner experience", await featurePage.locator(".connection-note").count() === 6);
 check("The Product Management template brings its maintained advanced content", await featurePage.locator(".advanced-editor").count() > 5);
 await featurePage.getByRole("button", { name: "Add exemplar" }).click();
 check("A trainer can add a worked-document exemplar", await featurePage.locator(".advanced-editor").filter({ hasText: "Untitled exemplar" }).count() === 1);
@@ -256,7 +285,9 @@ const advancedSerious = advancedAxe.violations.filter((item) => item.impact === 
 check("Advanced editors have no serious or critical automated accessibility violations", advancedSerious.length === 0, advancedSerious.map((item) => item.id).join(", "));
 
 await featurePage.getByRole("button", { name: /Media & source deck/ }).click();
-check("Cloned Product Management includes its complete 98-slide deck", await featurePage.locator(".slide-editor").count() === 98);
+check("Large decks render in responsive batches without losing their complete count", await featurePage.locator(".slide-editor").count() === 20 && /Showing 20 of 98 slides/i.test(await featurePage.locator(".slide-render-status").innerText()));
+await featurePage.getByRole("button", { name: "Show next 20 slides" }).click();
+check("A trainer can reveal the next slide-editor batch", await featurePage.locator(".slide-editor").count() === 40);
 const firstVisual = featurePage.locator(".visual-editor").first();
 await firstVisual.locator('input[type="file"]').setInputFiles({ name: "stage-visual.png", mimeType: "image/png", buffer: tinyPng });
 await firstVisual.locator("img").waitFor();
@@ -266,7 +297,7 @@ check("Stage images can be embedded and described", await firstVisual.locator("i
 await featurePage.getByRole("button", { name: /Teach/ }).click();
 await featurePage.getByLabel("Page, section or locator").first().fill("slides 1–2");
 await featurePage.getByLabel("Imported slide numbers").first().fill("1–2");
-await featurePage.waitForTimeout(500);
+await featurePage.waitForTimeout(1200);
 const indexedDraft = await featurePage.evaluate(() => new Promise((resolve, reject) => {
   const request = indexedDB.open("product-practice-course-workshop", 1);
   request.onerror = () => reject(request.error);
@@ -285,7 +316,7 @@ const [cloneDownload] = await Promise.all([
 const cloneFile = path.join(qaDir, "adapted-pm-course-draft.json");
 await cloneDownload.saveAs(cloneFile);
 const cloneDraft = JSON.parse(await readFile(cloneFile, "utf8"));
-check("Clone resets identity, version, status and approvals", cloneDraft.package.manifest.id === "pm-fundamentals-adapted" && cloneDraft.package.manifest.version === "0.1.0" && cloneDraft.package.manifest.status === "draft" && cloneDraft.release.releaseApproved === false);
+check("Clone resets identity, version, status, review evidence and approvals", cloneDraft.package.manifest.id === "pm-fundamentals-adapted" && cloneDraft.package.manifest.version === "0.1.0" && cloneDraft.package.manifest.status === "draft" && cloneDraft.package.manifest.reviewed === "" && cloneDraft.package.content.sources.every((source) => !source.checked) && cloneDraft.release.releaseApproved === false);
 check("Clone preserves advanced course content and embeds the source deck", cloneDraft.package.content.caseStudies.length > 0 && cloneDraft.package.content.toolkitTemplates.length > 0 && cloneDraft.package.content.capstoneSteps.length > 0 && cloneDraft.package.content.fieldGuide.length > 0 && cloneDraft.package.content.slides.length === 98 && cloneDraft.package.content.assets.length === 99);
 check("Precise lesson citations survive the editable draft", cloneDraft.package.content.modules.some((module) => module.sections.some((section) => section.sourceReferences?.some((reference) => reference.locator === "slides 1–2" && reference.slideNumbers?.join(",") === "1,2"))));
 await featurePage.setViewportSize({ width: 390, height: 844 });

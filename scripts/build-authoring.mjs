@@ -19,7 +19,7 @@ const authoringDir = path.join(projectDir, "authoring");
 const outputFile = path.join(projectDir, "Course-Authoring-Studio.html");
 const publishedDir = path.join(projectDir, "docs", "course-workshop");
 const publishedFile = path.join(publishedDir, "index.html");
-const studioVersion = "0.3.0";
+const studioVersion = "0.4.0";
 
 function escapeForScript(source) {
   return source.replace(/[ \t]+$/gm, "").replace(/<\/script/gi, "<\\/script");

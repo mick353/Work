@@ -11,7 +11,7 @@ The online Workshop is public, but it contains no draft or course content from i
 
 ## Trainer workflow
 
-The first page in the Workshop is the trainer instruction page. The controlled path is:
+The first page in the Workshop is the trainer instruction page. Before entering detailed content, use its five-part blueprint to agree the audience, final performance, evidence base, learning sequence and assessment approach. The controlled path is:
 
 1. **Course setup** — record stable identity, ownership, version, status and governing sources.
 2. **Teach** — write stages in learner order, with explanations, checks, scenarios, an assignment and precise source locators.
@@ -22,6 +22,12 @@ The first page in the Workshop is the trainer instruction page. The controlled p
 7. **Release** — record the subject-matter, learning-flow, audience/handling and release decisions; set the course status to **Available**; choose an output.
 
 Status alone does not release a course. Final outputs unlock only when the course has no blocking content errors, the complete release checklist is recorded and status is **Available**. Preview and editable draft remain separate from release.
+
+New courses begin with the content-review and source-checked dates blank. Enter those dates only after the corresponding review has actually occurred. The Review page groups issues by authoring step, filters blockers/warnings/notes, and sends each issue back to its relevant field with keyboard focus. Every step change starts at and focuses the new heading.
+
+Each authoring step contains a concise **How this step connects** explanation. Course setup reports where every source is currently used; Teach reports the diagnostic, cards, glossary, contrast, cases and media connected to the active stage; Apply and reference explains the learner destination or stage/source relationship for every optional content type; Media shows the complete register → import → review → cite sequence. These are guidance and live summaries, not extra course fields.
+
+The persistent draft header updates as the trainer works. A blank course shows **Duration pending** rather than presenting a false estimate; the derived minute estimate appears after lesson explanation content exists.
 
 ## Current authoring scope
 
@@ -53,7 +59,7 @@ The Workshop carries editable templates for every maintained course in the publi
 
 - gives the copy a new course id and an “Adapted” title;
 - resets its version to `0.1.0` and status to **Draft**;
-- clears the review date and every release declaration;
+- clears the course review date, every source checked date and every release declaration;
 - leaves the published source course unchanged.
 
 The trainer must give the adaptation its own permanent id, review its inherited and changed content, and make a fresh release decision. A clone is never an in-place update to an existing released course.
@@ -72,6 +78,8 @@ Field-guide entries use the same source-reference model. Source ids are renamed 
 Imported media is resized to a maximum 1,600-pixel edge and embedded as validated image data inside the draft/package. This keeps tablet authoring, standalone learner HTML and repository handoff self-contained. Limits are 50 MB per selected source file, 150 PDF pages and 80 MB of embedded package data.
 
 PDF import renders each page, extracts searchable text where available, and creates editable slide title, stage, text and alternative-text fields. Image import uses natural filename order. The Workshop recalculates each stage's slide range whenever slides are added, removed or reassigned.
+
+Large decks are retained in full but their editors are displayed in batches of 20. This prevents a 98- or 150-slide source deck from rendering every editor at once. Template cloning displays progress, and asset-rich autosave is deferred briefly so it does not compete with the immediate interaction.
 
 ## Outputs and what happens next
 
