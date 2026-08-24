@@ -8,6 +8,7 @@
  * Single-course output:
  *   exports/<course-id>/<course-id>.html
  *   exports/<course-id>/site/
+ *   exports/<course-id>/releases/<course-version>/
  *
  * Usage:
  *   node scripts/build.mjs
@@ -60,6 +61,27 @@ const siteDir = selectedCourseId ? path.join(outputRoot, "site") : path.join(pro
 const standaloneFile = selectedCourseId
   ? path.join(outputRoot, `${selectedCourseId}.html`)
   : path.join(projectDir, "Product-Management-Learning-System.html");
+
+async function selectedCourseVersion() {
+  if (!selectedCourseIndex) return null;
+  const result = await build({
+    entryPoints: [selectedCourseIndex],
+    bundle: true,
+    platform: "node",
+    format: "esm",
+    target: "node20",
+    write: false,
+    logLevel: "silent",
+  });
+  const source = result.outputFiles[0]?.text;
+  if (!source) throw new Error(`Could not read the version for ${selectedCourseId}.`);
+  const module = await import(`data:text/javascript;base64,${Buffer.from(source).toString("base64")}`);
+  const version = module.default?.manifest?.version;
+  if (typeof version !== "string" || !/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(version)) {
+    throw new Error(`Course ${selectedCourseId} does not expose a semantic version.`);
+  }
+  return version;
+}
 
 /** Replace the catalogue at bundle time so an individual export contains one course only. */
 function selectedCoursePlugin() {
@@ -238,6 +260,35 @@ async function assemble() {
     throw new Error("Service worker version was not fully stamped.");
   }
   await writeFile(path.join(siteDir, "sw.js"), swOut, "utf8");
+
+  if (selectedCourseId) {
+    const courseVersion = await selectedCourseVersion();
+    const releaseDir = path.join(outputRoot, "releases", courseVersion);
+    await rm(releaseDir, { recursive: true, force: true });
+    await mkdir(releaseDir, { recursive: true });
+    await writeFile(path.join(releaseDir, `${selectedCourseId}-v${courseVersion}.html`), standalone, "utf8");
+    await cp(siteDir, path.join(releaseDir, "site"), { recursive: true });
+    await writeFile(
+      path.join(releaseDir, "release-manifest.json"),
+      JSON.stringify({
+        recordVersion: 1,
+        courseId: selectedCourseId,
+        courseVersion,
+        generatedAt: new Date().toISOString(),
+        files: {
+          standalone: {
+            name: `${selectedCourseId}-v${courseVersion}.html`,
+            sha256: createHash("sha256").update(standalone).digest("hex"),
+          },
+          siteIndex: {
+            name: "site/index.html",
+            sha256: createHash("sha256").update(pagesHtml).digest("hex"),
+          },
+        },
+      }, null, 2),
+      "utf8",
+    );
+  }
 
   const standaloneMb = (Buffer.byteLength(standalone, "utf8") / 1024 / 1024).toFixed(2);
   const pagesKb = (Buffer.byteLength(pagesHtml, "utf8") / 1024).toFixed(1);

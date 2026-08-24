@@ -1,4 +1,4 @@
-import type { LoadedDraft } from "./draft";
+import type { AuthoringDraft } from "./draft";
 
 const DATABASE = "product-practice-course-workshop";
 const STORE = "drafts";
@@ -19,13 +19,13 @@ function openDatabase(): Promise<IDBDatabase> {
   });
 }
 
-export async function readBrowserDraft(): Promise<LoadedDraft | undefined> {
+export async function readBrowserDraft(): Promise<unknown | undefined> {
   const database = await openDatabase();
   try {
     return await new Promise((resolve, reject) => {
       const transaction = database.transaction(STORE, "readonly");
       const request = transaction.objectStore(STORE).get(CURRENT);
-      request.onsuccess = () => resolve(request.result as LoadedDraft | undefined);
+      request.onsuccess = () => resolve(request.result as unknown | undefined);
       request.onerror = () => reject(request.error ?? new Error("Browser draft could not be read."));
     });
   } finally {
@@ -33,7 +33,7 @@ export async function readBrowserDraft(): Promise<LoadedDraft | undefined> {
   }
 }
 
-export async function writeBrowserDraft(draft: LoadedDraft): Promise<void> {
+export async function writeBrowserDraft(draft: AuthoringDraft): Promise<void> {
   const database = await openDatabase();
   try {
     await new Promise<void>((resolve, reject) => {

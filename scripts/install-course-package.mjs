@@ -7,6 +7,7 @@
 
 import { build } from "esbuild";
 import { unzipSync } from "fflate";
+import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { mkdir, mkdtemp, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -73,10 +74,13 @@ function readJson(files, name) {
   }
 }
 
-function requiredReleaseRecord(record, entry) {
-  if (!record || typeof record !== "object" || record.recordVersion !== 1) fail("release-record.json uses an unsupported format.");
+function requiredReleaseRecord(record, entry, packageSha256) {
+  if (!record || typeof record !== "object" || record.recordVersion !== 2) fail("release-record.json uses an unsupported format. Regenerate the package with the current Course Workshop.");
   if (record.packageId !== entry.manifest.id || record.packageVersion !== entry.manifest.version) {
     fail("Release record identity does not match course-package.json.");
+  }
+  if (record.packageDigest?.algorithm !== "SHA-256" || record.packageDigest?.value !== packageSha256) {
+    fail("Release record is not bound to the exact course-package.json content.");
   }
   if (record.packageStatus !== "available" || record.checklistComplete !== true) {
     fail("The package is not recorded as an approved Available release.");
@@ -87,6 +91,11 @@ function requiredReleaseRecord(record, entry) {
       approvals.learningFlowChecked !== true ||
       approvals.audienceAndHandlingChecked !== true ||
       approvals.releaseApproved !== true ||
+      typeof approvals.reviewer?.name !== "string" || !approvals.reviewer.name.trim() ||
+      typeof approvals.reviewer?.role !== "string" || !approvals.reviewer.role.trim() ||
+      typeof approvals.approver?.name !== "string" || !approvals.approver.name.trim() ||
+      typeof approvals.approver?.role !== "string" || !approvals.approver.role.trim() ||
+      typeof approvals.approvalScope !== "string" || !approvals.approvalScope.trim() ||
       typeof approvals.approvalReference !== "string" || !approvals.approvalReference.trim() ||
       typeof approvals.approvalDate !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(approvals.approvalDate)) {
     fail("release-record.json does not contain the complete human release checklist.");
@@ -156,6 +165,8 @@ async function inspectPackage(zipPath) {
   if (!root.endsWith("-course-package")) fail("Top-level folder is not a Course Workshop repository package.");
 
   const canonicalPath = `${root}/course-package.json`;
+  const canonicalText = readText(files, canonicalPath);
+  const packageSha256 = createHash("sha256").update(canonicalText, "utf8").digest("hex");
   const entry = readJson(files, canonicalPath);
   if (!entry?.manifest?.id || !entry?.content) fail("course-package.json is not a training package.");
   const id = entry.manifest.id;
@@ -195,11 +206,19 @@ async function inspectPackage(zipPath) {
     fail("hosted/index.html differs from the repository's trusted single-course player build.");
   }
 
-  const release = readJson(files, `${root}/release-record.json`);
-  requiredReleaseRecord(release, entry);
+  const releasePath = `${root}/release-record.json`;
+  const release = readJson(files, releasePath);
+  requiredReleaseRecord(release, entry, packageSha256);
+  const archivedReleasePath = `${root}/src/courses/${id}/releases/${entry.manifest.version}.json`;
+  if (readText(files, archivedReleasePath) !== readText(files, releasePath)) {
+    fail("The course-owned release archive differs from release-record.json.");
+  }
   const report = readJson(files, `${root}/validation-report.json`);
   if (report.packageId !== id || report.packageVersion !== entry.manifest.version || report.contentBlocked !== false || report.releaseReady !== true) {
     fail("validation-report.json does not record a release-ready version of this package.");
+  }
+  if (report.packageDigest?.algorithm !== "SHA-256" || report.packageDigest?.value !== packageSha256) {
+    fail("validation-report.json is not bound to the exact course-package.json content.");
   }
 
   const validators = await loadValidators();
@@ -252,6 +271,12 @@ async function installInCatalogue(projectDir, inspected) {
   try {
     await writeFile(path.join(stagedCourse, "course-package.json"), readText(inspected.files, `${inspected.root}/course-package.json`), "utf8");
     await writeFile(path.join(stagedCourse, "index.ts"), expectedEntryModule(), "utf8");
+    await mkdir(path.join(stagedCourse, "releases"), { recursive: true });
+    await writeFile(
+      path.join(stagedCourse, "releases", `${inspected.entry.manifest.version}.json`),
+      readText(inspected.files, `${inspected.root}/release-record.json`),
+      "utf8",
+    );
     const assetPrefix = `${inspected.root}/public/courses/${inspected.id}/`;
     for (const [name, bytes] of inspected.files) {
       if (!name.startsWith(assetPrefix)) continue;

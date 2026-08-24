@@ -37,9 +37,16 @@ const failures = [];
 const checks = [];
 const consoleErrors = [];
 
-function check(name, condition, detail = "") {
-  checks.push({ name, passed: Boolean(condition), detail });
-  if (!condition) failures.push(`${name}${detail ? ` — ${detail}` : ""}`);
+function check(name, condition, observation = "", failureMessage = "") {
+  const passed = Boolean(condition);
+  const result = {
+    name,
+    passed,
+    observation,
+    failureMessage: passed ? "" : (failureMessage || observation || "The asserted condition was false."),
+  };
+  checks.push(result);
+  if (!passed) failures.push(`${name} — ${result.failureMessage}`);
 }
 
 function watchPage(page, label) {
@@ -67,9 +74,10 @@ const bankModule = await esbuild({
     contents: `
       import { trainingPackages } from ${JSON.stringify(path.join(projectDir, "src/packages.ts"))};
       import { validateTrainingPackage } from ${JSON.stringify(path.join(projectDir, "src/package-validation.ts"))};
+      import { COURSE_QUALITY_PROFILE_VERSION } from ${JSON.stringify(path.join(projectDir, "src/course-quality-profiles.ts"))};
       const product = trainingPackages.find((entry) => entry.manifest.id === "pm-fundamentals");
       if (!product) throw new Error("Product Management package is missing");
-      export { trainingPackages, validateTrainingPackage };
+      export { trainingPackages, validateTrainingPackage, COURSE_QUALITY_PROFILE_VERSION };
       export const modules = product.content.modules;
       export const sources = product.content.sources;
       export const practiceQuestions = product.content.practiceQuestions;
@@ -481,54 +489,72 @@ check(
 
 const totalMinutes = bank.modules.reduce((sum, module) => sum + module.minutes, 0);
 /*
- * Teaching volume.
+ * Maintained-course depth profiles.
  *
- * The review measured 5,852 words of lesson prose against 15,971 words of
- * questions and feedback — the course tested 2.7x more than it taught, and
- * sections of 24-72 words state conclusions without deriving them. Each stage
- * now carries a worked-reasoning passage showing a decision made badly and
- * then well.
+ * A previous suite applied its deepest pedagogy checks only to Product
+ * Management. Each catalogue course now has an explicit, versioned profile.
+ * These floors detect silent erosion; they do not replace human review or
+ * evidence from learners using the material.
  */
 {
   const words = (text) => String(text ?? "").trim().split(/\s+/).filter(Boolean).length;
-  const withReasoning = bank.modules.filter((module) =>
-    module.sections.some((section) => /^Worked reasoning:/.test(section.heading)),
-  );
   check(
-    "Every stage carries a worked-reasoning passage",
-    withReasoning.length === 9,
-    `${withReasoning.length} of 9`,
+    "Every maintained course owns a current quality profile",
+    bank.trainingPackages.every((entry) => entry.qualityProfile?.profileVersion === bank.COURSE_QUALITY_PROFILE_VERSION),
+    bank.trainingPackages.map((entry) => `${entry.manifest.id}:v${entry.qualityProfile?.profileVersion ?? "missing"}`).join(", "),
   );
-  const shortPassages = bank.modules.flatMap((module) =>
-    module.sections.filter((s) => /^Worked reasoning:/.test(s.heading) && words(s.body) < 150),
-  );
-  check(
-    "Worked reasoning actually derives the reasoning",
-    shortPassages.length === 0,
-    `${shortPassages.length} passage(s) under 150 words — a summary, not a derivation`,
-  );
-  const lessonWords = bank.modules.reduce((total, module) => {
-    let n = words(module.outcome) + words(module.coreIdea);
-    for (const section of module.sections) {
-      n += words(section.heading) + words(section.body) + words(section.example);
-      for (const bullet of section.bullets ?? []) n += words(bullet);
-      if (section.table) {
-        for (const head of section.table.head) n += words(head);
-        for (const row of section.table.rows) for (const cell of row) n += words(cell);
-      }
-    }
-    return total + n;
-  }, 0);
-  check("Lesson prose is substantial", lessonWords >= 8000, `${lessonWords} words`);
-  const thinnest = Math.min(...bank.modules.map((m) => m.sections.reduce((n, s) => n + words(s.body), 0)));
-  check("No stage is a stub", thinnest >= 300, `thinnest stage has ${thinnest} body words`);
 
-  // The minutes are derived now, so they cannot drift from the content.
-  check(
-    "Stage length is derived, not declared",
-    bank.modules.every((m) => m.minutes % 5 === 0 && m.minutes >= 5),
-    bank.modules.map((m) => m.minutes).join(", "),
-  );
+  for (const entry of bank.trainingPackages) {
+    const profile = entry.qualityProfile;
+    if (!profile) continue;
+    const label = entry.manifest.title;
+    check(`${label} uses the current quality-profile version`, profile.profileVersion === bank.COURSE_QUALITY_PROFILE_VERSION, `profile v${profile.profileVersion}`);
+    check(`${label} retains its reviewed stage structure`, entry.content.modules.length === profile.stageCount, `${entry.content.modules.length} of ${profile.stageCount} stages`);
+
+    const lessonWords = entry.content.modules.reduce((total, module) => {
+      let count = words(module.outcome) + words(module.coreIdea);
+      for (const section of module.sections) {
+        count += words(section.heading) + words(section.body) + words(section.example);
+        for (const bullet of section.bullets ?? []) count += words(bullet);
+        if (section.table) {
+          for (const head of section.table.head) count += words(head);
+          for (const row of section.table.rows) for (const cell of row) count += words(cell);
+        }
+      }
+      return total + count;
+    }, 0);
+    check(`${label} lesson prose remains substantial`, lessonWords >= profile.minimumLessonWords, `${lessonWords} words; floor ${profile.minimumLessonWords}`);
+
+    const stageBodyWords = entry.content.modules.map((module) => module.sections.reduce((count, section) => count + words(section.body), 0));
+    check(`${label} has no stub stage`, Math.min(...stageBodyWords) >= profile.minimumStageBodyWords, `thinnest stage ${Math.min(...stageBodyWords)} body words; floor ${profile.minimumStageBodyWords}`);
+
+    const reasoning = entry.content.modules.flatMap((module) => module.sections.filter((section) => /^Worked reasoning:/.test(section.heading)));
+    check(`${label} retains its worked-reasoning coverage`, reasoning.length >= profile.minimumWorkedReasoningPassages, `${reasoning.length} passages; floor ${profile.minimumWorkedReasoningPassages}`);
+    const shortReasoning = reasoning.filter((section) => words(section.body) < profile.minimumWorkedReasoningWords);
+    check(`${label} worked reasoning remains developed`, shortReasoning.length === 0, `${shortReasoning.length} passage(s) below ${profile.minimumWorkedReasoningWords} words`);
+
+    check(
+      `${label} retains sufficient questions and scenarios per stage`,
+      entry.content.modules.every((module) => module.questions.length >= profile.minimumKnowledgeQuestionsPerStage && module.scenarios.length === profile.scenariosPerStage),
+      entry.content.modules.map((module) => `${module.id}:${module.questions.length}q/${module.scenarios.length}s`).join(" "),
+    );
+    const thinModels = entry.content.modules.filter((module) => words(module.assignment.modelAnswer) < profile.minimumAssignmentWords);
+    check(`${label} assignments retain substantial worked answers`, thinModels.length === 0, `${thinModels.length} below ${profile.minimumAssignmentWords} words`);
+    const weakCriteria = entry.content.modules.filter((module) => (module.assignment.criteria ?? []).length < profile.minimumAssignmentCriteria);
+    check(`${label} worked answers retain self-check criteria`, weakCriteria.length === 0, `${weakCriteria.length} below ${profile.minimumAssignmentCriteria} criteria`);
+
+    const caseStages = new Set(entry.content.caseStudies.flatMap((study) => study.steps.map((step) => step.moduleId)));
+    check(`${label} case set retains its intended stage coverage`, caseStages.size >= profile.minimumCaseStageCoverage, `${caseStages.size} stages; floor ${profile.minimumCaseStageCoverage}`);
+    const shortCaseSteps = entry.content.caseStudies.flatMap((study) => study.steps).filter((step) => words(step.body) < profile.minimumCaseStepWords);
+    check(`${label} case steps remain substantial`, shortCaseSteps.length === 0, `${shortCaseSteps.length} below ${profile.minimumCaseStepWords} words`);
+    check(`${label} case steps carry explicit decisions`, entry.content.caseStudies.every((study) => study.steps.every((step) => Boolean(step.decision?.trim()))));
+
+    check(
+      `${label} stage duration remains derived and usable`,
+      entry.content.modules.every((module) => module.minutes % 5 === 0 && module.minutes >= 5),
+      entry.content.modules.map((module) => module.minutes).join(", "),
+    );
+  }
 }
 
 /*
@@ -586,34 +612,6 @@ const totalMinutes = bank.modules.reduce((sum, module) => sum + module.minutes, 
 }
 
 {
-  const caseStages = new Set(bank.caseStudies.flatMap((c) => c.steps.map((s) => s.stage)));
-  check(
-    "The case set exercises every stage",
-    caseStages.size === 9,
-    `covers stages ${[...caseStages].sort((a, b) => a - b).join(", ")}`,
-  );
-  const shortSteps = bank.caseStudies.flatMap((c) => c.steps).filter((s) => s.body.trim().split(/\s+/).length < 40);
-  check(
-    "Case steps are substantial",
-    shortSteps.length === 0,
-    `${shortSteps.length} step(s) under 40 words`,
-  );
-  const everyStepDecides = bank.caseStudies.every((c) => c.steps.every((s) => s.decision && s.decision.trim()));
-  check("Every case step carries a decision in the data", everyStepDecides);
-}
-
-{
-  const withModel = bank.modules.filter((m) => m.assignment.modelAnswer && m.assignment.modelAnswer.trim());
-  check("Every stage assignment has a worked answer", withModel.length === 9, `${withModel.length} of 9`);
-  const withCriteria = bank.modules.filter((m) => (m.assignment.criteria ?? []).length >= 3);
-  check("Every worked answer has self-check criteria", withCriteria.length === 9, `${withCriteria.length} of 9`);
-  const thinModels = bank.modules.filter(
-    (m) => (m.assignment.modelAnswer ?? "").trim().split(/\s+/).length < 100,
-  );
-  check("Worked answers are substantial", thinModels.length === 0, `${thinModels.length} under 100 words`);
-}
-
-{
   // One document listed twice is one source, not two. The Digital Service
   // Standard had a web entry and a PDF entry whose note explained which PDF
   // superseded which — version housekeeping in a learner-facing list.
@@ -627,14 +625,6 @@ const totalMinutes = bank.modules.reduce((sum, module) => sum + module.minutes, 
   check("Source notes carry no version housekeeping", versionChatter.length === 0);
 }
 
-check("Stated stage count is nine", bank.modules.length === 9);
-// Four is the minimum that makes the 75% mastery threshold meaningful; the
-// delivery and government stages carry five because they cover more ground.
-check(
-  "Every stage has at least four knowledge questions and exactly two scenarios",
-  bank.modules.every((module) => module.questions.length >= 4 && module.scenarios.length === 2),
-  bank.modules.map((module) => `${module.id}:${module.questions.length}q/${module.scenarios.length}s`).join(" "),
-);
 console.log(
   `\nBank: ${allQuestions.length} questions, ${bank.flashcards.length} cards, ${bank.toolkitTemplates.length} templates, ${totalMinutes} minutes of lessons.\n`,
 );
@@ -2476,6 +2466,36 @@ check(
     carried.oldGone && carried.score === 88 && carried.days,
     `old key removed: ${carried.oldGone}, score carried: ${carried.score}, study days carried: ${carried.days}`,
   );
+  const versionDialog = freshPage.getByRole("dialog", { name: "Choose what happens to your saved work" });
+  check("Unversioned saved work triggers an explicit curriculum-migration choice", await versionDialog.count() === 1 && /earlier version/i.test(await versionDialog.innerText()));
+  await versionDialog.getByRole("button", { name: "Keep my saved work" }).click();
+  const keptVersionedWork = await freshPage.evaluate(() => ({
+    version: localStorage.getItem("product-practice-v2:pm-fundamentals:content-version"),
+    progress: localStorage.getItem("product-practice-v2:pm-fundamentals:progress"),
+  }));
+  check("Learner can deliberately keep saved work against the current course version", keptVersionedWork.version === "1.0.0" && Boolean(keptVersionedWork.progress));
+
+  await freshPage.evaluate(() => {
+    localStorage.setItem("product-practice-v2:pm-fundamentals:content-version", "0.9.0");
+    localStorage.setItem("product-practice-v2:pm-fundamentals:toolkit", JSON.stringify({ retained: "old note" }));
+    localStorage.setItem("product-practice-v2:theme", JSON.stringify("dark"));
+  });
+  await freshPage.reload({ waitUntil: "load" });
+  const changedDialog = freshPage.getByRole("dialog", { name: "Choose what happens to your saved work" });
+  await changedDialog.waitFor();
+  const versionExplanation = await changedDialog.innerText();
+  await Promise.all([
+    freshPage.waitForNavigation({ waitUntil: "load" }),
+    changedDialog.getByRole("button", { name: "Start this version fresh" }).click(),
+  ]);
+  const resetVersionedWork = await freshPage.evaluate(() => ({
+    version: localStorage.getItem("product-practice-v2:pm-fundamentals:content-version"),
+    progress: localStorage.getItem("product-practice-v2:pm-fundamentals:progress"),
+    toolkit: localStorage.getItem("product-practice-v2:pm-fundamentals:toolkit"),
+    theme: localStorage.getItem("product-practice-v2:theme"),
+  }));
+  check("Changed version is explained before a learner chooses", /0\.9\.0/.test(versionExplanation) && /1\.0\.0/.test(versionExplanation));
+  check("Starting fresh clears only that course and records the new version", resetVersionedWork.version === "1.0.0" && resetVersionedWork.progress === null && resetVersionedWork.toolkit === null && resetVersionedWork.theme === JSON.stringify("dark"));
   await fresh.close();
 }
 
@@ -3200,6 +3220,7 @@ await browser.close();
 check("No uncaught console or page errors", consoleErrors.length === 0, consoleErrors.join(" | "));
 
 const report = {
+  reportVersion: 2,
   artefact: artifactUrl,
   ranAt: new Date().toISOString(),
   passed: failures.length === 0,
@@ -3210,7 +3231,7 @@ const report = {
 await writeFile(path.join(projectDir, "qa-report.json"), JSON.stringify(report, null, 2), "utf8");
 
 for (const item of checks) {
-  console.log(`${item.passed ? "PASS" : "FAIL"}  ${item.name}${item.detail && !item.passed ? ` — ${item.detail}` : ""}`);
+  console.log(`${item.passed ? "PASS" : "FAIL"}  ${item.name}${item.failureMessage ? ` — ${item.failureMessage}` : ""}`);
 }
 console.log(`\n${checks.length - failures.length}/${checks.length} checks passed.`);
 

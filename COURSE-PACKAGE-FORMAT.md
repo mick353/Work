@@ -19,6 +19,8 @@ The canonical TypeScript contract is `src/package-model.ts`. `src/package-valida
 - `schemaVersion` identifies the shape the player understands. It changes only when the package contract changes.
 - `version` is the semantic version of one course's content. It changes when that course is released or revised.
 
+Current package schema version 2 adds the course-owned `qualityProfile`. The profile travels with Workshop JSON and a generated repository package, so installing a new course does not require a hidden central QA entry.
+
 ## 2. Folder contract
 
 Every course owns one source folder and one optional public-asset folder:
@@ -30,6 +32,7 @@ src/courses/<course-id>/
   reference.ts   cards, glossary, cases, capstone, toolkit and field guide
   slides.ts      optional generated slide metadata
   exemplar.ts    optional worked document
+  releases/      Workshop-installed versioned release declarations
 
 public/courses/<course-id>/
   slides/        optional slide-NN.webp assets
@@ -56,9 +59,9 @@ The default export is what the selected-course build imports without needing cou
 - minor: additive lessons, practice or reference material that remains compatible with existing progress;
 - major: a breaking curriculum change, such as replacing or re-identifying stages.
 
-Changing `version` does not change the storage namespace. That is intentional for compatible revisions. A breaking major release therefore needs an explicit migration, or a new course id when old and new versions must coexist. Do not silently rename a course id: existing browser progress would appear to vanish.
+Changing `version` does not change the storage namespace. On first use of a changed or previously unrecorded version, the player explains the mismatch and asks the learner to **keep saved work** or **start this version fresh**. Starting fresh clears only that package's state; other courses and person-level settings remain. A new course id is still required when old and new curricula must coexist. Do not silently rename an id: existing browser progress would appear to vanish.
 
-The repository currently holds one active version of each course. Retaining historical release files, signing releases or choosing among multiple live versions belongs to the future training-managed release workflow.
+The repository holds one active version of each course. Isolated builds also retain `exports/<course-id>/releases/<version>/` delivery copies with a SHA-256 manifest, and a Workshop-installed course retains its release declaration under `src/courses/<course-id>/releases/<version>.json`. Signing releases or choosing among multiple live versions remains outside the current workflow.
 
 ## 4. Registration
 
@@ -85,9 +88,9 @@ Course Workshop uses the same player through a different, self-contained asset r
 - `Slide.assetId` selects an embedded source-slide image;
 - `LessonSection.sourceReferences` and `FieldGuideEntry.sourceReferences` add human locators and optional slide numbers to an existing source id.
 
-The runtime validator rejects unknown asset/source ids, duplicate slide numbers, unsafe filenames, unsupported/SVG media declarations, mismatched data-URL prefixes, missing alternative text, missing cited slides and packages above the embedded-media limit. An embedded package needs no public binary-asset folder: standalone, hosted and repository outputs carry the same canonical data and remain self-contained.
+The runtime validator rejects unknown asset/source ids, duplicate slide numbers, unsafe filenames, unsupported/SVG media declarations, mismatched data-URL prefixes, image bytes that do not match the declared PNG/JPEG/WebP type, missing alternative text, missing cited slides and packages above the embedded-media limit. Source URLs must be credential-free HTTPS. An embedded package needs no public binary-asset folder: standalone, hosted and repository outputs carry the same canonical data and remain self-contained.
 
-Current hardening boundary: source URLs are not yet restricted to an approved scheme, and imported draft JSON is checked against its declared image data-URL prefix rather than an independent binary signature. Maintained packages use ordinary HTTPS sources and Workshop media passes through browser image/PDF decoding, but a release custodian must still treat an external package as untrusted. Scheme restriction and stronger exact-content evidence are prioritised in [ROADMAP.md](ROADMAP.md).
+Allowed syntax is not source authority: a release custodian must still confirm that every HTTPS address is the intended governing or supporting source and that the package is suitable for its stated audience.
 
 Stage ids only need to be unique inside one course. Shared-player mappings that sit outside a package must therefore use both identities. Curated illustrations are registered as `<package-id>:<stage-id>`; an authored `visualAssetId` takes precedence, and a course-neutral SVG remains the fallback.
 
@@ -115,6 +118,7 @@ Outputs:
 
 - `exports/<course-id>/<course-id>.html`
 - `exports/<course-id>/site/`
+- `exports/<course-id>/releases/<course-version>/` — exact standalone and site copies plus their hash manifest
 
 All individual courses:
 
@@ -165,14 +169,14 @@ No documentation records a fixed total number of QA checks. The suite changes wi
 
 The browser tool can produce a self-contained learner HTML file, an isolated hosted-course ZIP, an editable draft or a repository package ZIP. It cannot write into the repository. Final learner/repository outputs require a structurally clean package, **Available** status and the recorded subject-matter, learning-flow, audience/handling and release declarations.
 
-The repository ZIP carries the intended `src/courses/<course-id>/` folder, canonical JSON, entry module, hosted page, validation report and declared release record. `scripts/install-course-package.mjs` treats those records as untrusted input: it rejects unsafe paths or mismatched identities, recalculates structural and authoring checks and refuses incomplete approvals before any write. The current human release record is matched by package id and semantic version; it is not yet cryptographically bound to the exact canonical JSON. The custodian therefore still verifies that the inspected diff is the approved content.
+The repository ZIP carries the intended `src/courses/<course-id>/` folder, canonical JSON, entry module, course-owned versioned release archive, hosted page, validation report and declared release record. `scripts/install-course-package.mjs` treats those records as untrusted input: it rejects unsafe paths or mismatched identities, recalculates structural and authoring checks, verifies that the release and validation records contain the SHA-256 digest of the exact canonical JSON, and refuses incomplete reviewer/approver identity, role, scope, reference or date before any write. The custodian still verifies the resulting Git diff and the authority behind the declarations.
 
 The implemented authoring profile covers course identity and sources; stages and sourced lesson sections; questions, scenarios and assignments; diagnostics, review cards, glossary and contrasts; worked cases; toolkit templates; complete capstones; field-guide entries; explicit source differences; worked-document exemplars; precise source/slide references; PDF or ordered-image source-deck import; and course-owned stage visuals.
 
 Course Workshop embeds every maintained catalogue course as a safe editable template during its build. A clone carries the complete course and its deck, then receives a new id/title, version `0.1.0`, Draft status and empty review/release state. The maintained original is not edited.
 
-Asset-rich drafts use browser IndexedDB, with downloaded draft JSON as the portable source. Draft format version 1 records the package, release checklist and save time; it does not provide shared editing, merge support or release history. Final outputs still carry one course only. Arbitrary multi-course composition is not part of the current product boundary.
+Asset-rich drafts use browser IndexedDB, with downloaded draft JSON as the portable source. Draft format version 2 records a stable draft id, revision, origin and timestamps with the package and release checklist. Version-1 drafts and raw packages are migrated with review/release evidence cleared. This supports checkpoint comparison and transfer, not shared editing or automatic merge. Final outputs still carry one course only. Arbitrary multi-course composition is not part of the current product boundary.
 
-Work that remains outside the browser profile includes legacy-draft migration, exact-content release evidence, source-link hardening, release history, draft lineage, course-profile QA, deliberate migration choices for breaking revisions and findings from trainer/manual-accessibility testing. Direct PowerPoint parsing also remains outside: save a deck as PDF or slide images for browser import.
+The remaining readiness work is external evidence: trainer observation with real course material, applicable manual accessibility/device testing and the genuine human review/approval evidence for each release. Direct PowerPoint parsing remains outside: save a deck as PDF or slide images for browser import.
 
 See [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md) for the tool workflow, validation boundary and distribution decision.

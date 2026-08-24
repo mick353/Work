@@ -60,6 +60,9 @@ try {
   const installedCourse = path.join(testProject, "src", "courses", "workshop-fixture");
   const installedCatalog = await readFile(path.join(testProject, "src", "package-catalog.ts"), "utf8");
   check("Combined-catalogue command installs one namespaced course and one catalogue entry", installed.status === 0 && existsSync(path.join(installedCourse, "course-package.json")) && existsSync(path.join(installedCourse, "index.ts")) && installedCatalog.includes('./courses/workshop-fixture'), installed.stderr.trim());
+  const installedPackage = JSON.parse(await readFile(path.join(installedCourse, "course-package.json"), "utf8"));
+  check("Installed course carries its own current QA profile", installedPackage.qualityProfile?.profileVersion === 1 && installedPackage.qualityProfile?.stageCount === installedPackage.content?.modules?.length);
+  check("Combined-catalogue command retains the exact versioned release record", existsSync(path.join(installedCourse, "releases", "0.1.0.json")));
   check("Combined-catalogue command installs course-owned assets in the same namespace", existsSync(path.join(testProject, "public", "courses", "workshop-fixture", "README.md")));
 
   const hosted = runInstaller("--host", fixtureZip, testProject);
@@ -87,6 +90,15 @@ const tamperedZip = path.join(fixtureDir, "tampered-release-course-package.zip")
 await writeFile(tamperedZip, zipSync(packageFiles));
 const tamperedInspection = runInstaller("--inspect", tamperedZip);
 check("Inspector rejects an incomplete or tampered release record", tamperedInspection.status !== 0 && /release checklist/i.test(tamperedInspection.stderr));
+
+const digestTamperedFiles = unzipSync(new Uint8Array(await readFile(fixtureZip)));
+const digestTamperedRelease = JSON.parse(new TextDecoder().decode(digestTamperedFiles[releasePath]));
+digestTamperedRelease.packageDigest.value = "0".repeat(64);
+digestTamperedFiles[releasePath] = strToU8(JSON.stringify(digestTamperedRelease));
+const digestTamperedZip = path.join(fixtureDir, "tampered-digest-course-package.zip");
+await writeFile(digestTamperedZip, zipSync(digestTamperedFiles));
+const digestTamperedInspection = runInstaller("--inspect", digestTamperedZip);
+check("Inspector rejects approval evidence detached from the exact package content", digestTamperedInspection.status !== 0 && /not bound to the exact/i.test(digestTamperedInspection.stderr));
 
 const codeTamperedFiles = unzipSync(new Uint8Array(await readFile(fixtureZip)));
 const entryPath = `${root}/src/courses/workshop-fixture/index.ts`;

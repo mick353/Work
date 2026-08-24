@@ -3,6 +3,7 @@
 import { AxeBuilder } from "@axe-core/playwright";
 import { chromium } from "playwright";
 import { copyFile, mkdir, readFile, rm } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { pathToFileURL, fileURLToPath } from "node:url";
 import { strFromU8, unzipSync } from "fflate";
@@ -87,7 +88,7 @@ function validPackage() {
   const modelAnswer = Array.from({ length: 110 }, (_, index) => `word${index + 1}`).join(" ");
   return {
     manifest: {
-      schemaVersion: 1,
+      schemaVersion: 2,
       version: "0.1.0",
       id: "workshop-fixture",
       title: "Evidence to Action",
@@ -98,6 +99,20 @@ function validPackage() {
       status: "available",
       summary: "A compact course for turning evidence into a transparent decision and next action.",
       arc: "From evidence to an accountable next step",
+    },
+    qualityProfile: {
+      profileVersion: 1,
+      stageCount: 1,
+      minimumLessonWords: 300,
+      minimumStageBodyWords: 300,
+      minimumKnowledgeQuestionsPerStage: 4,
+      scenariosPerStage: 2,
+      minimumAssignmentWords: 100,
+      minimumAssignmentCriteria: 2,
+      minimumWorkedReasoningPassages: 0,
+      minimumWorkedReasoningWords: 0,
+      minimumCaseStageCoverage: 0,
+      minimumCaseStepWords: 40,
     },
     content: {
       modules: [{
@@ -186,9 +201,29 @@ const approvedRelease = {
   learningFlowChecked: true,
   handlingChecked: true,
   releaseApproved: true,
+  reviewerName: "Review Fixture",
+  reviewerRole: "Subject matter reviewer",
+  approverName: "Approval Fixture",
+  approverRole: "Training release owner",
+  approvalScope: "Internal QA fixture",
   approvalReference: "QA fixture approval",
   approvalDate: "2026-08-21",
 };
+
+function currentDraft(packageEntry, release = approvedRelease) {
+  return {
+    draftSchemaVersion: 2,
+    savedAt: new Date().toISOString(),
+    lineage: {
+      draftId: `qa-${packageEntry.manifest.id}`,
+      revision: 1,
+      createdAt: "2026-08-21T00:00:00.000Z",
+      origin: "blank",
+    },
+    package: packageEntry,
+    release,
+  };
+}
 
 await rm(qaDir, { recursive: true, force: true });
 await mkdir(qaDir, { recursive: true });
@@ -241,7 +276,7 @@ check("Reinforce explains that its content belongs to the active stage", /active
 await page.getByRole("button", { name: /Review & export/ }).click();
 check("Review checks are grouped by step and filterable", await page.locator(".review-step-summary > div").count() === 6 && await page.getByRole("button", { name: /Blockers/ }).count() === 1);
 check("Review explains issue navigation and the human release boundary", /relevant field.*human learning-flow review/is.test(await page.locator(".step-connection").innerText()));
-check("Draft output explains the complete trainer handoff", /Complete editable draft.*another trainer.*embedded slides, images.*approximately.*(?:KB|MB)/is.test(await page.locator("body").innerText()));
+check("Draft output explains the complete trainer checkpoint transfer", /Complete editable draft.*another trainer.*embedded slides, images.*approximately.*(?:KB|MB)/is.test(await page.locator("body").innerText()));
 await page.locator(".issue.error").filter({ hasText: "Add the course title" }).click();
 await page.waitForTimeout(50);
 check("A review issue opens and focuses its exact field", await page.evaluate(() => document.activeElement?.id === "manifest-title" && document.activeElement?.scrollIntoView !== undefined));
@@ -324,6 +359,8 @@ const cloneFile = path.join(qaDir, "adapted-pm-course-draft.json");
 await cloneDownload.saveAs(cloneFile);
 const cloneDraft = JSON.parse(await readFile(cloneFile, "utf8"));
 check("Clone resets identity, version, status, review evidence and approvals", cloneDraft.package.manifest.id === "pm-fundamentals-adapted" && cloneDraft.package.manifest.version === "0.1.0" && cloneDraft.package.manifest.status === "draft" && cloneDraft.package.manifest.reviewed === "" && cloneDraft.package.content.sources.every((source) => !source.checked) && cloneDraft.release.releaseApproved === false);
+check("Clone receives the portable Workshop quality profile instead of inheriting a hidden course-specific gate", cloneDraft.package.qualityProfile?.stageCount === 9 && cloneDraft.package.qualityProfile?.minimumLessonWords === 2700 && cloneDraft.package.qualityProfile?.minimumWorkedReasoningPassages === 0);
+check("Portable clone draft records stable lineage and a shareable revision", cloneDraft.draftSchemaVersion === 2 && cloneDraft.lineage?.origin === "clone" && cloneDraft.lineage?.basedOn?.packageId === "pm-fundamentals" && cloneDraft.lineage?.revision === 2 && Boolean(cloneDraft.lineage?.lastExportedAt));
 check("Clone preserves advanced course content and embeds the source deck", cloneDraft.package.content.caseStudies.length > 0 && cloneDraft.package.content.toolkitTemplates.length > 0 && cloneDraft.package.content.capstoneSteps.length > 0 && cloneDraft.package.content.fieldGuide.length > 0 && cloneDraft.package.content.slides.length === 98 && cloneDraft.package.content.assets.length === 99);
 check("Precise lesson citations survive the editable draft", cloneDraft.package.content.modules.some((module) => module.sections.some((section) => section.sourceReferences?.some((reference) => reference.locator === "slides 1–2" && reference.slideNumbers?.join(",") === "1,2"))));
 await featurePage.setViewportSize({ width: 390, height: 844 });
@@ -354,8 +391,26 @@ check("Repository export is disabled for an incomplete draft", await page.getByR
 await page.getByRole("button", { name: /Teach/ }).click();
 await page.getByLabel("Title").first().fill("Local persistence check");
 await page.waitForTimeout(400);
-const saved = await page.evaluate((key) => window.localStorage.getItem(key), "product-practice:course-workshop:draft-v1");
+const saved = await page.evaluate((key) => window.localStorage.getItem(key), "product-practice:course-workshop:draft-v2");
 check("Draft changes autosave to a workshop-specific storage key", Boolean(saved?.includes("Local persistence check")));
+
+const legacyPackage = validPackage();
+await page.locator('input[type="file"]').setInputFiles({
+  name: "legacy-v1-course-draft.json",
+  mimeType: "application/json",
+  buffer: Buffer.from(JSON.stringify({ draftSchemaVersion: 1, savedAt: "2026-08-20T00:00:00.000Z", package: legacyPackage, release: approvedRelease })),
+});
+await page.waitForSelector("text=This older draft was upgraded");
+await page.getByRole("button", { name: /Review & export/ }).click();
+check("Legacy drafts cannot carry old review declarations into a current release", await page.getByRole("button", { name: "Export repository ZIP" }).isDisabled());
+const [migratedDownload] = await Promise.all([
+  page.waitForEvent("download"),
+  page.locator(".sidebar-actions").getByRole("button", { name: "Save/share complete draft" }).click(),
+]);
+const migratedFile = path.join(qaDir, "migrated-v2-course-draft.json");
+await migratedDownload.saveAs(migratedFile);
+const migratedDraft = JSON.parse(await readFile(migratedFile, "utf8"));
+check("Legacy migration emits a traceable v2 draft with review evidence cleared", migratedDraft.draftSchemaVersion === 2 && migratedDraft.lineage?.origin === "migrated-v1" && migratedDraft.lineage?.revision === 2 && migratedDraft.package.manifest.reviewed === "" && migratedDraft.package.manifest.status === "draft" && migratedDraft.package.content.sources.every((source) => !source.checked) && migratedDraft.release.releaseApproved === false);
 
 const fixture = validPackage();
 const brokenFixture = structuredClone(fixture);
@@ -365,7 +420,7 @@ reviewFixture.manifest.status = "in-development";
 await page.locator('input[type="file"]').setInputFiles({
   name: "deliberately-broken-course-draft.json",
   mimeType: "application/json",
-  buffer: Buffer.from(JSON.stringify({ draftSchemaVersion: 1, savedAt: new Date().toISOString(), package: brokenFixture, release: approvedRelease })),
+  buffer: Buffer.from(JSON.stringify(currentDraft(brokenFixture))),
 });
 await page.waitForSelector("text=Loaded deliberately-broken-course-draft.json");
 await page.getByRole("button", { name: /Review & export/ }).click();
@@ -374,21 +429,24 @@ check("A deliberately broken distractor-feedback rule blocks export", await page
 
 const unsafeMediaFixture = richPackage();
 unsafeMediaFixture.content.assets[0].alt = "";
+unsafeMediaFixture.content.assets[0].dataUrl = "data:image/png;base64,SGVsbG8=";
+unsafeMediaFixture.content.sources[0].url = "javascript:alert('unsafe')";
 unsafeMediaFixture.content.modules[0].sections[0].sourceReferences[0].slideNumbers = [999];
 await page.locator('input[type="file"]').setInputFiles({
   name: "unsafe-media-course-draft.json",
   mimeType: "application/json",
-  buffer: Buffer.from(JSON.stringify({ draftSchemaVersion: 1, savedAt: new Date().toISOString(), package: unsafeMediaFixture, release: approvedRelease })),
+  buffer: Buffer.from(JSON.stringify(currentDraft(unsafeMediaFixture))),
 });
 await page.waitForSelector("text=Loaded unsafe-media-course-draft.json");
 await page.getByRole("button", { name: /Review & export/ }).click();
 await page.waitForSelector(".readiness.blocked");
-check("Missing image descriptions and broken slide citations block export", await page.getByRole("button", { name: "Export training HTML" }).isDisabled() && /alternative text|missing slide 999/i.test(await page.locator(".issue-list").innerText()));
+const unsafeIssueText = await page.locator(".issue-list").innerText();
+check("Unsafe source links, false media types and broken citations block export", await page.getByRole("button", { name: "Export training HTML" }).isDisabled() && /https|declared media type|missing slide 999/i.test(unsafeIssueText), unsafeIssueText);
 
 await page.locator('input[type="file"]').setInputFiles({
   name: "workshop-fixture-under-review.json",
   mimeType: "application/json",
-  buffer: Buffer.from(JSON.stringify({ draftSchemaVersion: 1, savedAt: new Date().toISOString(), package: reviewFixture, release: approvedRelease })),
+  buffer: Buffer.from(JSON.stringify(currentDraft(reviewFixture))),
 });
 await page.waitForSelector("text=Loaded workshop-fixture-under-review.json");
 await page.getByRole("button", { name: /Review & export/ }).click();
@@ -398,7 +456,7 @@ check("Clean content remains unreleased until its status is Available", await pa
 await page.locator('input[type="file"]').setInputFiles({
   name: "workshop-fixture-course-draft.json",
   mimeType: "application/json",
-  buffer: Buffer.from(JSON.stringify({ draftSchemaVersion: 1, savedAt: new Date().toISOString(), package: fixture, release: approvedRelease })),
+  buffer: Buffer.from(JSON.stringify(currentDraft(fixture))),
 });
 await page.waitForSelector("text=Loaded workshop-fixture-course-draft.json");
 await page.getByRole("button", { name: /Review & export/ }).click();
@@ -435,12 +493,16 @@ const zipped = unzipSync(new Uint8Array(await readFile(zipFile)));
 const zipNames = Object.keys(zipped).sort();
 const expectedRoot = "workshop-fixture-course-package";
 check("Developer ZIP owns one explicit package root", zipNames.every((name) => name.startsWith(`${expectedRoot}/`)));
-check("Developer ZIP contains the canonical course folder", zipNames.includes(`${expectedRoot}/src/courses/workshop-fixture/course-package.json`) && zipNames.includes(`${expectedRoot}/src/courses/workshop-fixture/index.ts`));
+check("Developer ZIP contains the canonical course folder and versioned release archive", zipNames.includes(`${expectedRoot}/src/courses/workshop-fixture/course-package.json`) && zipNames.includes(`${expectedRoot}/src/courses/workshop-fixture/index.ts`) && zipNames.includes(`${expectedRoot}/src/courses/workshop-fixture/releases/0.1.0.json`));
 check("Repository ZIP contains installation, hosted-page, validation and release records", zipNames.includes(`${expectedRoot}/README.md`) && zipNames.includes(`${expectedRoot}/CATALOGUE-ENTRY.txt`) && zipNames.includes(`${expectedRoot}/validation-report.json`) && zipNames.includes(`${expectedRoot}/release-record.json`) && zipNames.includes(`${expectedRoot}/hosted/index.html`));
 check("Developer ZIP contains no unsafe traversal path", zipNames.every((name) => !name.includes("..") && !path.isAbsolute(name)));
 const report = JSON.parse(strFromU8(zipped[`${expectedRoot}/validation-report.json`]));
 const releaseRecord = JSON.parse(strFromU8(zipped[`${expectedRoot}/release-record.json`]));
 check("Validation report and release record keep automated and declared evidence distinct", report.releaseReady === true && /neither record is independent review evidence/i.test(report.statement) && releaseRecord.checklistComplete === true);
+const canonicalPackageText = strFromU8(zipped[`${expectedRoot}/course-package.json`]);
+const canonicalDigest = createHash("sha256").update(canonicalPackageText, "utf8").digest("hex");
+check("Release evidence is bound to the exact canonical package bytes", releaseRecord.recordVersion === 2 && releaseRecord.packageDigest?.value === canonicalDigest && report.packageDigest?.value === canonicalDigest);
+check("Release evidence records reviewer, approver, role and scope", releaseRecord.approvals?.reviewer?.name === approvedRelease.reviewerName && releaseRecord.approvals?.reviewer?.role === approvedRelease.reviewerRole && releaseRecord.approvals?.approver?.name === approvedRelease.approverName && releaseRecord.approvals?.approver?.role === approvedRelease.approverRole && releaseRecord.approvals?.approvalScope === approvedRelease.approvalScope);
 
 const [hostedDownload] = await Promise.all([
   page.waitForEvent("download"),
@@ -450,7 +512,10 @@ const hostedFile = path.join(qaDir, "workshop-fixture-hosted-course.zip");
 await hostedDownload.saveAs(hostedFile);
 const hostedZip = unzipSync(new Uint8Array(await readFile(hostedFile)));
 const hostedNames = Object.keys(hostedZip);
-check("Hosted-course ZIP is isolated and contains only its page, guidance and release record", hostedNames.includes("workshop-fixture-hosted-course/index.html") && hostedNames.includes("workshop-fixture-hosted-course/README.md") && hostedNames.includes("workshop-fixture-hosted-course/release-record.json") && hostedNames.every((name) => name.startsWith("workshop-fixture-hosted-course/")));
+check("Hosted-course ZIP is isolated and carries verifiable canonical content", hostedNames.includes("workshop-fixture-hosted-course/index.html") && hostedNames.includes("workshop-fixture-hosted-course/course-package.json") && hostedNames.includes("workshop-fixture-hosted-course/README.md") && hostedNames.includes("workshop-fixture-hosted-course/release-record.json") && hostedNames.every((name) => name.startsWith("workshop-fixture-hosted-course/")));
+const hostedCanonical = strFromU8(hostedZip["workshop-fixture-hosted-course/course-package.json"]);
+const hostedRelease = JSON.parse(strFromU8(hostedZip["workshop-fixture-hosted-course/release-record.json"]));
+check("Hosted-course approval is bound to its bundled canonical content", hostedRelease.packageDigest?.value === createHash("sha256").update(hostedCanonical, "utf8").digest("hex"));
 
 const learner = await context.newPage();
 const learnerErrors = [];
@@ -474,7 +539,7 @@ const richFixture = richPackage();
 await page.locator('input[type="file"]').setInputFiles({
   name: "rich-workshop-fixture-course-draft.json",
   mimeType: "application/json",
-  buffer: Buffer.from(JSON.stringify({ draftSchemaVersion: 1, savedAt: new Date().toISOString(), package: richFixture, release: approvedRelease })),
+  buffer: Buffer.from(JSON.stringify(currentDraft(richFixture))),
 });
 await page.waitForSelector("text=Loaded rich-workshop-fixture-course-draft.json");
 await page.getByRole("button", { name: /Review & export/ }).click();

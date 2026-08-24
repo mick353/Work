@@ -26,8 +26,10 @@ Each document has one job. Start with the one that matches what you are doing.
 | **[COURSE-PACKAGE-FORMAT.md](COURSE-PACKAGE-FORMAT.md)** | You need the folder contract, package schema, versioning rules or export commands |
 | **[COURSE-WORKSHOP.md](COURSE-WORKSHOP.md)** | You are using or maintaining the separate trainer-facing course authoring tool |
 | **[ROADMAP.md](ROADMAP.md)** | You want to know what remains beyond the implemented player, exports and authoring profile |
+| **[LEARNING-SYSTEM-DIRECTION.md](LEARNING-SYSTEM-DIRECTION.md)** | You need the settled training-managed product and deployment decisions |
 | **[NOTICE.md](NOTICE.md)** | Provenance, status and takedown contact |
 | **[DELIVERY-ASSURANCE-QUALITY-COURSE-PROPOSAL.md](DELIVERY-ASSURANCE-QUALITY-COURSE-PROPOSAL.md)** | You are reviewing the proposed third course; it is a concept and research brief, not an implemented package |
+| **[RELEASE-NOTES-2026-08-24.md](RELEASE-NOTES-2026-08-24.md)** | You need the current readiness and release-hardening record |
 | **[RELEASE-NOTES-2026-08-20.md](RELEASE-NOTES-2026-08-20.md)** | You need the historical record of the authority-sensitive corrections released on 20 August 2026 |
 
 If you are an AI agent picking this up cold: read AUTHORING.md end to end before changing any content, and STANDARDS.md before writing any assessment item. Both are written to be followed without further context.
@@ -36,9 +38,9 @@ If you are an AI agent picking this up cold: read AUTHORING.md end to end before
 
 - The combined learner site publishes two maintained packages: Product Management Fundamentals and Closure Reports.
 - Both packages can also be built and distributed independently without the catalogue or the other course's content.
-- Course Workshop covers the complete current package shape, including advanced learning content, embedded media and source decks. It is suitable for demonstration and controlled trainer pilots.
+- Course Workshop 0.5.0 covers the complete current package shape, including advanced learning content, embedded media and source decks. Its code-level readiness controls are implemented; organisational production readiness still requires real trainer and manual accessibility/device evidence.
 - Repository installation and online publication remain release-custodian actions. Browser authoring never changes Git or publishes a course by itself.
-- The remaining operational work—including legacy-draft migration, exact-content release evidence, course-profile QA, trainer usability testing and manual accessibility testing—is recorded in [ROADMAP.md](ROADMAP.md).
+- Draft v2 migration, exact-content release binding, HTTPS/media hardening, per-course quality profiles, versioned release archives and learner curriculum-version choices are implemented. The remaining external evidence is recorded in [ROADMAP.md](ROADMAP.md).
 
 ## Use it
 
@@ -50,7 +52,7 @@ If you are an AI agent picking this up cold: read AUTHORING.md end to end before
 
 **Anywhere else:** download **`Product-Management-Learning-System.html`** and open it in any modern browser. That one file is everything — both courses, all 98 slides, no installation, no server, no network. It works from a USB stick, an email attachment or a network share.
 
-Learner progress is stored in the browser's local storage and is not transmitted by the application. Course Workshop drafts use a separate local IndexedDB store so decks and images fit. There is no account, login, application server or telemetry. Locally entered learner answers and trainer-authored material can still contain personal, sensitive or internal information, so downloaded backups and draft files must be handled appropriately. Progress and drafts do **not** follow you between machines—use **Settings → Download a backup** for learner progress and **Save/share complete draft** in Course Workshop for authoring work.
+Learner progress is stored in the browser's local storage and is not transmitted by the application. When a course version changes, the player asks whether to keep that course's saved work or start it fresh. Course Workshop drafts use a separate local IndexedDB store so decks and images fit; portable draft v2 files carry stable identity and revision metadata. There is no account, login, application server or telemetry. Locally entered learner answers and trainer-authored material can still contain personal, sensitive or internal information, so downloaded backups and draft files must be handled appropriately. Progress and drafts do **not** follow you between machines—use **Settings → Download a backup** for learner progress and **Save/share complete draft** in Course Workshop for authoring work.
 
 The recommended loop:
 
@@ -123,7 +125,7 @@ npm run verify     # all learner, export, Workshop and release checks
 1. **`Product-Management-Learning-System.html`** — a pure single file, with every required slide inlined.
 2. **`docs/`** — the web/PWA build with course assets kept as separate lazy-loaded files. This is what GitHub Pages serves.
 
-`npm run export:course -- <course-id>` builds the same two delivery forms under `exports/<course-id>/`, but replaces the catalogue at bundle time. The other course's content and assets are not present. In a one-course build the library route returns to the overview, and the library/switcher chrome is omitted. `exports/` is generated and ignored by Git; copy the required file or site folder to the delivery location.
+`npm run export:course -- <course-id>` builds the same two delivery forms under `exports/<course-id>/`, but replaces the catalogue at bundle time. The other course's content and assets are not present. In a one-course build the library route returns to the overview, and the library/switcher chrome is omitted. It also retains exact copies under `exports/<course-id>/releases/<version>/` with a SHA-256 manifest. `exports/` is generated and ignored by Git; copy the required file or site folder to the delivery location.
 
 The PWA pieces are deliberately kept out of the standalone file: a service worker registration that can never succeed on `file://` would only log errors. The service worker's cache name is stamped with a hash of the built HTML, so each release invalidates the last.
 
@@ -158,7 +160,7 @@ The script reads the stage-to-slide mapping from `src/courses/<course-id>/course
 
 ### QA
 
-`scripts/qa.mjs` runs the combined-site browser suite and writes its exact result to `qa-report.json`. Its package-contract and selected authority checks cover the full catalogue; some deep content and learner-journey regressions remain specific to Product Management Fundamentals and are identified as such in [STANDARDS.md](STANDARDS.md). `scripts/qa-exports.mjs` builds each course separately and verifies bundle isolation, asset isolation, single-course navigation, accessibility and course-scoped capstone downloads. `scripts/qa-authoring.mjs` verifies the separate authoring tool, its release gate and generated outputs. `scripts/qa-release.mjs` proves controlled inspection/installation/hosting, overwrite and tamper refusal, and distinct service-worker caching for nested pages. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
+`scripts/qa.mjs` runs the combined-site browser suite and writes its exact result to `qa-report.json`; passing rows carry observations while only failing rows carry failure messages. Shared checks cover the catalogue, and each maintained course is also evaluated against its explicit versioned quality profile. Some end-to-end learner journeys intentionally exercise one representative package and are named accordingly. `scripts/qa-exports.mjs` builds each course separately and verifies bundle isolation, versioned release hashes, single-course navigation, accessibility and course-scoped capstone downloads. `scripts/qa-authoring.mjs` verifies the separate authoring tool, v1→v2 migration, release gate, source/media hardening, content digests and generated outputs. `scripts/qa-release.mjs` proves controlled inspection/installation/hosting, exact-content and executable tamper refusal, and distinct service-worker caching for nested pages. Playwright and its Chromium are resolved from `node_modules`, so there are no absolute paths.
 
 It covers question-bank integrity, scoring arithmetic, mastery gating, backup round-trip including rejection of malformed files, package switching **through the control a learner clicks**, contrast on all 40 stage-page/theme combinations, axe-core rules tagged to WCAG 2.0/2.1 A/AA with serious and critical impacts, line measure and horizontal overflow at 390, 768, 1100, 1440 and 1920 px, the project's 24 px target-size rule, keyboard and focus behaviour, reduced motion, and console hygiene. These checks are regression evidence, not a claim of complete WCAG conformance.
 
@@ -177,7 +179,7 @@ public/                Assets copied into web builds at build time
   training/             Approved individually hosted course routes
 docs/                  GENERATED — the GitHub Pages build. Do not edit by hand.
   course-workshop/      GENERATED separate trainer-facing authoring URL
-exports/               GENERATED, ignored — one folder per isolated course
+exports/               GENERATED, ignored — current + versioned isolated releases
 authoring/              Separate Course Workshop React source
   AdvancedEditor.tsx   Cases, toolkit, capstone, guide, differences, exemplars
   MediaEditor.tsx      Source-deck and course-owned image workflow
@@ -203,6 +205,7 @@ scripts/
 src/
   package-model.ts     Versioned, course-neutral data contract
   package-validation.ts Runtime validation at the package boundary
+  course-quality-profiles.ts Versioned release floors for every maintained course
   package-utils.ts     Shared derivation/assembly helpers
   package-catalog.ts   The combined catalogue; registers course entry modules
   packages.ts          Validated catalogue and active-package helpers

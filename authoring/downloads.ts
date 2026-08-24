@@ -1,7 +1,7 @@
 import { strToU8, zipSync } from "fflate";
 import type { TrainingPackage } from "../src/package-model";
-import { makeDraft, packageForExport } from "./draft";
-import type { ReleaseChecklist } from "./draft";
+import { makeDraft, nextDraftRevision, packageForExport } from "./draft";
+import type { AuthoringDraft, DraftLineage, ReleaseChecklist } from "./draft";
 import type { AuthoringIssue } from "./quality";
 
 const PACKAGE_MARKER = "<!--AUTHORED_PACKAGE_DATA-->";
@@ -33,13 +33,15 @@ export function exportLearnerHtml(entry: TrainingPackage) {
   download(`${canonical.manifest.id}.html`, learnerHtml(canonical), "text/html;charset=utf-8");
 }
 
-export function exportDraft(entry: TrainingPackage, release: ReleaseChecklist) {
+export function exportDraft(entry: TrainingPackage, release: ReleaseChecklist, lineage: DraftLineage): AuthoringDraft {
   const canonical = packageForExport(entry);
+  const draft = makeDraft(canonical, release, nextDraftRevision(lineage));
   download(
     `${canonical.manifest.id}-course-draft.json`,
-    JSON.stringify(makeDraft(canonical, release), null, 2),
+    JSON.stringify(draft, null, 2),
     "application/json;charset=utf-8",
   );
+  return draft;
 }
 
 function releaseChecklistComplete(release: ReleaseChecklist): boolean {
@@ -47,24 +49,38 @@ function releaseChecklistComplete(release: ReleaseChecklist): boolean {
     release.learningFlowChecked &&
     release.handlingChecked &&
     release.releaseApproved &&
+    Boolean(release.reviewerName.trim()) &&
+    Boolean(release.reviewerRole.trim()) &&
+    Boolean(release.approverName.trim()) &&
+    Boolean(release.approverRole.trim()) &&
+    Boolean(release.approvalScope.trim()) &&
     Boolean(release.approvalReference.trim()) &&
     /^\d{4}-\d{2}-\d{2}$/.test(release.approvalDate.trim());
 }
 
-function releaseRecord(entry: TrainingPackage, release: ReleaseChecklist) {
+async function sha256Hex(value: string): Promise<string> {
+  const digest = await globalThis.crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function releaseRecord(entry: TrainingPackage, release: ReleaseChecklist, packageSha256: string) {
   return {
-    recordVersion: 1,
+    recordVersion: 2,
     generatedAt: new Date().toISOString(),
     studioVersion: __STUDIO_VERSION__,
     packageId: entry.manifest.id,
     packageVersion: entry.manifest.version,
     packageStatus: entry.manifest.status,
+    packageDigest: { algorithm: "SHA-256", value: packageSha256 },
     checklistComplete: releaseChecklistComplete(release),
     approvals: {
       subjectMatterChecked: release.subjectMatterChecked,
       learningFlowChecked: release.learningFlowChecked,
       audienceAndHandlingChecked: release.handlingChecked,
       releaseApproved: release.releaseApproved,
+      reviewer: { name: release.reviewerName.trim(), role: release.reviewerRole.trim() },
+      approver: { name: release.approverName.trim(), role: release.approverRole.trim() },
+      approvalScope: release.approvalScope.trim(),
       approvalReference: release.approvalReference.trim(),
       approvalDate: release.approvalDate.trim(),
     },
@@ -86,8 +102,10 @@ Nothing in this ZIP has modified the learning-system repository. A release custo
 ## Contents
 
 - \`course-package.json\` — canonical, versioned TrainingPackage data.
+- The canonical data includes the course-owned quality profile used by catalogue QA after installation.
 - \`src/courses/${id}/course-package.json\` — the same data at its intended repository path.
 - \`src/courses/${id}/index.ts\` — a data-only entry module for the shared player.
+- \`src/courses/${id}/releases/${entry.manifest.version}.json\` — the dated approval record retained with this released course version.
 - \`hosted/index.html\` — the approved single-course page for an individual URL.
 - \`release-record.json\` — human review and approval declarations captured at export.
 - \`CATALOGUE-ENTRY.txt\` — the manual catalogue equivalent, retained for transparency.
@@ -139,12 +157,13 @@ Then add the imported name once to catalogPackages. Inspect the diff before comm
 `;
 }
 
-export function packageZip(entry: TrainingPackage, issues: AuthoringIssue[], release: ReleaseChecklist): Uint8Array {
+export async function packageZip(entry: TrainingPackage, issues: AuthoringIssue[], release: ReleaseChecklist): Promise<Uint8Array> {
   const canonical = packageForExport(entry);
   const id = canonical.manifest.id;
   const root = `${id}-course-package`;
   const data = JSON.stringify(canonical, null, 2);
-  const record = releaseRecord(canonical, release);
+  const packageSha256 = await sha256Hex(data);
+  const record = releaseRecord(canonical, release, packageSha256);
   const contentBlocked = issues.some((issue) => issue.severity === "error");
   const releaseReady = !contentBlocked && canonical.manifest.status === "available" && record.checklistComplete;
   const report = JSON.stringify(
@@ -153,6 +172,7 @@ export function packageZip(entry: TrainingPackage, issues: AuthoringIssue[], rel
       studioVersion: __STUDIO_VERSION__,
       packageId: id,
       packageVersion: canonical.manifest.version,
+      packageDigest: { algorithm: "SHA-256", value: packageSha256 },
       contentBlocked,
       releaseReady,
       issues,
@@ -167,6 +187,7 @@ export function packageZip(entry: TrainingPackage, issues: AuthoringIssue[], rel
     [`${root}/course-package.json`]: strToU8(data),
     [`${root}/src/courses/${id}/course-package.json`]: strToU8(data),
     [`${root}/src/courses/${id}/index.ts`]: strToU8(entryModule()),
+    [`${root}/src/courses/${id}/releases/${canonical.manifest.version}.json`]: strToU8(JSON.stringify(record, null, 2)),
     [`${root}/hosted/index.html`]: strToU8(learnerHtml(canonical)),
     [`${root}/release-record.json`]: strToU8(JSON.stringify(record, null, 2)),
     [`${root}/CATALOGUE-ENTRY.txt`]: strToU8(catalogueSnippet(id)),
@@ -178,40 +199,44 @@ export function packageZip(entry: TrainingPackage, issues: AuthoringIssue[], rel
   return zipSync(files, { level: 6 });
 }
 
-export function exportDeveloperPackage(entry: TrainingPackage, issues: AuthoringIssue[], release: ReleaseChecklist) {
+export async function exportDeveloperPackage(entry: TrainingPackage, issues: AuthoringIssue[], release: ReleaseChecklist) {
   const canonical = packageForExport(entry);
   download(
     `${canonical.manifest.id}-course-package.zip`,
-    packageZip(canonical, issues, release),
+    await packageZip(canonical, issues, release),
     "application/zip",
   );
 }
 
-export function hostedCourseZip(entry: TrainingPackage, release: ReleaseChecklist): Uint8Array {
+export async function hostedCourseZip(entry: TrainingPackage, release: ReleaseChecklist): Promise<Uint8Array> {
   const canonical = packageForExport(entry);
   const id = canonical.manifest.id;
   const root = `${id}-hosted-course`;
+  const data = JSON.stringify(canonical, null, 2);
+  const packageSha256 = await sha256Hex(data);
   const readme = `# ${canonical.manifest.title} — individually hosted course
 
 This folder is the isolated learner course exported by Product Practice Course Workshop ${__STUDIO_VERSION__}.
 
 - Open \`index.html\` locally to test it.
+- \`course-package.json\` is the canonical course data. Its SHA-256 digest is recorded in \`release-record.json\` so the approval can be checked against the exact content.
 - To host it through the learning-system repository, use the repository package and run \`npm run course:host -- <package.zip>\` instead of copying files manually.
 - The page contains the complete course text. Treat the destination as public unless the host is access-controlled.
 - \`release-record.json\` records the declarations captured at export; it is not independent review evidence.
 `;
   return zipSync({
     [`${root}/index.html`]: strToU8(learnerHtml(canonical)),
+    [`${root}/course-package.json`]: strToU8(data),
     [`${root}/README.md`]: strToU8(readme),
-    [`${root}/release-record.json`]: strToU8(JSON.stringify(releaseRecord(canonical, release), null, 2)),
+    [`${root}/release-record.json`]: strToU8(JSON.stringify(releaseRecord(canonical, release, packageSha256), null, 2)),
   }, { level: 6 });
 }
 
-export function exportHostedCourse(entry: TrainingPackage, release: ReleaseChecklist) {
+export async function exportHostedCourse(entry: TrainingPackage, release: ReleaseChecklist) {
   const canonical = packageForExport(entry);
   download(
     `${canonical.manifest.id}-hosted-course.zip`,
-    hostedCourseZip(canonical, release),
+    await hostedCourseZip(canonical, release),
     "application/zip",
   );
 }

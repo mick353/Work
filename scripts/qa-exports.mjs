@@ -4,6 +4,7 @@ import { chromium } from "playwright";
 import AxeBuilder from "@axe-core/playwright";
 import { build as esbuild } from "esbuild";
 import { spawn } from "node:child_process";
+import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
@@ -56,19 +57,29 @@ for (const entry of trainingPackages) {
   const standalonePath = path.join(exportRoot, `${id}.html`);
   const siteDir = path.join(exportRoot, "site");
   const siteIndex = path.join(siteDir, "index.html");
+  const releaseDir = path.join(exportRoot, "releases", version);
+  const releaseStandalone = path.join(releaseDir, `${id}-v${version}.html`);
+  const releaseSiteIndex = path.join(releaseDir, "site", "index.html");
+  const releaseManifestPath = path.join(releaseDir, "release-manifest.json");
   const label = `${id} v${version}`;
 
   check(`${label}: standalone file exists`, existsSync(standalonePath));
   check(`${label}: web build exists`, existsSync(siteIndex));
+  check(`${label}: versioned release archive exists`, existsSync(releaseStandalone) && existsSync(releaseSiteIndex) && existsSync(releaseManifestPath));
   if (!existsSync(standalonePath) || !existsSync(siteIndex)) continue;
 
   const html = await readFile(standalonePath, "utf8");
+  const archivedHtml = await readFile(releaseStandalone, "utf8");
+  const archivedSite = await readFile(releaseSiteIndex, "utf8");
+  const releaseManifest = JSON.parse(await readFile(releaseManifestPath, "utf8"));
+  check(`${label}: archived standalone and site are exact release copies`, archivedHtml === html && archivedSite === await readFile(siteIndex, "utf8"));
+  check(`${label}: release manifest binds both archived delivery forms`, releaseManifest.courseId === id && releaseManifest.courseVersion === version && releaseManifest.files?.standalone?.sha256 === createHash("sha256").update(archivedHtml).digest("hex") && releaseManifest.files?.siteIndex?.sha256 === createHash("sha256").update(archivedSite).digest("hex"));
   const otherTitles = trainingPackages
     .filter((candidate) => candidate.manifest.id !== id)
     .map((candidate) => candidate.manifest.title)
     .filter((otherTitle) => html.includes(otherTitle));
   check(`${label}: bundle excludes every other course`, otherTitles.length === 0, otherTitles.join(", "));
-  check(`${label}: schema version is current`, schemaVersion === 1, `schema ${schemaVersion}`);
+  check(`${label}: schema version is current`, schemaVersion === 2, `schema ${schemaVersion}`);
 
   const inlinedSlides = (html.match(/data:image\/webp;base64,/g) ?? []).length;
   check(

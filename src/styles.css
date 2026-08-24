@@ -2272,3 +2272,19 @@ p { color: var(--muted); line-height: 1.65; }
 .reset-option small { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
 .backup-name { color: var(--muted); font-size: 13.5px; }
 .backup-name code { padding: 2px 6px; border-radius: 5px; background: var(--surface-alt); font-size: 12.5px; }
+
+.curriculum-version-dialog {
+  width: min(560px, calc(100vw - 32px));
+  padding: 30px;
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 24px 80px rgb(15 23 42 / 32%);
+}
+.curriculum-version-dialog::backdrop { background: rgb(15 23 42 / 70%); backdrop-filter: blur(4px); }
+.curriculum-version-dialog h2 { margin: 6px 0 14px; font-family: Georgia, Cambria, serif; font-size: clamp(24px, 4vw, 34px); }
+.curriculum-version-dialog p { color: var(--muted); line-height: 1.65; }
+.curriculum-version-dialog .dialog-kicker { color: var(--brand-strong); font-size: 12px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+.curriculum-version-dialog .dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.curriculum-version-dialog .dialog-actions button { min-height: 44px; }

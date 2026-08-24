@@ -7,8 +7,23 @@
  * same validation and export pipeline.
  */
 
-export const PACKAGE_SCHEMA_VERSION = 1 as const;
+export const PACKAGE_SCHEMA_VERSION = 2 as const;
 export const CAPSTONE_MIN_WORDS = 60;
+
+export type CourseQualityProfile = {
+  profileVersion: 1;
+  stageCount: number;
+  minimumLessonWords: number;
+  minimumStageBodyWords: number;
+  minimumKnowledgeQuestionsPerStage: number;
+  scenariosPerStage: number;
+  minimumAssignmentWords: number;
+  minimumAssignmentCriteria: number;
+  minimumWorkedReasoningPassages: number;
+  minimumWorkedReasoningWords: number;
+  minimumCaseStageCoverage: number;
+  minimumCaseStepWords: number;
+};
 
 export type Question = {
   id: string;
@@ -276,5 +291,6 @@ export type PackageContent = {
 
 export type TrainingPackage = {
   manifest: PackageManifest;
+  qualityProfile: CourseQualityProfile;
   content: PackageContent;
 };

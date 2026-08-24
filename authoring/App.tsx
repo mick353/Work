@@ -33,8 +33,10 @@ import type {
 import {
   DRAFT_STORAGE_KEY,
   EMPTY_RELEASE_CHECKLIST,
+  LEGACY_DRAFT_STORAGE_KEYS,
   addStage,
   blankQuestion,
+  createDraftLineage,
   createStarterPackage,
   makeDraft,
   packageForExport,
@@ -44,8 +46,10 @@ import {
   renameSourceId,
   slugify,
   type LoadedDraft,
+  type DraftLineage,
   type ReleaseChecklist,
 } from "./draft";
+import { workshopQualityProfile } from "../src/course-quality-profiles";
 import {
   exportDeveloperPackage,
   exportDraft,
@@ -73,16 +77,19 @@ const NAV: Array<{ id: View; label: string; description: string; icon: typeof Se
 ];
 
 function freshDraft(): LoadedDraft {
-  return { package: createStarterPackage(), release: { ...EMPTY_RELEASE_CHECKLIST } };
+  return { package: createStarterPackage(), release: { ...EMPTY_RELEASE_CHECKLIST }, lineage: createDraftLineage() };
 }
 
 function loadLocalDraft(): LoadedDraft {
   try {
-    const raw = window.localStorage.getItem(DRAFT_STORAGE_KEY);
-    if (!raw) return freshDraft();
-    const draft = readDraft(JSON.parse(raw) as unknown);
-    packageForExport(draft.package);
-    return draft;
+    for (const key of [DRAFT_STORAGE_KEY, ...LEGACY_DRAFT_STORAGE_KEYS]) {
+      const raw = window.localStorage.getItem(key);
+      if (!raw) continue;
+      const draft = readDraft(JSON.parse(raw) as unknown);
+      packageForExport(draft.package);
+      return draft;
+    }
+    return freshDraft();
   } catch {
     return freshDraft();
   }
@@ -319,11 +326,12 @@ export function App() {
   const [initialDraft] = useState<LoadedDraft>(loadLocalDraft);
   const [entry, setEntry] = useState<TrainingPackage>(initialDraft.package);
   const [release, setRelease] = useState<ReleaseChecklist>(initialDraft.release);
+  const [lineage, setLineage] = useState<DraftLineage>(initialDraft.lineage);
   const [view, setView] = useState<View>("instructions");
   const [activeStage, setActiveStage] = useState(entry.content.modules[0]?.id ?? "");
   const [saveLabel, setSaveLabel] = useState("Saved locally");
-  const [draftBytes, setDraftBytes] = useState(() => new Blob([JSON.stringify(makeDraft(initialDraft.package, initialDraft.release))]).size);
-  const [message, setMessage] = useState("");
+  const [draftBytes, setDraftBytes] = useState(() => new Blob([JSON.stringify(makeDraft(initialDraft.package, initialDraft.release, initialDraft.lineage))]).size);
+  const [message, setMessage] = useState(initialDraft.migrationNotice ?? "");
   const [browserReady, setBrowserReady] = useState(false);
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("all");
   const [cloneProgress, setCloneProgress] = useState("");
@@ -343,6 +351,11 @@ export function App() {
     release.learningFlowChecked &&
     release.handlingChecked &&
     release.releaseApproved &&
+    Boolean(release.reviewerName.trim()) &&
+    Boolean(release.reviewerRole.trim()) &&
+    Boolean(release.approverName.trim()) &&
+    Boolean(release.approverRole.trim()) &&
+    Boolean(release.approvalScope.trim()) &&
     Boolean(release.approvalReference.trim()) &&
     /^\d{4}-\d{2}-\d{2}$/.test(release.approvalDate.trim());
   const releaseReady = contentReady && entry.manifest.status === "available" && releaseChecksComplete;
@@ -356,7 +369,9 @@ export function App() {
         packageForExport(draft.package);
         setEntry(draft.package);
         setRelease(draft.release);
+        setLineage(draft.lineage);
         setActiveStage(draft.package.content.modules[0]?.id ?? "");
+        if (draft.migrationNotice) setMessage(draft.migrationNotice);
       })
       .catch(() => undefined)
       .finally(() => { if (!cancelled) setBrowserReady(true); });
@@ -367,19 +382,20 @@ export function App() {
     if (!browserReady) return;
     setSaveLabel("Saving…");
     const timer = window.setTimeout(() => {
-      const draft = makeDraft(entry, release);
+      const draft = makeDraft(entry, release, lineage);
       void writeBrowserDraft(draft).then(() => {
         const compact = JSON.stringify(draft);
         setDraftBytes(new Blob([compact], { type: "application/json" }).size);
         try {
           if (compact.length < 1_500_000) window.localStorage.setItem(DRAFT_STORAGE_KEY, compact);
           else window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+          LEGACY_DRAFT_STORAGE_KEYS.forEach((key) => window.localStorage.removeItem(key));
         } catch { /* IndexedDB remains the asset-capable primary store. */ }
         setSaveLabel("Saved in this browser");
       }).catch(() => setSaveLabel("Browser storage unavailable — download a draft"));
     }, (entry.content.assets?.length ?? 0) > 30 ? 900 : 250);
     return () => window.clearTimeout(timer);
-  }, [browserReady, entry, release]);
+  }, [browserReady, entry, lineage, release]);
 
   useEffect(() => {
     if (!entry.content.modules.some((stage) => stage.id === activeStage)) {
@@ -489,9 +505,10 @@ export function App() {
       packageForExport(imported.package);
       setEntry(imported.package);
       setRelease(imported.release);
+      setLineage(imported.lineage);
       setActiveStage(imported.package.content.modules[0]?.id ?? "");
       setView("instructions");
-      setMessage(`Loaded ${file.name}. Review the checks before exporting.`);
+      setMessage(imported.migrationNotice ?? `Loaded ${file.name} (draft ${imported.lineage.draftId}, revision ${imported.lineage.revision}). Review the checks before exporting.`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : String(error));
     } finally {
@@ -504,6 +521,7 @@ export function App() {
     const fresh = createStarterPackage();
     setEntry(fresh);
     setRelease({ ...EMPTY_RELEASE_CHECKLIST });
+    setLineage(createDraftLineage());
     setActiveStage(fresh.content.modules[0].id);
     setView("instructions");
     setMessage("Started a new local draft.");
@@ -527,8 +545,10 @@ export function App() {
     };
     clone.content.contentReviewed = "";
     clone.content.sources = clone.content.sources.map((source) => ({ ...source, checked: "" }));
+    clone.qualityProfile = workshopQualityProfile(clone.content.modules.length);
     setEntry(clone);
     setRelease({ ...EMPTY_RELEASE_CHECKLIST });
+    setLineage(createDraftLineage("clone", { packageId: template.manifest.id, packageVersion: template.manifest.version }));
     setActiveStage(clone.content.modules[0]?.id ?? "");
     setView("setup");
     setMessage(`Created a separate draft from ${template.manifest.title}. The published original was not changed. Give this adaptation its own stable id and complete a fresh review.`);
@@ -536,6 +556,12 @@ export function App() {
     const remaining = minimumProgressTime - (performance.now() - startedAt);
     if (remaining > 0) await new Promise<void>((resolve) => window.setTimeout(resolve, remaining));
     setCloneProgress("");
+  };
+
+  const downloadPortableDraft = () => {
+    const draft = exportDraft(entry, release, lineage);
+    setLineage(draft.lineage);
+    setMessage(`Saved portable draft ${draft.lineage.draftId}, revision ${draft.lineage.revision}. Anyone who loads it can continue from this exact checkpoint.`);
   };
 
   const preview = () => {
@@ -704,7 +730,7 @@ npm run verify`}</code></pre>
                 <InputField id={`source-${index}-checked`} label="Checked" value={sourceItem.checked ?? ""} hint="Enter only after opening the source and confirming the version and course use." onChange={(value) => {
                   const sources = [...entry.content.sources]; sources[index] = { ...sourceItem, checked: value }; updateContent("sources", sources);
                 }} />
-                <InputField label="URL (optional)" type="url" value={sourceItem.url ?? ""} onChange={(value) => {
+                <InputField label="URL (optional)" type="url" hint="Use a public HTTPS address. File, data, JavaScript and credential-bearing links are blocked." value={sourceItem.url ?? ""} onChange={(value) => {
                   const sources = [...entry.content.sources]; sources[index] = { ...sourceItem, url: value || undefined }; updateContent("sources", sources);
                 }} />
               </div>
@@ -917,6 +943,11 @@ npm run verify`}</code></pre>
           <label className="release-option"><input type="checkbox" checked={release.releaseApproved} onChange={(event) => setRelease((current) => ({ ...current, releaseApproved: event.target.checked }))} /><span><strong>Release approved</strong><small>The accountable team has authorised this version for learner use.</small></span></label>
         </div>
         <div className="form-grid release-record-fields">
+          <InputField label="Reviewer name" required value={release.reviewerName} onChange={(value) => setRelease((current) => ({ ...current, reviewerName: value }))} hint="Person who completed the subject and learning-flow review" />
+          <InputField label="Reviewer role" required value={release.reviewerRole} onChange={(value) => setRelease((current) => ({ ...current, reviewerRole: value }))} hint="Role or team that establishes the reviewer's competence and remit" />
+          <InputField label="Approver name" required value={release.approverName} onChange={(value) => setRelease((current) => ({ ...current, approverName: value }))} hint="Accountable person authorising learner use" />
+          <InputField label="Approver role" required value={release.approverRole} onChange={(value) => setRelease((current) => ({ ...current, approverRole: value }))} hint="Role or team holding release authority" />
+          <InputField label="Approval scope" required value={release.approvalScope} onChange={(value) => setRelease((current) => ({ ...current, approvalScope: value }))} hint="For example: internal staff, named team, or public learner release" />
           <InputField label="Approval reference" required value={release.approvalReference} onChange={(value) => setRelease((current) => ({ ...current, approvalReference: value }))} hint="Meeting, email, ticket or document reference — do not include secrets" />
           <InputField label="Approval date" required type="date" value={release.approvalDate} onChange={(value) => setRelease((current) => ({ ...current, approvalDate: value }))} />
         </div>
@@ -931,7 +962,7 @@ npm run verify`}</code></pre>
           <article><div className="export-icon"><FileText size={24} /></div><h3>Standalone learner course</h3><p>One self-contained offline HTML file. Share it directly; it has no authoring controls, catalogue or switcher.</p><button type="button" className="primary" disabled={!releaseReady} onClick={() => exportLearnerHtml(entry)}><Download size={17} />Export training HTML</button></article>
           <article><div className="export-icon"><FolderGit2 size={24} /></div><h3>Individually hosted course</h3><p>A small ZIP containing an <code>index.html</code> for its own <code>training/&lt;course-id&gt;/</code> web address.</p><button type="button" className="primary" disabled={!releaseReady} onClick={() => exportHostedCourse(entry, release)}><Download size={17} />Export hosted-course ZIP</button></article>
           <article><div className="export-icon"><Archive size={24} /></div><h3>Repository package</h3><p>The canonical course folder, hosted page, release evidence and metadata used by the controlled inspect/install commands.</p><button type="button" className="primary" disabled={!releaseReady} onClick={() => exportDeveloperPackage(entry, issues, release)}><Download size={17} />Export repository ZIP</button></article>
-          <article><div className="export-icon"><FileJson size={24} /></div><h3>Complete editable draft</h3><p>A portable JSON handoff that another trainer can load and continue. It includes embedded slides, images and the current review checklist. Approximately {draftSizeLabel}; it is never a learner course.</p><button type="button" className="secondary" onClick={() => exportDraft(entry, release)}><Save size={17} />Download complete draft</button></article>
+          <article><div className="export-icon"><FileJson size={24} /></div><h3>Complete editable draft</h3><p>A portable JSON checkpoint that another trainer can load and continue. It includes stable draft identity, revision, embedded slides, images and the current review checklist. Approximately {draftSizeLabel}; it is never a learner course.</p><button type="button" className="secondary" onClick={downloadPortableDraft}><Save size={17} />Download complete draft</button></article>
         </div>
       </Card>
       <section className="release-boundary"><ShieldCheck size={22} /><div><strong>Repository and publication boundary</strong><p>Exporting downloads files to this computer only. It does not alter a copied repository or publish online. A release custodian uses the commands on How it works, inspects the generated diff, runs the full verification suite and deliberately pushes the approved change.</p></div></section>
@@ -957,7 +988,7 @@ npm run verify`}</code></pre>
         <div className="sidebar-actions">
           <input ref={importRef} className="visually-hidden" type="file" accept="application/json,.json" aria-label="Load a Course Workshop draft" onChange={(event) => void handleImport(event.target.files?.[0])} />
           <button type="button" onClick={() => importRef.current?.click()}><Upload size={16} />Load draft</button>
-          <button type="button" onClick={() => exportDraft(entry, release)}><Download size={16} />Save/share complete draft</button>
+          <button type="button" onClick={downloadPortableDraft}><Download size={16} />Save/share complete draft</button>
           <small className="draft-backup-note">Includes embedded slides and images · approximately {draftSizeLabel}</small>
           <button type="button" onClick={startAgain}><RotateCcw size={16} />New course</button>
         </div>

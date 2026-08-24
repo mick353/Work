@@ -13,6 +13,7 @@ The short version: it is a React app with no application backend, accounts or te
 `src/package-model.ts` defines the versioned, course-neutral contract:
 
 - `PackageManifest` — schema version, course version, stable id and provenance. It also carries title, subtitle, publisher, source artefact, `sourceAuthor` (optional — whoever wrote that artefact), review date, status, summary and curriculum arc.
+- `CourseQualityProfile` — versioned, course-owned regression floors for depth, assessment, worked reasoning, assignments and cases.
 - `PackageContent` — everything a course owns: modules, sources, questions in four separate pools, flashcards, glossary, case studies, contrasts, divergences, toolkit templates, capstone steps and briefs, field guide, an optional worked-example document, slides.
 
 Each `src/courses/<course-id>/index.ts` assembles one complete `TrainingPackage` and default-exports it. `src/package-catalog.ts` is the combined registry. `src/packages.ts` validates that catalogue at startup and exposes `trainingPackages`. Adding a course means adding one self-contained course folder and one catalogue import; it does not mean touching a view.
@@ -55,6 +56,8 @@ Person-level settings sit outside any package on purpose: re-randomising someone
 
 `storageKey()` in `lib.ts` applies the namespace. `readStored` / `writeStored` guard against quota errors and private-mode failures rather than throwing. Data written before namespacing existed migrates on first load rather than presenting as a reset.
 
+Each package namespace also records the course content version. If learning data exists against a different or previously unrecorded version, a native modal asks the learner to keep it or start that package fresh. The fresh route clears only `product-practice-v2:<packageId>:` keys and then records the current version; person-level settings and other packages remain untouched.
+
 **Backups** are JSON, named `pp-<packageId>-<YYYY-MM-DD>-<HHMM>[-before-reset].json` in local time. Restore rejects a malformed file rather than clearing progress — there is a QA check for that specific failure.
 
 ---
@@ -76,6 +79,7 @@ With `--course <course-id>`, an esbuild catalogue plugin imports only that cours
 
 - `exports/<course-id>/<course-id>.html`
 - `exports/<course-id>/site/`
+- `exports/<course-id>/releases/<version>/` with exact copies and a SHA-256 release manifest
 
 This is compile-time isolation, not a runtime filter: the other course's content is absent from the JavaScript bundle, and its asset folder is not copied. The single-course UI omits the switcher and package-position count; a `#library` route returns to the course overview. `scripts/qa-exports.mjs` verifies these properties for every course folder.
 
@@ -89,11 +93,13 @@ The service worker's cache name is stamped with a hash of the built HTML (`__BUI
 
 `scripts/build-authoring.mjs` creates `Course-Authoring-Studio.html` as a separate standalone browser application and writes the identical bytes to `docs/course-workshop/index.html`. During the build it bundles the existing player against a JSON package supplied at runtime, embeds that inert player template, embeds the PDF.js worker, and serialises every maintained catalogue course as an editable template. Curated slide files are converted to embedded course assets in that template so a clone never depends on repository-relative media. **Export training HTML** inserts one validated package into the player template in the browser.
 
-This is reuse of the real player, not a second learner implementation. Generated courses inherit the same storage namespacing, navigation, mastery behaviour and single-course UI. Course Workshop draft state uses a separate IndexedDB database because embedded decks exceed practical `localStorage` limits; small drafts are mirrored to the original Workshop key for compatibility. The published copy contains no draft state and makes no network request while authoring.
+Because every template is embedded, the build enforces a 12 MB self-contained Workshop budget. Exceeding it is a release-blocking architecture decision, not a number to raise automatically.
 
-Trainer media is course data, not an executable upload. The package contract admits PNG/JPEG/WebP data URLs with a bounded total size, required alternative text and optional source ownership. PDF import renders pages into those inert image assets and extracts searchable text; SVG and arbitrary file types are rejected. `Module.visualAssetId`, `Slide.assetId` and source references connect the data to the existing stage, deck and citation views. Imported JSON is checked against the declared data-URL prefix; independent binary-signature validation remains a hardening opportunity.
+This is reuse of the real player, not a second learner implementation. Generated courses inherit the same storage namespacing, navigation, mastery behaviour and single-course UI. Course Workshop draft state uses a separate IndexedDB database because embedded decks exceed practical `localStorage` limits; smaller drafts are mirrored to the current v2 Workshop key. Version-1 browser/file drafts are migrated with inherited review/release evidence cleared. The published copy contains no draft state and makes no network request while authoring.
 
-The repository ZIP is an output boundary, not a repository mutation. It carries canonical package data, the target course folder, an isolated hosted page, encoded-check results and the declared human release record. `scripts/install-course-package.mjs` independently rechecks it and supports two explicit mutations: `--install` adds the course folder/assets plus one catalogue entry; `--host` adds only `public/training/<course-id>/`. Both refuse overwrites and never commit or push. The release record is currently matched to package id and version rather than a digest of the exact canonical content, so the custodian's review of the inspected package and Git diff remains load-bearing.
+Trainer media is course data, not an executable upload. The package contract admits PNG/JPEG/WebP data URLs with a bounded total size, required alternative text and optional source ownership. PDF import renders pages into those inert image assets and extracts searchable text; SVG and arbitrary file types are rejected. `Module.visualAssetId`, `Slide.assetId` and source references connect the data to the existing stage, deck and citation views. Imported JSON is checked both for the declared data-URL prefix and matching PNG/JPEG/WebP binary signature. Source links are restricted to credential-free HTTPS.
+
+The repository ZIP is an output boundary, not a repository mutation. It carries canonical package data, the target course folder, an isolated hosted page, encoded-check results and the declared human release record. That record identifies reviewer/approver roles and scope and carries the SHA-256 digest of the exact canonical JSON; a matching versioned copy travels in the course folder. `scripts/install-course-package.mjs` independently recomputes the digest and checks, then supports two explicit mutations: `--install` adds the course folder/assets plus one catalogue entry; `--host` adds only `public/training/<course-id>/`. Both refuse overwrites and never commit or push. The custodian's review of the underlying authority and resulting Git diff remains load-bearing.
 
 ---
 
@@ -140,7 +146,7 @@ Behaviours that produce no error and no visible symptom until someone reports on
 
 `scripts/qa.mjs` runs the comprehensive suite against the real combined artefact in Chromium, writing the exact result to `qa-report.json`. `scripts/qa-exports.mjs` builds every course separately and checks content/asset isolation, single-course routes and chrome, browser/runtime errors, accessibility and capstone filenames/content. `scripts/qa-authoring.mjs` verifies Course Workshop, its release gate, safe ZIP layouts and generated learner course. `scripts/qa-release.mjs` exercises package inspection, catalogue installation, individual hosting, overwrite/tamper refusal and route-specific offline document caching. Playwright and its browser resolve from `node_modules`, so there are no absolute paths.
 
-Coverage includes question-bank integrity and item-writing statistics, scoring arithmetic, mastery gating, backup round-trip including malformed-file rejection, package switching *through the button*, contrast across all 40 stage-page/theme combinations, axe-core rules tagged to WCAG 2.0/2.1 A/AA with serious and critical impacts, line measure and horizontal overflow at 390, 768, 1100, 1440 and 1920 px, the project's 24 px target-size rule, keyboard and focus, reduced motion, and console hygiene. Catalogue-contract and selected authority checks run across the registered packages; some deep content and end-to-end learner assertions in `qa.mjs` are deliberately Product-Management-specific. The individual-export suite loops over every package but does not repeat the whole deep-content suite. This is regression evidence rather than complete course validation or accessibility certification.
+Coverage includes question-bank integrity and item-writing statistics, explicit versioned depth profiles for every maintained course, scoring arithmetic, mastery gating, backup and curriculum-version choices, package switching *through the button*, contrast across all stage-page/theme combinations, axe-core rules tagged to WCAG 2.0/2.1 A/AA with serious and critical impacts, line measure and horizontal overflow at exercised widths, the project's 24 px target-size rule, keyboard and focus, reduced motion, and console hygiene. Some end-to-end journeys intentionally exercise one representative package and are named accordingly. The individual-export suite loops over every package but does not repeat the whole browser suite. This is regression evidence rather than complete course validation or accessibility certification.
 
 Two rules govern additions to it:
 

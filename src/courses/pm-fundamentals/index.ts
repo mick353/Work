@@ -1,5 +1,6 @@
 import { PACKAGE_SCHEMA_VERSION, type TrainingPackage } from "../../package-model";
 import { buildPracticeQuestions, withDerivedMinutes } from "../../package-utils";
+import { courseQualityProfiles } from "../../course-quality-profiles";
 import { CONTENT_REVIEWED, modules as authoredModules, sources } from "./course";
 import {
   capstoneBriefs,
@@ -38,6 +39,7 @@ export const pmFundamentals: TrainingPackage = {
       "Nine stages from user need to measured value, built from the departmental deck and turned into something you practise rather than sit through.",
     arc: "From user need to measured value",
   },
+  qualityProfile: courseQualityProfiles[PM_FUNDAMENTALS_ID],
   content: {
     modules,
     sources,

@@ -235,9 +235,9 @@ npm run course:install -- path/to/<course-id>-course-package.zip # combined cata
 npm run course:host -- path/to/<course-id>-course-package.zip    # separate training/<id>/ URL
 ```
 
-Both may be used for the same course. The first creates the namespaced course source/assets and one catalogue entry. The second creates an isolated learner page and release record under `public/training/<course-id>/`. Both reject existing targets, so a revision to an already released id is a deliberate developer/custodian change rather than a silent replacement.
+Both may be used for the same course. The first creates the namespaced course source/assets, retains `releases/<version>.json` and adds one catalogue entry. The second creates an isolated learner page and release record under `public/training/<course-id>/`. Both reject existing targets, so a revision to an already released id is a deliberate developer/custodian change rather than a silent replacement.
 
-Run the Phase 8 gate against the resulting repository. The exported approval record is a declaration to inspect, not a substitute for the human course read or repository verification.
+Run the Phase 8 gate against the resulting repository. The inspector verifies the reviewer/approver fields and SHA-256 binding to the exact canonical package. That proves which content the declaration names; it is not a substitute for the human course read, the authority behind the approval or repository verification.
 
 ---
 
@@ -325,8 +325,8 @@ Committed to memory or checked deliberately — nothing in this list produces an
 | `grid-template-columns: 1fr` around a `<pre>` or table | Horizontal overflow, often clipped |
 | Colour changed without its background | Text the same colour as what is behind it |
 | Flat shuffle over a question pool | A practice set drawn from one stage |
-| Source URL using an active or unintended scheme | A published source link becomes unsafe; current structural validation does not yet whitelist schemes |
-| Approval record reused after content changes without a version change | The declaration still matches id/version even though it is not bound to an exact-content digest |
+| Allowed HTTPS URL points to the wrong version or authority | Syntax passes while provenance is wrong |
+| Two trainers edit the same portable draft revision separately | Both copies retain the same lineage until compared; there is no automatic merge |
 
 ## What no check will find
 

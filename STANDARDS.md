@@ -54,10 +54,11 @@ The current Workshop release gate is intentionally strict enough to reject a stu
 | Workshop release profile | At least 1 complete glossary entry and 1 observable practice contrast per stage |
 | Workshop release profile | Stage assignment with a worked answer of at least 100 words and at least 2 review criteria |
 | Workshop release profile | Cases, capstone, field guide and exemplars may be omitted; partially authored optional content becomes blocking |
-| Product Management regression | At least 8,000 measured teaching words, a substantial named worked-reasoning passage per stage, 4 worked cases and complete stage coverage across the cases |
+| Product Management profile v1 | 9 stages; at least 8,000 teaching words; 300 body words per stage; 4 questions and 2 scenarios per stage; 100-word/4-criterion worked assignments; 9 substantial worked-reasoning passages; case steps covering all 9 stages |
+| Closure Reports profile v1 | 12 stages; at least 12,500 teaching words; 300 body words per stage; 4 questions and 2 scenarios per stage; 100-word/3-criterion worked assignments; 5 substantial worked-reasoning passages; case steps covering at least 8 stages |
 | Learner behaviour | A capstone response needs 60 words before it counts as completed |
 
-Closure Reports currently has three worked cases and uses an explicit `Worked reasoning:` section in five of twelve stages; its remaining stages teach through substantial explanatory sections, scenarios, assignments and applied material. It is not covered by the Product Management-specific four-case/named-passage checks. The roadmap therefore requires either versioned course profiles or course-owned checks before a green suite is described as symmetric pedagogical evidence.
+The exact catalogue profiles live in `src/course-quality-profiles.ts`; `scripts/qa.mjs` fails if a maintained course has no current profile. These floors prevent reviewed depth and applied practice from silently disappearing. They are regression evidence, not proof that word count causes learning or that one profile suits every future course.
 
 Stage `minutes` are **derived** from word count at 220 wpm plus 1 minute per question and 2 per scenario. Never type them as release evidence.
 
@@ -137,10 +138,14 @@ The automated scan and the project-specific checks are regression gates, not a c
 | `docs/` | Pages build; slides as separate lazy-loaded files; service worker; web manifest |
 | `exports/<course-id>/<course-id>.html` | Contains exactly one course; its slides are inlined; no library/switcher chrome |
 | `exports/<course-id>/site/` | Contains exactly one course and only that course's public asset folder |
+| `exports/<course-id>/releases/<version>/` | Exact standalone/site copies plus a SHA-256 release manifest |
 | `Course-Authoring-Studio.html` | Self-contained; no network request while authoring; byte-identical to `docs/course-workshop/index.html` |
 | Workshop course output | Exactly one course; advanced content and embedded media preserved; no authoring or package-switcher chrome |
-| Workshop media | PNG/JPEG/WebP only; 50 MB per selected source, 150 PDF pages, 1,600 px maximum edge, 80 MB embedded-data ceiling, alternative text required |
+| Workshop media | PNG/JPEG/WebP only; declared type and binary signature must match; 50 MB per selected source, 150 PDF pages, 1,600 px maximum edge, 80 MB embedded-data ceiling, alternative text required |
+| Workshop source URL | Credential-free HTTPS only; syntactic acceptance does not establish authority or correctness |
+| Workshop release record | Named reviewer/approver roles and scope; SHA-256 bound to exact canonical package JSON; retained under the installed course version |
 | Pages size budget | `500 KB + 32 KB per stage` — scales with content, so ordinary authoring does not fail it |
+| Workshop size budget | 12 MB self-contained build ceiling; crossing it requires an explicit template/media architecture decision |
 | Service worker cache | Stamped with a hash of the built HTML |
 | Console | Zero uncaught page or console errors across every view |
 
@@ -154,7 +159,7 @@ The automated scan and the project-specific checks are regression gates, not a c
 |---|---|
 | Per package | `product-practice-v2:<packageId>:<key>` — progress, reviews, drafts, study days, item stats |
 | Per person | `product-practice-v2:<key>` — theme, shuffle salt, sidebar state, active package |
-| Course Workshop | IndexedDB `product-practice-course-workshop` / `drafts` / `current`; small legacy-compatible drafts may also use the Workshop-specific `localStorage` key |
+| Course Workshop | IndexedDB `product-practice-course-workshop` / `drafts` / `current`; smaller drafts may also use `product-practice:course-workshop:draft-v2` |
 
 | Property | Rule |
 |---|---|
@@ -163,8 +168,9 @@ The automated scan and the project-specific checks are regression gates, not a c
 | Malformed backup | Rejected; must not clear existing progress |
 | Reset | Backup is offered and optional; clearing the option warns that nothing will be saved |
 | Package switch | Full page reload — storage keys are namespaced and a reload re-reads all of them |
+| Curriculum version change | Explain the previous/current version and require a keep-or-reset choice; reset only that package namespace |
 
-New and cloned Workshop drafts begin with review evidence blank. Stored drafts from an earlier Workshop build are preserved as user data and may retain values created under the older behaviour; those values must be reconfirmed or cleared until schema migration is implemented.
+New and cloned Workshop drafts begin with review evidence blank. Draft schema v2 adds stable id, revision, origin and timestamps. Version-1 drafts and raw released packages are preserved as editable content but migrated to Draft status with review dates, source checks and release declarations cleared.
 
 ---
 
@@ -176,4 +182,4 @@ New and cloned Workshop drafts begin with review evidence blank. Stored drafts f
 4. **Run shared claims against every package and every applicable theme.** If a check intentionally protects one course, name the course/profile in the check and documentation; do not report it as catalogue-wide evidence.
 5. **Budgets scale with content.** A fixed ceiling that has to be raised on every addition asserts nothing.
 
-Use `qa-report.json` for the exact combined-suite result and the console/output of the other verification scripts for their results. Some successful `qa-report.json` rows currently retain failure-oriented detail text, so the boolean result and named assertion are authoritative until the report separates `observed`, `expected` and `failureMessage`. Investigate missing or changed checks by name rather than maintaining a hard-coded expected total in documentation.
+Use `qa-report.json` for the exact combined-suite result and the console/output of the other verification scripts for their results. Report format v2 records `observation` for measured context and leaves `failureMessage` empty on passing rows. Investigate missing or changed checks by name rather than maintaining a hard-coded expected total in documentation.

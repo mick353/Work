@@ -1,5 +1,6 @@
 import { PACKAGE_SCHEMA_VERSION, type TrainingPackage } from "../../package-model";
 import { buildPracticeQuestions, withDerivedMinutes } from "../../package-utils";
+import { courseQualityProfiles } from "../../course-quality-profiles";
 import { CLOSURE_REVIEWED, closureModules as authoredModules, closureSources } from "./course";
 import { closureExemplars } from "./exemplar";
 import {
@@ -37,6 +38,7 @@ export const closureReports: TrainingPackage = {
       "Writing a closure report that survives an audit — marked claims, transferred benefits, lessons that change behaviour, a settled financial and records position, and a handover that works once the team has gone.",
     arc: "From evidence to signed handover",
   },
+  qualityProfile: courseQualityProfiles[CLOSURE_REPORTS_ID],
   content: {
     modules,
     sources: closureSources,

@@ -25,15 +25,22 @@ The learner-facing product does not change. Course Workshop embeds the existing 
 
 **Release authority remains human.** Final outputs require a clean encoded profile, **Available** status and a recorded subject-matter, course-flow, audience/handling and release checklist. These are declarations, not independent review evidence. A custodian still inspects the package/diff and runs full verification before publication.
 
-**Remaining work, in priority order:**
+**Implemented readiness controls (24 August 2026):**
 
-1. **Legacy draft migration and review-evidence integrity.** Earlier Workshop builds could save prefilled review dates. The current clean-draft test does not migrate an already stored browser draft. Introduce a new draft schema, clear or explicitly reconfirm legacy evidence and test upgrades from every supported stored format.
-2. **Release and package hardening.** Restrict source links to approved URL schemes. Bind the human release record to the canonical package content, not only its id and version, and record enough reviewer/approver identity, role and scope to interpret the declaration.
-3. **Course-profile QA.** Replace Product-Management-specific deep-content assumptions with explicit, versioned profiles or course-owned checks that run for every maintained package. Make the generated QA record distinguish observations from failure messages.
-4. **Trainer and accessibility testing with real material.** Observe trainers building a short and a substantial course on desktop and tablet. Test terminology, file transfer, storage limits, phased readiness and whether the current fixed content minimums suit more than one course type. Complete applicable keyboard, screen-reader, zoom, text-spacing, forced-colour, touch and print testing with people and real devices.
-5. **Release history and draft lineage.** Add retained/datable release archives and release notes. Give portable drafts stable identity, revision and transfer metadata so two separately edited copies can be compared before one replaces the other.
-6. **Curriculum version migration.** Provide deliberate retain/reset choices when a revision breaks learner-progress compatibility.
-7. **Direct office-file ingestion only if trainers need it.** Current browser import accepts PDF or PNG/JPEG/WebP. Do not add PowerPoint parsing merely for technical completeness.
+- Draft schema v2 gives a portable draft a stable id, revision, creation/export timestamps and clone/import origin. Version-1 drafts and raw released packages are migrated into Draft status with review dates, source-checked dates and release declarations cleared.
+- Final releases require named reviewer and approver roles, approval scope, reference and date. Source links are restricted to credential-free HTTPS, embedded image bytes are checked against their declared type, and both the release record and validation report carry the SHA-256 digest of the exact canonical package JSON.
+- Every maintained catalogue course has an explicit versioned quality profile in `src/course-quality-profiles.ts`. The catalogue suite applies the declared depth, assessment, worked-reasoning, assignment and case floors to each course. `qa-report.json` separates observations from failure messages.
+- Individual exports retain `releases/<course-version>/` copies of both delivery forms with a hash manifest. Workshop-installed courses retain the exact release record under `src/courses/<id>/releases/<version>.json`.
+- When stored learner work belongs to a different or previously unrecorded course version, the player asks whether to keep it or start that course fresh. It never silently resets another course or person-level settings.
+- The self-contained Workshop has a 12 MB build budget. Exceeding it blocks the build and forces a deliberate decision about embedded templates/media.
+
+**External evidence still required before calling the authoring product organisationally production-ready:**
+
+1. Observe trainers building a short and a substantial real course on desktop and tablet. Test terminology, draft transfer, storage limits, release responsibilities and whether the current strict profile suits the training team's actual course types.
+2. Complete applicable manual keyboard, screen-reader, zoom, text-spacing, forced-colour, touch and print testing with people and real devices. Automated checks are regression evidence, not accessibility certification.
+3. For every released course, retain the real subject-matter, learning-flow, handling and approval evidence named in its release record. The software can bind declarations to content; it cannot manufacture the underlying review.
+
+**Deliberately parked:** direct PowerPoint parsing remains out unless trainers demonstrate a need; PDF and ordered PNG/JPEG/WebP import are the supported browser route. Arbitrary multi-course bundle composition also remains parked.
 
 Arbitrary multi-course bundle composition remains parked. One course per learner export is the agreed default; the combined catalogue remains a controlled repository release surface.
 
@@ -61,9 +68,7 @@ If registration is ever needed, prefer email one-time codes or magic links over 
 
 ## Smaller things, unscheduled
 
-- **Light theme** has had less scrutiny than dark. The tints were tuned by eye against dark first, and the one contrast fault that reached a user was light-theme only.
+- **Manual light-theme review.** Automated contrast and accessibility checks exercise all stage pages in both themes; human/device review remains part of the external testing above.
 - **Two-column treatment** for the field guide, glossary and toolkit on wide screens — flagged, not done.
-- **Versioned export archives.** Current exports replace `exports/<course-id>/`; a training-managed release workflow may also retain signed or dated copies for audit and rollback.
 - **Diagnostic presentation.** The current all-at-once diagnostic works and is accessible to automated checks, but a paged or one-question-at-a-time mode may reduce mobile and cognitive load.
 - **Catalogue decision information.** Course cards currently emphasise volume. Audience, prerequisite, difficulty, outcome, owner and currency would be more useful selection information as the catalogue grows.
-- **Workshop bundle growth.** Every maintained template is embedded into the self-contained Workshop. This is appropriate for the current small catalogue but should become an explicit size/performance decision as more courses are added.

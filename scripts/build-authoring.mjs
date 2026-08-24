@@ -19,7 +19,8 @@ const authoringDir = path.join(projectDir, "authoring");
 const outputFile = path.join(projectDir, "Course-Authoring-Studio.html");
 const publishedDir = path.join(projectDir, "docs", "course-workshop");
 const publishedFile = path.join(publishedDir, "index.html");
-const studioVersion = "0.4.1";
+const studioVersion = "0.5.0";
+const MAX_STUDIO_BYTES = 12 * 1024 * 1024;
 
 function escapeForScript(source) {
   return source.replace(/[ \t]+$/gm, "").replace(/<\/script/gi, "<\\/script");
@@ -114,6 +115,12 @@ const studioHtml = inline(
   studioJs,
   '<script type="module" src="/authoring/main.tsx"></script>',
 );
+const studioBytes = Buffer.byteLength(studioHtml);
+if (studioBytes > MAX_STUDIO_BYTES) {
+  throw new Error(
+    `Course Workshop is ${(studioBytes / 1024 / 1024).toFixed(2)} MB, above the ${(MAX_STUDIO_BYTES / 1024 / 1024).toFixed(0)} MB self-contained release budget. Revisit embedded templates/media before publishing.`,
+  );
+}
 
 await writeFile(outputFile, studioHtml, "utf8");
 await rm(publishedDir, { recursive: true, force: true });
@@ -123,6 +130,6 @@ await rm(tempDir, { recursive: true, force: true });
 
 console.log(
   `Built Course Workshop ${studioVersion}:\n` +
-  `  ${path.relative(projectDir, outputFile)} — ${(Buffer.byteLength(studioHtml) / 1024 / 1024).toFixed(2)} MB, self-contained\n` +
+  `  ${path.relative(projectDir, outputFile)} — ${(studioBytes / 1024 / 1024).toFixed(2)} MB, self-contained (budget ${(MAX_STUDIO_BYTES / 1024 / 1024).toFixed(0)} MB)\n` +
   `  ${path.relative(projectDir, publishedFile)} — GitHub Pages copy\n`,
 );

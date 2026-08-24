@@ -49,15 +49,19 @@ import { DEFAULT_PACKAGE_ID, activePackage, trainingPackages } from "./packages"
 import { bringForward, cardsToResurface } from "./recall";
 import {
   clearStored,
+  acceptCurriculumVersion,
+  curriculumVersionDecision,
   scrollBehavior,
   localDayKey,
   matchView,
   migrateToPackageNamespace,
   parseView,
+  resetPackageForCurriculumVersion,
   setActivePackageId,
   scheduleNext,
   viewToHash,
   type BackupParseResult,
+  type CurriculumVersionDecision,
   type Rating,
   type View,
 } from "./lib";
@@ -308,6 +312,37 @@ function useMediaQuery(query: string) {
   return matches;
 }
 
+function CurriculumVersionDialog({
+  decision,
+  onKeep,
+  onReset,
+}: {
+  decision: CurriculumVersionDecision;
+  onKeep: () => void;
+  onReset: () => void;
+}) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) dialog.showModal();
+    return () => { if (dialog?.open) dialog.close(); };
+  }, []);
+  return (
+    <dialog ref={dialogRef} className="curriculum-version-dialog" aria-labelledby="curriculum-version-title">
+      <span className="dialog-kicker">Course content changed</span>
+      <h2 id="curriculum-version-title">Choose what happens to your saved work</h2>
+      <p>
+        This course is now version <strong>{decision.currentVersion}</strong>. Your browser has learning data from {decision.previousVersion ? `version ${decision.previousVersion}` : "an earlier version recorded before version tracking was added"}.
+      </p>
+      <p>Keeping it preserves notes, answers and scores, but those scores may describe different questions or teaching. Starting fresh clears only this course; other courses and display settings remain.</p>
+      <div className="dialog-actions">
+        <button type="button" className="primary" onClick={onKeep}>Keep my saved work</button>
+        <button type="button" className="secondary" onClick={onReset}>Start this version fresh</button>
+      </div>
+    </dialog>
+  );
+}
+
 export default function App() {
   /*
    * The active package is resolved BEFORE any other stored state, because
@@ -335,6 +370,9 @@ export default function App() {
     return resolved;
   });
   const pack = activePackage(packageId);
+  const [versionDecision, setVersionDecision] = useState<CurriculumVersionDecision | null>(
+    () => curriculumVersionDecision(pack.manifest.id, pack.manifest.version),
+  );
 
   const [view, setView] = useState<View>(() => parseView(window.location.hash));
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -592,6 +630,15 @@ export default function App() {
     window.location.reload();
   }, []);
 
+  const keepVersionedWork = useCallback(() => {
+    acceptCurriculumVersion(pack.manifest.id, pack.manifest.version);
+    setVersionDecision(null);
+  }, [pack.manifest.id, pack.manifest.version]);
+
+  const resetForCurrentVersion = useCallback(() => {
+    if (resetPackageForCurriculumVersion(pack.manifest.id, pack.manifest.version)) window.location.reload();
+  }, [pack.manifest.id, pack.manifest.version]);
+
   let content: React.ReactNode;
   if (view === "dashboard" || (view === "library" && trainingPackages.length === 1)) {
     content = (
@@ -695,6 +742,7 @@ export default function App() {
 
   return (
     <SlideViewerProvider>
+    {versionDecision && <CurriculumVersionDialog decision={versionDecision} onKeep={keepVersionedWork} onReset={resetForCurrentVersion} />}
     <Shell
       shortcutsOpen={shortcutsOpen}
       setShortcutsOpen={setShortcutsOpen}

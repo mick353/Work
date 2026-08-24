@@ -10,15 +10,22 @@ import {
   type TrainingPackage,
 } from "../src/package-model";
 import { buildPracticeQuestions, withDerivedMinutes } from "../src/package-utils";
+import { workshopQualityProfile } from "../src/course-quality-profiles";
 
-export const DRAFT_SCHEMA_VERSION = 1 as const;
-export const DRAFT_STORAGE_KEY = "product-practice:course-workshop:draft-v1";
+export const DRAFT_SCHEMA_VERSION = 2 as const;
+export const DRAFT_STORAGE_KEY = "product-practice:course-workshop:draft-v2";
+export const LEGACY_DRAFT_STORAGE_KEYS = ["product-practice:course-workshop:draft-v1"] as const;
 
 export type ReleaseChecklist = {
   subjectMatterChecked: boolean;
   learningFlowChecked: boolean;
   handlingChecked: boolean;
   releaseApproved: boolean;
+  reviewerName: string;
+  reviewerRole: string;
+  approverName: string;
+  approverRole: string;
+  approvalScope: string;
   approvalReference: string;
   approvalDate: string;
 };
@@ -28,13 +35,28 @@ export const EMPTY_RELEASE_CHECKLIST: ReleaseChecklist = {
   learningFlowChecked: false,
   handlingChecked: false,
   releaseApproved: false,
+  reviewerName: "",
+  reviewerRole: "",
+  approverName: "",
+  approverRole: "",
+  approvalScope: "",
   approvalReference: "",
   approvalDate: "",
+};
+
+export type DraftLineage = {
+  draftId: string;
+  revision: number;
+  createdAt: string;
+  lastExportedAt?: string;
+  origin: "blank" | "clone" | "imported-package" | "migrated-v1";
+  basedOn?: { packageId: string; packageVersion: string };
 };
 
 export type AuthoringDraft = {
   draftSchemaVersion: typeof DRAFT_SCHEMA_VERSION;
   savedAt: string;
+  lineage: DraftLineage;
   package: TrainingPackage;
   release: ReleaseChecklist;
 };
@@ -42,7 +64,30 @@ export type AuthoringDraft = {
 export type LoadedDraft = {
   package: TrainingPackage;
   release: ReleaseChecklist;
+  lineage: DraftLineage;
+  migrationNotice?: string;
 };
+
+function newDraftId(): string {
+  return globalThis.crypto?.randomUUID?.() ?? `draft-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+export function createDraftLineage(
+  origin: DraftLineage["origin"] = "blank",
+  basedOn?: { packageId: string; packageVersion: string },
+): DraftLineage {
+  return {
+    draftId: newDraftId(),
+    revision: 1,
+    createdAt: new Date().toISOString(),
+    origin,
+    ...(basedOn ? { basedOn } : {}),
+  };
+}
+
+export function nextDraftRevision(lineage: DraftLineage): DraftLineage {
+  return { ...lineage, revision: lineage.revision + 1, lastExportedAt: new Date().toISOString() };
+}
 
 export function slugify(value: string): string {
   return value
@@ -139,6 +184,7 @@ export function createStarterPackage(): TrainingPackage {
       summary: "",
       arc: "",
     },
+    qualityProfile: workshopQualityProfile(1),
     content: {
       modules: [stage],
       sources: [{ id: "source-1", title: "", publisher: "", note: "", checked: "" }],
@@ -298,6 +344,7 @@ function cleanText(value: string | undefined): string {
 /** Create the canonical data emitted to the learner player and developer ZIP. */
 export function packageForExport(source: TrainingPackage): TrainingPackage {
   const entry = structuredClone(source);
+  entry.manifest.schemaVersion = PACKAGE_SCHEMA_VERSION;
   entry.manifest.id = slugify(entry.manifest.id);
   entry.manifest.title = cleanText(entry.manifest.title);
   entry.manifest.subtitle = cleanText(entry.manifest.subtitle);
@@ -325,6 +372,13 @@ export function packageForExport(source: TrainingPackage): TrainingPackage {
       })),
     })),
   );
+  const profile = entry.qualityProfile ?? workshopQualityProfile(entry.content.modules.length);
+  const usesWorkshopBaseline = profile.minimumAssignmentCriteria === 2 &&
+    profile.minimumWorkedReasoningPassages === 0 &&
+    profile.minimumCaseStageCoverage === 0;
+  entry.qualityProfile = usesWorkshopBaseline
+    ? workshopQualityProfile(entry.content.modules.length)
+    : { ...profile, stageCount: entry.content.modules.length };
   entry.content.totalMinutes = entry.content.modules.reduce((sum, module) => sum + module.minutes, 0);
   entry.content.practiceQuestions = buildPracticeQuestions(
     entry.content.modules,
@@ -342,10 +396,26 @@ export function packageForExport(source: TrainingPackage): TrainingPackage {
   return entry;
 }
 
-export function makeDraft(entry: TrainingPackage, release: ReleaseChecklist = EMPTY_RELEASE_CHECKLIST): AuthoringDraft {
+export function clearReviewEvidence(source: TrainingPackage): TrainingPackage {
+  const entry = structuredClone(source);
+  entry.manifest.schemaVersion = PACKAGE_SCHEMA_VERSION;
+  entry.qualityProfile = entry.qualityProfile ?? workshopQualityProfile(entry.content.modules.length);
+  entry.manifest.status = "draft";
+  entry.manifest.reviewed = "";
+  entry.content.contentReviewed = "";
+  entry.content.sources = entry.content.sources.map((item) => ({ ...item, checked: "" }));
+  return entry;
+}
+
+export function makeDraft(
+  entry: TrainingPackage,
+  release: ReleaseChecklist = EMPTY_RELEASE_CHECKLIST,
+  lineage: DraftLineage = createDraftLineage(),
+): AuthoringDraft {
   return {
     draftSchemaVersion: DRAFT_SCHEMA_VERSION,
     savedAt: new Date().toISOString(),
+    lineage: { ...lineage, basedOn: lineage.basedOn ? { ...lineage.basedOn } : undefined },
     package: entry,
     release: { ...release },
   };
@@ -359,27 +429,72 @@ function normaliseRelease(value: unknown): ReleaseChecklist {
     learningFlowChecked: candidate.learningFlowChecked === true,
     handlingChecked: candidate.handlingChecked === true,
     releaseApproved: candidate.releaseApproved === true,
+    reviewerName: typeof candidate.reviewerName === "string" ? candidate.reviewerName : "",
+    reviewerRole: typeof candidate.reviewerRole === "string" ? candidate.reviewerRole : "",
+    approverName: typeof candidate.approverName === "string" ? candidate.approverName : "",
+    approverRole: typeof candidate.approverRole === "string" ? candidate.approverRole : "",
+    approvalScope: typeof candidate.approvalScope === "string" ? candidate.approvalScope : "",
     approvalReference: typeof candidate.approvalReference === "string" ? candidate.approvalReference : "",
     approvalDate: typeof candidate.approvalDate === "string" ? candidate.approvalDate : "",
   };
 }
 
+function normaliseLineage(value: unknown): DraftLineage {
+  if (!value || typeof value !== "object") return createDraftLineage();
+  const candidate = value as Partial<DraftLineage>;
+  const origins: DraftLineage["origin"][] = ["blank", "clone", "imported-package", "migrated-v1"];
+  const basedOn = candidate.basedOn &&
+    typeof candidate.basedOn.packageId === "string" &&
+    typeof candidate.basedOn.packageVersion === "string"
+    ? { packageId: candidate.basedOn.packageId, packageVersion: candidate.basedOn.packageVersion }
+    : undefined;
+  return {
+    draftId: typeof candidate.draftId === "string" && candidate.draftId.trim() ? candidate.draftId : newDraftId(),
+    revision: Number.isInteger(candidate.revision) && Number(candidate.revision) > 0 ? Number(candidate.revision) : 1,
+    createdAt: typeof candidate.createdAt === "string" && candidate.createdAt.trim() ? candidate.createdAt : new Date().toISOString(),
+    ...(typeof candidate.lastExportedAt === "string" && candidate.lastExportedAt.trim() ? { lastExportedAt: candidate.lastExportedAt } : {}),
+    origin: origins.includes(candidate.origin as DraftLineage["origin"]) ? candidate.origin as DraftLineage["origin"] : "blank",
+    ...(basedOn ? { basedOn } : {}),
+  };
+}
+
 export function readDraft(value: unknown): LoadedDraft {
   if (!value || typeof value !== "object") throw new Error("The selected file does not contain a course draft.");
-  const candidate = value as Partial<AuthoringDraft> & Partial<TrainingPackage>;
+  const candidate = value as Partial<Omit<AuthoringDraft, "draftSchemaVersion">> & Partial<TrainingPackage> & { draftSchemaVersion?: number };
   if (candidate.draftSchemaVersion !== undefined) {
-    if (candidate.draftSchemaVersion !== DRAFT_SCHEMA_VERSION || !candidate.package) {
+    if (!candidate.package) {
+      throw new Error("This draft uses an unsupported Course Workshop format.");
+    }
+    if (candidate.draftSchemaVersion === 1) {
+      return {
+        package: clearReviewEvidence(candidate.package),
+        release: { ...EMPTY_RELEASE_CHECKLIST },
+        lineage: createDraftLineage("migrated-v1", {
+          packageId: candidate.package.manifest.id,
+          packageVersion: candidate.package.manifest.version,
+        }),
+        migrationNotice: "This older draft was upgraded. Review dates and release declarations were cleared because the earlier format could not prove when or by whom they were confirmed.",
+      };
+    }
+    if (candidate.draftSchemaVersion !== DRAFT_SCHEMA_VERSION) {
       throw new Error("This draft uses an unsupported Course Workshop format.");
     }
     return {
-      package: structuredClone(candidate.package),
+      package: packageForExport(candidate.package),
       release: normaliseRelease(candidate.release),
+      lineage: normaliseLineage(candidate.lineage),
     };
   }
   if (candidate.manifest && candidate.content) {
+    const imported = candidate as TrainingPackage;
     return {
-      package: structuredClone(candidate as TrainingPackage),
+      package: clearReviewEvidence(imported),
       release: { ...EMPTY_RELEASE_CHECKLIST },
+      lineage: createDraftLineage("imported-package", {
+        packageId: imported.manifest.id,
+        packageVersion: imported.manifest.version,
+      }),
+      migrationNotice: "The package was opened as a new editable draft. Its prior review dates and release declarations were cleared so this version receives a fresh review.",
     };
   }
   throw new Error("The file is neither a Course Workshop draft nor a training package.");

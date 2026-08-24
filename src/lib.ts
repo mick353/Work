@@ -227,6 +227,13 @@ export function onStorageStatusChange(listener: (status: StorageStatus) => void)
  * opened a different course would be pointless churn.
  */
 const GLOBAL_KEYS = new Set(["theme", "salt", "nav-collapsed-v2", "active-package"]);
+const CONTENT_VERSION_KEY = "content-version";
+
+export type CurriculumVersionDecision = {
+  packageId: string;
+  previousVersion: string | null;
+  currentVersion: string;
+};
 
 let activePackageId = "";
 
@@ -241,6 +248,51 @@ export function getActivePackageId(): string {
 export function storageKey(key: string) {
   if (GLOBAL_KEYS.has(key)) return `${STORAGE_PREFIX}:${key}`;
   return `${STORAGE_PREFIX}:${activePackageId}:${key}`;
+}
+
+/**
+ * Detect learning data created against a different course version.
+ *
+ * The decision is surfaced to the learner instead of silently treating old
+ * scores as evidence about changed content or silently deleting their work.
+ */
+export function curriculumVersionDecision(packageId: string, currentVersion: string): CurriculumVersionDecision | null {
+  try {
+    const prefix = `${STORAGE_PREFIX}:${packageId}:`;
+    const marker = `${prefix}${CONTENT_VERSION_KEY}`;
+    const previousVersion = window.localStorage.getItem(marker);
+    if (previousVersion === currentVersion) return null;
+    const hasLearningData = Object.keys(window.localStorage).some((key) => key.startsWith(prefix) && key !== marker);
+    if (!hasLearningData) {
+      window.localStorage.setItem(marker, currentVersion);
+      return null;
+    }
+    return { packageId, previousVersion, currentVersion };
+  } catch {
+    return null;
+  }
+}
+
+export function acceptCurriculumVersion(packageId: string, currentVersion: string): boolean {
+  try {
+    window.localStorage.setItem(`${STORAGE_PREFIX}:${packageId}:${CONTENT_VERSION_KEY}`, currentVersion);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function resetPackageForCurriculumVersion(packageId: string, currentVersion: string): boolean {
+  try {
+    const prefix = `${STORAGE_PREFIX}:${packageId}:`;
+    Object.keys(window.localStorage)
+      .filter((key) => key.startsWith(prefix))
+      .forEach((key) => window.localStorage.removeItem(key));
+    window.localStorage.setItem(`${prefix}${CONTENT_VERSION_KEY}`, currentVersion);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**

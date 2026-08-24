@@ -19,6 +19,31 @@ function validateQuestion(question: Question, moduleIds: Set<string>, label: str
   }
 }
 
+function isApprovedSourceUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && !url.username && !url.password;
+  } catch {
+    return false;
+  }
+}
+
+function embeddedImageMatchesType(dataUrl: string, mimeType: string): boolean {
+  const encoded = dataUrl.slice(dataUrl.indexOf(",") + 1);
+  try {
+    const binary = atob(encoded.slice(0, 24));
+    const bytes = [...binary].map((character) => character.charCodeAt(0));
+    if (mimeType === "image/png") return bytes.slice(0, 8).join(",") === "137,80,78,71,13,10,26,10";
+    if (mimeType === "image/jpeg") return bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+    if (mimeType === "image/webp") {
+      return binary.slice(0, 4) === "RIFF" && binary.slice(8, 12) === "WEBP";
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Structural checks needed when packages eventually arrive from an authoring
  * form rather than the TypeScript compiler. Content-quality checks remain in
@@ -39,6 +64,16 @@ export function validateTrainingPackage(entry: TrainingPackage): string[] {
   }
   if (!manifest.title.trim()) errors.push("manifest title is empty");
   if (!content.modules.length) errors.push("package contains no stages");
+  const profile = entry.qualityProfile;
+  if (!profile || profile.profileVersion !== 1) {
+    errors.push("package has no supported course quality profile");
+  } else {
+    if (profile.stageCount !== content.modules.length) errors.push(`quality profile stageCount ${profile.stageCount} does not match ${content.modules.length} stages`);
+    for (const [key, value] of Object.entries(profile)) {
+      if (key === "profileVersion") continue;
+      if (!Number.isInteger(value) || value < 0) errors.push(`quality profile ${key} must be a non-negative integer`);
+    }
+  }
 
   const rawModuleIds = content.modules.map((module) => module.id);
   const rawSourceIds = content.sources.map((source) => source.id);
@@ -52,6 +87,15 @@ export function validateTrainingPackage(entry: TrainingPackage): string[] {
   unique(rawSourceIds, "sources", errors);
   unique(assets.map((asset) => asset.id), "assets", errors);
   if (slideNumbers.size !== content.slides.length) errors.push("slides contain duplicate slide numbers");
+
+  for (const source of content.sources) {
+    if (source.url && !isApprovedSourceUrl(source.url)) {
+      errors.push(`source "${source.id}" URL must use HTTPS without embedded credentials`);
+    }
+    if (source.altUrl && !isApprovedSourceUrl(source.altUrl)) {
+      errors.push(`source "${source.id}" alternative URL must use HTTPS without embedded credentials`);
+    }
+  }
 
   const ordered = content.modules.map((module) => module.number);
   if (!ordered.every((number, index) => number === index + 1)) {
@@ -134,6 +178,7 @@ export function validateTrainingPackage(entry: TrainingPackage): string[] {
     if (!asset.alt.trim()) errors.push(`asset "${asset.id}" has no alternative text`);
     if (!/^(image\/png|image\/jpeg|image\/webp)$/.test(asset.mimeType)) errors.push(`asset "${asset.id}" uses unsupported media type "${asset.mimeType}"`);
     if (!asset.dataUrl.startsWith(`data:${asset.mimeType};base64,`)) errors.push(`asset "${asset.id}" data does not match its media type`);
+    else if (!embeddedImageMatchesType(asset.dataUrl, asset.mimeType)) errors.push(`asset "${asset.id}" bytes do not match its declared media type`);
     embeddedAssetCharacters += asset.dataUrl.length;
   }
   if (embeddedAssetCharacters > 80_000_000) errors.push("embedded course media exceeds the 80 MB package limit");
