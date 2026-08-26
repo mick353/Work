@@ -1,4 +1,4 @@
-import { findModule, flashcards, practiceQuestions } from "./content";
+import { findModule, practiceQuestions } from "./content";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Brain, ChevronRight, RefreshCw, Trophy } from "lucide-react";
 import { FLASHCARD_KIND_LABEL, type Flashcard, type PracticeQuestion, type Question } from "./package-model";
@@ -61,10 +61,12 @@ export function selectDueCards(cards: Flashcard[], reviews: ReviewMap, now: numb
 }
 
 export function Review({
+  cards,
   reviews,
   onRate,
   navigate,
 }: {
+  cards: Flashcard[];
   reviews: ReviewMap;
   onRate: (card: Flashcard, rating: Rating) => void;
   navigate: (view: string) => void;
@@ -75,7 +77,7 @@ export function Review({
   // current one is finished, instead of being told the queue is clear when it
   // is not — which is what the previous build did once eight cards were done.
   const queue = useMemo(
-    () => selectDueCards(flashcards, reviews, Date.now(), SESSION_SIZE),
+    () => selectDueCards(cards, reviews, Date.now(), SESSION_SIZE),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [sessionSeed],
   );
@@ -118,8 +120,8 @@ export function Review({
 
   const remainingDue = useMemo(() => {
     const now = Date.now();
-    return flashcards.filter((item) => !reviews[item.id] || reviews[item.id].due <= now).length;
-  }, [reviews]);
+    return cards.filter((item) => !reviews[item.id] || reviews[item.id].due <= now).length;
+  }, [cards, reviews]);
 
   const startNextBatch = () => {
     setIndex(0);
@@ -128,7 +130,9 @@ export function Review({
   };
 
   if (!card) {
+    const eligibleIds = new Set(cards.map((item) => item.id));
     const upcoming = Object.entries(reviews)
+      .filter(([id]) => eligibleIds.has(id))
       .map(([, schedule]) => schedule as ReviewSchedule)
       .sort((a, b) => a.due - b.due)[0];
     const finishedSome = index > 0;

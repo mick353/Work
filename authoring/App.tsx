@@ -80,6 +80,21 @@ function freshDraft(): LoadedDraft {
   return { package: createStarterPackage(), release: { ...EMPTY_RELEASE_CHECKLIST }, lineage: createDraftLineage() };
 }
 
+function hasAuthoredCourseContent(entry: TrainingPackage): boolean {
+  const starter = createStarterPackage();
+  const authoredManifest = (course: TrainingPackage) => ({
+    title: course.manifest.title,
+    subtitle: course.manifest.subtitle,
+    publisher: course.manifest.publisher,
+    sourceAuthor: course.manifest.sourceAuthor ?? "",
+    source: course.manifest.source,
+    summary: course.manifest.summary,
+    arc: course.manifest.arc,
+  });
+  return JSON.stringify(authoredManifest(entry)) !== JSON.stringify(authoredManifest(starter)) ||
+    JSON.stringify(entry.content) !== JSON.stringify(starter.content);
+}
+
 function loadLocalDraft(): LoadedDraft {
   try {
     for (const key of [DRAFT_STORAGE_KEY, ...LEGACY_DRAFT_STORAGE_KEYS]) {
@@ -333,7 +348,7 @@ export function App() {
   const [draftBytes, setDraftBytes] = useState(() => new Blob([JSON.stringify(makeDraft(initialDraft.package, initialDraft.release, initialDraft.lineage))]).size);
   const [message, setMessage] = useState(initialDraft.migrationNotice ?? "");
   const [browserReady, setBrowserReady] = useState(false);
-  const [issueFilter, setIssueFilter] = useState<IssueFilter>("all");
+  const [issueFilter, setIssueFilter] = useState<IssueFilter>("error");
   const [cloneProgress, setCloneProgress] = useState("");
   const [focusAnnouncement, setFocusAnnouncement] = useState("");
   const [focusRequest, setFocusRequest] = useState(0);
@@ -346,6 +361,7 @@ export function App() {
   const draftSizeLabel = formatFileSize(draftBytes);
   const hasDurationEvidence = entry.content.modules.some((stage) => stage.sections.some((section) => wordCount(section.body) > 0));
   const contentReady = counts.errors === 0;
+  const untouchedDraft = !hasAuthoredCourseContent(entry);
   const releaseChecksComplete =
     release.subjectMatterChecked &&
     release.learningFlowChecked &&
@@ -582,7 +598,6 @@ export function App() {
             locally, keeps drafts in this browser and separates writing from release so an unfinished course cannot
             alter the learner site.
           </p>
-          <button type="button" className="primary" onClick={() => navigateTo("setup")}>Begin course setup <ChevronRight size={17} /></button>
         </div>
         <div className="instruction-principle">
           <ShieldCheck size={28} />
@@ -590,6 +605,14 @@ export function App() {
           <p>Autosave uses this browser only. Download the JSON draft when moving machines or handing work to another trainer.</p>
         </div>
       </div>
+
+      <Card title="Choose how to start" eyebrow="Blank course or editable copy">
+        <p className="section-intro">Start with a clean structure, or copy a maintained course when its learning pattern is genuinely useful. A copy becomes a separate local draft and never alters the published original.</p>
+        <div className="template-grid start-options">
+          <article><span className="pill">Blank course</span><h3>Start from a clean structure</h3><p>Use the guided seven-step form to design a new course from its audience, final performance and evidence base.</p><dl><div><dt>Stages</dt><dd>1 starter</dd></div><div><dt>Review</dt><dd>Fresh record</dd></div></dl><button type="button" className="primary" onClick={() => navigateTo("setup")}><Plus size={17} />Start blank course</button></article>
+          {__COURSE_TEMPLATES__.map((template) => <article key={template.manifest.id}><span className="pill">Published template</span><h3>{template.manifest.title}</h3><p>{template.manifest.summary}</p><dl><div><dt>Stages</dt><dd>{template.content.modules.length}</dd></div><div><dt>Deck</dt><dd>{template.content.slides.length ? `${template.content.slides.length} slides` : "None"}</dd></div><div><dt>Version</dt><dd>{template.manifest.version}</dd></div></dl><button type="button" className="secondary" onClick={() => cloneTemplate(template)}><Library size={17} />Clone as new course</button></article>)}
+        </div>
+      </Card>
 
       <Card title="The complete workflow" eyebrow="Seven controlled steps">
         <ol className="workflow-list">
@@ -621,11 +644,6 @@ export function App() {
           <div><strong>Review</strong><span>Checks read the complete connected course. Selecting an issue returns to the relevant step, stage and field.</span></div>
           <div><strong>Outputs</strong><span>Preview, learner HTML and ZIP outputs are generated from the same draft. You do not re-enter content for each delivery route.</span></div>
         </div>
-      </Card>
-
-      <Card title="Start from an existing published course" eyebrow="Safe editable copies">
-        <p className="section-intro">Cloning copies the complete maintained course—including cases, toolkit, capstone, reference content, exemplars and any source deck—into a new local draft. It resets the version, status and approvals. The published course remains untouched.</p>
-        <div className="template-grid">{__COURSE_TEMPLATES__.map((template) => <article key={template.manifest.id}><span className="pill">Published template</span><h3>{template.manifest.title}</h3><p>{template.manifest.summary}</p><dl><div><dt>Stages</dt><dd>{template.content.modules.length}</dd></div><div><dt>Deck</dt><dd>{template.content.slides.length ? `${template.content.slides.length} slides` : "None"}</dd></div><div><dt>Version</dt><dd>{template.manifest.version}</dd></div></dl><button type="button" className="secondary" onClick={() => cloneTemplate(template)}><Library size={17} />Clone as new course</button></article>)}</div>
       </Card>
 
       <div className="instruction-grid">
@@ -692,7 +710,6 @@ npm run verify`}</code></pre>
           <InputField id="manifest-publisher" label="Publisher / owning team" required value={entry.manifest.publisher} onChange={(value) => updateManifest("publisher", value)} />
           <InputField id="manifest-version" label="Content version" required value={entry.manifest.version} onChange={(value) => updateManifest("version", value)} hint="Semantic version, such as 0.1.0 or 1.0.0" />
           <label className="field"><span>Status</span><select value={entry.manifest.status} onChange={(event) => updateManifest("status", event.target.value as TrainingPackage["manifest"]["status"])}><option value="draft">Draft — still being written</option><option value="in-development">In development — under review</option><option value="available">Available — approved for learners</option><option value="retired">Retired — no new delivery</option></select><small>Status is metadata. Final outputs also require all checks and release confirmations.</small></label>
-          <InputField id="manifest-reviewed" label="Content reviewed" required value={entry.manifest.reviewed} onChange={(value) => updateManifest("reviewed", value)} hint="Leave blank until a person has actually completed the content review. Then use an unambiguous date, for example 21 August 2026." />
           <InputField label="Source author (optional)" value={entry.manifest.sourceAuthor ?? ""} onChange={(value) => updateManifest("sourceAuthor", value || undefined)} />
         </div>
         <TextAreaField id="manifest-source" label="Governing source description" value={entry.manifest.source} onChange={(value) => updateManifest("source", value)} hint="Name the departmental material, standard or evidence base the course is built from" />
@@ -900,14 +917,14 @@ npm run verify`}</code></pre>
     return <div className="workspace-stack">
       <div className="page-heading"><span className="eyebrow">7 · Review and export</span><h1>Separate machine checks from release judgement</h1><p>The Workshop can reject malformed or visibly incomplete packages. People remain responsible for subject-matter accuracy, instructional quality, handling and release.</p></div>
       <StepConnection>Automated issues read the whole connected draft. Select an issue to return to its step, active stage and relevant field. Preview is for human learning-flow review; final outputs also require the recorded approvals and Available status.</StepConnection>
-      <section className={`readiness ${releaseReady ? "ready" : contentReady ? "pending" : "blocked"}`}>
-        <div className="readiness-icon">{releaseReady ? <Check size={30} /> : contentReady ? <ShieldCheck size={30} /> : <AlertTriangle size={30} />}</div>
+      <section className={`readiness ${untouchedDraft ? "not-started" : releaseReady ? "ready" : contentReady ? "pending" : "blocked"}`}>
+        <div className="readiness-icon">{untouchedDraft ? <CircleHelp size={30} /> : releaseReady ? <Check size={30} /> : contentReady ? <ShieldCheck size={30} /> : <AlertTriangle size={30} />}</div>
         <div>
           <span className="eyebrow">Course release state</span>
-          <h2>{releaseReady ? "Approved outputs are unlocked" : contentReady ? "Human release checks are pending" : `${counts.errors} blocking issue${counts.errors === 1 ? "" : "s"}`}</h2>
-          <p>{releaseReady ? "The course passed the encoded checks, is marked Available and carries a completed release record." : contentReady ? "Preview the course, complete the approvals below and set its status to Available when the release decision is made." : "Use the issue list to return to the relevant field. Preview and final output stay locked until the course is structurally usable."}</p>
+          <h2>{untouchedDraft ? "Start with Course setup" : releaseReady ? "Approved outputs are unlocked" : contentReady ? "Human release checks are pending" : `${counts.errors} blocking issue${counts.errors === 1 ? "" : "s"}`}</h2>
+          <p>{untouchedDraft ? "This new draft has not started yet. Complete Course setup first; checks will guide you as content is added." : releaseReady ? "The course passed the encoded checks, is marked Available and carries a completed release record." : contentReady ? "Preview the course, complete the approvals below and set its status to Available when the release decision is made." : "Use the issue list to return to the relevant field. Preview and final output stay locked until the course is structurally usable."}</p>
         </div>
-        <div className="issue-totals"><strong>{counts.errors}</strong><span>errors</span><strong>{counts.warnings}</strong><span>warnings</span><strong>{counts.notes}</strong><span>notes</span></div>
+        <div className="issue-totals"><strong>{counts.errors}</strong><span>{untouchedDraft ? "to complete" : "errors"}</span><strong>{counts.warnings}</strong><span>warnings</span><strong>{counts.notes}</strong><span>notes</span></div>
       </section>
       <Card title="Checks" eyebrow="Grouped by authoring step" actions={nextIssue && <button type="button" className="secondary" onClick={() => navigateIssue(nextIssue)}>Go to next {nextIssue.severity === "error" ? "blocker" : "issue"}<ChevronRight size={16} /></button>}>
         <div id="review-checks">
@@ -929,7 +946,7 @@ npm run verify`}</code></pre>
             const areaIssues = filteredIssues.filter((issue) => issue.area === area.id);
             if (!areaIssues.length) return null;
             const areaErrors = areaIssues.filter((issue) => issue.severity === "error").length;
-            return <IssueGroup key={`${area.id}-${issueFilter}`} label={area.label} countLabel={areaErrors ? `${areaErrors} blocker${areaErrors === 1 ? "" : "s"}` : `${areaIssues.length} advisory`} initiallyOpen={areaErrors > 0 || issueFilter !== "all"}>
+            return <IssueGroup key={`${area.id}-${issueFilter}`} label={area.label} countLabel={areaErrors ? `${areaErrors} blocker${areaErrors === 1 ? "" : "s"}` : `${areaIssues.length} advisory`} initiallyOpen={false}>
               {areaIssues.map((issue) => <button type="button" className={`issue ${issue.severity}`} key={issue.id} onClick={() => navigateIssue(issue)}><span className="issue-mark">{issue.severity === "error" ? "!" : issue.severity === "warning" ? "△" : "i"}</span><span><strong>{issue.title}</strong><small>{issue.detail}</small></span><ChevronRight size={18} /></button>)}
             </IssueGroup>;
           })}</div>
@@ -943,6 +960,7 @@ npm run verify`}</code></pre>
           <label className="release-option"><input type="checkbox" checked={release.releaseApproved} onChange={(event) => setRelease((current) => ({ ...current, releaseApproved: event.target.checked }))} /><span><strong>Release approved</strong><small>The accountable team has authorised this version for learner use.</small></span></label>
         </div>
         <div className="form-grid release-record-fields">
+          <InputField id="manifest-reviewed" label="Content review date" required value={entry.manifest.reviewed} onChange={(value) => updateManifest("reviewed", value)} hint="Record this only after a person has completed the content review. Use an unambiguous date, for example 21 August 2026." />
           <InputField label="Reviewer name" required value={release.reviewerName} onChange={(value) => setRelease((current) => ({ ...current, reviewerName: value }))} hint="Person who completed the subject and learning-flow review" />
           <InputField label="Reviewer role" required value={release.reviewerRole} onChange={(value) => setRelease((current) => ({ ...current, reviewerRole: value }))} hint="Role or team that establishes the reviewer's competence and remit" />
           <InputField label="Approver name" required value={release.approverName} onChange={(value) => setRelease((current) => ({ ...current, approverName: value }))} hint="Accountable person authorising learner use" />
@@ -979,12 +997,17 @@ npm run verify`}</code></pre>
       <aside className="studio-sidebar">
         <div className="studio-brand"><div className="brand-mark"><BookOpen size={22} /></div><div><strong>Course Workshop</strong><span>Product Practice authoring</span></div></div>
         <div className="privacy-banner"><ShieldCheck size={17} /><span>Local only. Draft content is not uploaded.</span></div>
-        <nav aria-label="Course authoring steps">{NAV.map((item, index) => {
+        <label className="mobile-step-picker"><span>Current step</span><select value={view} onChange={(event) => navigateTo(event.target.value as View)}>{NAV.map((item, index) => {
+          const errors = issues.filter((issue) => issue.area === item.id && issue.severity === "error").length;
+          const state = errors ? untouchedDraft ? "not started" : `${errors} blocker${errors === 1 ? "" : "s"}` : "complete";
+          return <option key={item.id} value={item.id}>{index + 1}. {item.label} — {state}</option>;
+        })}</select></label>
+        <nav className="desktop-step-nav" aria-label="Course authoring steps">{NAV.map((item, index) => {
           const Icon = item.icon;
           const errors = issues.filter((issue) => issue.area === item.id && issue.severity === "error").length;
-          return <button type="button" key={item.id} className={view === item.id ? "active" : ""} aria-current={view === item.id ? "step" : undefined} onClick={() => navigateTo(item.id)}><span className="nav-number">{index + 1}</span><Icon size={19} /><span><strong>{item.label}</strong><small>{item.description}</small></span>{errors > 0 && <b title={`${errors} blocking issue${errors === 1 ? "" : "s"} in this step`} aria-label={`${errors} blocking issue${errors === 1 ? "" : "s"} in ${item.label}`}>{errors}</b>}</button>;
+          return <button type="button" key={item.id} className={view === item.id ? "active" : ""} aria-current={view === item.id ? "step" : undefined} onClick={() => navigateTo(item.id)}><span className="nav-number">{index + 1}</span><Icon size={19} /><span><strong>{item.label}</strong><small>{item.description}</small></span>{errors > 0 && (untouchedDraft ? <b className="pending-label" title={`${item.label} has not started`}>New</b> : <b title={`${errors} blocking issue${errors === 1 ? "" : "s"} in this step`} aria-label={`${errors} blocking issue${errors === 1 ? "" : "s"} in ${item.label}`}>{errors}</b>)}</button>;
         })}</nav>
-        <div className="sidebar-status"><span className={releaseReady ? "status-ready" : contentReady ? "status-pending" : "status-blocked"}>{releaseReady ? "Ready to release" : contentReady ? "Release checks pending" : "Draft incomplete"}</span><small><Save size={13} />{saveLabel}</small></div>
+        <div className="sidebar-status"><span className={releaseReady ? "status-ready" : contentReady || untouchedDraft ? "status-pending" : "status-blocked"}>{releaseReady ? "Ready to release" : untouchedDraft ? "New draft — start with setup" : contentReady ? "Release checks pending" : "Draft incomplete"}</span><small><Save size={13} />{saveLabel}</small></div>
         <div className="sidebar-actions">
           <input ref={importRef} className="visually-hidden" type="file" accept="application/json,.json" aria-label="Load a Course Workshop draft" onChange={(event) => void handleImport(event.target.files?.[0])} />
           <button type="button" onClick={() => importRef.current?.click()}><Upload size={16} />Load draft</button>
@@ -999,7 +1022,7 @@ npm run verify`}</code></pre>
         <div className="studio-workspace">{view === "instructions" ? renderInstructions() : view === "setup" ? renderSetup() : view === "stages" ? renderStages() : view === "supports" ? renderSupports() : view === "advanced" ? <AdvancedEditor entry={entry} setEntry={setEntry} /> : view === "media" ? <MediaEditor entry={entry} setEntry={setEntry} setMessage={setMessage} /> : renderReview()}</div>
         <footer className="step-footer">
           <button type="button" className="secondary" disabled={currentIndex === 0} onClick={() => navigateTo(NAV[currentIndex - 1]?.id ?? "instructions")}><ChevronLeft size={17} />Previous</button>
-          <span>{viewIssues ? `${viewIssues} blocking issue${viewIssues === 1 ? "" : "s"} in this step` : "This step has no blocking issues"}</span>
+          <span>{viewIssues ? `${viewIssues} blocker${viewIssues === 1 ? "" : "s"} in this step · ${counts.errors} across the course` : counts.errors ? `No blockers in this step · ${counts.errors} across the course` : "No blocking issues in this step or course"}</span>
           <button type="button" className="primary" disabled={currentIndex === NAV.length - 1} onClick={() => navigateTo(NAV[currentIndex + 1]?.id ?? "review")}>Next<ChevronRight size={17} /></button>
         </footer>
       </main>

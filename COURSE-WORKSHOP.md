@@ -23,13 +23,13 @@ The first page in the Workshop is the trainer instruction page. Before entering 
 
 Status alone does not release a course. Final outputs unlock only when the course has no blocking content errors, the complete release checklist is recorded and status is **Available**. Preview and editable draft remain separate from release.
 
-New courses begin with the content-review and source-checked dates blank. Enter those dates only after the corresponding review has actually occurred. The Review page groups issues by authoring step, filters blockers/warnings/notes, and sends each issue back to its relevant field with keyboard focus. Every step change starts at and focuses the new heading.
+New courses begin with the content-review and source-checked dates blank. Enter those dates only after the corresponding review has actually occurred. A missing content-review date is not a drafting blocker; it becomes a release blocker only when status is set to **Available**. The Review page groups issues by authoring step, starts on blockers with groups collapsed, and sends each selected issue back to its relevant field with keyboard focus. An untouched course is labelled **Not started** rather than presented as a failed course. Every step change starts at and focuses the new heading.
 
 An existing browser may still contain a draft saved by an earlier Workshop build. Draft schema v2 preserves the course content but clears the old review date, source-checked dates, release declarations and **Available** status because the earlier format could not prove who confirmed them or when. The Workshop explains the migration and saves the upgraded draft under the current key. A raw released package loaded for editing is handled the same way: it becomes a fresh Draft that requires fresh review.
 
 Each authoring step contains a concise **How this step connects** explanation. Course setup reports where every source is currently used; Teach reports the diagnostic, cards, glossary, contrast, cases and media connected to the active stage; Apply and reference explains the learner destination or stage/source relationship for every optional content type; Media shows the complete register → import → review → cite sequence. These are guidance and live summaries, not extra course fields.
 
-The persistent draft header updates as the trainer works. A blank course shows **Duration pending** rather than presenting a false estimate; the derived minute estimate appears after lesson explanation content exists.
+The persistent draft header updates as the trainer works. A blank course shows **Duration pending** rather than presenting a false estimate; the derived minute estimate appears after lesson explanation content exists. On tablet and phone widths, one step selector replaces the desktop step rail so navigation does not require horizontal scrolling.
 
 ## Current authoring scope
 

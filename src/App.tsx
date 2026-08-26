@@ -400,6 +400,16 @@ export default function App() {
     [setCollapsedNav],
   );
 
+  /**
+   * A study day represents deliberate learner activity, not a page visit.
+   * Recording it from the actions below keeps the dashboard and streak views
+   * honest while still grouping any number of actions into one local day.
+   */
+  const recordStudyDay = useCallback(() => {
+    const today = localDayKey();
+    setStudyDays((days) => (days.includes(today) ? days : [...days, today].slice(-180)));
+  }, [setStudyDays]);
+
   /*
    * Opening the group that owns the current view. Without this, a keyboard
    * shortcut or a deep link into a collapsed group lands you on a page whose
@@ -424,6 +434,7 @@ export default function App() {
    */
   const recordAttempt = useCallback(
     (entry: Omit<HistoryEntry, "at">, missed: Question[] = [], answered: { id: string; correct: boolean }[] = []) => {
+      recordStudyDay();
       // Capped so a heavy user cannot grow local storage without bound.
       setHistory((current) => [...current, { ...entry, at: Date.now() }].slice(-400));
 
@@ -450,7 +461,7 @@ export default function App() {
       }
       return cards.length;
     },
-    [setHistory, setReviews, setItemStats],
+    [recordStudyDay, setHistory, setReviews, setItemStats],
   );
 
   useEffect(() => {
@@ -471,22 +482,6 @@ export default function App() {
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
-
-  /**
-   * Record the study day in LOCAL time, and re-check periodically so a tab left
-   * open across midnight still records the new day. The previous build used a
-   * UTC date key, so at AEST every session before ~10am was filed against the
-   * previous day.
-   */
-  useEffect(() => {
-    const record = () => {
-      const today = localDayKey();
-      setStudyDays((days) => (days.includes(today) ? days : [...days, today].slice(-180)));
-    };
-    record();
-    const timer = window.setInterval(record, 10 * 60_000);
-    return () => window.clearInterval(timer);
-  }, [setStudyDays]);
 
   useScrollActiveStageIntoView(view);
 
@@ -517,20 +512,42 @@ export default function App() {
 
   const updateModule = useCallback(
     (id: string, changes: Partial<ModuleProgress>) => {
+      recordStudyDay();
       setProgress((current) => ({
         ...current,
         [id]: { ...(current[id] ?? emptyModuleProgress()), ...changes },
       }));
     },
-    [setProgress],
+    [recordStudyDay, setProgress],
   );
 
   const recordReview = useCallback(
     (card: { id: string }, rating: Rating) => {
+      recordStudyDay();
       setReviews((current) => ({ ...current, [card.id]: scheduleNext(current[card.id], rating) }));
     },
-    [setReviews],
+    [recordStudyDay, setReviews],
   );
+
+  const setToolkitWithStudy = useCallback((updater: (current: TextMap) => TextMap) => {
+    recordStudyDay();
+    setToolkit(updater);
+  }, [recordStudyDay, setToolkit]);
+
+  const setCapstoneWithStudy = useCallback((updater: (current: TextMap) => TextMap) => {
+    recordStudyDay();
+    setCapstone(updater);
+  }, [recordStudyDay, setCapstone]);
+
+  const setRubricWithStudy = useCallback((updater: (current: RubricMap) => RubricMap) => {
+    recordStudyDay();
+    setRubric(updater);
+  }, [recordStudyDay, setRubric]);
+
+  const setBriefWithStudy = useCallback((id: string) => {
+    recordStudyDay();
+    setBriefId(id);
+  }, [recordStudyDay, setBriefId]);
 
   const masteredCount = modules.filter(
     (module) => masteryState(progress[module.id], module.scenarios.length).mastered,
@@ -546,9 +563,18 @@ export default function App() {
     modules.find((module) => !masteryState(progress[module.id], module.scenarios.length).mastered) ??
     modules[modules.length - 1];
 
+  /*
+   * Fresh cards unlock after their lesson has been read. A card already in the
+   * scheduler remains eligible, including one brought forward by a missed
+   * question, so existing review evidence is never discarded.
+   */
+  const availableReviewCards = useMemo(
+    () => flashcards.filter((card) => Boolean(reviews[card.id]) || Boolean(progress[card.moduleId]?.lessonRead)),
+    [progress, reviews],
+  );
   const dueCount = useMemo(
-    () => selectDueCards(flashcards, reviews, Date.now(), flashcards.length).length,
-    [reviews],
+    () => selectDueCards(availableReviewCards, reviews, Date.now(), availableReviewCards.length).length,
+    [availableReviewCards, reviews],
   );
 
   const handleImport = useCallback(
@@ -658,20 +684,20 @@ export default function App() {
   } else if (view === "diagnostic") {
     content = <Diagnostic navigate={navigate} salt={salt} onComplete={recordAttempt} />;
   } else if (view === "review") {
-    content = <Review reviews={reviews} onRate={recordReview} navigate={navigate as (view: string) => void} />;
+    content = <Review cards={availableReviewCards} reviews={reviews} onRate={recordReview} navigate={navigate as (view: string) => void} />;
   } else if (view === "practice") {
     content = <Practice best={practiceBest} setBest={setPracticeBest} salt={salt} onComplete={recordAttempt} />;
   } else if (view === "toolkit") {
-    content = <Toolkit values={toolkit} setValues={setToolkit} />;
+    content = <Toolkit values={toolkit} setValues={setToolkitWithStudy} />;
   } else if (view === "capstone") {
     content = (
       <Capstone
         values={capstone}
-        setValues={setCapstone}
+        setValues={setCapstoneWithStudy}
         rubric={rubric}
-        setRubric={setRubric}
+        setRubric={setRubricWithStudy}
         briefId={briefId}
-        setBriefId={setBriefId}
+        setBriefId={setBriefWithStudy}
       />
     );
   } else if (view === "results") {
@@ -931,7 +957,7 @@ function Shell({
           <button className="package-switch" onClick={() => navigate("library")}>
             <Layers size={16} aria-hidden="true" />
             <span>
-              <small>{`Training package · ${packagePosition} of ${packageCount}`}</small>
+              <small>{`Course · ${packagePosition} of ${packageCount}`}</small>
               <strong>{packageTitle}</strong>
             </span>
             <span className="package-switch-action">Library</span>
@@ -1003,6 +1029,7 @@ function Shell({
                   className={view === `module:${module.id}` ? "active" : ""}
                   data-stage={module.number}
                   data-state={state}
+                  title={`Stage ${module.number}: ${module.title}${label}`}
                   aria-current={view === `module:${module.id}` ? "page" : undefined}
                   onClick={() => navigate(`module:${module.id}`)}
                 >

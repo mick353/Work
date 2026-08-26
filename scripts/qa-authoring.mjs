@@ -247,7 +247,7 @@ page.on("request", (request) => { if (/^https?:/i.test(request.url())) networkRe
 await page.goto(pathToFileURL(studioFile).href);
 await page.waitForSelector(".studio-shell");
 check("Course Workshop opens as a local standalone file", await page.title() === "Course Workshop — Product Practice");
-check("A new course is blocked until required content is written", await page.locator(".status-blocked").count() === 1);
+check("A new course is presented as a calm not-started draft", /new draft.*start with setup/i.test(await page.locator(".sidebar-status").innerText()));
 check("A blank course does not claim a duration before lesson content exists", /Duration pending/i.test(await page.locator(".topbar-meta").innerText()));
 check("The built-in instructional page explains all three learner delivery routes", /offline HTML course.*host it at its own URL.*combined catalogue/is.test(await page.locator("body").innerText()));
 check("The studio makes its local-only boundary visible", /not uploaded/i.test(await page.locator(".privacy-banner").innerText()));
@@ -259,8 +259,12 @@ check("Workshop instructions have no serious or critical automated accessibility
 
 check("Instructions include a five-part course blueprint", await page.locator(".blueprint-list li").count() === 5);
 check("Instructions explain how sources, stages, review and outputs connect", await page.locator(".connection-map > div").count() === 4);
+check("Blank and template starting choices are presented together before the workflow", await page.locator(".start-options article").count() === 3 && await page.locator(".start-options").evaluate((element) => {
+  const workflow = document.querySelector(".workflow-list");
+  return Boolean(workflow && element.closest(".editor-card")?.compareDocumentPosition(workflow) & Node.DOCUMENT_POSITION_FOLLOWING);
+}));
 await page.getByRole("button", { name: /Course setup/ }).click();
-check("A new draft does not claim review evidence automatically", await page.getByLabel("Content reviewed").inputValue() === "" && await page.getByLabel("Checked").inputValue() === "");
+check("Course setup keeps release evidence out of the drafting fields", await page.getByLabel("Content review date").count() === 0 && await page.getByLabel("Checked").inputValue() === "");
 check("Course setup explains downstream ids and shows live source usage", await page.locator(".step-connection").count() === 1 && /0 lesson sections.*0 guide entries.*0 media items/is.test(await page.locator(".linkage-summary").innerText()));
 await page.getByRole("button", { name: /Media & source deck/ }).click();
 check("An incomplete source is labelled and never selected as the deck source", await page.getByLabel("Deck source").inputValue() === "" && /source-1 — incomplete/i.test(await page.getByLabel("Deck source").innerText()));
@@ -275,13 +279,18 @@ check("Step navigation resets scroll and focuses the new heading", navigationSta
 check("Reinforce explains that its content belongs to the active stage", /active stage/i.test(await page.locator(".step-connection").innerText()));
 await page.getByRole("button", { name: /Review & export/ }).click();
 check("Review checks are grouped by step and filterable", await page.locator(".review-step-summary > div").count() === 6 && await page.getByRole("button", { name: /Blockers/ }).count() === 1);
+check("A blank draft review is calm and starts with issue groups collapsed", await page.locator(".readiness.not-started").count() === 1 && await page.locator("details.issue-group[open]").count() === 0);
+check("The content review date is recorded at release, not while drafting", await page.getByLabel("Content review date").inputValue() === "");
 check("Review explains issue navigation and the human release boundary", /relevant field.*human learning-flow review/is.test(await page.locator(".step-connection").innerText()));
 check("Draft output explains the complete trainer checkpoint transfer", /Complete editable draft.*another trainer.*embedded slides, images.*approximately.*(?:KB|MB)/is.test(await page.locator("body").innerText()));
+check("The step footer distinguishes current-step and whole-course blockers", /in this step.*across the course/i.test(await page.locator(".step-footer").innerText()));
+await page.locator("details.issue-group").filter({ hasText: "Course setup" }).locator("summary").click();
 await page.locator(".issue.error").filter({ hasText: "Add the course title" }).click();
 await page.waitForTimeout(50);
 check("A review issue opens and focuses its exact field", await page.evaluate(() => document.activeElement?.id === "manifest-title" && document.activeElement?.scrollIntoView !== undefined));
 
 let templateProfilesClean = true;
+const templateProfileDetails = [];
 for (const templateTitle of ["Product Management Fundamentals", "Closure Reports"]) {
   const templateContext = await browser.newContext();
   const templatePage = await templateContext.newPage();
@@ -289,12 +298,13 @@ for (const templateTitle of ["Product Management Fundamentals", "Closure Reports
   templatePage.once("dialog", (dialog) => void dialog.accept());
   await templatePage.locator(".template-grid article").filter({ hasText: templateTitle }).getByRole("button", { name: "Clone as new course" }).click();
   await templatePage.waitForSelector("text=Created a separate draft from");
-  await templatePage.getByRole("button", { name: /Review & export/ }).click();
-  const blockingTitles = await templatePage.locator(".issue.error strong").allInnerTexts();
-  templateProfilesClean &&= blockingTitles.length === 1 && blockingTitles[0] === "Add the content review date";
+  await templatePage.locator(".desktop-step-nav button").filter({ hasText: "Review & export" }).click();
+  const draftBlockingTitles = await templatePage.locator(".issue.error strong").allTextContents();
+  templateProfileDetails.push(`${templateTitle}: draft [${draftBlockingTitles.join(" | ") || "none"}]`);
+  templateProfilesClean &&= draftBlockingTitles.length === 0;
   await templateContext.close();
 }
-check("Every maintained course template satisfies the Workshop profile before fresh review", templateProfilesClean);
+check("Every maintained course template satisfies the Workshop profile before fresh review", templateProfilesClean, templateProfileDetails.join("; "));
 
 const featureContext = await browser.newContext({ acceptDownloads: true, viewport: { width: 1440, height: 1000 } });
 const featurePage = await featureContext.newPage();
@@ -364,9 +374,9 @@ check("Portable clone draft records stable lineage and a shareable revision", cl
 check("Clone preserves advanced course content and embeds the source deck", cloneDraft.package.content.caseStudies.length > 0 && cloneDraft.package.content.toolkitTemplates.length > 0 && cloneDraft.package.content.capstoneSteps.length > 0 && cloneDraft.package.content.fieldGuide.length > 0 && cloneDraft.package.content.slides.length === 98 && cloneDraft.package.content.assets.length === 99);
 check("Precise lesson citations survive the editable draft", cloneDraft.package.content.modules.some((module) => module.sections.some((section) => section.sourceReferences?.some((reference) => reference.locator === "slides 1–2" && reference.slideNumbers?.join(",") === "1,2"))));
 await featurePage.setViewportSize({ width: 390, height: 844 });
-await featurePage.getByRole("button", { name: /Apply & reference/ }).click();
+await featurePage.locator(".mobile-step-picker select").selectOption("advanced");
 const advancedMobileOverflow = await featurePage.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1);
-await featurePage.getByRole("button", { name: /Media & source deck/ }).click();
+await featurePage.locator(".mobile-step-picker select").selectOption("media");
 const mediaMobileOverflow = await featurePage.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1);
 check("Advanced and media editors fit a phone/tablet-width browser", advancedMobileOverflow && mediaMobileOverflow);
 check("Advanced and media authoring produced no console errors", featureErrors.length === 0, featureErrors[0] ?? "clean console");
@@ -413,6 +423,23 @@ const migratedDraft = JSON.parse(await readFile(migratedFile, "utf8"));
 check("Legacy migration emits a traceable v2 draft with review evidence cleared", migratedDraft.draftSchemaVersion === 2 && migratedDraft.lineage?.origin === "migrated-v1" && migratedDraft.lineage?.revision === 2 && migratedDraft.package.manifest.reviewed === "" && migratedDraft.package.manifest.status === "draft" && migratedDraft.package.content.sources.every((source) => !source.checked) && migratedDraft.release.releaseApproved === false);
 
 const fixture = validPackage();
+const unreviewedReleaseFixture = structuredClone(fixture);
+unreviewedReleaseFixture.manifest.reviewed = "";
+unreviewedReleaseFixture.content.contentReviewed = "";
+await page.locator('input[type="file"]').setInputFiles({
+  name: "available-but-unreviewed-course-draft.json",
+  mimeType: "application/json",
+  buffer: Buffer.from(JSON.stringify(currentDraft(unreviewedReleaseFixture))),
+});
+await page.waitForSelector("text=Loaded available-but-unreviewed-course-draft.json");
+await page.getByRole("button", { name: /Course setup/ }).click();
+const unreviewedStatus = await page.locator("label.field select").first().inputValue();
+await page.getByRole("button", { name: /Review & export/ }).click();
+await page.waitForTimeout(50);
+const unreviewedReviewDate = await page.getByLabel("Content review date").inputValue();
+const unreviewedBlockingTitles = await page.locator(".issue.error strong").allTextContents();
+check("Content review evidence is required for release but not for an ordinary draft", unreviewedStatus === "available" && unreviewedReviewDate === "" && unreviewedBlockingTitles.length === 1 && unreviewedBlockingTitles[0] === "Add the content review date", `status ${unreviewedStatus}; review date ${unreviewedReviewDate || "blank"}; ${unreviewedBlockingTitles.join(" | ") || "no blocker"}`);
+
 const brokenFixture = structuredClone(fixture);
 brokenFixture.content.modules[0].questions[0].optionNotes = ["", "", "", ""];
 const reviewFixture = structuredClone(fixture);
@@ -440,7 +467,7 @@ await page.locator('input[type="file"]').setInputFiles({
 await page.waitForSelector("text=Loaded unsafe-media-course-draft.json");
 await page.getByRole("button", { name: /Review & export/ }).click();
 await page.waitForSelector(".readiness.blocked");
-const unsafeIssueText = await page.locator(".issue-list").innerText();
+const unsafeIssueText = await page.locator(".issue-list").textContent() ?? "";
 check("Unsafe source links, false media types and broken citations block export", await page.getByRole("button", { name: "Export training HTML" }).isDisabled() && /https|declared media type|missing slide 999/i.test(unsafeIssueText), unsafeIssueText);
 
 await page.locator('input[type="file"]').setInputFiles({
@@ -463,6 +490,7 @@ await page.getByRole("button", { name: /Review & export/ }).click();
 await page.waitForSelector(".readiness.ready");
 check("A complete draft clears every blocking authoring check", (await page.locator(".issue.error").count()) === 0);
 check("Final outputs require and accept a complete human release record", !(await page.getByRole("button", { name: "Export repository ZIP" }).isDisabled()));
+await page.getByRole("button", { name: /^All / }).click();
 check("Optional advanced learning elements remain honest warnings or notes", (await page.locator(".issue.warning, .issue.note").count()) >= 2);
 
 const studioAxe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
@@ -561,6 +589,11 @@ await richLearner.waitForSelector('.slide-lightbox[role="dialog"]');
 check("Precise source citations open the embedded source slide", /Evidence connected to a decision/i.test(await richLearner.locator(".slide-lightbox").innerText()) && await richLearner.locator('.slide-lightbox img[alt*="Slide 1"]').count() === 1);
 const richSource = await readFile(richLearnerFile, "utf8");
 check("Advanced content and media remain self-contained in learner output", richSource.includes("decision-case") && richSource.includes("decision-record") && richSource.includes(tinyPngDataUrl) && !/<script[^>]+src=|<link[^>]+href=/i.test(richSource));
+
+await page.setViewportSize({ width: 768, height: 1024 });
+await page.waitForTimeout(100);
+const tabletOverflow = await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1);
+check("Tablet Workshop uses a compact step selector without horizontal navigation", await page.locator(".mobile-step-picker").isVisible() && !(await page.locator(".desktop-step-nav").isVisible()) && tabletOverflow);
 
 await page.setViewportSize({ width: 390, height: 844 });
 await page.waitForTimeout(100);

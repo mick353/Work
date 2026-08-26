@@ -175,7 +175,9 @@ Why the learning design is shaped the way it is. Read before changing any of it.
 
 **Stage length is computed, never typed.** `stageMinutes()` derives it from word count plus an allowance per question, so the figure moves when the content does. Hand-typed values drift from the content and cannot be trusted once a stage is edited.
 
-**Errors drive the review queue.** Getting a question wrong brings forward the flashcards covering it, so the queue is shaped by what you missed rather than by a fixed order. It moves the due date only, never the card's ease or lapse count, because rating a card the learner has not seen would corrupt it with data from a different exercise.
+**Encounter comes before retrieval.** A fresh flashcard enters the learner's available pool only after its lesson has been marked read. An already scheduled card remains available. Merely opening the site records neither a study day nor course progress; study days are recorded by meaningful learning actions.
+
+**Errors drive the review queue.** Getting a question wrong brings forward the eligible flashcards covering it, so the queue is shaped by what you missed rather than by a fixed order. It moves the due date only, never the card's ease or lapse count, because rating a card the learner has not seen would corrupt it with data from a different exercise.
 
 **The completion record is deliberately not a certificate.** It is readable and printable, and states on its face that it is self-recorded in one browser, not issued or verified by anyone. A QA check fails the build if the wording drifts toward implying a credential.
 

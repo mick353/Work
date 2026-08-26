@@ -797,6 +797,15 @@ check(
   "First-time visitor is told where to start",
   (await page.locator(".hero .button-row .primary").innerText()).includes("Start Stage 1"),
 );
+const firstMetrics = await page.locator(".metric-strip > div").evaluateAll((items) => items.map((item) => item.textContent?.replace(/\s+/g, " ").trim()));
+const dueMetric = page.locator(".metric-strip > div").filter({ hasText: "Cards due today" });
+check("A first-time learner has no review cards due", (await dueMetric.locator("strong").innerText()).trim() === "0", firstMetrics.join(" | "));
+check("Opening the site does not count as a study day", await page.evaluate(() => localStorage.getItem("product-practice-v2:pm-fundamentals:study-days") === null));
+check("The first study plan begins with understanding, not retrieval", (await page.locator(".plan-list li").first().innerText()).includes("Understand"));
+await page.setViewportSize({ width: 1440, height: 768 });
+const firstActionVisible = await page.locator(".hero .button-row .primary").evaluate((element) => element.getBoundingClientRect().bottom <= window.innerHeight);
+check("The primary first-time action is visible on a common laptop screen", firstActionVisible);
+await page.setViewportSize({ width: 1440, height: 1000 });
 
 // Grouped nav. The flat list overflowed every laptop viewport.
 const groupLabels = await page.locator(".nav-section-header span").allInnerTexts();
@@ -825,6 +834,9 @@ check(
   "The complete guide is reachable from the sidebar without opening anything",
   (await page.getByRole("button", { name: "Read the whole course", exact: true }).count()) === 1,
 );
+await page.getByRole("button", { name: "Review", exact: true }).click();
+check("Review cards remain locked until their lesson has been encountered", await page.getByRole("heading", { name: "Review queue clear" }).count() === 1);
+await page.getByRole("button", { name: "Overview", exact: true }).click();
 /*
   The reading material must come before the assessment of it. The sidebar used
   to run Learn / Practise / Apply / Reference with the stages last, so the
@@ -1339,6 +1351,10 @@ check(
   await page.evaluate(() => { window.location.hash = "dashboard"; });
   await page.waitForTimeout(150);
 }
+check(
+  "The learner sidebar has one scroll surface rather than a nested stage scrollbar",
+  await page.locator(".sidebar-modules nav").evaluate((element) => getComputedStyle(element).overflowY === "visible"),
+);
 /*
  * The real requirement is not that the whole sidebar fits — the nine-stage
  * list is a long list and long lists scroll. It is that every way into the

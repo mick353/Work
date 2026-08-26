@@ -104,7 +104,6 @@ export function evaluateCourse(source: TrainingPackage): AuthoringIssue[] {
     ["subtitle", "course subtitle"],
     ["publisher", "publisher or owning team"],
     ["source", "governing source description"],
-    ["reviewed", "content review date"],
     ["summary", "course summary"],
     ["arc", "learning arc"],
   ];
@@ -112,6 +111,10 @@ export function evaluateCourse(source: TrainingPackage): AuthoringIssue[] {
     if (!String(entry.manifest[key] ?? "").trim()) {
       add({ severity: "error", area: "setup", targetId: `manifest-${String(key)}`, title: `Add the ${label}`, detail: "This appears in the learner overview and the exported package record." });
     }
+  }
+
+  if (entry.manifest.status === "available" && !entry.manifest.reviewed.trim()) {
+    add({ severity: "error", area: "review", targetId: "manifest-reviewed", title: "Add the content review date", detail: "Record the completed content review before releasing the course as Available." });
   }
 
   if (!entry.content.sources.length) {

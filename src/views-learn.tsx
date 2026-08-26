@@ -163,7 +163,7 @@ export function Dashboard({
     [studyDays],
   );
 
-  const started = Object.keys(progress).length > 0 || studyDays.length > 1;
+  const started = Object.keys(progress).length > 0;
   const shownCompletion = useCountUp(completion);
   const shownMastered = useCountUp(mastered, 520);
 
@@ -254,7 +254,7 @@ export function Dashboard({
         </div>
         <div>
           <strong>{dueCount}</strong>
-          <span>Cards ready today</span>
+          <span>Cards due today</span>
         </div>
         <div>
           <strong>{studyDays.length}</strong>
@@ -271,32 +271,61 @@ export function Dashboard({
             </div>
             <Clock3 size={22} aria-hidden="true" />
           </header>
-          <ol className="plan-list">
-            <li>
-              <span aria-hidden="true">01</span>
-              <div>
-                <strong>Retrieve</strong>
-                <p>Clear the due review queue before rereading anything.</p>
-              </div>
-              <button onClick={() => navigate("review")}>Start review</button>
-            </li>
-            <li>
-              <span aria-hidden="true">02</span>
-              <div>
-                <strong>Build the model</strong>
-                <p>Complete the next lesson and explain its core idea in your own words.</p>
-              </div>
-              <button onClick={() => navigate(`module:${nextModule.id}`)}>Open stage</button>
-            </li>
-            <li>
-              <span aria-hidden="true">03</span>
-              <div>
-                <strong>Transfer</strong>
-                <p>Answer mixed scenarios so the idea works outside the slide where you first saw it.</p>
-              </div>
-              <button onClick={() => navigate("practice")}>Practise</button>
-            </li>
-          </ol>
+          {dueCount > 0 ? (
+            <ol className="plan-list">
+              <li>
+                <span aria-hidden="true">01</span>
+                <div>
+                  <strong>Retrieve</strong>
+                  <p>Clear the due review queue before rereading anything.</p>
+                </div>
+                <button onClick={() => navigate("review")}>Start review</button>
+              </li>
+              <li>
+                <span aria-hidden="true">02</span>
+                <div>
+                  <strong>Build the model</strong>
+                  <p>Complete the next lesson and explain its core idea in your own words.</p>
+                </div>
+                <button onClick={() => navigate(`module:${nextModule.id}`)}>Open stage</button>
+              </li>
+              <li>
+                <span aria-hidden="true">03</span>
+                <div>
+                  <strong>Transfer</strong>
+                  <p>Answer mixed scenarios so the idea works outside the slide where you first saw it.</p>
+                </div>
+                <button onClick={() => navigate("practice")}>Practise</button>
+              </li>
+            </ol>
+          ) : (
+            <ol className="plan-list">
+              <li>
+                <span aria-hidden="true">01</span>
+                <div>
+                  <strong>Understand</strong>
+                  <p>Start the next lesson and build the idea before trying to retrieve it.</p>
+                </div>
+                <button onClick={() => navigate(`module:${nextModule.id}`)}>Open stage</button>
+              </li>
+              <li>
+                <span aria-hidden="true">02</span>
+                <div>
+                  <strong>Apply</strong>
+                  <p>Use the lesson questions and scenarios to make the idea work in a real decision.</p>
+                </div>
+                <button onClick={() => navigate(`module:${nextModule.id}`)}>Start learning</button>
+              </li>
+              <li>
+                <span aria-hidden="true">03</span>
+                <div>
+                  <strong>Review later</strong>
+                  <p>Review cards unlock after their lesson, then return when your memory needs them.</p>
+                </div>
+                <button onClick={() => navigate("path")}>View learning path</button>
+              </li>
+            </ol>
+          )}
         </section>
 
         <section className="study-rhythm">

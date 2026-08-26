@@ -169,8 +169,10 @@ The automated scan and the project-specific checks are regression gates, not a c
 | Reset | Backup is offered and optional; clearing the option warns that nothing will be saved |
 | Package switch | Full page reload — storage keys are namespaced and a reload re-reads all of them |
 | Curriculum version change | Explain the previous/current version and require a keep-or-reset choice; reset only that package namespace |
+| Study day | Record only after a meaningful learner action, never from a page visit |
+| Fresh review card | Eligible after its owning lesson is marked read; previously scheduled cards remain eligible |
 
-New and cloned Workshop drafts begin with review evidence blank. Draft schema v2 adds stable id, revision, origin and timestamps. Version-1 drafts and raw released packages are preserved as editable content but migrated to Draft status with review dates, source checks and release declarations cleared.
+New and cloned Workshop drafts begin with review evidence blank. A blank review date does not block ordinary drafting; it blocks release when status is **Available**. Draft schema v2 adds stable id, revision, origin and timestamps. Version-1 drafts and raw released packages are preserved as editable content but migrated to Draft status with review dates, source checks and release declarations cleared.
 
 ---
 
