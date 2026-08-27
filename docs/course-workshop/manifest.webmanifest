@@ -1,0 +1,19 @@
+{
+  "name": "Course Workshop — Product Practice",
+  "short_name": "Course Workshop",
+  "description": "A local, guided authoring studio for Product Practice training packages.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F7F7F5",
+  "theme_color": "#3E4246",
+  "categories": ["education", "productivity"],
+  "lang": "en-AU",
+  "dir": "ltr",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

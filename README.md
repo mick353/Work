@@ -181,6 +181,8 @@ docs/                  GENERATED — the GitHub Pages build. Do not edit by hand
   course-workshop/      GENERATED separate trainer-facing authoring URL
 exports/               GENERATED, ignored — current + versioned isolated releases
 authoring/              Separate Course Workshop React source
+  assets/               Workshop icon masters and generated device sizes
+  manifest.webmanifest  Route-scoped Workshop install metadata
   AdvancedEditor.tsx   Cases, toolkit, capstone, guide, differences, exemplars
   MediaEditor.tsx      Source-deck and course-owned image workflow
   media.ts             PDF/image conversion into inert embedded assets

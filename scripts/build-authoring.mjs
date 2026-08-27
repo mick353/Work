@@ -8,7 +8,7 @@
  */
 
 import { build } from "esbuild";
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { buildAuthoredPlayerTemplate } from "./authored-player.mjs";
@@ -19,6 +19,14 @@ const authoringDir = path.join(projectDir, "authoring");
 const outputFile = path.join(projectDir, "Course-Authoring-Studio.html");
 const publishedDir = path.join(projectDir, "docs", "course-workshop");
 const publishedFile = path.join(publishedDir, "index.html");
+const iconDir = path.join(authoringDir, "assets");
+const iconFiles = {
+  "icon-192.png": path.join(iconDir, "workshop-icon-192.png"),
+  "icon-512.png": path.join(iconDir, "workshop-icon-512.png"),
+  "icon-maskable-512.png": path.join(iconDir, "workshop-icon-maskable-512.png"),
+  "apple-touch-icon.png": path.join(iconDir, "workshop-apple-touch-icon.png"),
+};
+const manifestFile = path.join(authoringDir, "manifest.webmanifest");
 const studioVersion = "0.5.3";
 const MAX_STUDIO_BYTES = 12 * 1024 * 1024;
 
@@ -32,6 +40,14 @@ function inline(template, css, js, sourceTag) {
     .replace(sourceTag, () => `<script>\n${escapeForScript(js)}\n</script>`);
   if (result.includes("<!--INLINE_STYLES-->") || result.includes(sourceTag)) {
     throw new Error(`Template placeholder was not replaced: ${sourceTag}`);
+  }
+  return result;
+}
+
+function addAppIcons(html, markup) {
+  const result = html.replace("<!--APP_ICONS-->", markup);
+  if (result.includes("<!--APP_ICONS-->")) {
+    throw new Error("Course Workshop icon placeholder was not replaced.");
   }
   return result;
 }
@@ -105,16 +121,29 @@ await build({
   logLevel: "warning",
 });
 
-const [studioTemplate, studioJs, studioCss] = await Promise.all([
+const [studioTemplate, studioJs, studioCss, iconSvg, appleTouchIcon] = await Promise.all([
   readFile(path.join(authoringDir, "index.html"), "utf8"),
   readFile(path.join(tempDir, "studio", "app.js"), "utf8"),
   readFile(path.join(tempDir, "studio", "app.css"), "utf8"),
+  readFile(path.join(iconDir, "workshop-icon.svg")),
+  readFile(iconFiles["apple-touch-icon.png"]),
 ]);
-const studioHtml = inline(
+const studioHtmlBase = inline(
   studioTemplate,
   studioCss,
   studioJs,
   '<script type="module" src="/authoring/main.tsx"></script>',
+);
+const studioHtml = addAppIcons(
+  studioHtmlBase,
+  `    <link rel="icon" href="data:image/svg+xml;base64,${iconSvg.toString("base64")}" type="image/svg+xml" />\n` +
+    `    <link rel="apple-touch-icon" href="data:image/png;base64,${appleTouchIcon.toString("base64")}" />`,
+);
+const publishedHtml = addAppIcons(
+  studioHtmlBase,
+  `    <link rel="manifest" href="manifest.webmanifest" />\n` +
+    `    <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png" />\n` +
+    `    <link rel="apple-touch-icon" href="apple-touch-icon.png" />`,
 );
 const studioBytes = Buffer.byteLength(studioHtml);
 if (studioBytes > MAX_STUDIO_BYTES) {
@@ -126,11 +155,13 @@ if (studioBytes > MAX_STUDIO_BYTES) {
 await writeFile(outputFile, studioHtml, "utf8");
 await rm(publishedDir, { recursive: true, force: true });
 await mkdir(publishedDir, { recursive: true });
-await writeFile(publishedFile, studioHtml, "utf8");
+await writeFile(publishedFile, publishedHtml, "utf8");
+await copyFile(manifestFile, path.join(publishedDir, "manifest.webmanifest"));
+await Promise.all(Object.entries(iconFiles).map(([name, source]) => copyFile(source, path.join(publishedDir, name))));
 await rm(tempDir, { recursive: true, force: true });
 
 console.log(
   `Built Course Workshop ${studioVersion}:\n` +
   `  ${path.relative(projectDir, outputFile)} — ${(studioBytes / 1024 / 1024).toFixed(2)} MB, self-contained (budget ${(MAX_STUDIO_BYTES / 1024 / 1024).toFixed(0)} MB)\n` +
-  `  ${path.relative(projectDir, publishedFile)} — GitHub Pages copy\n`,
+  `  ${path.relative(projectDir, publishedFile)} — GitHub Pages copy with manifest and app icons\n`,
 );

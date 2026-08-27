@@ -11,6 +11,7 @@ import { strFromU8, unzipSync } from "fflate";
 const projectDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const studioFile = path.join(projectDir, "Course-Authoring-Studio.html");
 const publishedStudioFile = path.join(projectDir, "docs", "course-workshop", "index.html");
+const publishedStudioDir = path.dirname(publishedStudioFile);
 const qaDir = path.join(projectDir, ".qa-authoring");
 const releaseFixtureDir = path.join(projectDir, ".qa-release");
 let passed = 0;
@@ -234,7 +235,38 @@ const [offlineStudioSource, publishedStudioSource] = await Promise.all([
   readFile(studioFile, "utf8"),
   readFile(publishedStudioFile, "utf8"),
 ]);
-check("Published Course Workshop is byte-identical to the offline repository copy", offlineStudioSource === publishedStudioSource);
+check(
+  "Offline Course Workshop carries a self-contained browser and Apple icon",
+  /rel="icon" href="data:image\/svg\+xml;base64,/.test(offlineStudioSource) &&
+    /rel="apple-touch-icon" href="data:image\/png;base64,/.test(offlineStudioSource),
+);
+check(
+  "Published Course Workshop links its route-owned manifest and icons",
+  publishedStudioSource.includes('rel="manifest" href="manifest.webmanifest"') &&
+    publishedStudioSource.includes('rel="icon" href="icon-192.png"') &&
+    publishedStudioSource.includes('rel="apple-touch-icon" href="apple-touch-icon.png"'),
+);
+const workshopManifest = JSON.parse(await readFile(path.join(publishedStudioDir, "manifest.webmanifest"), "utf8"));
+const workshopIconChecks = await Promise.all(workshopManifest.icons.map(async (icon) => {
+  const bytes = await readFile(path.join(publishedStudioDir, icon.src));
+  const [width, height] = icon.sizes.split("x").map(Number);
+  return bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) &&
+    bytes.readUInt32BE(16) === width && bytes.readUInt32BE(20) === height;
+}));
+const appleTouchBytes = await readFile(path.join(publishedStudioDir, "apple-touch-icon.png"));
+check(
+  "Course Workshop manifest is route-scoped and declares valid any and maskable icons",
+  workshopManifest.start_url === "./" &&
+    workshopManifest.scope === "./" &&
+    workshopManifest.short_name === "Course Workshop" &&
+    workshopManifest.icons.some((icon) => icon.purpose === "maskable") &&
+    workshopIconChecks.every(Boolean),
+);
+check(
+  "Course Workshop ships a valid 180-pixel Apple touch icon",
+  appleTouchBytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) &&
+    appleTouchBytes.readUInt32BE(16) === 180 && appleTouchBytes.readUInt32BE(20) === 180,
+);
 
 const browser = await chromium.launch({ headless: true });
 const context = await browser.newContext({ acceptDownloads: true, viewport: { width: 1440, height: 1000 } });

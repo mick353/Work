@@ -43,6 +43,8 @@ The learner header and Course Workshop use the exact inline black and all-white 
 
 The inline treatment is the guide's preferred digital logo and fits the supported mobile width, so the player does not switch to or redraw a stacked mark. Light and dark themes select the corresponding approved contrast treatment without filters, recolouring or distortion.
 
+Browser and installed-app icons remain product identifiers rather than miniature departmental logos, which would be illegible at favicon size. Course Workshop uses an open-book product mark in the same Graphite, Eucalyptus, Mint and Yellow system as the interface, with separate standard, maskable and Apple touch exports.
+
 ## Ongoing validation
 
 The technical theme is implemented and regression-tested. The following evidence and maintenance activities sit outside automated checks:

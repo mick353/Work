@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Course Workshop">
+  <rect width="512" height="512" rx="112" fill="#3E4246"/>
+  <path d="M92 137c58-5 116 10 164 50v211c-45-36-100-51-164-45V137Z" fill="#FFFFFF"/>
+  <path d="M420 137c-58-5-116 10-164 50v211c45-36 100-51 164-45V137Z" fill="#FFFFFF"/>
+  <path d="M256 187v211" stroke="#78A34F" stroke-width="22" stroke-linecap="round"/>
+  <path d="M126 194c35-1 67 7 96 24M126 254c35-1 67 7 96 24" fill="none" stroke="#4CBFAD" stroke-width="17" stroke-linecap="round"/>
+  <path d="M386 194c-35-1-67 7-96 24M386 254c-35-1-67 7-96 24" fill="none" stroke="#F1BE36" stroke-width="17" stroke-linecap="round"/>
+</svg>
