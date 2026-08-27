@@ -252,6 +252,8 @@ check("The skip link is the first keyboard stop on initial load", await page.eva
 const workshopTheme = await page.evaluate(() => {
   const rootStyle = getComputedStyle(document.documentElement);
   const headingStyle = getComputedStyle(document.querySelector(".instruction-hero h1"));
+  const logo = document.querySelector(".studio-brand .department-logo");
+  const logoBox = logo?.getBoundingClientRect();
   return {
     brand: document.documentElement.dataset.brand,
     font: rootStyle.fontFamily,
@@ -260,6 +262,10 @@ const workshopTheme = await page.evaluate(() => {
     eucalyptus: rootStyle.getPropertyValue("--dewr-eucalyptus").trim().toLowerCase(),
     spruce: rootStyle.getPropertyValue("--dewr-spruce").trim().toLowerCase(),
     themeColor: document.querySelector('meta[name="theme-color"]')?.getAttribute("content")?.toLowerCase(),
+    logoCount: document.querySelectorAll(".studio-brand .department-logo").length,
+    logoAlt: logo?.getAttribute("alt") ?? "",
+    logoSource: logo?.getAttribute("src") ?? "",
+    logoHeight: logoBox?.height ?? 0,
   };
 });
 check(
@@ -271,6 +277,14 @@ check(
     workshopTheme.eucalyptus === "#78a34f" &&
     workshopTheme.spruce === "#055044" &&
     workshopTheme.themeColor === "#3e4246",
+  JSON.stringify(workshopTheme),
+);
+check(
+  "Course Workshop uses the approved reversed DEWR logo once at website-banner size",
+  workshopTheme.logoCount === 1 &&
+    workshopTheme.logoAlt === "Australian Government Department of Employment and Workplace Relations" &&
+    workshopTheme.logoSource.startsWith("data:image/png;base64,") &&
+    workshopTheme.logoHeight >= 78,
   JSON.stringify(workshopTheme),
 );
 check("A new course is presented as a calm not-started draft", /new draft.*start with setup/i.test(await page.locator(".sidebar-status").innerText()));

@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   Archive,
-  BookOpen,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -24,6 +23,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
+import dewrLogoReversed from "../src/assets/dewr-logo-inline-reversed.png";
 import type {
   Module,
   Question,
@@ -1058,7 +1058,10 @@ npm run verify`}</code></pre>
       <div className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">{focusAnnouncement}</div>
       {cloneProgress && <div className="operation-overlay" role="dialog" aria-modal="true" aria-labelledby="operation-title"><div><span className="progress-spinner" /><h2 id="operation-title">Creating the editable course</h2><p>{cloneProgress}</p><small>Large source decks can take a moment. Keep this page open.</small></div></div>}
       <aside className="studio-sidebar">
-        <div className="studio-brand"><div className="brand-mark"><BookOpen size={22} /></div><div><strong>Course Workshop</strong><span>Product Practice authoring</span></div></div>
+        <div className="studio-brand">
+          <img className="department-logo" src={dewrLogoReversed} alt="Australian Government Department of Employment and Workplace Relations" />
+          <div><strong>Course Workshop</strong><span>Product Practice authoring</span></div>
+        </div>
         <div className="privacy-banner"><ShieldCheck size={17} /><span>Local only. Draft content is not uploaded.</span></div>
         <label className="mobile-step-picker"><span>Current step</span><select value={view} onChange={(event) => navigateTo(event.target.value as View)}>{NAV.map((item, index) => {
           const errors = issues.filter((issue) => issue.area === item.id && issue.severity === "error").length;

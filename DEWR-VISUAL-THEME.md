@@ -8,7 +8,7 @@ The DEWR-aligned presentation is the **default visual theme** for the combined l
 - Course Workshop: <https://mick353.github.io/Work/course-workshop/>
 - Existing bookmarks containing `?brand=dewr` remain compatible, but the parameter is no longer required.
 - The application continues to identify itself as an `internal learning aid`.
-- The learner header uses the approved inline black logo on the light theme and the approved all-white reversed logo on the dark theme.
+- The learner header uses the approved inline black logo on the light theme and the approved all-white reversed logo on the dark theme. Course Workshop uses the reversed logo on its dark application sidebar.
 
 ## Current authority
 
@@ -39,7 +39,7 @@ The design target is WCAG 2.2 Level AA. Normal text must reach 4.5:1, large text
 
 ## Logo use
 
-The learner header uses the exact inline black and all-white reversed logo artwork supplied in the department's 2026 guide. It appears once, at the top of the application, with the guide's isolation space preserved. The displayed artwork keeps the Coat of Arms at or above the 48-pixel website-banner minimum. Its alternative text is `Australian Government Department of Employment and Workplace Relations`.
+The learner header and Course Workshop use the exact inline black and all-white reversed logo artwork supplied in the department's 2026 guide. The logo appears once per application, at the top of the interface, with the guide's isolation space preserved. The displayed artwork keeps the Coat of Arms at or above the 48-pixel website-banner minimum. Its alternative text is `Australian Government Department of Employment and Workplace Relations`.
 
 The inline treatment is the guide's preferred digital logo and fits the supported mobile width, so the player does not switch to or redraw a stacked mark. Light and dark themes select the corresponding approved contrast treatment without filters, recolouring or distortion.
 

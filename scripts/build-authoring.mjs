@@ -92,6 +92,7 @@ await build({
   target: ["chrome111", "firefox113", "safari16.4", "edge111"],
   jsx: "automatic",
   legalComments: "none",
+  loader: { ".png": "dataurl" },
   define: {
     "process.env.NODE_ENV": '"production"',
     __PLAYER_TEMPLATE__: JSON.stringify(playerTemplate),

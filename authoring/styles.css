@@ -89,8 +89,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
     linear-gradient(160deg, var(--dewr-spruce) 0%, var(--dewr-graphite) 88%);
   overflow-y: auto;
 }
-.studio-brand { display: flex; align-items: center; gap: 12px; padding: 2px 6px 20px; }
-.studio-brand .brand-mark { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; color: #000; background: var(--dewr-eucalyptus); box-shadow: 0 10px 24px rgba(0, 0, 0, .18); }
+.studio-brand { display: grid; justify-items: start; gap: 7px; padding: 0 6px 18px; }
+.studio-brand .department-logo { display: block; width: auto; height: 78px; object-fit: contain; }
 .studio-brand strong, .studio-brand span { display: block; }
 .studio-brand strong { font-size: 1.08rem; letter-spacing: -.02em; }
 .studio-brand span { margin-top: 2px; color: var(--on-dark-muted); font-size: .78rem; }
@@ -489,7 +489,6 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
   .studio-shell { display: block; }
   .studio-sidebar { position: static; width: auto; height: auto; padding: 13px 16px; overflow: visible; }
   .studio-brand { padding: 0 0 11px; }
-  .studio-brand .brand-mark { width: 36px; height: 36px; }
   .privacy-banner, .sidebar-status { display: none; }
   .desktop-step-nav { display: none !important; }
   .mobile-step-picker { display: grid; gap: 6px; }
