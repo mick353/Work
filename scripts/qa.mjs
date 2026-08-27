@@ -31,6 +31,7 @@ if (!existsSync(artifactPath)) {
   throw new Error("Build the artefact first: npm run build");
 }
 const artifactUrl = pathToFileURL(artifactPath).href;
+const dewrArtifactUrl = `${artifactUrl}?brand=dewr`;
 const headed = process.argv.includes("--headed");
 
 const failures = [];
@@ -766,6 +767,44 @@ await page.goto(artifactUrl, { waitUntil: "load" });
 await page.evaluate(() => localStorage.clear());
 await page.reload({ waitUntil: "load" });
 await page.getByRole("heading", { name: "Product Management Fundamentals" }).waitFor();
+check("Default site remains outside the DEWR prototype", (await page.locator("html").getAttribute("data-brand")) === null);
+
+{
+  const previewContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const previewPage = await previewContext.newPage();
+  watchPage(previewPage, "dewr-preview-identity");
+  await previewPage.goto(`${dewrArtifactUrl}#dashboard`, { waitUntil: "load" });
+  await previewPage.getByRole("heading", { name: "Product Management Fundamentals" }).waitFor();
+  const previewIdentity = await previewPage.evaluate(() => {
+    const style = getComputedStyle(document.documentElement);
+    return {
+      brandMode: document.documentElement.dataset.brand,
+      brand: style.getPropertyValue("--brand").trim().toLowerCase(),
+      brandStrong: style.getPropertyValue("--brand-strong").trim().toLowerCase(),
+      ink: style.getPropertyValue("--ink").trim().toLowerCase(),
+      subtitle: document.querySelector(".brand small")?.textContent ?? "",
+      title: document.title,
+    };
+  });
+  check(
+    "DEWR preview is opt-in, visibly labelled and uses the approved primary palette",
+    previewIdentity.brandMode === "dewr" &&
+      previewIdentity.brand === "#5d7a38" &&
+      previewIdentity.brandStrong === "#4a632b" &&
+      previewIdentity.ink === "#404246" &&
+      /DEWR theme preview/i.test(previewIdentity.subtitle) &&
+      /^DEWR theme preview/i.test(previewIdentity.title),
+    JSON.stringify(previewIdentity),
+  );
+  await previewPage.getByRole("button", { name: "Search the course" }).click();
+  check(
+    "DEWR preview survives in-app navigation without becoming the default",
+    new URL(previewPage.url()).searchParams.get("brand") === "dewr" &&
+      (await previewPage.locator("html").getAttribute("data-brand")) === "dewr",
+    previewPage.url(),
+  );
+  await previewContext.close();
+}
 
 
 /* -- home page and sidebar structure ------------------------------- */
@@ -2388,26 +2427,29 @@ check(
 */
 {
   const offenders = [];
-  for (const theme of ["light", "dark"]) {
-    for (const pkg of ["pm-fundamentals", "closure-reports"]) {
-      const ctx = await browser.newContext({ viewport: { width: 1440, height: 1200 } });
-      const cpage = await ctx.newPage();
-      watchPage(cpage, `contrast-${theme}-${pkg}`);
-      await cpage.addInitScript(([t, p]) => {
-        localStorage.setItem("product-practice-v2:active-package", JSON.stringify(p));
-        localStorage.setItem("product-practice-v2:theme", JSON.stringify(t));
-      }, [theme, pkg]);
-      await cpage.goto(artifactUrl, { waitUntil: "load" });
-      await cpage.waitForSelector(".sidebar-modules nav button");
+  let visitedStagePages = 0;
+  for (const [brandMode, targetUrl] of [["default", artifactUrl], ["dewr", dewrArtifactUrl]]) {
+    for (const theme of ["light", "dark"]) {
+      for (const pkg of ["pm-fundamentals", "closure-reports"]) {
+        const ctx = await browser.newContext({ viewport: { width: 1440, height: 1200 } });
+        const cpage = await ctx.newPage();
+        watchPage(cpage, `contrast-${brandMode}-${theme}-${pkg}`);
+        await cpage.addInitScript(([t, p]) => {
+          localStorage.setItem("product-practice-v2:active-package", JSON.stringify(p));
+          localStorage.setItem("product-practice-v2:theme", JSON.stringify(t));
+        }, [theme, pkg]);
+        await cpage.goto(targetUrl, { waitUntil: "load" });
+        await cpage.waitForSelector(".sidebar-modules nav button");
 
-      const stages = await cpage.locator(".sidebar-modules nav button").count();
-      for (let i = 0; i < stages; i += 1) {
-        await cpage.evaluate(() => { window.location.hash = "dashboard"; });
-        await cpage.waitForTimeout(110);
-        await cpage.locator(".sidebar-modules nav button").nth(i).click();
-        await cpage.waitForTimeout(400);
+        const stages = await cpage.locator(".sidebar-modules nav button").count();
+        for (let i = 0; i < stages; i += 1) {
+          visitedStagePages += 1;
+          await cpage.evaluate(() => { window.location.hash = "dashboard"; });
+          await cpage.waitForTimeout(110);
+          await cpage.locator(".sidebar-modules nav button").nth(i).click();
+          await cpage.waitForTimeout(400);
 
-        const bad = await cpage.evaluate(() => {
+          const bad = await cpage.evaluate(() => {
           const chan = (s) => (s.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
           const lum = (c) => {
             const s = c.map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
@@ -2442,16 +2484,17 @@ check(
             }
           });
           return out;
-        });
-        for (const b of bad) offenders.push(`${theme}/${pkg} stage ${i + 1}: ${b}`);
+          });
+          for (const b of bad) offenders.push(`${brandMode}/${theme}/${pkg} stage ${i + 1}: ${b}`);
+        }
+        await ctx.close();
       }
-      await ctx.close();
     }
   }
   check(
-    "Every stage page meets AA on its own hue, both packages, both themes",
+    "Every stage page meets AA on its own hue, both brand modes, packages and themes",
     offenders.length === 0,
-    offenders.length ? `${offenders.length} failures — ${offenders.slice(0, 4).join(" | ")}` : "40 stage pages clean",
+    offenders.length ? `${offenders.length} failures — ${offenders.slice(0, 4).join(" | ")}` : `${visitedStagePages} stage pages clean`,
   );
 }
 
@@ -3108,6 +3151,39 @@ for (const [hash, label] of axeViews) {
     `Accessibility (${label}): no serious or critical violations`,
     serious.length === 0,
     serious.map((violation) => `${violation.id} x${violation.nodes.length}`).join("; "),
+  );
+}
+
+{
+  const previewViolations = [];
+  for (const theme of ["light", "dark"]) {
+    const previewContext = await browser.newContext({
+      viewport: { width: 1440, height: 1000 },
+      reducedMotion: "reduce",
+    });
+    const previewPage = await previewContext.newPage();
+    watchPage(previewPage, `dewr-preview-accessibility-${theme}`);
+    await previewPage.addInitScript((selectedTheme) => {
+      localStorage.setItem("product-practice-v2:theme", JSON.stringify(selectedTheme));
+    }, theme);
+    await previewPage.goto(`${dewrArtifactUrl}#dashboard`, { waitUntil: "load" });
+    for (const [hash, label] of axeViews) {
+      await previewPage.evaluate((target) => { window.location.hash = target; }, hash);
+      await previewPage.waitForTimeout(250);
+      const results = await new AxeBuilder({ page: previewPage })
+        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+        .analyze();
+      const serious = results.violations.filter((violation) => ["serious", "critical"].includes(violation.impact));
+      for (const violation of serious) {
+        previewViolations.push(`${theme}/${label}: ${violation.id} x${violation.nodes.length}`);
+      }
+    }
+    await previewContext.close();
+  }
+  check(
+    "DEWR preview has no serious or critical axe violations in either theme",
+    previewViolations.length === 0,
+    previewViolations.join("; "),
   );
 }
 

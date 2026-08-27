@@ -117,8 +117,8 @@ SVG text does not wrap or reflow. Position labels in **fixed columns**. A label 
 
 | Check | Requirement |
 |---|---|
-| Automated accessibility scan | Zero serious or critical axe violations from rules tagged WCAG 2.0/2.1 A/AA, across the views and themes exercised by the suite |
-| Text contrast | 4.5:1 normal, 3:1 large — checked on **every stage page**, both themes |
+| Automated accessibility scan | Zero serious or critical axe violations from rules tagged WCAG 2.0/2.1 A/AA, across the views, themes and brand modes exercised by the suite |
+| Text contrast | 4.5:1 normal, 3:1 large — checked on **every stage page**, both themes and every supported brand mode |
 | Target size | Project rule: every measured button and link is at least 24 × 24 CSS pixels. This is deliberately stricter than [WCAG 2.2 SC 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html), which also permits spacing and four other exceptions |
 | Keyboard | Closed mobile drawer is `inert`; opening moves focus in; Escape closes and returns focus |
 | Reduced motion | Project usability rule: every animation off under `prefers-reduced-motion`, including JavaScript `scrollIntoView` |

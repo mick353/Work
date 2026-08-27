@@ -377,6 +377,7 @@ export default function App() {
   const [view, setView] = useState<View>(() => parseView(window.location.hash));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [theme, setTheme] = usePreferredTheme();
+  const dewrPreview = document.documentElement.dataset.brand === "dewr";
   const storageStatus = useStorageStatus();
   const salt = useSalt();
 
@@ -469,8 +470,8 @@ export default function App() {
   }, [theme]);
 
   useEffect(() => {
-    document.title = `Product Practice — ${pack.manifest.title}`;
-  }, [pack.manifest.title]);
+    document.title = `${dewrPreview ? "DEWR theme preview · " : ""}Product Practice — ${pack.manifest.title}`;
+  }, [dewrPreview, pack.manifest.title]);
 
   useEffect(() => {
     // Only react to hashes that name a view. An in-page fragment — the skip
@@ -830,6 +831,7 @@ function Shell({
   packagePosition: number;
   packageCount: number;
 }) {
+  const dewrPreview = document.documentElement.dataset.brand === "dewr";
   const isMobile = useMediaQuery(MOBILE_QUERY);
   const sidebarRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -907,7 +909,9 @@ function Shell({
           </span>
           <span>
             <strong>{manifest.title}</strong>
-            <small>{manifest.publisher} — internal learning aid</small>
+            <small>
+              {manifest.publisher} — internal learning aid{dewrPreview ? " · DEWR theme preview" : ""}
+            </small>
           </span>
         </button>
         <div className="topbar-actions">

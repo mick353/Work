@@ -10,6 +10,12 @@
     <meta name="theme-color" content="#18362f" />
     <meta name="color-scheme" content="light dark" />
     <title>Product Practice — Training Package Player</title>
+    <script>
+      if (new URLSearchParams(window.location.search).get("brand") === "dewr") {
+        document.documentElement.dataset.brand = "dewr";
+        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#404246");
+      }
+    </script>
     <!--INLINE_STYLES-->
   </head>
   <body>

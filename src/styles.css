@@ -57,6 +57,7 @@
   --brand-bright: #6366f1;
   --brand-soft: #eef0ff;
   --brand-ink: #ffffff;
+  --brand-text: var(--brand);
 
   /* Status */
   --success: #0f7a43;
@@ -141,6 +142,7 @@
   --brand-bright: #818cf8;
   --brand-soft: #1c2340;
   --brand-ink: #12161d;
+  --brand-text: var(--brand);
 
   --success: #5fd598;
   --success-soft: #0f2b1e;
@@ -183,6 +185,177 @@
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 8px 24px rgba(0, 0, 0, 0.35);
   --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.45), 0 18px 44px rgba(0, 0, 0, 0.45);
+}
+
+/* ==================================================================
+   Optional DEWR brand prototype
+
+   Activated only by ?brand=dewr. The default experience is deliberately
+   unchanged while trainers evaluate the direction. Values come from the
+   departmental colour guide; where a raw colour is too light for normal
+   text, a documented accessible pairing or a tint is used instead.
+
+   Primary palette: Graphite #404246, Eucalyptus #7A9F4C,
+   Dark Eucalyptus #5D7A38, Grey #A4A7A9, Mid grey #D7D8D8.
+   Secondary and tertiary colours remain supporting stage/graphic colours.
+   ================================================================== */
+
+:root[data-brand="dewr"] {
+  font-family: "Aptos", "Segoe UI", Arial, sans-serif;
+  --on-dark-accent: #b9cd9e;
+
+  --n-0: #ffffff;
+  --n-25: #fbfbfa;
+  --n-50: #f7f7f5;
+  --n-100: #f1f2ee;
+  --n-200: #d7d8d8;
+  --n-300: #8a8d8f;
+  --n-400: #7b7e81;
+  --n-500: #62656a;
+  --n-600: #56595d;
+  --n-700: #4c4e52;
+  --n-800: #46484b;
+  --n-900: #404246;
+
+  --canvas: var(--n-50);
+  --paper: var(--n-0);
+  --paper-strong: var(--n-0);
+  --surface-alt: var(--n-100);
+  --ink: #404246;
+  --muted: #62656a;
+  --line: #d7d8d8;
+  --line-strong: #8a8d8f;
+
+  /* White on Dark Eucalyptus is AA for normal text. Eucalyptus itself is
+     reserved for focus, large accents and non-text graphics (3.05:1 on white). */
+  --brand: #5d7a38;
+  --brand-strong: #4a632b;
+  --brand-bright: #7a9f4c;
+  --brand-soft: #eff4e8;
+  --brand-ink: #ffffff;
+  --brand-text: #4a632b;
+
+  /* Raw DEWR colours provide the visual identity. Accessible darker partners
+     carry text and white-label fills through the existing -ink contract. */
+  --stage-1: #7a9f4c;  --stage-1-ink: #4a632b;
+  --stage-2: #009b9f;  --stage-2-ink: #0d2c6c;
+  --stage-3: #62165c;  --stage-3-ink: #62165c;
+  --stage-4: #0d2c6c;  --stage-4-ink: #0d2c6c;
+  --stage-5: #287db2;  --stage-5-ink: #004f9d;
+  --stage-6: #91040d;  --stage-6-ink: #91040d;
+  --stage-7: #004f9d;  --stage-7-ink: #004f9d;
+  --stage-8: #573393;  --stage-8-ink: #573393;
+  --stage-9: #d37190;  --stage-9-ink: #62165c;
+  --stage-10: #f26322; --stage-10-ink: #91040d;
+  --stage-11: #404246; --stage-11-ink: #404246;
+  --stage-12: #5d7a38; --stage-12-ink: #4a632b;
+
+  --accent: var(--brand-strong);
+  --accent-soft: var(--brand-soft);
+  --accent-deep: var(--brand-strong);
+  --vivid: var(--brand-bright);
+  --on-deep: #ffffff;
+  --stage: var(--brand-bright);
+
+  --accent-1: var(--stage-1-ink); --accent-2: var(--stage-2-ink); --accent-3: var(--stage-3-ink);
+  --accent-4: var(--stage-4-ink); --accent-5: var(--stage-5-ink); --accent-6: var(--stage-6-ink);
+  --accent-7: var(--stage-7-ink); --accent-8: var(--stage-8-ink); --accent-9: var(--stage-9-ink);
+  --vivid-1: var(--stage-1); --vivid-2: var(--stage-2); --vivid-3: var(--stage-3);
+  --vivid-4: var(--stage-4); --vivid-5: var(--stage-5); --vivid-6: var(--stage-6);
+  --vivid-7: var(--stage-7); --vivid-8: var(--stage-8); --vivid-9: var(--stage-9);
+  --accent-1-soft: #f0f4ea; --accent-2-soft: #e6f5f5; --accent-3-soft: #f3e8f2;
+  --accent-4-soft: #e7eaf0; --accent-5-soft: #eaf2f7; --accent-6-soft: #f6e6e7;
+  --accent-7-soft: #e6eef5; --accent-8-soft: #eeeaf4; --accent-9-soft: #f8edf1;
+  --accent-9-deep: #62165c;
+
+  --shadow-sm: 0 1px 2px rgba(64, 66, 70, 0.06);
+  --shadow: 0 1px 2px rgba(64, 66, 70, 0.05), 0 8px 24px rgba(64, 66, 70, 0.08);
+  --shadow-lg: 0 2px 4px rgba(64, 66, 70, 0.06), 0 18px 44px rgba(64, 66, 70, 0.14);
+}
+
+:root[data-brand="dewr"][data-theme="dark"] {
+  --n-0: #17191b;
+  --n-25: #1b1d20;
+  --n-50: #141618;
+  --n-100: #202225;
+  --n-200: #2c2f32;
+  --n-300: #45494c;
+  --n-400: #6f7376;
+  --n-500: #94989a;
+  --n-600: #c3c5c5;
+  --n-700: #d7d8d8;
+  --n-800: #e5e6e4;
+  --n-900: #f5f5f3;
+
+  --canvas: #141618;
+  --paper: #202225;
+  --paper-strong: #25272a;
+  --surface-alt: #292c2f;
+  --ink: #f5f5f3;
+  --muted: #c3c5c5;
+  --line: #3f4245;
+  --line-strong: #6f7376;
+
+  --brand: #b9cd9e;
+  --brand-strong: #d5e1c7;
+  --brand-bright: #a7c080;
+  --brand-soft: #273020;
+  --brand-ink: #404246;
+  --brand-text: #b9cd9e;
+
+  /* Departmental tints are permitted on dark backgrounds. Each value remains
+     above AA as text against the prototype's dark paper surface. */
+  --stage-1: #b8cd9d;  --stage-1-ink: #b8cd9d;
+  --stage-2: #80cdcf;  --stage-2-ink: #80cdcf;
+  --stage-3: #b985b3;  --stage-3-ink: #b985b3;
+  --stage-4: #8696b5;  --stage-4-ink: #8696b5;
+  --stage-5: #94bed9;  --stage-5-ink: #94bed9;
+  --stage-6: #c88286;  --stage-6-ink: #c88286;
+  --stage-7: #80a7ce;  --stage-7-ink: #80a7ce;
+  --stage-8: #ab99c9;  --stage-8-ink: #ab99c9;
+  --stage-9: #e2b8c7;  --stage-9-ink: #e2b8c7;
+  --stage-10: #f8b191; --stage-10-ink: #f8b191;
+  --stage-11: #a0a1a3; --stage-11-ink: #a0a1a3;
+  --stage-12: #aec09b; --stage-12-ink: #aec09b;
+
+  --accent: var(--brand);
+  --accent-soft: var(--brand-soft);
+  --accent-deep: var(--brand-strong);
+  --vivid: var(--brand-bright);
+  --on-deep: #404246;
+  --stage: var(--brand);
+
+  --accent-1: var(--stage-1); --accent-2: var(--stage-2); --accent-3: var(--stage-3);
+  --accent-4: var(--stage-4); --accent-5: var(--stage-5); --accent-6: var(--stage-6);
+  --accent-7: var(--stage-7); --accent-8: var(--stage-8); --accent-9: var(--stage-9);
+  --vivid-1: var(--stage-1); --vivid-2: var(--stage-2); --vivid-3: var(--stage-3);
+  --vivid-4: var(--stage-4); --vivid-5: var(--stage-5); --vivid-6: var(--stage-6);
+  --vivid-7: var(--stage-7); --vivid-8: var(--stage-8); --vivid-9: var(--stage-9);
+  --accent-1-soft: #273020; --accent-2-soft: #123336; --accent-3-soft: #32172f;
+  --accent-4-soft: #151f35; --accent-5-soft: #172b36; --accent-6-soft: #36181b;
+  --accent-7-soft: #14273b; --accent-8-soft: #2b203a; --accent-9-soft: #3a232d;
+  --accent-9-deep: #e2b8c7;
+}
+
+:root[data-brand="dewr"] h1,
+:root[data-brand="dewr"] h2,
+:root[data-brand="dewr"] h3,
+:root[data-brand="dewr"] .brand strong,
+:root[data-brand="dewr"] .hero-index strong,
+:root[data-brand="dewr"] .path-number,
+:root[data-brand="dewr"] .module-index {
+  font-family: "Montserrat", "Aptos Display", "Segoe UI", Arial, sans-serif;
+}
+
+:root[data-brand="dewr"] .topbar {
+  box-shadow: inset 0 4px 0 var(--brand-bright);
+}
+
+:root[data-brand="dewr"] .brand-mark {
+  border-radius: 4px;
+  box-shadow: inset 0 -5px 0 var(--brand-bright);
+  font-family: "Montserrat", "Aptos", "Segoe UI", Arial, sans-serif;
+  font-weight: 800;
 }
 
 /* --stage is the ONLY thing a stage recolours: its numeral, its rail node,
@@ -625,7 +798,7 @@ p { color: var(--muted); line-height: 1.65; }
 :root[data-theme="dark"] .rubric { background: var(--surface-alt); color: var(--ink); border: 1px solid var(--line); }
 
 .rubric .eyebrow { color: var(--on-dark-accent); }
-:root[data-theme="dark"] .rubric .eyebrow { color: var(--brand); }
+:root[data-theme="dark"] .rubric .eyebrow { color: var(--brand-text, var(--brand)); }
 .rubric h2 { margin: 9px 0 20px; color: inherit; }
 .rubric > div { display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; }
 .rubric p { color: inherit; font-size: 12.5px; line-height: 1.55; }
@@ -663,7 +836,7 @@ p { color: var(--muted); line-height: 1.65; }
 .divergence header span { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
 .divergence dl { display: grid; gap: 14px; margin: 0; }
 .divergence dl > div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 18px; }
-.divergence dt { color: var(--brand); font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.06em; padding-top: 3px; }
+.divergence dt { color: var(--brand-text, var(--brand)); font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.06em; padding-top: 3px; }
 .divergence dd { margin: 0; color: var(--muted); line-height: 1.6; }
 
 .search-field { display: flex; align-items: center; gap: 12px; border: 1.5px solid var(--line-strong); border-radius: 8px; padding: 2px 16px; background: var(--paper-strong); }
@@ -997,7 +1170,7 @@ p { color: var(--muted); line-height: 1.65; }
 .case-step-body > p { font-size: 15.5px; }
 .case-artefact { margin: 16px 0; padding: 16px 18px; background: var(--surface-alt); border-left: 3px solid var(--line-strong); border-radius: 0 10px 10px 0; font-family: ui-monospace, "Cascadia Code", monospace; font-size: 13.5px; line-height: 1.65; white-space: pre-wrap; color: var(--ink); overflow-x: auto; }
 .case-insight { margin: 14px 0 0; padding: 13px 16px; border-radius: 10px; background: var(--brand-soft); color: var(--ink); font-size: 14.5px; }
-.case-insight strong { color: var(--brand); }
+.case-insight strong { color: var(--brand-text, var(--brand)); }
 .case-closing { margin-top: 30px; padding: 28px 30px; border-radius: 18px; background: var(--n-900); color: var(--n-0); }
 :root[data-theme="dark"] .case-closing { background: var(--surface-alt); color: var(--ink); border: 1px solid var(--line); }
 .case-closing h2 { color: inherit; margin-bottom: 12px; }
@@ -1020,7 +1193,7 @@ p { color: var(--muted); line-height: 1.65; }
   max-width: 900px; margin: 38px 0 0 90px; padding: 22px 26px; border: 1px solid var(--line);
   border-left: 4px solid var(--brand); border-radius: 14px; background: var(--brand-soft); }
 .worked-pointer p { margin: 6px 0 0; color: var(--ink); font-size: 14.5px; max-width: 560px; }
-.worked-pointer strong { color: var(--brand); }
+.worked-pointer strong { color: var(--brand-text, var(--brand)); }
 @media (max-width: 820px) { .worked-pointer { margin-left: 0; } }
 
 /* ---- Keyboard shortcut panel ---- */
@@ -1055,7 +1228,7 @@ p { color: var(--muted); line-height: 1.65; }
 .contrast-usual > span { color: var(--warning); }
 .contrast-good p, .contrast-usual p { margin: 0; color: var(--ink); font-size: 14.5px; line-height: 1.55; }
 .contrast-tell { margin: 14px 0 0; padding: 13px 16px; border-radius: 10px; background: var(--surface-alt); color: var(--ink); font-size: 14px; }
-.contrast-tell strong { color: var(--brand); }
+.contrast-tell strong { color: var(--brand-text, var(--brand)); }
 @media (max-width: 820px) { .contrast-panel { margin-left: 0; } .contrast-pair { grid-template-columns: 1fr; } }
 
 /* ---- One-page stage summary (print only) ---- */
@@ -1195,7 +1368,7 @@ p { color: var(--muted); line-height: 1.65; }
   cursor: pointer; transition: color 0.15s, border-color 0.15s, background 0.15s;
 }
 .slide-cite svg { flex: none; opacity: 0.75; }
-.slide-cite:hover { color: var(--brand); border-color: var(--brand); background: var(--brand-soft); }
+.slide-cite:hover { color: var(--brand-text, var(--brand)); border-color: var(--brand); background: var(--brand-soft); }
 .slide-cite:hover svg { opacity: 1; }
 .slide-cite:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 /* Captions are centred and italic; the control should not fight that. */
@@ -1226,7 +1399,7 @@ p { color: var(--muted); line-height: 1.65; }
   background: var(--paper); color: var(--ink); cursor: pointer;
   transition: border-color 0.15s, color 0.15s, background 0.15s;
 }
-.slide-step:hover:not(:disabled) { border-color: var(--brand); color: var(--brand); background: var(--brand-soft); }
+.slide-step:hover:not(:disabled) { border-color: var(--brand); color: var(--brand-text, var(--brand)); background: var(--brand-soft); }
 .slide-step:disabled { opacity: 0.3; cursor: default; }
 .slide-step:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 
@@ -1259,7 +1432,7 @@ p { color: var(--muted); line-height: 1.65; }
   transition: color 0.15s, border-color 0.15s, background 0.15s;
 }
 .deck-filter button:hover { color: var(--ink); border-color: var(--line-strong); background: var(--surface-alt); }
-.deck-filter button.active { color: var(--brand); border-color: var(--brand); background: var(--brand-soft); }
+.deck-filter button.active { color: var(--brand-text, var(--brand)); border-color: var(--brand); background: var(--brand-soft); }
 .deck-filter button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .deck-filter-num {
   display: grid; place-items: center; width: 20px; height: 20px; border-radius: 6px;
