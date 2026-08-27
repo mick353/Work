@@ -2,27 +2,24 @@
 
 ## What this is
 
-**Product Practice** is an unofficial, self-directed learning aid containing two training packages:
+**Product Practice** is a self-directed learning system containing two training packages:
 
 - **Product Management Fundamentals**, built from the internal presentation *Product Management Fundamentals — 12AUG2026*, prepared in the Digital Experience and Solutions Division, Department of Employment and Workplace Relations (DEWR).
 - **Closure Reports**, built from the internal DEWR Project Closure Report Template, Tier 3 form, Project Closure Factsheet and closure announcement. DTA, Finance, ANAO, National Archives and UK Government material is used as attributed authority or comparator material, as labelled in the package.
 
 The source artefacts supply the subject matter and operational context. The lessons, assessment items, practice activities, worked examples and player are separate work built around them.
 
-The repository also contains a concept document for a possible Delivery Assurance & Quality course. It is research/design material only and is not a released training package or DEWR-endorsed proposal.
+The repository also contains a concept document for a possible Delivery Assurance & Quality course. It is research/design material only and is not a released training package.
 
-## What this is not
+## Authority and operational use
 
-- It is **not an official Australian Government publication**.
-- It is **not** departmental policy, guidance, a controlled template or a controlled document.
-- It does **not** substitute for current departmental templates and frameworks, the Digital Service Standard, Finance guidance, records authorities, or advice from policy, privacy, security, finance, records or assurance areas.
-- It carries **no Commonwealth branding** and does not use the Commonwealth Coat of Arms.
-
-Where this material and an official, controlled or authoritative source disagree, **that source governs**.
+Use current departmental templates and frameworks, the Digital Service Standard, Finance guidance, records authorities, and advice from the relevant policy, privacy, security, finance, records or assurance area for operational decisions. Where this learning material and a current controlled or authoritative source disagree, **the current source governs**.
 
 ## Copyright and publication authority
 
-The **application code** is released under the MIT Licence — see [`LICENSE`](LICENSE). That licence does not grant rights in the course content, the internal source artefacts, or rendered source-deck images.
+The **application code** is released under the MIT Licence — see [`LICENSE`](LICENSE). That licence does not grant rights in the course content, the departmental branding, the internal source artefacts, or rendered source-deck images.
+
+The DEWR header logo artwork is reproduced from the department-supplied *DEWR Brand Guidelines, version 1, June 2026*. The MIT Licence does not extend to the Commonwealth Coat of Arms, departmental wordmark or other branding.
 
 The **course content** is an original synthesis, but it summarises and restructures internal and published material. The source artefacts remain the property of their respective owners and, to the extent they are Commonwealth material, may be subject to Crown copyright. The MIT Licence does **not** extend to them.
 

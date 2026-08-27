@@ -23,6 +23,9 @@
    ================================================================== */
 
 :root {
+  --department-banner-height: 82px;
+  --course-bar-height: 66px;
+  --app-header-height: calc(var(--department-banner-height) + var(--course-bar-height));
   /* Eyebrow/label tint for reversed (dark) panels. */
   --on-dark-accent: #a5b4fc;
   font-family: "Segoe UI", Arial, sans-serif;
@@ -368,15 +371,8 @@
   font-family: "Aptos Display", "Aptos", "Segoe UI", Arial, sans-serif;
 }
 
-:root[data-brand="dewr"] .topbar {
-  box-shadow: inset 0 4px 0 var(--dewr-eucalyptus);
-}
-
-:root[data-brand="dewr"] .brand-mark {
-  border-radius: 4px;
-  box-shadow: inset 0 -5px 0 var(--dewr-eucalyptus);
-  font-family: "Aptos Display", "Aptos", "Segoe UI", Arial, sans-serif;
-  font-weight: 800;
+:root[data-brand="dewr"] .department-banner {
+  border-bottom-color: var(--dewr-eucalyptus);
 }
 
 /* --stage is the ONLY thing a stage recolours: its numeral, its rail node,
@@ -457,10 +453,14 @@ kbd { display: inline-block; border: 1px solid var(--line-strong); border-bottom
 .skip-link:focus { top: 12px; }
 
 .app-shell { min-height: 100vh; }
-.topbar { position: fixed; inset: 0 0 auto 0; z-index: 100; height: 66px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(14px); padding: 0 22px; }
-.brand { display: flex; align-items: center; min-height: 44px; gap: 12px; border: 0; background: none; text-align: left; cursor: pointer; padding: 4px; border-radius: 6px; }
-.brand-mark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 8px; background: var(--brand); color: var(--brand-ink); font-family: Georgia, serif; font-size: 14px; letter-spacing: 0.06em; flex: 0 0 auto; }
-.brand > span:last-child { display: flex; flex-direction: column; gap: 2px; }
+.topbar { position: fixed; inset: 0 0 auto 0; z-index: 100; height: var(--app-header-height); background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(14px); }
+.department-banner { height: var(--department-banner-height); display: flex; align-items: center; border-bottom: 4px solid var(--line); background: #fff; padding: 0 22px; }
+:root[data-theme="dark"] .department-banner { background: var(--dewr-graphite); }
+.department-home { display: flex; align-items: center; height: calc(var(--department-banner-height) - 4px); border: 0; border-radius: 3px; background: transparent; padding: 0; cursor: pointer; }
+.department-logo { display: block; width: auto; height: calc(var(--department-banner-height) - 4px); object-fit: contain; }
+.course-bar { height: var(--course-bar-height); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 0 22px; }
+.brand { display: flex; align-items: center; min-width: 0; min-height: 44px; border: 0; background: none; text-align: left; cursor: pointer; padding: 4px; border-radius: 6px; }
+.brand > span { display: flex; min-width: 0; flex-direction: column; gap: 2px; }
 .brand strong { font-family: Georgia, serif; font-size: 17px; font-weight: 600; }
 .brand small { color: var(--muted); font-size: 11.5px; }
 .topbar-actions { display: flex; align-items: center; gap: 8px; }
@@ -472,12 +472,12 @@ kbd { display: inline-block; border: 1px solid var(--line-strong); border-bottom
 .top-progress > div, .progress-track { height: 6px; background: var(--line); overflow: hidden; border-radius: 4px; }
 .top-progress i, .progress-track i { display: block; height: 100%; background: var(--brand-bright); border-radius: 4px; }
 
-.sidebar { position: fixed; z-index: 90; inset: 66px auto 0 0; width: 268px; overflow-y: auto; border-right: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(14px); padding: 20px 14px 26px; }
+.sidebar { position: fixed; z-index: 90; inset: var(--app-header-height) auto 0 0; width: 268px; overflow-y: auto; border-right: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(14px); padding: 12px 14px 20px; }
 .sidebar nav { display: grid; gap: 2px; }
 /* Groups now carry the rhythm; the single divider under a flat list is gone. */
 /* Overview sits above the groups, so it needs the nav button treatment
    without a NavSection wrapper around it. */
-.nav-standalone { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 40px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); padding: 10px; margin-bottom: 4px; text-align: left; cursor: pointer; font: inherit; transition: background 140ms ease, color 140ms ease; }
+.nav-standalone { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 36px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); padding: 7px 10px; margin-bottom: 2px; text-align: left; cursor: pointer; font: inherit; transition: background 140ms ease, color 140ms ease; }
 .nav-standalone svg { color: var(--muted); transition: color 140ms ease; }
 .nav-standalone:hover { background: var(--surface-alt); color: var(--ink); }
 .nav-standalone.active { background: var(--accent-soft); color: var(--accent); font-weight: 650; }
@@ -489,7 +489,7 @@ kbd { display: inline-block; border: 1px solid var(--line-strong); border-bottom
 /* The sidebar is the single scroll surface. A compact two-column stage map
    keeps every group discoverable without adding a second wheel/touch region. */
 .sidebar-modules nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 4px; max-height: none; overflow: visible; }
-.sidebar nav button { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 40px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); padding: 10px; text-align: left; cursor: pointer; transition: background 140ms ease, color 140ms ease; }
+.sidebar nav button { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 36px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); padding: 7px 10px; text-align: left; cursor: pointer; transition: background 140ms ease, color 140ms ease; }
 .sidebar nav button svg { color: var(--muted); transition: color 140ms ease; }
 .sidebar nav button:hover { background: var(--surface-alt); color: var(--ink); }
 .sidebar nav button.active { background: var(--accent-soft); color: var(--accent); font-weight: 650; }
@@ -506,7 +506,7 @@ kbd { display: inline-block; border: 1px solid var(--line-strong); border-bottom
 :root[data-theme="dark"] .module-dot.done { color: #0d1117; }
 .privacy-note { margin: 20px 10px 0; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
 
-.main-content { min-height: 100vh; padding: 66px 0 0 268px; }
+.main-content { min-height: 100vh; padding: var(--app-header-height) 0 0 268px; }
 .page { width: min(var(--page-max, 1160px), calc(100% - 64px)); margin: 0 auto; padding: 52px 0 78px; }
 /*
   The container grows on wide screens. It was pinned at 1160px, so at 1920 the
@@ -978,9 +978,6 @@ p { color: var(--muted); line-height: 1.65; }
 .metric-strip > div { transition: background 140ms ease; }
 .path-item { transition: background 140ms ease; border-radius: 10px; }
 .path-item:hover { border-color: var(--line-strong); box-shadow: var(--shadow); }
-.brand-mark { background: var(--brand); color: var(--brand-ink); }
-:root[data-theme="dark"] .brand-mark { color: #0d1117; }
-
 .hero-index strong { color: var(--ink); }
 
 .scrim { display: none; }
@@ -995,12 +992,12 @@ p { color: var(--muted); line-height: 1.65; }
 }
 
 @media (max-width: 820px) {
-  .topbar { padding: 0 13px; }
+  .department-banner, .course-bar { padding-left: 13px; padding-right: 13px; }
   .mobile-menu { display: grid; }
   .brand small, .top-progress { display: none; }
   .sidebar { z-index: 150; transform: translateX(-104%); visibility: hidden; transition: transform 180ms ease, visibility 180ms; box-shadow: var(--shadow); }
   .sidebar.open { transform: translateX(0); visibility: visible; }
-  .scrim { display: block; position: fixed; z-index: 140; inset: 66px 0 0; border: 0; background: rgba(8, 12, 20, 0.5); }
+  .scrim { display: block; position: fixed; z-index: 140; inset: var(--app-header-height) 0 0; border: 0; background: rgba(8, 12, 20, 0.5); }
   .main-content { padding-left: 0; }
   .page, .narrow-page, .storage-warning, .app-footer { width: min(100% - 34px, 760px); }
   .page { padding-top: 36px; }
@@ -1021,8 +1018,9 @@ p { color: var(--muted); line-height: 1.65; }
 }
 
 @media (max-width: 560px) {
-  .brand-mark { width: 34px; height: 34px; }
+  .brand { flex: 1 1 auto; overflow: hidden; }
   .brand strong { font-size: 15px; }
+  .brand strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .topbar-actions { gap: 4px; }
   /* Kept at 44px on mobile too — this is where target size matters most. */
   .icon-button, .mobile-menu { width: 44px; height: 44px; }
@@ -1508,7 +1506,7 @@ p { color: var(--muted); line-height: 1.65; }
 .nav-section + .nav-section { margin-top: 2px; }
 .nav-section-header {
   display: flex; align-items: center; gap: 7px; width: 100%;
-  margin: 0; min-height: 36px; padding: 8px 10px 6px; border: 0; border-radius: 6px;
+  margin: 0; min-height: 32px; padding: 6px 10px 4px; border: 0; border-radius: 6px;
   background: transparent; color: var(--muted); cursor: pointer;
   font-size: 11.5px; font-weight: 750; letter-spacing: 0.11em; text-transform: uppercase;
   transition: color 140ms ease, background 140ms ease;
@@ -1519,8 +1517,8 @@ p { color: var(--muted); line-height: 1.65; }
 .nav-section-header[aria-expanded="false"] svg { transform: rotate(-90deg); }
 /* A collapsed group whose page you are on would otherwise look inactive. */
 .nav-section:has(button.active) .nav-section-header { color: var(--accent); }
-.nav-section nav { padding-bottom: 6px; }
-.sidebar > .nav-section:last-of-type nav { padding-bottom: 12px; }
+.nav-section nav { padding-bottom: 3px; }
+.sidebar > .nav-section:last-of-type nav { padding-bottom: 8px; }
 
 @media (prefers-reduced-motion: reduce) { .nav-section-header svg { transition: none; } }
 
@@ -1867,7 +1865,7 @@ p { color: var(--muted); line-height: 1.65; }
 
 .package-switch {
   display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; align-items: center; gap: 10px;
-  width: 100%; min-height: 52px; margin-bottom: 14px; padding: 9px 11px;
+  width: 100%; min-height: 48px; margin-bottom: 8px; padding: 7px 11px;
   border: 1px solid var(--line); border-radius: 10px;
   background: var(--surface-alt); color: var(--muted); text-align: left; cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
@@ -2042,14 +2040,14 @@ p { color: var(--muted); line-height: 1.65; }
 
 /* Reading progress. On a stage that runs to 13,000px, knowing how much is
    left is the single most useful piece of feedback available. */
-.reading-progress { position: fixed; top: 66px; left: 268px; right: 0; height: 3px; z-index: 40; background: transparent; pointer-events: none; }
+.reading-progress { position: fixed; top: var(--app-header-height); left: 268px; right: 0; height: 3px; z-index: 40; background: transparent; pointer-events: none; }
 .reading-progress i {
   display: block; height: 100%; width: 100%;
   transform: scaleX(var(--read, 0)); transform-origin: 0 50%;
   background: linear-gradient(90deg, var(--stage, var(--accent)), var(--accent));
   transition: transform 90ms linear;
 }
-@media (max-width: 820px) { .reading-progress { left: 0; top: 58px; } }
+@media (max-width: 820px) { .reading-progress { left: 0; } }
 
 /* Stage framing. Microlearning works by telling people the shape of the
    thing before they start it: sections, minutes, questions. */

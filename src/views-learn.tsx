@@ -1039,7 +1039,7 @@ export function ModuleView({
           </div>
         )}
         <footer>
-          {manifest.title} — internal learning aid, not an official Australian Government publication.
+          {manifest.title} — internal learning aid.
         </footer>
       </section>
 

@@ -8,7 +8,7 @@ The DEWR-aligned presentation is the **default visual theme** for the combined l
 - Course Workshop: <https://mick353.github.io/Work/course-workshop/>
 - Existing bookmarks containing `?brand=dewr` remain compatible, but the parameter is no longer required.
 - The application continues to identify itself as an `internal learning aid`.
-- This is not an official Australian Government publication or evidence of departmental endorsement. It does not use the Australian Government crest or an official wordmark.
+- The learner header uses the approved inline black logo on the light theme and the approved all-white reversed logo on the dark theme.
 
 ## Current authority
 
@@ -26,7 +26,7 @@ Learner-facing wording also follows the Australian Government Style Manual's pla
 |---|---|---|
 | Main text and application structure | Graphite on white or a light Graphite tint | The guide approves Graphite with white and discourages arbitrary substitute colours |
 | Primary actions and focus | White on Spruce in light mode; black on Eucalyptus in dark mode | These are approved regular-text pairings; Eucalyptus is not used behind small white text |
-| Visible brand accent | Eucalyptus on the header edge and product mark | Gives a clear DEWR cue without making a low-contrast colour carry meaning |
+| Visible brand accent | Eucalyptus on the departmental banner edge and restrained application accents | Gives a clear DEWR cue without making a low-contrast colour carry meaning |
 | Stages and diagrams | Exact core, supporting or data colours with a separately tested text-safe partner | Colour differentiates content but is never the only cue |
 | Data visualisation | Dedicated DATA colours, direct labels and restrained series counts | Matches the guide's chart palette and avoids legend-only interpretation |
 | Typography | Aptos family with offline system fallbacks | Matches the June 2026 department-wide type direction |
@@ -37,18 +37,18 @@ Learner-facing wording also follows the Australian Government Style Manual's pla
 
 The design target is WCAG 2.2 Level AA. Normal text must reach 4.5:1, large text and meaningful graphical/interface boundaries 3:1. The application also retains keyboard, focus, zoom, reduced-motion and target-size safeguards. Automated checks are regression evidence, not a claim of complete conformance.
 
-## Logo and approval boundary
+## Logo use
 
-The 2026 guide specifies approved inline and stacked Australian Government/department logo files, clear space, minimum digital sizes and the alt text `Australian Government Department of Employment and Workplace Relations`. Those assets must come from the department's approved source. The application keeps its `PP` product mark and does **not** copy, redraw or extract a crest from the PDF.
+The learner header uses the exact inline black and all-white reversed logo artwork supplied in the department's 2026 guide. It appears once, at the top of the application, with the guide's isolation space preserved. The displayed artwork keeps the Coat of Arms at or above the 48-pixel website-banner minimum. Its alternative text is `Australian Government Department of Employment and Workplace Relations`.
 
-If the product is approved for formal departmental adoption, the Design team or brand owner should supply the correct logo asset and confirm its placement. The `internal learning aid` wording remains until the department explicitly changes the product's status.
+The inline treatment is the guide's preferred digital logo and fits the supported mobile width, so the player does not switch to or redraw a stacked mark. Light and dark themes select the corresponding approved contrast treatment without filters, recolouring or distortion.
 
-## Remaining organisational checks
+## Ongoing validation
 
-The technical theme is implemented and regression-tested. Formal departmental adoption still requires the evidence that software cannot provide by itself:
+The technical theme is implemented and regression-tested. The following evidence and maintenance activities sit outside automated checks:
 
-1. obtain brand or communications approval and any approved logo assets;
-2. resolve trainer feedback and complete representative manual keyboard, screen-reader, zoom and device checks;
-3. retain the unofficial/internal-learning-aid notice until authorised otherwise.
+1. resolve trainer feedback;
+2. complete representative manual keyboard, screen-reader, zoom and device checks;
+3. replace the embedded logo files only if the Design team supplies a newer approved brand asset pack.
 
 The automated suite verifies the default theme across every course stage in light and dark modes. The palette values are a tested contract so a future edit cannot silently restore superseded colours.

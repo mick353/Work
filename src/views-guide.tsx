@@ -61,8 +61,8 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
           <div><dt>Content reviewed</dt><dd>{CONTENT_REVIEWED}</dd></div>
         </dl>
         <p className="guide-cover-note">
-          Not an official Australian Government publication. Where this and any official departmental or Australian
-          Government source disagree, the official source governs.
+          Use current departmental and Australian Government sources for operational decisions. Where this learning
+          material and a current source disagree, the current source governs.
         </p>
       </section>
 
@@ -266,9 +266,9 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
       </section>
 
       <footer className="guide-end">
-        {manifest.title} — unofficial internal learning aid. Built from {manifest.source}
+        {manifest.title} — internal learning aid. Built from {manifest.source}
         {manifest.sourceAuthor ? `, by ${manifest.sourceAuthor}` : ""}.
-        Content reviewed {CONTENT_REVIEWED}. Not an official Australian Government publication.
+        Content reviewed {CONTENT_REVIEWED}.
       </footer>
     </div>
   );

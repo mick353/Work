@@ -739,12 +739,17 @@ if (!existsSync(docsDir)) {
   // Allow 32 KB per stage: the authority notes and required worked-reasoning
   // passages take the measured bundle just above 31 KB per stage after the
   // shared shell. This still catches asset/dependency bloat.
-  const budgetKb = 500 + 32 * stageCountAll;
+  // The approved light and reversed departmental logo treatments are
+  // deliberately embedded so the web and single-file builds never depend on
+  // an external brand asset. Give that fixed shell asset its own bounded
+  // allowance rather than pretending it is course-stage prose.
+  const brandAssetBudgetKb = 96;
+  const budgetKb = 500 + 32 * stageCountAll + brandAssetBudgetKb;
   const pagesKb = Buffer.byteLength(pagesHtml, "utf8") / 1024;
   check(
     "Pages build stays small for the content it carries",
     pagesKb < budgetKb,
-    `${pagesKb.toFixed(0)} KB against ${budgetKb} KB for ${stageCountAll} stages across ${packageCount} packages`,
+    `${pagesKb.toFixed(0)} KB against ${budgetKb} KB for ${stageCountAll} stages across ${packageCount} packages, including the embedded brand allowance`,
   );
   check(
     "All 98 slide images ship with the Pages build",
@@ -792,6 +797,8 @@ check("DEWR visual theme is the default learner presentation", (await page.locat
   await brandPage.getByRole("heading", { name: "Product Management Fundamentals" }).waitFor();
   const brandIdentity = await brandPage.evaluate(() => {
     const style = getComputedStyle(document.documentElement);
+    const logo = document.querySelector(".department-logo");
+    const logoBox = logo?.getBoundingClientRect();
     return {
       brandMode: document.documentElement.dataset.brand,
       brand: style.getPropertyValue("--brand").trim().toLowerCase(),
@@ -804,6 +811,11 @@ check("DEWR visual theme is the default learner presentation", (await page.locat
       ].map((name) => [name, style.getPropertyValue(`--dewr-${name}`).trim().toLowerCase()])),
       subtitle: document.querySelector(".brand small")?.textContent ?? "",
       title: document.title,
+      logoCount: document.querySelectorAll(".department-logo").length,
+      logoAlt: logo?.getAttribute("alt") ?? "",
+      logoSource: logo?.getAttribute("src") ?? "",
+      logoHeight: logoBox?.height ?? 0,
+      logoTop: logoBox?.top ?? -1,
     };
   });
   check(
@@ -830,6 +842,29 @@ check("DEWR visual theme is the default learner presentation", (await page.locat
     Object.entries(expectedDewrPalette).every(([name, value]) => brandIdentity.palette[name] === value),
     JSON.stringify(brandIdentity.palette),
   );
+  check(
+    "The approved DEWR inline logo appears once, first in the header, with the required accessible name and banner size",
+    brandIdentity.logoCount === 1 &&
+      brandIdentity.logoAlt === "Australian Government Department of Employment and Workplace Relations" &&
+      brandIdentity.logoSource.startsWith("data:image/png;base64,") &&
+      brandIdentity.logoHeight >= 78 &&
+      brandIdentity.logoTop === 0,
+    JSON.stringify(brandIdentity),
+  );
+  const lightLogoSource = brandIdentity.logoSource;
+  await brandPage.getByRole("button", { name: "Switch to dark theme" }).click();
+  const darkLogo = await brandPage.evaluate(() => ({
+    source: document.querySelector(".department-logo")?.getAttribute("src") ?? "",
+    background: getComputedStyle(document.querySelector(".department-banner")).backgroundColor,
+  }));
+  check(
+    "Dark mode uses the separate approved all-white reversed logo on Graphite",
+    darkLogo.source.startsWith("data:image/png;base64,") &&
+      darkLogo.source !== lightLogoSource &&
+      darkLogo.background === "rgb(62, 66, 70)",
+    JSON.stringify(darkLogo),
+  );
+  await brandPage.getByRole("button", { name: "Switch to light theme" }).click();
   await brandPage.getByRole("button", { name: "Search the course" }).click();
   check(
     "DEWR default survives in-app navigation without a query parameter",
@@ -1823,24 +1858,18 @@ check(
   /Stage \d/.test(await page.locator(".diagnostic-result h2").innerText()),
 );
 
-/* -- the disclaimer appears once per page --------------------------- */
+/* -- obsolete status disclaimers do not return --------------------- */
 
-/*
- * The same statement was running in the sidebar note, the page footer and the
- * body of the Sources page at once, so a reader met it three times on one
- * screen. Repetition does not make a caveat more binding — it makes the page
- * read as boilerplate and teaches people to skip the region it lives in.
- */
 for (const view of ["dashboard", "sources", "module/thinking", "glossary"]) {
   await page.evaluate((h) => { window.location.hash = h; }, view);
   await page.waitForTimeout(400);
   const occurrences = await page.evaluate(() => {
     const text = document.body.innerText;
-    return (text.match(/not an official Australian Government publication/gi) ?? []).length;
+    return (text.match(/\b(?:not an official|not official|unofficial)\b/gi) ?? []).length;
   });
   check(
-    `The disclaimer appears once per page (${view})`,
-    occurrences <= 1,
+    `Obsolete unofficial-status wording is absent (${view})`,
+    occurrences === 0,
     `${occurrences} occurrences on one screen`,
   );
 }

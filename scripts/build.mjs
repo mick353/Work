@@ -114,6 +114,7 @@ const buildOptions = {
   target: ["chrome111", "firefox113", "safari16.4", "edge111"],
   jsx: "automatic",
   legalComments: "none",
+  loader: { ".png": "dataurl" },
   define: { "process.env.NODE_ENV": watch ? '"development"' : '"production"' },
   outdir: tempDir,
   entryNames: "app",

@@ -45,6 +45,8 @@ import {
   X,
 } from "lucide-react";
 import type { Question } from "./package-model";
+import dewrLogoBlack from "./assets/dewr-logo-inline-black.png";
+import dewrLogoReversed from "./assets/dewr-logo-inline-reversed.png";
 import { DEFAULT_PACKAGE_ID, activePackage, trainingPackages } from "./packages";
 import { bringForward, cardsToResurface } from "./recall";
 import {
@@ -892,57 +894,65 @@ function Shell({
   return (
     <div className="app-shell">
       <header className="topbar">
-        <button
-          ref={menuButtonRef}
-          className="mobile-menu"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
-          aria-expanded={mobileOpen}
-        >
-          {mobileOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
-        </button>
-        <button className="brand" onClick={() => navigate("dashboard")} aria-label={`${manifest.title} home`}>
-          <span className="brand-mark" aria-hidden="true">
-            PP
-          </span>
-          <span>
-            <strong>{manifest.title}</strong>
-            <small>{manifest.publisher} — internal learning aid</small>
-          </span>
-        </button>
-        <div className="topbar-actions">
-          <div className="top-progress">
-            <span>{completion}% mastered</span>
-            <div
-              role="progressbar"
-              aria-valuenow={completion}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label="Overall course mastery"
-            >
-              <i style={{ width: `${completion}%` }} />
+        <div className="department-banner">
+          <button className="department-home" onClick={() => navigate("dashboard")} aria-label="Go to course overview">
+            <img
+              className="department-logo"
+              src={theme === "dark" ? dewrLogoReversed : dewrLogoBlack}
+              alt="Australian Government Department of Employment and Workplace Relations"
+            />
+          </button>
+        </div>
+        <div className="course-bar">
+          <button
+            ref={menuButtonRef}
+            className="mobile-menu"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+          </button>
+          <button className="brand" onClick={() => navigate("dashboard")} aria-label={`${manifest.title} home`}>
+            <span>
+              <strong>{manifest.title}</strong>
+              <small>{manifest.publisher} — internal learning aid</small>
+            </span>
+          </button>
+          <div className="topbar-actions">
+            <div className="top-progress">
+              <span>{completion}% mastered</span>
+              <div
+                role="progressbar"
+                aria-valuenow={completion}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Overall course mastery"
+              >
+                <i style={{ width: `${completion}%` }} />
+              </div>
             </div>
+            <button className="icon-button" onClick={() => navigate("search")} aria-label="Search the course">
+              <Search size={19} aria-hidden="true" />
+            </button>
+            <button
+              className="icon-button"
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
+            >
+              {theme === "light" ? <Moon size={19} aria-hidden="true" /> : <Sun size={19} aria-hidden="true" />}
+            </button>
+            <button
+              className="icon-button shortcut-button"
+              onClick={() => setShortcutsOpen(true)}
+              aria-label="Keyboard shortcuts"
+            >
+              <Keyboard size={19} aria-hidden="true" />
+            </button>
+            <button className="icon-button" onClick={() => navigate("settings")} aria-label="Learning settings">
+              <Settings2 size={19} aria-hidden="true" />
+            </button>
           </div>
-          <button className="icon-button" onClick={() => navigate("search")} aria-label="Search the course">
-            <Search size={19} aria-hidden="true" />
-          </button>
-          <button
-            className="icon-button"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
-          >
-            {theme === "light" ? <Moon size={19} aria-hidden="true" /> : <Sun size={19} aria-hidden="true" />}
-          </button>
-          <button
-            className="icon-button shortcut-button"
-            onClick={() => setShortcutsOpen(true)}
-            aria-label="Keyboard shortcuts"
-          >
-            <Keyboard size={19} aria-hidden="true" />
-          </button>
-          <button className="icon-button" onClick={() => navigate("settings")} aria-label="Learning settings">
-            <Settings2 size={19} aria-hidden="true" />
-          </button>
         </div>
       </header>
 
@@ -1060,21 +1070,9 @@ function Shell({
       <main id="main-content" className="main-content" tabIndex={-1}>
         {!storageOk && <StorageWarning />}
         {children}
-        {/*
-          One line, once.
-
-          The same disclaimer was running in three places at once — the sidebar
-          privacy note, this footer, and again in the body of the Sources page —
-          so a reader met it three times on one screen. Repetition does not make
-          a caveat more binding; it makes the whole page read as boilerplate and
-          teaches people to skip the region it lives in. The full statement now
-          lives on the Sources page, where somebody checking provenance will
-          actually be looking for it, and this is the persistent reminder.
-        */}
         <footer className="app-footer">
           <p>
             Internal learning aid
-            {view !== "sources" && " · not an official Australian Government publication"}
             {/* Separator travels with the link, so print does not strand a "·". */}
             <span className="footer-link">
               {" · "}
