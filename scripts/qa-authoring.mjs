@@ -330,6 +330,35 @@ for (const templateTitle of ["Product Management Fundamentals", "Closure Reports
 }
 check("Every maintained course template satisfies the Workshop profile before fresh review", templateProfilesClean, templateProfileDetails.join("; "));
 
+const blankReplacementContext = await browser.newContext();
+const blankReplacementPage = await blankReplacementContext.newPage();
+await blankReplacementPage.goto(pathToFileURL(studioFile).href);
+blankReplacementPage.once("dialog", (dialog) => void dialog.accept());
+await blankReplacementPage.locator(".template-grid article").filter({ hasText: "Product Management Fundamentals" }).getByRole("button", { name: "Clone as new course" }).click();
+await blankReplacementPage.waitForSelector("text=Created a separate draft from Product Management Fundamentals");
+await blankReplacementPage.getByRole("button", { name: /How it works/ }).click();
+let blankReplacementPrompt = "";
+blankReplacementPage.once("dialog", (dialog) => {
+  blankReplacementPrompt = dialog.message();
+  void dialog.dismiss();
+});
+await blankReplacementPage.getByRole("button", { name: "Start blank course" }).click();
+check(
+  "Starting blank warns before replacing an existing draft and Cancel preserves it",
+  /current draft will be replaced.*download it first/is.test(blankReplacementPrompt) &&
+    /Adapted Product Management Fundamentals/i.test(await blankReplacementPage.locator(".topbar").innerText()),
+  blankReplacementPrompt,
+);
+blankReplacementPage.once("dialog", (dialog) => void dialog.accept());
+await blankReplacementPage.getByRole("button", { name: "Start blank course" }).click();
+await blankReplacementPage.getByRole("heading", { name: "Name the course and anchor it to its source" }).waitFor();
+check(
+  "Confirming blank replaces the draft, clears its identity and opens Course setup",
+  /Untitled training course/i.test(await blankReplacementPage.locator(".topbar").innerText()) &&
+    /previous local draft was replaced/i.test(await blankReplacementPage.locator(".notice").innerText()),
+);
+await blankReplacementContext.close();
+
 const featureContext = await browser.newContext({ acceptDownloads: true, viewport: { width: 1440, height: 1000 } });
 const featurePage = await featureContext.newPage();
 const featureErrors = [];

@@ -545,15 +545,15 @@ export function App() {
     }
   };
 
-  const startAgain = () => {
-    if (!window.confirm("Start a new blank course? Download a draft first if you may need this work again.")) return;
+  const startBlankCourse = (destination: View) => {
+    if (!untouchedDraft && !window.confirm("Start a new blank course? Your current draft will be replaced. Download it first if you may need this work again.")) return;
     const fresh = createStarterPackage();
     setEntry(fresh);
     setRelease({ ...EMPTY_RELEASE_CHECKLIST });
     setLineage(createDraftLineage());
     setActiveStage(fresh.content.modules[0].id);
-    setView("instructions");
-    setMessage("Started a new local draft.");
+    setView(destination);
+    setMessage(untouchedDraft ? "Blank course ready. Start with Course setup." : "Started a new blank course. The previous local draft was replaced.");
   };
 
   const cloneTemplate = async (template: TrainingPackage) => {
@@ -622,7 +622,7 @@ export function App() {
       <Card title="Choose how to start" eyebrow="Blank course or editable copy">
         <p className="section-intro">Start with a clean structure, or copy a maintained course when its learning pattern is genuinely useful. A copy becomes a separate local draft and never alters the published original.</p>
         <div className="template-grid start-options">
-          <article><span className="pill">Blank course</span><h3>Start from a clean structure</h3><p>Use the guided seven-step form to design a new course from its audience, final performance and evidence base.</p><dl><div><dt>Stages</dt><dd>1 starter</dd></div><div><dt>Review</dt><dd>Fresh record</dd></div></dl><button type="button" className="primary" onClick={() => navigateTo("setup")}><Plus size={17} />Start blank course</button></article>
+          <article><span className="pill">Blank course</span><h3>Start from a clean structure</h3><p>Use the guided seven-step form to design a new course from its audience, final performance and evidence base.</p><dl><div><dt>Stages</dt><dd>1 starter</dd></div><div><dt>Review</dt><dd>Fresh record</dd></div></dl><button type="button" className="primary" onClick={() => startBlankCourse("setup")}><Plus size={17} />Start blank course</button></article>
           {__COURSE_TEMPLATES__.map((template) => <article key={template.manifest.id}><span className="pill">Published template</span><h3>{template.manifest.title}</h3><p>{template.manifest.summary}</p><dl><div><dt>Stages</dt><dd>{template.content.modules.length}</dd></div><div><dt>Deck</dt><dd>{template.content.slides.length ? `${template.content.slides.length} slides` : "None"}</dd></div><div><dt>Version</dt><dd>{template.manifest.version}</dd></div></dl><button type="button" className="secondary" onClick={() => cloneTemplate(template)}><Library size={17} />Clone as new course</button></article>)}
         </div>
       </Card>
@@ -1035,7 +1035,7 @@ npm run verify`}</code></pre>
           <button type="button" onClick={() => importRef.current?.click()}><Upload size={16} />Load draft</button>
           <button type="button" onClick={downloadPortableDraft}><Download size={16} />Save/share complete draft</button>
           <small className="draft-backup-note">Includes embedded slides and images · approximately {draftSizeLabel}</small>
-          <button type="button" onClick={startAgain}><RotateCcw size={16} />New course</button>
+          <button type="button" onClick={() => startBlankCourse("instructions")}><RotateCcw size={16} />New course</button>
         </div>
       </aside>
       <main id="studio-main" className="studio-main" tabIndex={-1}>
