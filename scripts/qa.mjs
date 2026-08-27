@@ -755,6 +755,21 @@ if (!existsSync(docsDir)) {
 
 const browser = await chromium.launch({ headless: !headed });
 
+{
+  const sourceContext = await browser.newContext({ viewport: { width: 1000, height: 700 } });
+  const sourcePage = await sourceContext.newPage();
+  await sourcePage.goto(pathToFileURL(path.join(projectDir, "index.html")).href, { waitUntil: "load" });
+  const sourceHelp = await sourcePage.locator("#main-content").innerText();
+  const builtLink = await sourcePage.getByRole("link", { name: "Open Product Management Learning System" }).getAttribute("href");
+  check(
+    "Opening the repository source index locally explains which built file to use",
+    /build template.*cannot run directly.*self-contained application/is.test(sourceHelp) &&
+      builtLink === "Product-Management-Learning-System.html",
+    `${sourceHelp} | ${builtLink}`,
+  );
+  await sourceContext.close();
+}
+
 /* ---------------------------------------------------------------- *
  * Desktop pass
  * ---------------------------------------------------------------- */

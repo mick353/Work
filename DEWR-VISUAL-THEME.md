@@ -2,9 +2,10 @@
 
 ## Status
 
-The DEWR-aligned presentation is the **default visual theme** for the combined learner site and generated learner-course packages. It changes presentation only: course content, navigation, progress, scoring, storage and export behaviour remain the same.
+The DEWR-aligned presentation is the **default visual theme** for the combined learner site, generated learner-course packages and Course Workshop. It changes presentation only: course content, navigation, progress, scoring, storage, authoring and export behaviour remain the same.
 
 - Learner site: <https://mick353.github.io/Work/>
+- Course Workshop: <https://mick353.github.io/Work/course-workshop/>
 - Existing bookmarks containing `?brand=dewr` remain compatible, but the parameter is no longer required.
 - The application continues to identify itself as an `internal learning aid`.
 - This is not an official Australian Government publication or evidence of departmental endorsement. It does not use the Australian Government crest or an official wordmark.
@@ -15,7 +16,7 @@ The theme is aligned to the department-supplied **DEWR Brand Guidelines, version
 
 The core palette is Graphite `#3E4246`, Eucalyptus `#78A34F`, Mint `#4CBFAD`, Lime `#A6BD38`, Spruce `#055044` and Teal `#149B9E`. Supporting colours are used sparingly. The dedicated data palette—Pine Green, Ocean Mist, Rose Pink, Tiger Flame and Electric Indigo—is reserved for information graphics.
 
-The guide adopts Aptos as the department-wide typeface across Microsoft, print and digital platforms. The player therefore uses locally installed Aptos and Aptos Display where available, with Segoe UI and Arial as offline-safe fallbacks. It downloads no font.
+The guide adopts Aptos as the department-wide typeface across Microsoft, print and digital platforms. The player and Course Workshop therefore use locally installed Aptos and Aptos Display where available, with Segoe UI and Arial as offline-safe fallbacks. They download no font.
 
 Learner-facing wording also follows the Australian Government Style Manual's plain-language guidance: use familiar words and direct sentences, explain necessary specialist terms, and remove needless bureaucratic phrasing. Course-specific technical terms remain where they are part of what the learner must understand.
 
@@ -48,7 +49,6 @@ The technical theme is implemented and regression-tested. Formal departmental ad
 
 1. obtain brand or communications approval and any approved logo assets;
 2. resolve trainer feedback and complete representative manual keyboard, screen-reader, zoom and device checks;
-3. decide whether Course Workshop should adopt the same visual system; and
-4. retain the unofficial/internal-learning-aid notice until authorised otherwise.
+3. retain the unofficial/internal-learning-aid notice until authorised otherwise.
 
 The automated suite verifies the default theme across every course stage in light and dark modes. The palette values are a tested contract so a future edit cannot silently restore superseded colours.

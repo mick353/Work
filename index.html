@@ -15,6 +15,14 @@
   <body>
     <a class="skip-link" href="#main-content">Skip to learning content</a>
     <div id="root"></div>
+    <template id="source-file-help">
+      <main id="main-content" style="max-width: 46rem; margin: 5rem auto; padding: 0 1.5rem; font: 1rem/1.6 Aptos, 'Segoe UI', Arial, sans-serif; color: #3e4246">
+        <p style="margin: 0 0 .5rem; color: #055044; font-weight: 700">Repository source file</p>
+        <h1 style="margin: 0 0 1rem; font: 600 2rem/1.15 'Aptos Display', Aptos, 'Segoe UI', Arial, sans-serif">Open the built learning system</h1>
+        <p>This <code>index.html</code> file is the build template and cannot run directly from the file system. Use the self-contained application instead.</p>
+        <p><a href="Product-Management-Learning-System.html" style="color: #055044; font-weight: 700">Open Product Management Learning System</a></p>
+      </main>
+    </template>
     <noscript>
       <p style="max-width: 40em; margin: 4em auto; font-family: system-ui, sans-serif">
         This learning system needs JavaScript. It runs entirely in your browser and sends nothing anywhere; enable
@@ -23,5 +31,13 @@
     </noscript>
     <!--SLIDE_DATA-->
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      const sourceModule = document.querySelector('script[type="module"][src]');
+      if (window.location.protocol === "file:" && sourceModule?.getAttribute("src")?.endsWith("/main.tsx")) {
+        const help = document.querySelector("#source-file-help");
+        const root = document.querySelector("#root");
+        if (help instanceof HTMLTemplateElement && root) root.append(help.content.cloneNode(true));
+      }
+    </script>
   </body>
 </html>

@@ -247,6 +247,30 @@ page.on("request", (request) => { if (/^https?:/i.test(request.url())) networkRe
 await page.goto(pathToFileURL(studioFile).href);
 await page.waitForSelector(".studio-shell");
 check("Course Workshop opens as a local standalone file", await page.title() === "Course Workshop — Product Practice");
+const workshopTheme = await page.evaluate(() => {
+  const rootStyle = getComputedStyle(document.documentElement);
+  const headingStyle = getComputedStyle(document.querySelector(".instruction-hero h1"));
+  return {
+    brand: document.documentElement.dataset.brand,
+    font: rootStyle.fontFamily,
+    headingFont: headingStyle.fontFamily,
+    graphite: rootStyle.getPropertyValue("--dewr-graphite").trim().toLowerCase(),
+    eucalyptus: rootStyle.getPropertyValue("--dewr-eucalyptus").trim().toLowerCase(),
+    spruce: rootStyle.getPropertyValue("--dewr-spruce").trim().toLowerCase(),
+    themeColor: document.querySelector('meta[name="theme-color"]')?.getAttribute("content")?.toLowerCase(),
+  };
+});
+check(
+  "Course Workshop uses the default DEWR colour and Aptos typography contract",
+  workshopTheme.brand === "dewr" &&
+    workshopTheme.font.includes("Aptos") &&
+    workshopTheme.headingFont.includes("Aptos Display") &&
+    workshopTheme.graphite === "#3e4246" &&
+    workshopTheme.eucalyptus === "#78a34f" &&
+    workshopTheme.spruce === "#055044" &&
+    workshopTheme.themeColor === "#3e4246",
+  JSON.stringify(workshopTheme),
+);
 check("A new course is presented as a calm not-started draft", /new draft.*start with setup/i.test(await page.locator(".sidebar-status").innerText()));
 check("A blank course does not claim a duration before lesson content exists", /Duration pending/i.test(await page.locator(".topbar-meta").innerText()));
 check("The built-in instructional page explains all three learner delivery routes", /offline HTML course.*host it at its own URL.*combined catalogue/is.test(await page.locator("body").innerText()));
