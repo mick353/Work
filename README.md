@@ -27,7 +27,7 @@ Each document has one job. Start with the one that matches what you are doing.
 | **[COURSE-WORKSHOP.md](COURSE-WORKSHOP.md)** | You are using or maintaining the separate trainer-facing course authoring tool |
 | **[ROADMAP.md](ROADMAP.md)** | You want to know what remains beyond the implemented player, exports and authoring profile |
 | **[LEARNING-SYSTEM-DIRECTION.md](LEARNING-SYSTEM-DIRECTION.md)** | You need the settled training-managed product and deployment decisions |
-| **[DEWR-BRAND-PROTOTYPE.md](DEWR-BRAND-PROTOTYPE.md)** | You are reviewing the optional departmental visual theme and its accessibility guardrails |
+| **[DEWR-VISUAL-THEME.md](DEWR-VISUAL-THEME.md)** | You need the departmental colour, typography, accessibility and approval boundaries |
 | **[NOTICE.md](NOTICE.md)** | Provenance, status and takedown contact |
 | **[DELIVERY-ASSURANCE-QUALITY-COURSE-PROPOSAL.md](DELIVERY-ASSURANCE-QUALITY-COURSE-PROPOSAL.md)** | You are reviewing the proposed third course; it is a concept and research brief, not an implemented package |
 
@@ -40,13 +40,13 @@ If you are an AI agent picking this up cold: read AUTHORING.md end to end before
 - Course Workshop 0.5.0 covers the complete current package shape, including advanced learning content, embedded media and source decks. Its code-level readiness controls are implemented; organisational production readiness still requires real trainer and manual accessibility/device evidence.
 - Repository installation and online publication remain release-custodian actions. Browser authoring never changes Git or publishes a course by itself.
 - Draft v2 migration, exact-content release binding, HTTPS/media hardening, per-course quality profiles, versioned release archives and learner curriculum-version choices are implemented. The remaining external evidence is recorded in [ROADMAP.md](ROADMAP.md).
-- An opt-in DEWR visual prototype is available for trainer evaluation. It does not change the default learner site and is not a claim of departmental endorsement.
+- The learner site and generated learner packages use the DEWR-aligned visual theme by default. This remains an unofficial internal learning aid, not a claim of departmental endorsement.
 
 ## Use it
 
 **On the web:** <https://mick353.github.io/Work/>
 
-**DEWR visual prototype:** <https://mick353.github.io/Work/?brand=dewr#dashboard>. This is the same learner application and saved-progress model with an optional departmental colour/font treatment. The normal URL remains unchanged; see [DEWR-BRAND-PROTOTYPE.md](DEWR-BRAND-PROTOTYPE.md).
+**DEWR visual theme:** the normal learner link above now uses the departmental colour and Aptos typography treatment. Existing bookmarks containing `?brand=dewr` remain compatible, but the parameter is no longer needed. See [DEWR-VISUAL-THEME.md](DEWR-VISUAL-THEME.md).
 
 **For trainers creating a course:** <https://mick353.github.io/Work/course-workshop/>. Its first page is the complete author/review/release guide. A trainer can start blank or safely clone a maintained course, edit the complete learning package, import a PDF/image source deck and stage visuals, preview it, and export one learner course. Drafts remain in that browser; using the published tool does not add anything to the learner site.
 

@@ -188,12 +188,11 @@
 }
 
 /* ==================================================================
-   Optional DEWR brand prototype
+   Default DEWR-aligned visual theme
 
-   Activated only by ?brand=dewr. The default experience is deliberately
-   unchanged while trainers evaluate the direction. Values come from the
-   DEWR Brand Guidelines version 1 (June 2026). The named palette values stay
-   exact; semantic tokens choose the guide's approved black/white pairings.
+   Values come from the DEWR Brand Guidelines version 1 (June 2026). The
+   named palette values stay exact; semantic tokens choose the guide's
+   approved black/white pairings.
    Graphite, Eucalyptus, Mint, Lime, Spruce and Teal are the core palette.
    Supporting colours stay secondary; the five DATA colours are reserved for
    information graphics. Tints are used only where the guide permits them.

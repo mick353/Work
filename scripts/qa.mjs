@@ -767,15 +767,15 @@ await page.goto(artifactUrl, { waitUntil: "load" });
 await page.evaluate(() => localStorage.clear());
 await page.reload({ waitUntil: "load" });
 await page.getByRole("heading", { name: "Product Management Fundamentals" }).waitFor();
-check("Default site remains outside the DEWR prototype", (await page.locator("html").getAttribute("data-brand")) === null);
+check("DEWR visual theme is the default learner presentation", (await page.locator("html").getAttribute("data-brand")) === "dewr");
 
 {
-  const previewContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
-  const previewPage = await previewContext.newPage();
-  watchPage(previewPage, "dewr-preview-identity");
-  await previewPage.goto(`${dewrArtifactUrl}#dashboard`, { waitUntil: "load" });
-  await previewPage.getByRole("heading", { name: "Product Management Fundamentals" }).waitFor();
-  const previewIdentity = await previewPage.evaluate(() => {
+  const brandContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const brandPage = await brandContext.newPage();
+  watchPage(brandPage, "dewr-default-identity");
+  await brandPage.goto(`${artifactUrl}#dashboard`, { waitUntil: "load" });
+  await brandPage.getByRole("heading", { name: "Product Management Fundamentals" }).waitFor();
+  const brandIdentity = await brandPage.evaluate(() => {
     const style = getComputedStyle(document.documentElement);
     return {
       brandMode: document.documentElement.dataset.brand,
@@ -792,14 +792,15 @@ check("Default site remains outside the DEWR prototype", (await page.locator("ht
     };
   });
   check(
-    "DEWR preview is opt-in, visibly labelled and uses accessible June 2026 semantic tokens",
-    previewIdentity.brandMode === "dewr" &&
-      previewIdentity.brand === "#055044" &&
-      previewIdentity.brandStrong === "#3e4246" &&
-      previewIdentity.ink === "#3e4246" &&
-      /DEWR theme preview/i.test(previewIdentity.subtitle) &&
-      /^DEWR theme preview/i.test(previewIdentity.title),
-    JSON.stringify(previewIdentity),
+    "Default learner site uses the accessible June 2026 DEWR semantic tokens without preview labelling",
+    brandIdentity.brandMode === "dewr" &&
+      brandIdentity.brand === "#055044" &&
+      brandIdentity.brandStrong === "#3e4246" &&
+      brandIdentity.ink === "#3e4246" &&
+      /internal learning aid/i.test(brandIdentity.subtitle) &&
+      !/theme preview/i.test(brandIdentity.subtitle) &&
+      /^Product Practice/i.test(brandIdentity.title),
+    JSON.stringify(brandIdentity),
   );
   const expectedDewrPalette = {
     graphite: "#3e4246", eucalyptus: "#78a34f", mint: "#4cbfad", lime: "#a6bd38",
@@ -811,17 +812,17 @@ check("Default site remains outside the DEWR prototype", (await page.locator("ht
   };
   check(
     "DEWR core, supporting and data palette values match the June 2026 guide",
-    Object.entries(expectedDewrPalette).every(([name, value]) => previewIdentity.palette[name] === value),
-    JSON.stringify(previewIdentity.palette),
+    Object.entries(expectedDewrPalette).every(([name, value]) => brandIdentity.palette[name] === value),
+    JSON.stringify(brandIdentity.palette),
   );
-  await previewPage.getByRole("button", { name: "Search the course" }).click();
+  await brandPage.getByRole("button", { name: "Search the course" }).click();
   check(
-    "DEWR preview survives in-app navigation without becoming the default",
-    new URL(previewPage.url()).searchParams.get("brand") === "dewr" &&
-      (await previewPage.locator("html").getAttribute("data-brand")) === "dewr",
-    previewPage.url(),
+    "DEWR default survives in-app navigation without a query parameter",
+    new URL(brandPage.url()).searchParams.get("brand") === null &&
+      (await brandPage.locator("html").getAttribute("data-brand")) === "dewr",
+    brandPage.url(),
   );
-  await previewContext.close();
+  await brandContext.close();
 }
 
 
@@ -3173,35 +3174,35 @@ for (const [hash, label] of axeViews) {
 }
 
 {
-  const previewViolations = [];
+  const brandViolations = [];
   for (const theme of ["light", "dark"]) {
-    const previewContext = await browser.newContext({
+    const brandContext = await browser.newContext({
       viewport: { width: 1440, height: 1000 },
       reducedMotion: "reduce",
     });
-    const previewPage = await previewContext.newPage();
-    watchPage(previewPage, `dewr-preview-accessibility-${theme}`);
-    await previewPage.addInitScript((selectedTheme) => {
+    const brandPage = await brandContext.newPage();
+    watchPage(brandPage, `dewr-default-accessibility-${theme}`);
+    await brandPage.addInitScript((selectedTheme) => {
       localStorage.setItem("product-practice-v2:theme", JSON.stringify(selectedTheme));
     }, theme);
-    await previewPage.goto(`${dewrArtifactUrl}#dashboard`, { waitUntil: "load" });
+    await brandPage.goto(`${artifactUrl}#dashboard`, { waitUntil: "load" });
     for (const [hash, label] of axeViews) {
-      await previewPage.evaluate((target) => { window.location.hash = target; }, hash);
-      await previewPage.waitForTimeout(250);
-      const results = await new AxeBuilder({ page: previewPage })
+      await brandPage.evaluate((target) => { window.location.hash = target; }, hash);
+      await brandPage.waitForTimeout(250);
+      const results = await new AxeBuilder({ page: brandPage })
         .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
         .analyze();
       const serious = results.violations.filter((violation) => ["serious", "critical"].includes(violation.impact));
       for (const violation of serious) {
-        previewViolations.push(`${theme}/${label}: ${violation.id} x${violation.nodes.length}`);
+        brandViolations.push(`${theme}/${label}: ${violation.id} x${violation.nodes.length}`);
       }
     }
-    await previewContext.close();
+    await brandContext.close();
   }
   check(
-    "DEWR preview has no serious or critical axe violations in either theme",
-    previewViolations.length === 0,
-    previewViolations.join("; "),
+    "Default DEWR theme has no serious or critical axe violations in either colour mode",
+    brandViolations.length === 0,
+    brandViolations.join("; "),
   );
 }
 
