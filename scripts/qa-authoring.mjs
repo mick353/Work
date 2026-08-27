@@ -326,6 +326,12 @@ await cloneClick;
 await featurePage.waitForSelector("text=Created a separate draft from Product Management Fundamentals");
 check("Cloning creates a visibly separate draft", /Adapted Product Management Fundamentals/i.test(await featurePage.locator(".topbar").innerText()));
 
+await featurePage.getByRole("button", { name: /Review & export/ }).click();
+check("Advisory warnings are labelled as non-blocking", await featurePage.locator(".advisory-banner").count() === 1 && /do not disable Preview or any final export/i.test(await featurePage.locator(".advisory-banner").innerText()));
+check("Review explains the exact gates behind disabled final outputs", /set Course setup.*Available/i.test(await featurePage.locator(".release-gate-summary").innerText()) && /not caused by advisory warnings/i.test(await featurePage.locator(".export-gate-status").innerText()));
+check("Preview remains available when a cloned course has warnings but no errors", !(await featurePage.getByRole("button", { name: "Preview course" }).isDisabled()));
+check("A trainer can record an optional decision to leave advisories in place", await featurePage.locator(".advisory-option input").count() === 1 && /optional/i.test(await featurePage.locator(".advisory-option").innerText()));
+
 await featurePage.getByRole("button", { name: /Apply & reference/ }).click();
 check("Advanced course elements have dedicated editors", await featurePage.getByRole("heading", { name: "Worked cases" }).count() === 1 && await featurePage.getByRole("heading", { name: "Toolkit templates" }).count() === 1 && await featurePage.getByRole("heading", { name: "Capstone" }).count() === 1 && await featurePage.getByRole("heading", { name: "Field guide" }).count() === 1 && await featurePage.getByRole("heading", { name: "Source differences" }).count() === 1 && await featurePage.getByRole("heading", { name: "Worked documents and exemplars" }).count() === 1);
 check("Every advanced editor explains how its content reaches the learner experience", await featurePage.locator(".connection-note").count() === 6);
@@ -490,6 +496,8 @@ await page.getByRole("button", { name: /Review & export/ }).click();
 await page.waitForSelector(".readiness.ready");
 check("A complete draft clears every blocking authoring check", (await page.locator(".issue.error").count()) === 0);
 check("Final outputs require and accept a complete human release record", !(await page.getByRole("button", { name: "Export repository ZIP" }).isDisabled()));
+await page.locator(".advisory-option input").check();
+check("Optional advisory acknowledgement does not change release readiness", !(await page.getByRole("button", { name: "Export repository ZIP" }).isDisabled()));
 await page.getByRole("button", { name: /^All / }).click();
 check("Optional advanced learning elements remain honest warnings or notes", (await page.locator(".issue.warning, .issue.note").count()) >= 2);
 
@@ -526,7 +534,7 @@ check("Repository ZIP contains installation, hosted-page, validation and release
 check("Developer ZIP contains no unsafe traversal path", zipNames.every((name) => !name.includes("..") && !path.isAbsolute(name)));
 const report = JSON.parse(strFromU8(zipped[`${expectedRoot}/validation-report.json`]));
 const releaseRecord = JSON.parse(strFromU8(zipped[`${expectedRoot}/release-record.json`]));
-check("Validation report and release record keep automated and declared evidence distinct", report.releaseReady === true && /neither record is independent review evidence/i.test(report.statement) && releaseRecord.checklistComplete === true);
+check("Validation report and release record keep automated and declared evidence distinct", report.releaseReady === true && /neither record is independent review evidence/i.test(report.statement) && releaseRecord.checklistComplete === true && releaseRecord.approvals?.advisoriesReviewed === true);
 const canonicalPackageText = strFromU8(zipped[`${expectedRoot}/course-package.json`]);
 const canonicalDigest = createHash("sha256").update(canonicalPackageText, "utf8").digest("hex");
 check("Release evidence is bound to the exact canonical package bytes", releaseRecord.recordVersion === 2 && releaseRecord.packageDigest?.value === canonicalDigest && report.packageDigest?.value === canonicalDigest);

@@ -21,6 +21,8 @@ export type ReleaseChecklist = {
   learningFlowChecked: boolean;
   handlingChecked: boolean;
   releaseApproved: boolean;
+  /** Optional acknowledgement that advisory findings were reviewed and may remain. */
+  advisoriesReviewed: boolean;
   reviewerName: string;
   reviewerRole: string;
   approverName: string;
@@ -35,6 +37,7 @@ export const EMPTY_RELEASE_CHECKLIST: ReleaseChecklist = {
   learningFlowChecked: false,
   handlingChecked: false,
   releaseApproved: false,
+  advisoriesReviewed: false,
   reviewerName: "",
   reviewerRole: "",
   approverName: "",
@@ -429,6 +432,7 @@ function normaliseRelease(value: unknown): ReleaseChecklist {
     learningFlowChecked: candidate.learningFlowChecked === true,
     handlingChecked: candidate.handlingChecked === true,
     releaseApproved: candidate.releaseApproved === true,
+    advisoriesReviewed: candidate.advisoriesReviewed === true,
     reviewerName: typeof candidate.reviewerName === "string" ? candidate.reviewerName : "",
     reviewerRole: typeof candidate.reviewerRole === "string" ? candidate.reviewerRole : "",
     approverName: typeof candidate.approverName === "string" ? candidate.approverName : "",

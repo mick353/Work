@@ -69,7 +69,7 @@ function questionTextIssues(
       .filter((_, index) => index !== question.answer)
       .reduce((sum, length) => sum + length, 0) / 3;
     if (distractorMean > 0 && keyLength / distractorMean > 1.45) {
-      add({ severity: "warning", area, stageId, targetId: `question-${question.id}-option-${question.answer}`, title: `${label}'s answer stands out by length`, detail: "Shorten the key or strengthen the distractors so length does not reveal the answer." });
+      add({ severity: "warning", area, stageId, targetId: `question-${question.id}-option-${question.answer}`, title: `${label}'s answer stands out by length`, detail: `The keyed answer is ${keyLength} words and the distractors average ${distractorMean.toFixed(1)}. Shorten the key or strengthen the distractors so length does not reveal the answer.` });
     }
   }
 }

@@ -376,6 +376,11 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .issue-totals { display: grid; grid-template-columns: auto auto; gap: 1px 8px; min-width: 105px; }
 .issue-totals strong { color: var(--forest-950); font-size: 1.15rem; text-align: right; }
 .issue-totals span { align-self: center; color: var(--muted); font-size: .67rem; }
+.advisory-banner { display: grid; grid-template-columns: 24px minmax(0, 1fr); align-items: start; gap: 12px; padding: 16px 18px; color: #59481f; border: 1px solid #e7cf91; border-radius: 12px; background: var(--warning-soft); }
+.advisory-banner > svg { margin-top: 2px; }
+.advisory-banner strong { color: #4d3b14; font-size: .82rem; }
+.advisory-banner p { margin: 4px 0 11px; font-size: .76rem; line-height: 1.5; }
+.advisory-banner .secondary { padding: 8px 11px; color: #4d3b14; border-color: #cbb56e; background: rgba(255,255,255,.45); }
 .review-step-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 8px; margin-bottom: 15px; }
 .review-step-summary > div { padding: 11px; border: 1px solid var(--line); border-radius: 9px; background: #faf9f5; }
 .review-step-summary strong, .review-step-summary span { display: block; }
@@ -416,6 +421,19 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .release-status-line { display: flex; align-items: center; gap: 8px; padding: 11px 13px; border: 1px solid; border-radius: 9px; font-size: .75rem; font-weight: 750; }
 .release-status-line.complete { color: var(--success); border-color: #b7d7c6; background: var(--success-soft); }
 .release-status-line.incomplete { color: var(--warning); border-color: #e7cf91; background: var(--warning-soft); }
+.release-gate-summary { display: grid; grid-template-columns: 20px minmax(0, 1fr); align-items: start; gap: 9px; margin-top: 10px; padding: 12px 13px; border: 1px solid; border-radius: 9px; font-size: .75rem; line-height: 1.45; }
+.release-gate-summary.complete { color: var(--success); border-color: #b7d7c6; background: var(--success-soft); }
+.release-gate-summary.incomplete { color: #6a5420; border-color: #e7cf91; background: #fff9e9; }
+.release-gate-summary strong { color: inherit; }
+.release-gate-summary ul { margin: 6px 0 5px 18px; padding: 0; }
+.release-gate-summary li { margin: 2px 0; }
+.release-gate-summary small { display: block; color: #6d6859; font-size: .69rem; }
+.advisory-option { border-style: dashed; background: #fffdf6; }
+.advisory-option strong { color: #67521f; }
+.export-gate-status { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 14px; padding: 11px 13px; border: 1px solid; border-radius: 9px; font-size: .75rem; line-height: 1.45; }
+.export-gate-status.ready { color: var(--success); border-color: #b7d7c6; background: var(--success-soft); }
+.export-gate-status.locked { color: #6a5420; border-color: #e7cf91; background: #fff9e9; }
+.export-gate-status svg { flex: 0 0 auto; margin-top: 1px; }
 .export-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .export-grid article { display: flex; flex-direction: column; align-items: flex-start; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: #faf9f5; }
 .export-grid h3 { margin: 14px 0 6px; color: var(--forest-950); font-family: Georgia, Cambria, serif; font-size: 1.08rem; }

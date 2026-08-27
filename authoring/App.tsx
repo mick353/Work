@@ -120,6 +120,23 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / 1_000_000).toFixed(1)} MB`;
 }
 
+function releaseRecordMissing(release: ReleaseChecklist, reviewed: string): string[] {
+  const missing: string[] = [];
+  if (!reviewed.trim()) missing.push("content review date");
+  if (!release.subjectMatterChecked) missing.push("subject matter check");
+  if (!release.learningFlowChecked) missing.push("learning-flow check");
+  if (!release.handlingChecked) missing.push("audience and handling check");
+  if (!release.releaseApproved) missing.push("release approval");
+  if (!release.reviewerName.trim()) missing.push("reviewer name");
+  if (!release.reviewerRole.trim()) missing.push("reviewer role");
+  if (!release.approverName.trim()) missing.push("approver name");
+  if (!release.approverRole.trim()) missing.push("approver role");
+  if (!release.approvalScope.trim()) missing.push("approval scope");
+  if (!release.approvalReference.trim()) missing.push("approval reference");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(release.approvalDate.trim())) missing.push("approval date (YYYY-MM-DD)");
+  return missing;
+}
+
 function nextNumericId(prefix: string, used: Iterable<string>): string {
   const existing = new Set(used);
   let number = 1;
@@ -362,19 +379,15 @@ export function App() {
   const hasDurationEvidence = entry.content.modules.some((stage) => stage.sections.some((section) => wordCount(section.body) > 0));
   const contentReady = counts.errors === 0;
   const untouchedDraft = !hasAuthoredCourseContent(entry);
-  const releaseChecksComplete =
-    release.subjectMatterChecked &&
-    release.learningFlowChecked &&
-    release.handlingChecked &&
-    release.releaseApproved &&
-    Boolean(release.reviewerName.trim()) &&
-    Boolean(release.reviewerRole.trim()) &&
-    Boolean(release.approverName.trim()) &&
-    Boolean(release.approverRole.trim()) &&
-    Boolean(release.approvalScope.trim()) &&
-    Boolean(release.approvalReference.trim()) &&
-    /^\d{4}-\d{2}-\d{2}$/.test(release.approvalDate.trim());
-  const releaseReady = contentReady && entry.manifest.status === "available" && releaseChecksComplete;
+  const missingReleaseRecord = releaseRecordMissing(release, entry.manifest.reviewed);
+  const releaseChecksComplete = missingReleaseRecord.length === 0;
+  const statusAvailable = entry.manifest.status === "available";
+  const releaseGateReasons = [
+    !contentReady ? `${counts.errors} blocking issue${counts.errors === 1 ? "" : "s"} in the course` : "",
+    !statusAvailable ? "set Course setup → Status to Available" : "",
+    missingReleaseRecord.length ? `complete the human release record (${missingReleaseRecord.join(", ")})` : "",
+  ].filter(Boolean);
+  const releaseReady = contentReady && statusAvailable && releaseChecksComplete;
 
   useEffect(() => {
     let cancelled = false;
@@ -917,12 +930,16 @@ npm run verify`}</code></pre>
     return <div className="workspace-stack">
       <div className="page-heading"><span className="eyebrow">7 · Review and export</span><h1>Separate machine checks from release judgement</h1><p>The Workshop can reject malformed or visibly incomplete packages. People remain responsible for subject-matter accuracy, instructional quality, handling and release.</p></div>
       <StepConnection>Automated issues read the whole connected draft. Select an issue to return to its step, active stage and relevant field. Preview is for human learning-flow review; final outputs also require the recorded approvals and Available status.</StepConnection>
+      {counts.warnings > 0 && <section className="advisory-banner" role="note">
+        <Info size={21} aria-hidden="true" />
+        <div><strong>{counts.warnings} advisory warning{counts.warnings === 1 ? "" : "s"} — not blockers</strong><p>These are improvement suggestions, such as an answer option being longer than its distractors or a source check date being missing. They do not disable Preview or any final export. Review them when practical, or record that the advisories were considered below.</p><button type="button" className="secondary" onClick={() => { setIssueFilter("warning"); document.getElementById("review-checks")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>Review warnings <ChevronRight size={16} /></button></div>
+      </section>}
       <section className={`readiness ${untouchedDraft ? "not-started" : releaseReady ? "ready" : contentReady ? "pending" : "blocked"}`}>
         <div className="readiness-icon">{untouchedDraft ? <CircleHelp size={30} /> : releaseReady ? <Check size={30} /> : contentReady ? <ShieldCheck size={30} /> : <AlertTriangle size={30} />}</div>
         <div>
           <span className="eyebrow">Course release state</span>
-          <h2>{untouchedDraft ? "Start with Course setup" : releaseReady ? "Approved outputs are unlocked" : contentReady ? "Human release checks are pending" : `${counts.errors} blocking issue${counts.errors === 1 ? "" : "s"}`}</h2>
-          <p>{untouchedDraft ? "This new draft has not started yet. Complete Course setup first; checks will guide you as content is added." : releaseReady ? "The course passed the encoded checks, is marked Available and carries a completed release record." : contentReady ? "Preview the course, complete the approvals below and set its status to Available when the release decision is made." : "Use the issue list to return to the relevant field. Preview and final output stay locked until the course is structurally usable."}</p>
+          <h2>{untouchedDraft ? "Start with Course setup" : releaseReady ? "Approved outputs are unlocked" : contentReady ? "Complete the remaining release gates" : `${counts.errors} blocking issue${counts.errors === 1 ? "" : "s"}`}</h2>
+          <p>{untouchedDraft ? "This new draft has not started yet. Complete Course setup first; checks will guide you as content is added." : releaseReady ? "The course passed the encoded checks, is marked Available and carries a completed release record. Advisory warnings remain visible but do not block output." : contentReady ? `The course has no blocking content errors. Final outputs are locked because you must ${releaseGateReasons.join(" and ")}. Advisory warnings are not one of the gates.` : "Use the issue list to return to the relevant field. Preview and final output stay locked until the course is structurally usable."}</p>
         </div>
         <div className="issue-totals"><strong>{counts.errors}</strong><span>{untouchedDraft ? "to complete" : "errors"}</span><strong>{counts.warnings}</strong><span>warnings</span><strong>{counts.notes}</strong><span>notes</span></div>
       </section>
@@ -947,7 +964,7 @@ npm run verify`}</code></pre>
             if (!areaIssues.length) return null;
             const areaErrors = areaIssues.filter((issue) => issue.severity === "error").length;
             return <IssueGroup key={`${area.id}-${issueFilter}`} label={area.label} countLabel={areaErrors ? `${areaErrors} blocker${areaErrors === 1 ? "" : "s"}` : `${areaIssues.length} advisory`} initiallyOpen={false}>
-              {areaIssues.map((issue) => <button type="button" className={`issue ${issue.severity}`} key={issue.id} onClick={() => navigateIssue(issue)}><span className="issue-mark">{issue.severity === "error" ? "!" : issue.severity === "warning" ? "△" : "i"}</span><span><strong>{issue.title}</strong><small>{issue.detail}</small></span><ChevronRight size={18} /></button>)}
+              {areaIssues.map((issue) => <button type="button" className={`issue ${issue.severity}`} key={issue.id} onClick={() => navigateIssue(issue)}><span className="issue-mark">{issue.severity === "error" ? "!" : issue.severity === "warning" ? "△" : "i"}</span><span><strong>{issue.title}</strong><small>{issue.severity === "warning" ? "Advisory — does not block output. " : ""}{issue.detail}</small></span><ChevronRight size={18} /></button>)}
             </IssueGroup>;
           })}</div>
         </div>
@@ -958,6 +975,7 @@ npm run verify`}</code></pre>
           <label className="release-option"><input type="checkbox" checked={release.learningFlowChecked} onChange={(event) => setRelease((current) => ({ ...current, learningFlowChecked: event.target.checked }))} /><span><strong>Learning flow checked</strong><small>A reviewer completed the course in order, including feedback, scenarios and the assignment.</small></span></label>
           <label className="release-option"><input type="checkbox" checked={release.handlingChecked} onChange={(event) => setRelease((current) => ({ ...current, handlingChecked: event.target.checked }))} /><span><strong>Audience and handling checked</strong><small>The custodian confirmed who may receive it and that no unsuitable or sensitive material will be exposed.</small></span></label>
           <label className="release-option"><input type="checkbox" checked={release.releaseApproved} onChange={(event) => setRelease((current) => ({ ...current, releaseApproved: event.target.checked }))} /><span><strong>Release approved</strong><small>The accountable team has authorised this version for learner use.</small></span></label>
+          <label className="release-option advisory-option"><input type="checkbox" checked={release.advisoriesReviewed} onChange={(event) => setRelease((current) => ({ ...current, advisoriesReviewed: event.target.checked }))} /><span><strong>Advisory warnings reviewed (optional)</strong><small>Use this when the reviewer has considered the suggestions and deliberately wants to leave one or more in place. It records the decision but never turns a warning into a blocker.</small></span></label>
         </div>
         <div className="form-grid release-record-fields">
           <InputField id="manifest-reviewed" label="Content review date" required value={entry.manifest.reviewed} onChange={(value) => updateManifest("reviewed", value)} hint="Record this only after a person has completed the content review. Use an unambiguous date, for example 21 August 2026." />
@@ -973,13 +991,17 @@ npm run verify`}</code></pre>
           {entry.manifest.status === "available" ? <Check size={18} /> : <AlertTriangle size={18} />}
           <span>{entry.manifest.status === "available" ? "Course status is Available." : "Final outputs also require Course setup → Status to be Available."}</span>
         </div>
+        <div className={`release-gate-summary ${releaseReady ? "complete" : "incomplete"}`} role="status">
+          {releaseReady ? <><Check size={18} /><span><strong>Final outputs unlocked.</strong> Warnings are advisory only and will remain in the validation report.</span></> : <><AlertTriangle size={18} /><div><strong>Final outputs are locked for these reasons:</strong><ul>{releaseGateReasons.map((reason) => <li key={reason}>{reason}.</li>)}</ul><small>Preview is available now because there are no blocking content errors. Complete the gates above; no warning needs to be “cleared” to proceed.</small></div></>}
+        </div>
       </Card>
       <Card title="Generate outputs" eyebrow="Choose the delivery route">
+        <p id="final-output-status" className={`export-gate-status ${releaseReady ? "ready" : "locked"}`}>{releaseReady ? <><Check size={16} />Final outputs are ready. {counts.warnings ? `${counts.warnings} advisory warning${counts.warnings === 1 ? "" : "s"} will be carried in the validation report.` : "There are no advisory warnings."}</> : <><AlertTriangle size={16} />Locked until: {releaseGateReasons.join("; ")}. This is not caused by advisory warnings.</>}</p>
         <div className="export-grid">
-          <article><div className="export-icon"><Eye size={24} /></div><h3>Preview</h3><p>Open the actual single-course learner player without declaring a release. Use this for the full learning-flow review.</p><button type="button" className="secondary" disabled={!contentReady} onClick={preview}><Eye size={17} />Preview course</button></article>
-          <article><div className="export-icon"><FileText size={24} /></div><h3>Standalone learner course</h3><p>One self-contained offline HTML file. Share it directly; it has no authoring controls, catalogue or switcher.</p><button type="button" className="primary" disabled={!releaseReady} onClick={() => exportLearnerHtml(entry)}><Download size={17} />Export training HTML</button></article>
-          <article><div className="export-icon"><FolderGit2 size={24} /></div><h3>Individually hosted course</h3><p>A small ZIP containing an <code>index.html</code> for its own <code>training/&lt;course-id&gt;/</code> web address.</p><button type="button" className="primary" disabled={!releaseReady} onClick={() => exportHostedCourse(entry, release)}><Download size={17} />Export hosted-course ZIP</button></article>
-          <article><div className="export-icon"><Archive size={24} /></div><h3>Repository package</h3><p>The canonical course folder, hosted page, release evidence and metadata used by the controlled inspect/install commands.</p><button type="button" className="primary" disabled={!releaseReady} onClick={() => exportDeveloperPackage(entry, issues, release)}><Download size={17} />Export repository ZIP</button></article>
+          <article><div className="export-icon"><Eye size={24} /></div><h3>Preview</h3><p>Open the actual single-course learner player without declaring a release. Use this for the full learning-flow review.</p><button type="button" className="secondary" disabled={!contentReady} aria-describedby="final-output-status" onClick={preview}><Eye size={17} />Preview course</button></article>
+          <article><div className="export-icon"><FileText size={24} /></div><h3>Standalone learner course</h3><p>One self-contained offline HTML file. Share it directly; it has no authoring controls, catalogue or switcher.</p><button type="button" className="primary" disabled={!releaseReady} aria-describedby="final-output-status" title={releaseReady ? "Export the approved standalone learner course" : `Locked: ${releaseGateReasons.join("; ")}`} onClick={() => exportLearnerHtml(entry)}><Download size={17} />Export training HTML</button></article>
+          <article><div className="export-icon"><FolderGit2 size={24} /></div><h3>Individually hosted course</h3><p>A small ZIP containing an <code>index.html</code> for its own <code>training/&lt;course-id&gt;/</code> web address.</p><button type="button" className="primary" disabled={!releaseReady} aria-describedby="final-output-status" title={releaseReady ? "Export the approved hosted-course ZIP" : `Locked: ${releaseGateReasons.join("; ")}`} onClick={() => exportHostedCourse(entry, release)}><Download size={17} />Export hosted-course ZIP</button></article>
+          <article><div className="export-icon"><Archive size={24} /></div><h3>Repository package</h3><p>The canonical course folder, hosted page, release evidence and metadata used by the controlled inspect/install commands.</p><button type="button" className="primary" disabled={!releaseReady} aria-describedby="final-output-status" title={releaseReady ? "Export the approved repository package" : `Locked: ${releaseGateReasons.join("; ")}`} onClick={() => exportDeveloperPackage(entry, issues, release)}><Download size={17} />Export repository ZIP</button></article>
           <article><div className="export-icon"><FileJson size={24} /></div><h3>Complete editable draft</h3><p>A portable JSON checkpoint that another trainer can load and continue. It includes stable draft identity, revision, embedded slides, images and the current review checklist. Approximately {draftSizeLabel}; it is never a learner course.</p><button type="button" className="secondary" onClick={downloadPortableDraft}><Save size={17} />Download complete draft</button></article>
         </div>
       </Card>

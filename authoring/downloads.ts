@@ -78,6 +78,7 @@ function releaseRecord(entry: TrainingPackage, release: ReleaseChecklist, packag
       learningFlowChecked: release.learningFlowChecked,
       audienceAndHandlingChecked: release.handlingChecked,
       releaseApproved: release.releaseApproved,
+      advisoriesReviewed: release.advisoriesReviewed === true,
       reviewer: { name: release.reviewerName.trim(), role: release.reviewerRole.trim() },
       approver: { name: release.approverName.trim(), role: release.approverRole.trim() },
       approvalScope: release.approvalScope.trim(),
@@ -110,6 +111,7 @@ Nothing in this ZIP has modified the learning-system repository. A release custo
 - \`release-record.json\` — human review and approval declarations captured at export.
 - \`CATALOGUE-ENTRY.txt\` — the manual catalogue equivalent, retained for transparency.
 - \`validation-report.json\` — the automated checks visible at export time.
+- Advisory warnings are recommendations, not export blockers. If the reviewer selected the optional acknowledgement, it is recorded in \`release-record.json\`.
 - \`public/courses/${id}/README.md\` — reserved location for a future external-asset route; Workshop media is embedded in the package.
 
 ## Controlled release commands
@@ -220,6 +222,7 @@ This folder is the isolated learner course exported by Product Practice Course W
 
 - Open \`index.html\` locally to test it.
 - \`course-package.json\` is the canonical course data. Its SHA-256 digest is recorded in \`release-record.json\` so the approval can be checked against the exact content.
+- Advisory warnings are recommendations, not export blockers; an optional acknowledgement is retained in \`release-record.json\` when selected.
 - To host it through the learning-system repository, use the repository package and run \`npm run course:host -- <package.zip>\` instead of copying files manually.
 - The page contains the complete course text. Treat the destination as public unless the host is access-controlled.
 - \`release-record.json\` records the declarations captured at export; it is not independent review evidence.
