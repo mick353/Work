@@ -782,19 +782,37 @@ check("Default site remains outside the DEWR prototype", (await page.locator("ht
       brand: style.getPropertyValue("--brand").trim().toLowerCase(),
       brandStrong: style.getPropertyValue("--brand-strong").trim().toLowerCase(),
       ink: style.getPropertyValue("--ink").trim().toLowerCase(),
+      palette: Object.fromEntries([
+        "graphite", "eucalyptus", "mint", "lime", "spruce", "teal",
+        "yellow", "orange", "red", "pink", "indigo", "plum", "sky", "blue", "navy",
+        "data-pine", "data-ocean", "data-rose", "data-tiger", "data-electric",
+      ].map((name) => [name, style.getPropertyValue(`--dewr-${name}`).trim().toLowerCase()])),
       subtitle: document.querySelector(".brand small")?.textContent ?? "",
       title: document.title,
     };
   });
   check(
-    "DEWR preview is opt-in, visibly labelled and uses the approved primary palette",
+    "DEWR preview is opt-in, visibly labelled and uses accessible June 2026 semantic tokens",
     previewIdentity.brandMode === "dewr" &&
-      previewIdentity.brand === "#5d7a38" &&
-      previewIdentity.brandStrong === "#4a632b" &&
-      previewIdentity.ink === "#404246" &&
+      previewIdentity.brand === "#055044" &&
+      previewIdentity.brandStrong === "#3e4246" &&
+      previewIdentity.ink === "#3e4246" &&
       /DEWR theme preview/i.test(previewIdentity.subtitle) &&
       /^DEWR theme preview/i.test(previewIdentity.title),
     JSON.stringify(previewIdentity),
+  );
+  const expectedDewrPalette = {
+    graphite: "#3e4246", eucalyptus: "#78a34f", mint: "#4cbfad", lime: "#a6bd38",
+    spruce: "#055044", teal: "#149b9e", yellow: "#f1be36", orange: "#f47920",
+    red: "#af2a30", pink: "#d37e94", indigo: "#86226c", plum: "#611d57",
+    sky: "#90d6ec", blue: "#0060a1", navy: "#262165", "data-pine": "#0a5245",
+    "data-ocean": "#47bfad", "data-rose": "#ff66a1", "data-tiger": "#f26324",
+    "data-electric": "#4f1cff",
+  };
+  check(
+    "DEWR core, supporting and data palette values match the June 2026 guide",
+    Object.entries(expectedDewrPalette).every(([name, value]) => previewIdentity.palette[name] === value),
+    JSON.stringify(previewIdentity.palette),
   );
   await previewPage.getByRole("button", { name: "Search the course" }).click();
   check(

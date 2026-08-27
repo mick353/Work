@@ -192,85 +192,107 @@
 
    Activated only by ?brand=dewr. The default experience is deliberately
    unchanged while trainers evaluate the direction. Values come from the
-   departmental colour guide; where a raw colour is too light for normal
-   text, a documented accessible pairing or a tint is used instead.
-
-   Primary palette: Graphite #404246, Eucalyptus #7A9F4C,
-   Dark Eucalyptus #5D7A38, Grey #A4A7A9, Mid grey #D7D8D8.
-   Secondary and tertiary colours remain supporting stage/graphic colours.
+   DEWR Brand Guidelines version 1 (June 2026). The named palette values stay
+   exact; semantic tokens choose the guide's approved black/white pairings.
+   Graphite, Eucalyptus, Mint, Lime, Spruce and Teal are the core palette.
+   Supporting colours stay secondary; the five DATA colours are reserved for
+   information graphics. Tints are used only where the guide permits them.
    ================================================================== */
 
 :root[data-brand="dewr"] {
   font-family: "Aptos", "Segoe UI", Arial, sans-serif;
-  --on-dark-accent: #b9cd9e;
+
+  /* Authoritative June 2026 palette. Keep these declarations literal so a
+     regression check can distinguish the guide from the superseded 2024 set. */
+  --dewr-graphite: #3e4246;
+  --dewr-eucalyptus: #78a34f;
+  --dewr-mint: #4cbfad;
+  --dewr-lime: #a6bd38;
+  --dewr-spruce: #055044;
+  --dewr-teal: #149b9e;
+  --dewr-yellow: #f1be36;
+  --dewr-orange: #f47920;
+  --dewr-red: #af2a30;
+  --dewr-pink: #d37e94;
+  --dewr-indigo: #86226c;
+  --dewr-plum: #611d57;
+  --dewr-sky: #90d6ec;
+  --dewr-blue: #0060a1;
+  --dewr-navy: #262165;
+  --dewr-data-pine: #0a5245;
+  --dewr-data-ocean: #47bfad;
+  --dewr-data-rose: #ff66a1;
+  --dewr-data-tiger: #f26324;
+  --dewr-data-electric: #4f1cff;
+  --on-dark-accent: #ffffff;
 
   --n-0: #ffffff;
   --n-25: #fbfbfa;
   --n-50: #f7f7f5;
-  --n-100: #f1f2ee;
-  --n-200: #d7d8d8;
-  --n-300: #8a8d8f;
-  --n-400: #7b7e81;
-  --n-500: #62656a;
-  --n-600: #56595d;
-  --n-700: #4c4e52;
-  --n-800: #46484b;
-  --n-900: #404246;
+  --n-100: #f2f3f3;
+  --n-200: #dadbdc;
+  --n-300: #b2b4b5;
+  --n-400: #85888a;
+  --n-500: #696d70;
+  --n-600: #5b5f62;
+  --n-700: #4f5356;
+  --n-800: #474b4e;
+  --n-900: var(--dewr-graphite);
 
   --canvas: var(--n-50);
   --paper: var(--n-0);
   --paper-strong: var(--n-0);
   --surface-alt: var(--n-100);
-  --ink: #404246;
-  --muted: #62656a;
-  --line: #d7d8d8;
-  --line-strong: #8a8d8f;
+  --ink: var(--dewr-graphite);
+  --muted: #5b5f62;
+  --line: #dadbdc;
+  --line-strong: #85888a;
 
-  /* White on Dark Eucalyptus is AA for normal text. Eucalyptus itself is
-     reserved for focus, large accents and non-text graphics (3.05:1 on white). */
-  --brand: #5d7a38;
-  --brand-strong: #4a632b;
-  --brand-bright: #7a9f4c;
-  --brand-soft: #eff4e8;
+  /* Spruce with white is an approved regular-text pairing. Eucalyptus is the
+     visible brand accent, but never carries small white text or focus alone. */
+  --brand: var(--dewr-spruce);
+  --brand-strong: var(--dewr-graphite);
+  --brand-bright: var(--dewr-spruce);
+  --brand-soft: #eff4ea;
   --brand-ink: #ffffff;
-  --brand-text: #4a632b;
+  --brand-text: var(--dewr-spruce);
 
-  /* Raw DEWR colours provide the visual identity. Accessible darker partners
-     carry text and white-label fills through the existing -ink contract. */
-  --stage-1: #7a9f4c;  --stage-1-ink: #4a632b;
-  --stage-2: #009b9f;  --stage-2-ink: #0d2c6c;
-  --stage-3: #62165c;  --stage-3-ink: #62165c;
-  --stage-4: #0d2c6c;  --stage-4-ink: #0d2c6c;
-  --stage-5: #287db2;  --stage-5-ink: #004f9d;
-  --stage-6: #91040d;  --stage-6-ink: #91040d;
-  --stage-7: #004f9d;  --stage-7-ink: #004f9d;
-  --stage-8: #573393;  --stage-8-ink: #573393;
-  --stage-9: #d37190;  --stage-9-ink: #62165c;
-  --stage-10: #f26322; --stage-10-ink: #91040d;
-  --stage-11: #404246; --stage-11-ink: #404246;
-  --stage-12: #5d7a38; --stage-12-ink: #4a632b;
+  /* Light-mode stage rails use exact colours that remain visible against
+     white. The -ink token is separately safe for normal-size text. */
+  --stage-1: var(--dewr-spruce);        --stage-1-ink: var(--dewr-spruce);
+  --stage-2: var(--dewr-teal);          --stage-2-ink: var(--dewr-spruce);
+  --stage-3: var(--dewr-plum);          --stage-3-ink: var(--dewr-plum);
+  --stage-4: var(--dewr-navy);          --stage-4-ink: var(--dewr-navy);
+  --stage-5: var(--dewr-blue);          --stage-5-ink: var(--dewr-blue);
+  --stage-6: var(--dewr-red);           --stage-6-ink: var(--dewr-red);
+  --stage-7: var(--dewr-indigo);        --stage-7-ink: var(--dewr-indigo);
+  --stage-8: var(--dewr-graphite);      --stage-8-ink: var(--dewr-graphite);
+  --stage-9: var(--dewr-data-electric); --stage-9-ink: var(--dewr-data-electric);
+  --stage-10: var(--dewr-data-pine);    --stage-10-ink: var(--dewr-data-pine);
+  --stage-11: var(--dewr-spruce);       --stage-11-ink: var(--dewr-spruce);
+  --stage-12: var(--dewr-blue);         --stage-12-ink: var(--dewr-blue);
 
-  --accent: var(--brand-strong);
+  --accent: var(--brand);
   --accent-soft: var(--brand-soft);
-  --accent-deep: var(--brand-strong);
-  --vivid: var(--brand-bright);
+  --accent-deep: var(--brand);
+  --vivid: var(--dewr-eucalyptus);
   --on-deep: #ffffff;
-  --stage: var(--brand-bright);
+  --stage: var(--brand);
 
   --accent-1: var(--stage-1-ink); --accent-2: var(--stage-2-ink); --accent-3: var(--stage-3-ink);
   --accent-4: var(--stage-4-ink); --accent-5: var(--stage-5-ink); --accent-6: var(--stage-6-ink);
   --accent-7: var(--stage-7-ink); --accent-8: var(--stage-8-ink); --accent-9: var(--stage-9-ink);
-  --vivid-1: var(--stage-1); --vivid-2: var(--stage-2); --vivid-3: var(--stage-3);
-  --vivid-4: var(--stage-4); --vivid-5: var(--stage-5); --vivid-6: var(--stage-6);
-  --vivid-7: var(--stage-7); --vivid-8: var(--stage-8); --vivid-9: var(--stage-9);
-  --accent-1-soft: #f0f4ea; --accent-2-soft: #e6f5f5; --accent-3-soft: #f3e8f2;
-  --accent-4-soft: #e7eaf0; --accent-5-soft: #eaf2f7; --accent-6-soft: #f6e6e7;
-  --accent-7-soft: #e6eef5; --accent-8-soft: #eeeaf4; --accent-9-soft: #f8edf1;
-  --accent-9-deep: #62165c;
+  --vivid-1: var(--dewr-eucalyptus); --vivid-2: var(--dewr-mint); --vivid-3: var(--dewr-lime);
+  --vivid-4: var(--dewr-teal); --vivid-5: var(--dewr-blue); --vivid-6: var(--dewr-yellow);
+  --vivid-7: var(--dewr-data-rose); --vivid-8: var(--dewr-data-ocean); --vivid-9: var(--dewr-data-electric);
+  --accent-1-soft: #eff4ea; --accent-2-soft: #e9f7f5; --accent-3-soft: #f2eaf0;
+  --accent-4-soft: #e9e8ef; --accent-5-soft: #e6eff5; --accent-6-soft: #f5e9ea;
+  --accent-7-soft: #f2e9ef; --accent-8-soft: #ecedee; --accent-9-soft: #ede9ff;
+  --accent-9-deep: var(--dewr-data-electric);
 
-  --shadow-sm: 0 1px 2px rgba(64, 66, 70, 0.06);
-  --shadow: 0 1px 2px rgba(64, 66, 70, 0.05), 0 8px 24px rgba(64, 66, 70, 0.08);
-  --shadow-lg: 0 2px 4px rgba(64, 66, 70, 0.06), 0 18px 44px rgba(64, 66, 70, 0.14);
+  --shadow-sm: 0 1px 2px rgba(62, 66, 70, 0.06);
+  --shadow: 0 1px 2px rgba(62, 66, 70, 0.05), 0 8px 24px rgba(62, 66, 70, 0.08);
+  --shadow-lg: 0 2px 4px rgba(62, 66, 70, 0.06), 0 18px 44px rgba(62, 66, 70, 0.14);
 }
 
 :root[data-brand="dewr"][data-theme="dark"] {
@@ -296,33 +318,33 @@
   --line: #3f4245;
   --line-strong: #6f7376;
 
-  --brand: #b9cd9e;
-  --brand-strong: #d5e1c7;
-  --brand-bright: #a7c080;
-  --brand-soft: #273020;
-  --brand-ink: #404246;
-  --brand-text: #b9cd9e;
+  --brand: var(--dewr-eucalyptus);
+  --brand-strong: var(--dewr-mint);
+  --brand-bright: var(--dewr-eucalyptus);
+  --brand-soft: #30392d;
+  --brand-ink: #000000;
+  --brand-text: var(--dewr-mint);
 
-  /* Departmental tints are permitted on dark backgrounds. Each value remains
-     above AA as text against the prototype's dark paper surface. */
-  --stage-1: #b8cd9d;  --stage-1-ink: #b8cd9d;
-  --stage-2: #80cdcf;  --stage-2-ink: #80cdcf;
-  --stage-3: #b985b3;  --stage-3-ink: #b985b3;
-  --stage-4: #8696b5;  --stage-4-ink: #8696b5;
-  --stage-5: #94bed9;  --stage-5-ink: #94bed9;
-  --stage-6: #c88286;  --stage-6-ink: #c88286;
-  --stage-7: #80a7ce;  --stage-7-ink: #80a7ce;
-  --stage-8: #ab99c9;  --stage-8-ink: #ab99c9;
-  --stage-9: #e2b8c7;  --stage-9-ink: #e2b8c7;
-  --stage-10: #f8b191; --stage-10-ink: #f8b191;
-  --stage-11: #a0a1a3; --stage-11-ink: #a0a1a3;
-  --stage-12: #aec09b; --stage-12-ink: #aec09b;
+  /* On the dark paper, the guide's brighter exact colours clear regular-text
+     contrast. Dark core/supporting colours are not forced into unsafe use. */
+  --stage-1: var(--dewr-eucalyptus); --stage-1-ink: var(--dewr-eucalyptus);
+  --stage-2: var(--dewr-mint);       --stage-2-ink: var(--dewr-mint);
+  --stage-3: var(--dewr-lime);       --stage-3-ink: var(--dewr-lime);
+  --stage-4: var(--dewr-data-ocean); --stage-4-ink: var(--dewr-data-ocean);
+  --stage-5: var(--dewr-yellow);     --stage-5-ink: var(--dewr-yellow);
+  --stage-6: var(--dewr-orange);     --stage-6-ink: var(--dewr-orange);
+  --stage-7: var(--dewr-pink);       --stage-7-ink: var(--dewr-pink);
+  --stage-8: var(--dewr-sky);        --stage-8-ink: var(--dewr-sky);
+  --stage-9: var(--dewr-eucalyptus); --stage-9-ink: var(--dewr-eucalyptus);
+  --stage-10: var(--dewr-data-rose); --stage-10-ink: var(--dewr-data-rose);
+  --stage-11: var(--dewr-orange);     --stage-11-ink: var(--dewr-orange);
+  --stage-12: var(--dewr-mint);      --stage-12-ink: var(--dewr-mint);
 
-  --accent: var(--brand);
+  --accent: var(--dewr-mint);
   --accent-soft: var(--brand-soft);
   --accent-deep: var(--brand-strong);
   --vivid: var(--brand-bright);
-  --on-deep: #404246;
+  --on-deep: #000000;
   --stage: var(--brand);
 
   --accent-1: var(--stage-1); --accent-2: var(--stage-2); --accent-3: var(--stage-3);
@@ -331,10 +353,10 @@
   --vivid-1: var(--stage-1); --vivid-2: var(--stage-2); --vivid-3: var(--stage-3);
   --vivid-4: var(--stage-4); --vivid-5: var(--stage-5); --vivid-6: var(--stage-6);
   --vivid-7: var(--stage-7); --vivid-8: var(--stage-8); --vivid-9: var(--stage-9);
-  --accent-1-soft: #273020; --accent-2-soft: #123336; --accent-3-soft: #32172f;
-  --accent-4-soft: #151f35; --accent-5-soft: #172b36; --accent-6-soft: #36181b;
-  --accent-7-soft: #14273b; --accent-8-soft: #2b203a; --accent-9-soft: #3a232d;
-  --accent-9-deep: #e2b8c7;
+  --accent-1-soft: #30392d; --accent-2-soft: #283e3d; --accent-3-soft: #383e28;
+  --accent-4-soft: #1e383b; --accent-5-soft: #463e28; --accent-6-soft: #463224;
+  --accent-7-soft: #403339; --accent-8-soft: #344249; --accent-9-soft: #273e3d;
+  --accent-9-deep: var(--dewr-data-ocean);
 }
 
 :root[data-brand="dewr"] h1,
@@ -344,17 +366,17 @@
 :root[data-brand="dewr"] .hero-index strong,
 :root[data-brand="dewr"] .path-number,
 :root[data-brand="dewr"] .module-index {
-  font-family: "Montserrat", "Aptos Display", "Segoe UI", Arial, sans-serif;
+  font-family: "Aptos Display", "Aptos", "Segoe UI", Arial, sans-serif;
 }
 
 :root[data-brand="dewr"] .topbar {
-  box-shadow: inset 0 4px 0 var(--brand-bright);
+  box-shadow: inset 0 4px 0 var(--dewr-eucalyptus);
 }
 
 :root[data-brand="dewr"] .brand-mark {
   border-radius: 4px;
-  box-shadow: inset 0 -5px 0 var(--brand-bright);
-  font-family: "Montserrat", "Aptos", "Segoe UI", Arial, sans-serif;
+  box-shadow: inset 0 -5px 0 var(--dewr-eucalyptus);
+  font-family: "Aptos Display", "Aptos", "Segoe UI", Arial, sans-serif;
   font-weight: 800;
 }
 

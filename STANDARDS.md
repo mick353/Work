@@ -115,9 +115,11 @@ SVG text does not wrap or reflow. Position labels in **fixed columns**. A label 
 
 ## 7. Accessibility
 
+The product design target is **WCAG 2.2 Level AA**. Automated tooling is one part of the evidence: axe-core currently supplies tagged WCAG 2.0/2.1 A/AA rules, while the project adds explicit checks for relevant WCAG 2.2 behaviours and still requires manual review.
+
 | Check | Requirement |
 |---|---|
-| Automated accessibility scan | Zero serious or critical axe violations from rules tagged WCAG 2.0/2.1 A/AA, across the views, themes and brand modes exercised by the suite |
+| Automated accessibility scan | Zero serious or critical axe violations from the supported rules tagged WCAG 2.0/2.1 A/AA, across the views, themes and brand modes exercised by the suite |
 | Text contrast | 4.5:1 normal, 3:1 large — checked on **every stage page**, both themes and every supported brand mode |
 | Target size | Project rule: every measured button and link is at least 24 × 24 CSS pixels. This is deliberately stricter than [WCAG 2.2 SC 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html), which also permits spacing and four other exceptions |
 | Keyboard | Closed mobile drawer is `inert`; opening moves focus in; Escape closes and returns focus |
