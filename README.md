@@ -37,7 +37,7 @@ If you are an AI agent picking this up cold: read AUTHORING.md end to end before
 
 - The combined learner site publishes two maintained packages: Product Management Fundamentals and Closure Reports.
 - Both packages can also be built and distributed independently without the catalogue or the other course's content.
-- Course Workshop 0.5.2 covers the complete current package shape, including advanced learning content, embedded media and source decks. Its DEWR-aligned visual system and code-level readiness controls are implemented; organisational production readiness still requires real trainer and manual accessibility/device evidence.
+- Course Workshop 0.5.3 covers the complete current package shape, including advanced learning content, embedded media and source decks. It protects in-progress work when loading, cloning or resetting drafts, pauses autosave instead of overwriting an unreadable browser draft, and presents source-rich courses in compact expandable summaries. Its DEWR-aligned visual system and code-level readiness controls are implemented; organisational production readiness still requires real trainer and manual accessibility/device evidence.
 - Repository installation and online publication remain release-custodian actions. Browser authoring never changes Git or publishes a course by itself.
 - Draft v2 migration, exact-content release binding, HTTPS/media hardening, per-course quality profiles, versioned release archives and learner curriculum-version choices are implemented. The remaining external evidence is recorded in [ROADMAP.md](ROADMAP.md).
 - The learner site and generated learner packages use the DEWR-aligned visual theme by default. This remains an unofficial internal learning aid, not a claim of departmental endorsement.

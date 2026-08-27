@@ -65,6 +65,9 @@ import { readBrowserDraft, writeBrowserDraft } from "./storage";
 
 type View = "instructions" | "setup" | "stages" | "supports" | "advanced" | "media" | "review";
 type IssueFilter = "all" | AuthoringIssue["severity"];
+type InitialDraft = LoadedDraft & { storageLoadError?: string };
+
+const STORAGE_RECOVERY_MESSAGE = "A browser-saved draft could not be opened. Autosave is paused so the unreadable copy is not overwritten. Load a downloaded draft, or deliberately start a new course when you are ready to replace it.";
 
 const NAV: Array<{ id: View; label: string; description: string; icon: typeof Settings2 }> = [
   { id: "instructions", label: "How it works", description: "Author, review and release safely", icon: Info },
@@ -95,19 +98,28 @@ function hasAuthoredCourseContent(entry: TrainingPackage): boolean {
     JSON.stringify(entry.content) !== JSON.stringify(starter.content);
 }
 
-function loadLocalDraft(): LoadedDraft {
-  try {
-    for (const key of [DRAFT_STORAGE_KEY, ...LEGACY_DRAFT_STORAGE_KEYS]) {
+function hasReplacementSensitiveWork(entry: TrainingPackage, release: ReleaseChecklist, lineage: DraftLineage, authoredContent = hasAuthoredCourseContent(entry)): boolean {
+  const starter = createStarterPackage();
+  const releaseHasEvidence = Object.values(release).some((value) => value === true || (typeof value === "string" && value.trim().length > 0));
+  const lineageHasHistory = lineage.origin !== "blank" || lineage.revision > 1 || Boolean(lineage.lastExportedAt || lineage.basedOn);
+  return authoredContent || JSON.stringify(entry.manifest) !== JSON.stringify(starter.manifest) || releaseHasEvidence || lineageHasHistory;
+}
+
+function loadLocalDraft(): InitialDraft {
+  let unreadableDraftFound = false;
+  for (const key of [DRAFT_STORAGE_KEY, ...LEGACY_DRAFT_STORAGE_KEYS]) {
+    try {
       const raw = window.localStorage.getItem(key);
       if (!raw) continue;
       const draft = readDraft(JSON.parse(raw) as unknown);
       packageForExport(draft.package);
       return draft;
+    } catch {
+      unreadableDraftFound = true;
     }
-    return freshDraft();
-  } catch {
-    return freshDraft();
   }
+  const fresh = freshDraft();
+  return unreadableDraftFound ? { ...fresh, storageLoadError: STORAGE_RECOVERY_MESSAGE } : fresh;
 }
 
 function wordCount(value: string | undefined): number {
@@ -355,16 +367,17 @@ function StageTabs({ entry, active, setActive }: { entry: TrainingPackage; activ
 }
 
 export function App() {
-  const [initialDraft] = useState<LoadedDraft>(loadLocalDraft);
+  const [initialDraft] = useState<InitialDraft>(loadLocalDraft);
   const [entry, setEntry] = useState<TrainingPackage>(initialDraft.package);
   const [release, setRelease] = useState<ReleaseChecklist>(initialDraft.release);
   const [lineage, setLineage] = useState<DraftLineage>(initialDraft.lineage);
   const [view, setView] = useState<View>("instructions");
   const [activeStage, setActiveStage] = useState(entry.content.modules[0]?.id ?? "");
-  const [saveLabel, setSaveLabel] = useState("Saved locally");
+  const [saveLabel, setSaveLabel] = useState(initialDraft.storageLoadError ? "Autosave paused — recovery required" : "Checking browser storage…");
   const [draftBytes, setDraftBytes] = useState(() => new Blob([JSON.stringify(makeDraft(initialDraft.package, initialDraft.release, initialDraft.lineage))]).size);
-  const [message, setMessage] = useState(initialDraft.migrationNotice ?? "");
+  const [message, setMessage] = useState(initialDraft.migrationNotice ?? initialDraft.storageLoadError ?? "");
   const [browserReady, setBrowserReady] = useState(false);
+  const [storageLoadError, setStorageLoadError] = useState(initialDraft.storageLoadError ?? "");
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("error");
   const [cloneProgress, setCloneProgress] = useState("");
   const [focusAnnouncement, setFocusAnnouncement] = useState("");
@@ -379,6 +392,7 @@ export function App() {
   const hasDurationEvidence = entry.content.modules.some((stage) => stage.sections.some((section) => wordCount(section.body) > 0));
   const contentReady = counts.errors === 0;
   const untouchedDraft = !hasAuthoredCourseContent(entry);
+  const draftHasWork = hasReplacementSensitiveWork(entry, release, lineage, !untouchedDraft);
   const missingReleaseRecord = releaseRecordMissing(release, entry.manifest.reviewed);
   const releaseChecksComplete = missingReleaseRecord.length === 0;
   const statusAvailable = entry.manifest.status === "available";
@@ -393,19 +407,31 @@ export function App() {
     let cancelled = false;
     void readBrowserDraft()
       .then((stored) => {
-        if (cancelled || !stored) return;
+        if (cancelled) return;
+        if (!stored) {
+          if (!initialDraft.storageLoadError) setBrowserReady(true);
+          return;
+        }
         const draft = readDraft(stored);
         packageForExport(draft.package);
         setEntry(draft.package);
         setRelease(draft.release);
         setLineage(draft.lineage);
         setActiveStage(draft.package.content.modules[0]?.id ?? "");
+        setStorageLoadError("");
         if (draft.migrationNotice) setMessage(draft.migrationNotice);
+        else if (hasReplacementSensitiveWork(draft.package, draft.release, draft.lineage)) setMessage(`Recovered “${draft.package.manifest.title || "Untitled training course"}” from this browser. Autosave is active; download a complete draft before moving the work to another device.`);
+        setBrowserReady(true);
       })
-      .catch(() => undefined)
-      .finally(() => { if (!cancelled) setBrowserReady(true); });
+      .catch(() => {
+        if (cancelled) return;
+        setStorageLoadError(STORAGE_RECOVERY_MESSAGE);
+        setMessage(STORAGE_RECOVERY_MESSAGE);
+        setSaveLabel("Autosave paused — recovery required");
+        setBrowserReady(false);
+      });
     return () => { cancelled = true; };
-  }, []);
+  }, [initialDraft.storageLoadError]);
 
   useEffect(() => {
     if (!browserReady) return;
@@ -433,6 +459,7 @@ export function App() {
   }, [activeStage, entry.content.modules]);
 
   useEffect(() => {
+    if (focusRequest === 0) return;
     const timer = window.setTimeout(() => {
       const pendingIssue = pendingIssueRef.current;
       let target: HTMLElement | null = null;
@@ -469,7 +496,7 @@ export function App() {
       }
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [activeStage, focusRequest, view]);
+  }, [focusRequest, view]);
 
   const updateManifest = <K extends keyof TrainingPackage["manifest"]>(key: K, value: TrainingPackage["manifest"][K]) => {
     setEntry((current) => ({ ...current, manifest: { ...current.manifest, [key]: value } }));
@@ -532,10 +559,13 @@ export function App() {
     try {
       const imported = readDraft(await readJsonFile(file));
       packageForExport(imported.package);
+      if ((draftHasWork || storageLoadError) && !window.confirm(`Load “${file.name}” and replace the current browser draft? Download the current draft first if you may need it again.`)) return;
       setEntry(imported.package);
       setRelease(imported.release);
       setLineage(imported.lineage);
       setActiveStage(imported.package.content.modules[0]?.id ?? "");
+      setStorageLoadError("");
+      setBrowserReady(true);
       setView("instructions");
       setMessage(imported.migrationNotice ?? `Loaded ${file.name} (draft ${imported.lineage.draftId}, revision ${imported.lineage.revision}). Review the checks before exporting.`);
     } catch (error) {
@@ -546,18 +576,21 @@ export function App() {
   };
 
   const startBlankCourse = (destination: View) => {
-    if (!untouchedDraft && !window.confirm("Start a new blank course? Your current draft will be replaced. Download it first if you may need this work again.")) return;
+    const recoveringUnreadableDraft = Boolean(storageLoadError);
+    if ((recoveringUnreadableDraft || draftHasWork) && !window.confirm(recoveringUnreadableDraft ? "A browser-saved draft could not be opened. Start a new blank course and deliberately replace that saved copy? Load a downloaded draft instead if you may need the earlier work." : "Start a new blank course? Your current draft will be replaced. Download it first if you may need this work again.")) return;
     const fresh = createStarterPackage();
     setEntry(fresh);
     setRelease({ ...EMPTY_RELEASE_CHECKLIST });
     setLineage(createDraftLineage());
     setActiveStage(fresh.content.modules[0].id);
+    setStorageLoadError("");
+    setBrowserReady(true);
     setView(destination);
-    setMessage(untouchedDraft ? "Blank course ready. Start with Course setup." : "Started a new blank course. The previous local draft was replaced.");
+    setMessage(recoveringUnreadableDraft ? "Started a new blank course and replaced the unreadable browser draft. Autosave is active again." : untouchedDraft ? "Blank course ready. Start with Course setup." : "Started a new blank course. The previous local draft was replaced.");
   };
 
   const cloneTemplate = async (template: TrainingPackage) => {
-    if (!window.confirm(`Start a new editable course from “${template.manifest.title}”? Your current draft will be replaced, so download it first if needed.`)) return;
+    if ((storageLoadError || draftHasWork) && !window.confirm(storageLoadError ? `A browser-saved draft could not be opened. Start from “${template.manifest.title}” and deliberately replace that saved copy? Load a downloaded draft instead if you may need the earlier work.` : `Start a new editable course from “${template.manifest.title}”? Your current draft will be replaced, so download it first if needed.`)) return;
     const startedAt = performance.now();
     setCloneProgress(`Preparing ${template.manifest.title}…`);
     await new Promise<void>((resolve) => window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve())));
@@ -579,6 +612,8 @@ export function App() {
     setRelease({ ...EMPTY_RELEASE_CHECKLIST });
     setLineage(createDraftLineage("clone", { packageId: template.manifest.id, packageVersion: template.manifest.version }));
     setActiveStage(clone.content.modules[0]?.id ?? "");
+    setStorageLoadError("");
+    setBrowserReady(true);
     setView("setup");
     setMessage(`Created a separate draft from ${template.manifest.title}. The published original was not changed. Give this adaptation its own stable id and complete a fresh review.`);
     const minimumProgressTime = template.content.slides.length > 20 ? 400 : 120;
@@ -739,15 +774,20 @@ npm run verify`}</code></pre>
             const guideUses = entry.content.fieldGuide.filter((guide) => guide.sourceIds.includes(sourceItem.id)).length;
             const mediaUses = (entry.content.assets ?? []).filter((asset) => asset.sourceId === sourceItem.id).length;
             const detailsComplete = Boolean(sourceItem.id.trim() && sourceItem.title.trim() && sourceItem.publisher.trim() && sourceItem.note.trim());
-            return <div className="source-editor" key={`${sourceItem.id}-${index}`}>
-              <div className="source-number">{index + 1}</div>
-              <div className="linkage-summary" aria-label={`Source ${index + 1} connection summary`}>
-                <span className={detailsComplete ? sourceItem.checked?.trim() ? "linked" : "pending" : "incomplete"}>{detailsComplete ? sourceItem.checked?.trim() ? `Checked ${sourceItem.checked}` : "Details complete · check pending" : "Source details incomplete"}</span>
-                <span>{lessonUses} lesson section{lessonUses === 1 ? "" : "s"}</span>
-                <span>{guideUses} guide entr{guideUses === 1 ? "y" : "ies"}</span>
-                <span>{mediaUses} media item{mediaUses === 1 ? "" : "s"}</span>
-              </div>
-              <div className="form-grid">
+            return <details className="source-editor" key={`source-${index}`} open={entry.content.sources.length === 1 || !detailsComplete ? true : undefined}>
+              <summary>
+                <span className="source-number">{index + 1}</span>
+                <span className="source-summary-title"><strong>{sourceItem.title.trim() || "Untitled source"}</strong><small>{sourceItem.id.trim() || "Source id missing"}</small></span>
+                <span className="linkage-summary" aria-label={`Source ${index + 1} connection summary`}>
+                  <span className={detailsComplete ? sourceItem.checked?.trim() ? "linked" : "pending" : "incomplete"}>{detailsComplete ? sourceItem.checked?.trim() ? `Checked ${sourceItem.checked}` : "Details complete · check pending" : "Source details incomplete"}</span>
+                  <span>{lessonUses} lesson section{lessonUses === 1 ? "" : "s"}</span>
+                  <span>{guideUses} guide entr{guideUses === 1 ? "y" : "ies"}</span>
+                  <span>{mediaUses} media item{mediaUses === 1 ? "" : "s"}</span>
+                </span>
+                <span className="source-summary-action">Edit <ChevronRight size={16} aria-hidden="true" /></span>
+              </summary>
+              <div className="source-editor-body">
+                <div className="form-grid">
                 <InputField id={`source-${index}-id`} label="Source id" value={sourceItem.id} hint="The stable link used by lessons, the field guide and media. Do not rename after release." onChange={(value) => {
                   setEntry((current) => renameSourceId(current, sourceItem.id, value));
                 }} />
@@ -763,12 +803,13 @@ npm run verify`}</code></pre>
                 <InputField label="URL (optional)" type="url" hint="Use a public HTTPS address. File, data, JavaScript and credential-bearing links are blocked." value={sourceItem.url ?? ""} onChange={(value) => {
                   const sources = [...entry.content.sources]; sources[index] = { ...sourceItem, url: value || undefined }; updateContent("sources", sources);
                 }} />
+                </div>
+                <TextAreaField id={`source-${index}-note`} label="How this source is used" hint="State whether it governs the course, supports a claim, supplies a worked example or provides comparison practice." value={sourceItem.note} onChange={(value) => {
+                  const sources = [...entry.content.sources]; sources[index] = { ...sourceItem, note: value }; updateContent("sources", sources);
+                }} rows={3} />
+                {entry.content.sources.length > 1 && <button type="button" className="text-danger" onClick={() => updateContent("sources", entry.content.sources.filter((_, sourceIndex) => sourceIndex !== index))}><Trash2 size={16} aria-hidden="true" /> Remove source</button>}
               </div>
-              <TextAreaField id={`source-${index}-note`} label="How this source is used" hint="State whether it governs the course, supports a claim, supplies a worked example or provides comparison practice." value={sourceItem.note} onChange={(value) => {
-                const sources = [...entry.content.sources]; sources[index] = { ...sourceItem, note: value }; updateContent("sources", sources);
-              }} rows={3} />
-              {entry.content.sources.length > 1 && <button type="button" className="text-danger" onClick={() => updateContent("sources", entry.content.sources.filter((_, sourceIndex) => sourceIndex !== index))}><Trash2 size={16} aria-hidden="true" /> Remove source</button>}
-            </div>;
+            </details>;
           })}
         </div>
       </Card></div>
@@ -1040,7 +1081,7 @@ npm run verify`}</code></pre>
       </aside>
       <main id="studio-main" className="studio-main" tabIndex={-1}>
         <header className="topbar"><div><span className="course-kicker">Current draft</span><strong>{entry.manifest.title || "Untitled training course"}</strong></div><div className="topbar-meta"><span>v{entry.manifest.version}</span><span>{entry.content.modules.length} stage{entry.content.modules.length === 1 ? "" : "s"}</span><span>{hasDurationEvidence ? `${packageForExport(entry).content.totalMinutes} min` : "Duration pending"}</span></div></header>
-        {message && <div className="notice" role="status"><CircleHelp size={18} /><span>{message}</span><button type="button" aria-label="Dismiss message" onClick={() => setMessage("")}>×</button></div>}
+        {message && <div className={`notice ${storageLoadError && message === storageLoadError ? "notice-critical" : ""}`} role={storageLoadError && message === storageLoadError ? "alert" : "status"}><CircleHelp size={18} /><span>{message}</span><button type="button" aria-label="Dismiss message" onClick={() => setMessage("")}>×</button></div>}
         <div className="studio-workspace">{view === "instructions" ? renderInstructions() : view === "setup" ? renderSetup() : view === "stages" ? renderStages() : view === "supports" ? renderSupports() : view === "advanced" ? <AdvancedEditor entry={entry} setEntry={setEntry} /> : view === "media" ? <MediaEditor entry={entry} setEntry={setEntry} setMessage={setMessage} /> : renderReview()}</div>
         <footer className="step-footer">
           <button type="button" className="secondary" disabled={currentIndex === 0} onClick={() => navigateTo(NAV[currentIndex - 1]?.id ?? "instructions")}><ChevronLeft size={17} />Previous</button>

@@ -156,6 +156,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .notice { display: flex; align-items: center; gap: 9px; margin: 18px clamp(24px, 4vw, 58px) 0; padding: 11px 13px; color: var(--dewr-spruce); border: 1px solid #b8d8d4; border-radius: 10px; background: var(--information-soft); font-size: .82rem; }
 .notice span { flex: 1; }
 .notice button { color: inherit; border: 0; background: transparent; font-size: 1.35rem; line-height: 1; }
+.notice-critical { color: var(--warning); border-color: #dfca8a; background: var(--warning-soft); }
 .studio-workspace { max-width: 1220px; margin: 0 auto; padding: 44px clamp(24px, 4vw, 58px) 86px; }
 .workspace-stack { display: grid; gap: 23px; }
 .instruction-hero {
@@ -273,9 +274,24 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .text-danger { padding: 5px 0; color: var(--danger); border: 0; background: transparent; font-size: .74rem; }
 
 .source-list, .lesson-list, .support-list { display: grid; gap: 18px; }
-.source-editor, .support-row { position: relative; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-muted); }
-.source-number { position: absolute; top: -10px; left: -10px; display: grid; place-items: center; width: 28px; height: 28px; color: white; border: 3px solid var(--paper); border-radius: 50%; background: var(--forest-700); font-size: .72rem; font-weight: 900; }
+.source-editor, .support-row { position: relative; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-muted); }
+.support-row { padding: 20px; }
+.source-editor { overflow: hidden; }
+.source-editor[open] { border-color: var(--line-strong); box-shadow: 0 7px 20px rgba(62,66,70,.07); }
+.source-editor > summary { display: grid; grid-template-columns: 32px minmax(180px, .8fr) minmax(0, 1.5fr) auto; align-items: center; gap: 12px; padding: 15px 17px; cursor: pointer; list-style: none; }
+.source-editor > summary::-webkit-details-marker { display: none; }
+.source-editor[open] > summary { border-bottom: 1px solid var(--line); background: var(--forest-50); }
+.source-editor-body { display: grid; gap: 14px; padding: 20px; }
+.source-number { display: grid; place-items: center; width: 28px; height: 28px; color: white; border-radius: 50%; background: var(--forest-700); font-size: .72rem; font-weight: 900; }
+.source-summary-title { min-width: 0; }
+.source-summary-title strong, .source-summary-title small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.source-summary-title strong { color: var(--dewr-graphite); font-size: .8rem; }
+.source-summary-title small { margin-top: 3px; color: var(--muted); font-size: .65rem; }
+.source-summary-action { display: inline-flex; align-items: center; gap: 4px; color: var(--forest-800); font-size: .68rem; font-weight: 850; }
+.source-summary-action svg { transition: transform .16s ease; }
+.source-editor[open] .source-summary-action svg { transform: rotate(90deg); }
 .linkage-summary, .stage-linkage-summary { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 0 0 15px; }
+.source-editor > summary .linkage-summary { justify-content: flex-end; margin: 0; }
 .linkage-summary span, .stage-linkage-summary span { padding: 5px 8px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; background: white; font-size: .64rem; font-weight: 750; }
 .linkage-summary span:first-child { color: var(--forest-800); background: var(--forest-50); }
 .linkage-summary span.incomplete { color: var(--danger); border-color: #d9b5b8; background: var(--danger-soft); }
@@ -504,6 +520,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
   .status-guide > div, .output-guide > div { grid-template-columns: 1fr; gap: 5px; }
   .option-row { grid-template-columns: 1fr; padding: 10px; border: 1px solid var(--line); }
   .advanced-editor summary { grid-template-columns: 82px minmax(0,1fr); }
+  .source-editor > summary { grid-template-columns: 32px minmax(0,1fr) auto; }
+  .source-editor > summary .linkage-summary { grid-column: 1 / -1; justify-content: flex-start; }
   .slide-editor summary { grid-template-columns: 54px minmax(0,1fr); }
   .slide-editor summary img { width: 54px; height: 34px; }
   .slide-editor summary strong { grid-column: 2; }

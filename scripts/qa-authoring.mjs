@@ -247,6 +247,8 @@ page.on("request", (request) => { if (/^https?:/i.test(request.url())) networkRe
 await page.goto(pathToFileURL(studioFile).href);
 await page.waitForSelector(".studio-shell");
 check("Course Workshop opens as a local standalone file", await page.title() === "Course Workshop — Product Practice");
+await page.keyboard.press("Tab");
+check("The skip link is the first keyboard stop on initial load", await page.evaluate(() => document.activeElement?.classList.contains("skip-link") === true));
 const workshopTheme = await page.evaluate(() => {
   const rootStyle = getComputedStyle(document.documentElement);
   const headingStyle = getComputedStyle(document.querySelector(".instruction-hero h1"));
@@ -319,7 +321,6 @@ for (const templateTitle of ["Product Management Fundamentals", "Closure Reports
   const templateContext = await browser.newContext();
   const templatePage = await templateContext.newPage();
   await templatePage.goto(pathToFileURL(studioFile).href);
-  templatePage.once("dialog", (dialog) => void dialog.accept());
   await templatePage.locator(".template-grid article").filter({ hasText: templateTitle }).getByRole("button", { name: "Clone as new course" }).click();
   await templatePage.waitForSelector("text=Created a separate draft from");
   await templatePage.locator(".desktop-step-nav button").filter({ hasText: "Review & export" }).click();
@@ -333,7 +334,6 @@ check("Every maintained course template satisfies the Workshop profile before fr
 const blankReplacementContext = await browser.newContext();
 const blankReplacementPage = await blankReplacementContext.newPage();
 await blankReplacementPage.goto(pathToFileURL(studioFile).href);
-blankReplacementPage.once("dialog", (dialog) => void dialog.accept());
 await blankReplacementPage.locator(".template-grid article").filter({ hasText: "Product Management Fundamentals" }).getByRole("button", { name: "Clone as new course" }).click();
 await blankReplacementPage.waitForSelector("text=Created a separate draft from Product Management Fundamentals");
 await blankReplacementPage.getByRole("button", { name: /How it works/ }).click();
@@ -359,6 +359,92 @@ check(
 );
 await blankReplacementContext.close();
 
+const metadataReplacementContext = await browser.newContext();
+const metadataReplacementPage = await metadataReplacementContext.newPage();
+await metadataReplacementPage.goto(pathToFileURL(studioFile).href);
+await metadataReplacementPage.getByRole("button", { name: /Course setup/ }).click();
+await metadataReplacementPage.getByLabel("Status").selectOption("in-development");
+await metadataReplacementPage.getByRole("button", { name: /How it works/ }).click();
+const metadataDialogPromise = metadataReplacementPage.waitForEvent("dialog");
+const metadataClone = metadataReplacementPage.locator(".template-grid article").filter({ hasText: "Closure Reports" }).getByRole("button", { name: "Clone as new course" }).click();
+const metadataDialog = await metadataDialogPromise;
+const metadataPrompt = metadataDialog.message();
+await metadataDialog.dismiss();
+await metadataClone;
+check(
+  "Replacement protection includes metadata and review work, not only lesson content",
+  /current draft will be replaced/i.test(metadataPrompt) && /Untitled training course/i.test(await metadataReplacementPage.locator(".topbar").innerText()),
+  metadataPrompt,
+);
+await metadataReplacementContext.close();
+
+const corruptStorageContext = await browser.newContext();
+const corruptStoragePage = await corruptStorageContext.newPage();
+await corruptStoragePage.goto(pathToFileURL(studioFile).href);
+await corruptStoragePage.waitForTimeout(400);
+await corruptStoragePage.evaluate(async () => {
+  await new Promise((resolve, reject) => {
+    const request = indexedDB.deleteDatabase("product-practice-course-workshop");
+    request.onsuccess = () => resolve(undefined);
+    request.onerror = () => reject(request.error);
+    request.onblocked = () => reject(new Error("Database deletion was blocked"));
+  });
+  await new Promise((resolve, reject) => {
+    const request = indexedDB.open("product-practice-course-workshop", 1);
+    request.onupgradeneeded = () => request.result.createObjectStore("drafts");
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const database = request.result;
+      const transaction = database.transaction("drafts", "readwrite");
+      transaction.objectStore("drafts").put({ corrupt: true, marker: "preserve-unreadable-draft" }, "current");
+      transaction.oncomplete = () => { database.close(); resolve(undefined); };
+      transaction.onerror = () => reject(transaction.error);
+    };
+  });
+});
+await corruptStoragePage.reload();
+await corruptStoragePage.waitForSelector("text=Autosave is paused so the unreadable copy is not overwritten");
+await corruptStoragePage.waitForTimeout(600);
+const preservedCorruptDraft = await corruptStoragePage.evaluate(() => new Promise((resolve, reject) => {
+  const request = indexedDB.open("product-practice-course-workshop", 1);
+  request.onerror = () => reject(request.error);
+  request.onsuccess = () => {
+    const database = request.result;
+    const read = database.transaction("drafts", "readonly").objectStore("drafts").get("current");
+    read.onerror = () => reject(read.error);
+    read.onsuccess = () => { database.close(); resolve(read.result); };
+  };
+}));
+check(
+  "An unreadable browser draft pauses autosave instead of silently overwriting it",
+  preservedCorruptDraft?.marker === "preserve-unreadable-draft" && /Autosave paused/i.test(await corruptStoragePage.locator(".sidebar-status small").innerText()),
+);
+let unreadableReplacementPrompt = "";
+corruptStoragePage.once("dialog", (dialog) => {
+  unreadableReplacementPrompt = dialog.message();
+  void dialog.dismiss();
+});
+await corruptStoragePage.getByRole("button", { name: "Start blank course" }).click();
+check("Replacing an unreadable browser draft requires an explicit decision", /could not be opened.*deliberately replace/is.test(unreadableReplacementPrompt));
+corruptStoragePage.once("dialog", (dialog) => void dialog.accept());
+await corruptStoragePage.getByRole("button", { name: "Start blank course" }).click();
+await corruptStoragePage.waitForSelector("text=Autosave is active again");
+await corruptStorageContext.close();
+
+const recoveryContext = await browser.newContext();
+const recoveryPage = await recoveryContext.newPage();
+await recoveryPage.goto(pathToFileURL(studioFile).href);
+await recoveryPage.locator(".template-grid article").filter({ hasText: "Closure Reports" }).getByRole("button", { name: "Clone as new course" }).click();
+await recoveryPage.locator(".operation-overlay").waitFor({ state: "hidden" });
+await recoveryPage.waitForSelector("text=Saved in this browser");
+await recoveryPage.reload();
+await recoveryPage.waitForSelector("text=Recovered “Adapted Closure Reports” from this browser");
+check(
+  "A recovered browser draft is identified clearly after reload",
+  /Adapted Closure Reports/i.test(await recoveryPage.locator(".topbar").innerText()) && /Autosave is active/i.test(await recoveryPage.locator(".notice").innerText()),
+);
+await recoveryContext.close();
+
 const featureContext = await browser.newContext({ acceptDownloads: true, viewport: { width: 1440, height: 1000 } });
 const featurePage = await featureContext.newPage();
 const featureErrors = [];
@@ -366,7 +452,6 @@ featurePage.on("console", (message) => { if (message.type() === "error") feature
 await featurePage.goto(pathToFileURL(studioFile).href);
 const pmTemplate = featurePage.locator(".template-grid article").filter({ hasText: "Product Management Fundamentals" });
 check("Published Product Management is offered as an editable template", await pmTemplate.count() === 1);
-featurePage.once("dialog", (dialog) => void dialog.accept());
 const cloneClick = pmTemplate.getByRole("button", { name: "Clone as new course" }).click();
 await featurePage.waitForSelector(".operation-overlay");
 const cloneProgressText = await featurePage.locator(".operation-overlay").innerText();
@@ -377,7 +462,15 @@ check(
 );
 await cloneClick;
 await featurePage.waitForSelector("text=Created a separate draft from Product Management Fundamentals");
+await featurePage.locator(".operation-overlay").waitFor({ state: "hidden" });
 check("Cloning creates a visibly separate draft", /Adapted Product Management Fundamentals/i.test(await featurePage.locator(".topbar").innerText()));
+check("Cloning into an untouched starter does not show a needless replacement warning", await featurePage.locator(".notice").count() === 1);
+check(
+  "A source-rich cloned course starts with compact source summaries",
+  await featurePage.locator("details.source-editor").count() === 16 && await featurePage.locator("details.source-editor[open]").count() === 0 && /lesson sections.*guide entries.*media items/is.test(await featurePage.locator("details.source-editor summary").first().innerText()),
+);
+await featurePage.locator("details.source-editor summary").first().click();
+check("A trainer can expand a source summary to edit its full record", await featurePage.getByLabel("Checked").first().isVisible());
 
 await featurePage.getByRole("button", { name: /Review & export/ }).click();
 check("Advisory warnings are labelled as non-blocking", await featurePage.locator(".advisory-banner").count() === 1 && /do not disable Preview or any final export/i.test(await featurePage.locator(".advisory-banner").innerText()));
@@ -462,6 +555,26 @@ await page.getByLabel("Title").first().fill("Local persistence check");
 await page.waitForTimeout(400);
 const saved = await page.evaluate((key) => window.localStorage.getItem(key), "product-practice:course-workshop:draft-v2");
 check("Draft changes autosave to a workshop-specific storage key", Boolean(saved?.includes("Local persistence check")));
+
+await page.getByRole("button", { name: /Course setup/ }).click();
+await page.getByLabel("Course title").fill("Unsaved replacement safeguard");
+await page.waitForTimeout(50);
+const importReplacementDialog = page.waitForEvent("dialog");
+const guardedImport = page.locator('input[type="file"]').setInputFiles({
+  name: "replacement-safeguard-course-draft.json",
+  mimeType: "application/json",
+  buffer: Buffer.from(JSON.stringify(currentDraft(validPackage()))),
+});
+const importDialog = await importReplacementDialog;
+const importReplacementPrompt = importDialog.message();
+await importDialog.dismiss();
+await guardedImport;
+check(
+  "Loading a draft warns before replacing current work and Cancel preserves it",
+  /replace the current browser draft.*download the current draft/is.test(importReplacementPrompt) && await page.getByLabel("Course title").inputValue() === "Unsaved replacement safeguard",
+  importReplacementPrompt,
+);
+page.on("dialog", (dialog) => void dialog.accept());
 
 const legacyPackage = validPackage();
 await page.locator('input[type="file"]').setInputFiles({

@@ -19,7 +19,7 @@ const authoringDir = path.join(projectDir, "authoring");
 const outputFile = path.join(projectDir, "Course-Authoring-Studio.html");
 const publishedDir = path.join(projectDir, "docs", "course-workshop");
 const publishedFile = path.join(publishedDir, "index.html");
-const studioVersion = "0.5.2";
+const studioVersion = "0.5.3";
 const MAX_STUDIO_BYTES = 12 * 1024 * 1024;
 
 function escapeForScript(source) {
