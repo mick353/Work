@@ -24,7 +24,7 @@ released training package.
 
 ## Ownership and permissions
 
-The current application code and other original material authored by Mick Gobbo
+The current application code and other original material authored by Michael Robinson
 are proprietary and are protected by the accompanying [LICENSE](LICENSE).
 No permission is granted to copy, modify, redistribute, publish, host,
 sublicense or sell the current application or a derivative of it without a
