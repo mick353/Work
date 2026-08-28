@@ -15,6 +15,26 @@ function download(name: string, data: BlobPart, type: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
+function safeFilenamePart(value: string, fallback: string): string {
+  return value
+    .normalize("NFKD")
+    .replace(/[^a-z0-9._-]+/gi, "-")
+    .replace(/^[._-]+|[._-]+$/g, "") || fallback;
+}
+
+function localTimestamp(value: string): string {
+  const date = new Date(value);
+  const pad = (number: number) => String(number).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
+    `-${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
+}
+
+function portableDraftFilename(entry: TrainingPackage, draft: AuthoringDraft): string {
+  const id = safeFilenamePart(entry.manifest.id, "course").toLowerCase();
+  const version = safeFilenamePart(entry.manifest.version, "unversioned");
+  return `${id}-v${version}-draft-r${draft.lineage.revision}-${localTimestamp(draft.savedAt)}.json`;
+}
+
 function safeJsonForHtml(value: unknown): string {
   return JSON.stringify(value).replace(/</g, "\\u003c").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
 }
@@ -37,7 +57,7 @@ export function exportDraft(entry: TrainingPackage, release: ReleaseChecklist, l
   const canonical = packageForExport(entry);
   const draft = makeDraft(canonical, release, nextDraftRevision(lineage));
   download(
-    `${canonical.manifest.id}-course-draft.json`,
+    portableDraftFilename(canonical, draft),
     JSON.stringify(draft, null, 2),
     "application/json;charset=utf-8",
   );

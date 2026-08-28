@@ -566,6 +566,11 @@ const [cloneDownload] = await Promise.all([
 const cloneFile = path.join(qaDir, "adapted-pm-course-draft.json");
 await cloneDownload.saveAs(cloneFile);
 const cloneDraft = JSON.parse(await readFile(cloneFile, "utf8"));
+check(
+  "Portable draft filename carries course, version, revision, date and time",
+  /^pm-fundamentals-adapted-v0\.1\.0-draft-r2-\d{4}-\d{2}-\d{2}-\d{6}\.json$/.test(cloneDownload.suggestedFilename()),
+  cloneDownload.suggestedFilename(),
+);
 check("Clone resets identity, version, status, review evidence and approvals", cloneDraft.package.manifest.id === "pm-fundamentals-adapted" && cloneDraft.package.manifest.version === "0.1.0" && cloneDraft.package.manifest.status === "draft" && cloneDraft.package.manifest.reviewed === "" && cloneDraft.package.content.sources.every((source) => !source.checked) && cloneDraft.release.releaseApproved === false);
 check("Clone receives the portable Workshop quality profile instead of inheriting a hidden course-specific gate", cloneDraft.package.qualityProfile?.stageCount === 9 && cloneDraft.package.qualityProfile?.minimumLessonWords === 2700 && cloneDraft.package.qualityProfile?.minimumWorkedReasoningPassages === 0);
 check("Portable clone draft records stable lineage and a shareable revision", cloneDraft.draftSchemaVersion === 2 && cloneDraft.lineage?.origin === "clone" && cloneDraft.lineage?.basedOn?.packageId === "pm-fundamentals" && cloneDraft.lineage?.revision === 2 && Boolean(cloneDraft.lineage?.lastExportedAt));

@@ -5,7 +5,7 @@ The trainer-facing authoring tool for Product Practice courses.
 - **Online:** <https://mick353.github.io/Work/course-workshop/>
 - **From a copied repository:** open `Course-Authoring-Studio.html` in a modern browser.
 
-Both are the same self-contained application. No account or application server is required for authoring. Drafts autosave to a Workshop-specific IndexedDB store in that browser, which has enough capacity for embedded decks and images, and are not uploaded by the application. Smaller drafts are also mirrored to the current Workshop v2 `localStorage` key as a fallback. Use **Save/share complete draft** to move work to another computer or retain a deliberate checkpoint.
+Both are the same self-contained application. No account or application server is required for authoring. Drafts autosave to a Workshop-specific IndexedDB store in that browser, which has enough capacity for embedded decks and images, and are not uploaded by the application. Smaller drafts are also mirrored to the current Workshop v2 `localStorage` key as a fallback. Use **Save/share complete draft** to move work to another computer or retain a deliberate checkpoint. The downloaded filename records the course id, content version, draft revision and local save date/time so multiple checkpoints remain distinguishable.
 
 Course Workshop and the learner player share the DEWR-aligned colour and Aptos typography system described in [DEWR-VISUAL-THEME.md](DEWR-VISUAL-THEME.md). Aptos is used when it is installed on the device; Segoe UI and Arial remain offline-safe fallbacks. The visual treatment does not change draft content, release gates or exported-course behaviour.
 
