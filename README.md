@@ -26,7 +26,8 @@ Each document has one job. Start with the one that matches what you are doing.
 | **[ROADMAP.md](ROADMAP.md)** | You want to know what remains beyond the implemented player, exports and authoring profile |
 | **[LEARNING-SYSTEM-DIRECTION.md](LEARNING-SYSTEM-DIRECTION.md)** | You need the settled training-managed product and deployment decisions |
 | **[DEWR-VISUAL-THEME.md](DEWR-VISUAL-THEME.md)** | You need the departmental colour, typography, logo-use and accessibility rules |
-| **[NOTICE.md](NOTICE.md)** | Provenance, status and takedown contact |
+| **[LICENSE](LICENSE)** | The current proprietary permission terms and historical licence note |
+| **[NOTICE.md](NOTICE.md)** | Ownership, provenance, status and takedown contact |
 | **[DELIVERY-ASSURANCE-QUALITY-COURSE-PROPOSAL.md](DELIVERY-ASSURANCE-QUALITY-COURSE-PROPOSAL.md)** | You are reviewing the proposed third course; it is a concept and research brief, not an implemented package |
 
 If you are an AI agent picking this up cold: read AUTHORING.md end to end before changing any content, and STANDARDS.md before writing any assessment item. Both are written to be followed without further context.

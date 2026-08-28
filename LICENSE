@@ -1,33 +1,40 @@
-MIT License
+PROPRIETARY SOFTWARE LICENCE
+ALL RIGHTS RESERVED
 
-Copyright (c) 2026 Mick Gobbo
+Copyright © 2026 Mick Gobbo.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This repository and the original application code, configuration, documentation
+and other original material authored by Mick Gobbo are proprietary. No licence,
+permission or other right is granted to use, copy, reproduce, adapt, modify,
+publish, distribute, sublicense, sell, host or create derivative works from
+the current version or any future version, in whole or in part, except:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. as required by a right that cannot lawfully be excluded; or
+2. under a separate written licence or other written permission signed by the
+   rights holder.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+The public demonstration may be viewed for personal evaluation. Viewing or
+linking to the demonstration does not grant permission to download, reuse,
+modify, reproduce or redistribute the source code, course material or assets.
 
----
+The current version is provided for evaluation on an "as is" basis. To the
+maximum extent permitted by law, the rights holder gives no warranty and accepts
+no liability for loss, damage or interruption arising from use of the repository,
+the demonstration or any exported package.
 
-NOTE ON SCOPE
+COMPONENTS WITH SEPARATE RIGHTS
 
-This licence covers the APPLICATION CODE only: the contents of src/, scripts/
-and public/, and the build configuration.
+Third-party software, fonts, libraries, images and other assets remain subject
+to their own copyright notices and licence terms. This notice does not attempt
+to relicense them.
 
-It does NOT cover the course content — the lesson text, questions, flashcards,
-templates and field-guide entries — which summarises and restructures material
-from an internal Department of Employment and Workplace Relations presentation.
-See NOTICE.md for the full position on provenance and copyright.
+Course content, departmental material, source-deck images, logos, marks and
+other supplied or referenced material are outside the proprietary application
+licence and are addressed in NOTICE.md. Nothing in this file grants permission
+to reuse, publish or commercialise that material.
+
+HISTORICAL LICENCE NOTICE
+
+Some earlier commits or release bundles may have carried the MIT Licence. This
+licence governs the current version and future releases. It does not purport to
+revoke rights already granted under the terms that accompanied an earlier copy.
