@@ -20,6 +20,19 @@ function words(value: string | undefined): number {
   return (value ?? "").trim().split(/\s+/).filter(Boolean).length;
 }
 
+function learnerReferenceProblem(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value);
+    if (url.hostname.toLowerCase() === "pubmed.ncbi.nlm.nih.gov") {
+      return "PubMed is an evidence index, not a useful learner destination. Link to openly readable full text or to a substantive research-to-practice guide that explains the claim and its application.";
+    }
+  } catch {
+    // Structural URL validation reports malformed or unsafe values separately.
+  }
+  return undefined;
+}
+
 function questionTextIssues(
   question: Question,
   label: string,
@@ -126,6 +139,10 @@ export function evaluateCourse(source: TrainingPackage): AuthoringIssue[] {
     }
     if (!sourceItem.checked?.trim()) {
       add({ severity: "warning", area: "setup", targetId: `source-${index}-checked`, title: `Record when source ${index + 1} was checked`, detail: "A verification date makes future review and version decisions possible." });
+    }
+    const referenceProblem = learnerReferenceProblem(sourceItem.url);
+    if (referenceProblem) {
+      add({ severity: "error", area: "setup", targetId: `source-${index}-url`, title: `Replace source ${index + 1}'s database-only link`, detail: referenceProblem });
     }
   }
 

@@ -26,7 +26,7 @@ const modules = withDerivedMinutes(authoredModules);
 export const pmFundamentals: TrainingPackage = {
   manifest: {
     schemaVersion: PACKAGE_SCHEMA_VERSION,
-    version: "1.0.2",
+    version: "1.0.3",
     id: PM_FUNDAMENTALS_ID,
     title: "Product Management Fundamentals",
     subtitle: "Product management for Australian Government service delivery",

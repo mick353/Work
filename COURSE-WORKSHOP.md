@@ -85,6 +85,8 @@ The **Sources for this section** checkbox is meaningful even without a deck: it 
 
 Field-guide entries use the same source-reference model. Source ids are renamed consistently across lessons, field-guide entries and course-owned media.
 
+The URL is a learner destination, not merely a citation locator. Open it while signed out and confirm that the actual guide, standard, full text or substantive explanation is on that page. PubMed and other database records, search results, generic home pages, abstract-only pages and sign-in-gated courses are not suitable learner links. Where the underlying evidence is a restricted or highly technical paper, keep its formal citation in the source note and link learners to a credible open synthesis or practical guide that teaches the same supported claim.
+
 ## Media handling
 
 Imported media is resized to a maximum 1,600-pixel edge and embedded as validated image data inside the draft/package. This keeps tablet authoring, standalone learner HTML and repository transfer self-contained. Limits are 50 MB per selected source file, 150 PDF pages and 80 MB of embedded package data.

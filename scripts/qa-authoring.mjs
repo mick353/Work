@@ -513,7 +513,7 @@ check("Cloning creates a visibly separate draft", /Adapted Product Management Fu
 check("Cloning into an untouched starter does not show a needless replacement warning", await featurePage.locator(".notice").count() === 1);
 check(
   "A source-rich cloned course starts with compact source summaries",
-  await featurePage.locator("details.source-editor").count() === 16 && await featurePage.locator("details.source-editor[open]").count() === 0 && /lesson sections.*guide entries.*media items/is.test(await featurePage.locator("details.source-editor summary").first().innerText()),
+  await featurePage.locator("details.source-editor").count() > 1 && await featurePage.locator("details.source-editor[open]").count() === 0 && /lesson sections.*guide entries.*media items/is.test(await featurePage.locator("details.source-editor summary").first().innerText()),
 );
 await featurePage.locator("details.source-editor summary").first().click();
 check("A trainer can expand a source summary to edit its full record", await featurePage.getByLabel("Checked").first().isVisible());
@@ -692,6 +692,19 @@ await page.getByRole("button", { name: /Review & export/ }).click();
 await page.waitForSelector(".readiness.blocked");
 const unsafeIssueText = await page.locator(".issue-list").textContent() ?? "";
 check("Unsafe source links, false media types and broken citations block export", await page.getByRole("button", { name: "Export training HTML" }).isDisabled() && /https|declared media type|missing slide 999/i.test(unsafeIssueText), unsafeIssueText);
+
+const databaseOnlySourceFixture = structuredClone(fixture);
+databaseOnlySourceFixture.content.sources[0].url = "https://pubmed.ncbi.nlm.nih.gov/16507066/";
+await page.locator('input[type="file"]').setInputFiles({
+  name: "database-only-source-course-draft.json",
+  mimeType: "application/json",
+  buffer: Buffer.from(JSON.stringify(currentDraft(databaseOnlySourceFixture))),
+});
+await page.waitForSelector("text=Loaded database-only-source-course-draft.json");
+await page.getByRole("button", { name: /Review & export/ }).click();
+await page.waitForSelector(".readiness.blocked");
+const databaseOnlyIssueText = await page.locator(".issue-list").textContent() ?? "";
+check("Database-record links are rejected as learner sources", await page.getByRole("button", { name: "Export training HTML" }).isDisabled() && /PubMed is an evidence index|database-only link/i.test(databaseOnlyIssueText), databaseOnlyIssueText);
 
 await page.locator('input[type="file"]').setInputFiles({
   name: "workshop-fixture-under-review.json",

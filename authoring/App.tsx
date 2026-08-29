@@ -767,6 +767,7 @@ npm run verify`}</code></pre>
       <div id="source-register"><Card title="Source register" eyebrow="Evidence and authority" actions={<EmptyButton onClick={() => updateContent("sources", [...entry.content.sources, { id: nextNumericId("source", entry.content.sources.map((item) => item.id)), title: "", publisher: "", note: "", checked: "" }])}>Add source</EmptyButton>}>
         <GuidancePanel title="What counts as a checked source?">
           <p>Record the checked date only after someone has opened the named source, confirmed the relevant version and checked that the course uses it accurately. Adding a source to this form is not itself verification.</p>
+          <p>For a learner link, use the direct, substantive resource: the governing document, openly readable full text, or a credible guide that explains the evidence and how to apply it. Do not use a search result, catalogue or database record, abstract-only page, generic home page or sign-in-gated course.</p>
         </GuidancePanel>
         <div className="source-list">
           {entry.content.sources.map((sourceItem, index) => {
@@ -800,7 +801,7 @@ npm run verify`}</code></pre>
                 <InputField id={`source-${index}-checked`} label="Checked" value={sourceItem.checked ?? ""} hint="Enter only after opening the source and confirming the version and course use." onChange={(value) => {
                   const sources = [...entry.content.sources]; sources[index] = { ...sourceItem, checked: value }; updateContent("sources", sources);
                 }} />
-                <InputField label="URL (optional)" type="url" hint="Use a public HTTPS address. File, data, JavaScript and credential-bearing links are blocked." value={sourceItem.url ?? ""} onChange={(value) => {
+                <InputField id={`source-${index}-url`} label="URL (optional)" type="url" hint="Open the exact link first. Learners must reach substantive public content without searching or signing in; PubMed/database records are blocked." value={sourceItem.url ?? ""} onChange={(value) => {
                   const sources = [...entry.content.sources]; sources[index] = { ...sourceItem, url: value || undefined }; updateContent("sources", sources);
                 }} />
                 </div>

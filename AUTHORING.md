@@ -133,6 +133,10 @@ The `tell` in a contrast must be an **observable check** the learner can run, no
 
 Where the course materially adds to, clarifies or departs from its spine, declare that boundary in `divergences` so a learner knows which wording is the source's and which is the course's. Use an intentional empty array where the distinction genuinely does not apply; do not manufacture filler.
 
+Every learner-facing URL must open the exact substantive resource in an ordinary signed-out browser. Prefer, in order: the governing authority or standard; openly readable full text from the responsible publisher; or a credible research-to-practice guide that explains the evidence, limitations and application. A citation database record can help a reviewer locate evidence, but it is not a learning link. Do not give learners PubMed/index records, search results, generic home pages, abstract-only listings, obsolete editions or sign-in-gated courses. When an academic paper is too restricted or too narrow to teach from directly, pair the formal citation in the source note with an accessible evidence synthesis or practical guide as the URL.
+
+The source check must cover four separate questions: does the page open without an account; does it contain enough material to learn from; does it directly support the course claim; and is its authority, date and jurisdiction suitable for that claim? Record `checked` only after all four have been answered. Automated rules block known poor destinations, but cannot establish relevance or teaching value.
+
 **Produce:** all seven arrays required by `PackageContent`. Use `[]` where an optional section genuinely does not apply; do not manufacture filler merely to make an array non-empty.
 
 **Gate:** every required stage-level array meets its declared coverage rule; no `moduleId` refers to a stage that does not exist; every `sourceId` resolves; every empty package-level array is intentional and its view/navigation behaviour has been checked.

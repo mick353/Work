@@ -144,7 +144,7 @@ The automated scan and the project-specific checks are regression gates, not a c
 | `Course-Authoring-Studio.html` | Self-contained; no network request while authoring; byte-identical to `docs/course-workshop/index.html` |
 | Workshop course output | Exactly one course; advanced content and embedded media preserved; no authoring or package-switcher chrome |
 | Workshop media | PNG/JPEG/WebP only; declared type and binary signature must match; 50 MB per selected source, 150 PDF pages, 1,600 px maximum edge, 80 MB embedded-data ceiling, alternative text required |
-| Workshop source URL | Credential-free HTTPS only; syntactic acceptance does not establish authority or correctness |
+| Workshop source URL | Credential-free HTTPS direct to substantive public content; database/index records such as PubMed are blocked; a human still checks authority, claim support, currency, jurisdiction and teaching value |
 | Workshop release record | Named reviewer/approver roles and scope; SHA-256 bound to exact canonical package JSON; retained under the installed course version |
 | Pages size budget | `500 KB + 32 KB per stage` — scales with content, so ordinary authoring does not fail it |
 | Workshop size budget | 12 MB self-contained build ceiling; crossing it requires an explicit template/media architecture decision |

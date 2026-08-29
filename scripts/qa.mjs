@@ -123,6 +123,7 @@ check(
  * during source review rather than making every build depend on third parties.
  */
 const unsuitableReferenceTargets = [
+  /pubmed\.ncbi\.nlm\.nih\.gov\//i,
   /framework\.scaledagile\.com\/wsjf\/?$/i,
   /melissaperri\.com\/blog\/?$/i,
   /melissaperri\.com\/blog\/2014\/08\/05\/the-build-trap\/?$/i,
@@ -137,7 +138,7 @@ const unsuitableReferences = bank.trainingPackages.flatMap((entry) =>
     .map((source) => `${entry.manifest.id}:${source.id}=${source.url}`),
 );
 check(
-  "Learner references avoid known sign-in, generic and superseded targets",
+  "Learner references avoid database records, sign-in, generic and superseded targets",
   unsuitableReferences.length === 0,
   unsuitableReferences.join(" | "),
 );
