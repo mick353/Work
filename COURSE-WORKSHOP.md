@@ -85,7 +85,7 @@ The **Sources for this section** checkbox is meaningful even without a deck: it 
 
 Field-guide entries use the same source-reference model. Source ids are renamed consistently across lessons, field-guide entries and course-owned media.
 
-The URL is a learner destination, not merely a citation locator. Open it while signed out and confirm that the actual guide, standard, full text or substantive explanation is on that page. PubMed and other database records, search results, generic home pages, abstract-only pages and sign-in-gated courses are not suitable learner links. Where the underlying evidence is a restricted or highly technical paper, keep its formal citation in the source note and link learners to a credible open synthesis or practical guide that teaches the same supported claim.
+The URL is a learner destination, not merely a citation locator. Open it while signed out and confirm that the actual guide, standard, full text or substantive explanation is on that page. PubMed and other database records, search results, generic home pages, abstract-only pages, blog-only commentary and sign-in-gated courses are not suitable learner links. Where the underlying evidence is a restricted or highly technical paper, keep its formal citation in the source note and link learners to a credible open synthesis or practical guide that teaches the same supported claim. Prefer a governing authority or canonical guide over a personal blog when one exists.
 
 ## Media handling
 

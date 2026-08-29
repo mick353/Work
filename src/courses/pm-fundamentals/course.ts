@@ -14,7 +14,7 @@
 
 import type { Module, Source } from "../../package-model";
 
-export const CONTENT_REVIEWED = "15 August 2026";
+export const CONTENT_REVIEWED = "29 August 2026";
 
 export const sources: Source[] = [
   {
@@ -62,16 +62,16 @@ export const sources: Source[] = [
     id: "svpg",
     title: "The Product Operating Model: An Introduction",
     publisher: "Marty Cagan, Silicon Valley Product Group",
-    url: "https://www.svpg.com/product-vs-feature-teams/",
-    note: "Outcome-accountable teams and the value, usability, feasibility and viability risks addressed in discovery.",
+    url: "https://www.svpg.com/the-product-operating-model-an-introduction/",
+    note: "Authoritative practitioner guide to outcome-accountable product teams and the value, usability, feasibility and viability risks addressed in discovery.",
     checked: CONTENT_REVIEWED,
   },
   {
-    id: "eriksson",
-    title: "What, exactly, is Product Management?",
-    publisher: "Martin Eriksson, Mind the Product",
-    url: "https://www.mindtheproduct.com/what-exactly-is-a-product-manager/",
-    note: "Origin of the business / technology / user-experience intersection framing quoted on slides 8 and 54 of the source deck, where it appears unattributed.",
+    id: "aps-products-services",
+    title: "Products and services",
+    publisher: "Australian Government / APS Professions",
+    url: "https://www.apsprofessions.gov.au/guides-and-resources/modern-ways-working/products-and-services",
+    note: "Australian Government guidance distinguishing products, services and projects, and explaining product management as an outcome-focused, continuously improved way of working.",
     checked: CONTENT_REVIEWED,
   },
   {
@@ -84,10 +84,10 @@ export const sources: Source[] = [
   },
   {
     id: "lean",
-    title: "What is a Lean Canvas?",
-    publisher: "Ash Maurya",
-    url: "https://ashmaurya.com/blog/what-is-lean-canvas",
-    note: "The canvas as a one-page model of assumptions to expose and test, adapted on slide 33 of the deck.",
+    title: "Lean canvas template and guide",
+    publisher: "Atlassian",
+    url: "https://www.atlassian.com/software/confluence/templates/lean-canvas",
+    note: "Public, substantive guide to the Lean Canvas as a one-page model for problems, solutions, key metrics, users and assumptions. Use it as a starting model, then test the assumptions with evidence.",
     checked: CONTENT_REVIEWED,
   },
   {
@@ -115,11 +115,19 @@ export const sources: Source[] = [
     checked: "29 August 2026",
   },
   {
-    id: "pichler",
-    title: "Product Roadmaps and Product Strategy",
-    publisher: "Roman Pichler",
-    url: "https://www.romanpichler.com/blog/goal-oriented-agile-product-roadmap/",
-    note: "Named in the deck's recommended reading (slide 97). Goal-oriented roadmaps as an alternative to dated feature lists.",
+    id: "atlassian-roadmaps",
+    title: "Agile roadmaps: build, share, use and evolve",
+    publisher: "Atlassian",
+    url: "https://www.atlassian.com/agile/product-management/roadmaps",
+    note: "Public product-management guide explaining roadmaps as dynamic plans linked to product vision, initiatives, outcomes and evidence, with confidence and time horizons made explicit.",
+    checked: CONTENT_REVIEWED,
+  },
+  {
+    id: "aus-digital-roadmap",
+    title: "Standard 4: Planning — Digital Roadmap",
+    publisher: "Australian Government / Digital Transformation Agency",
+    url: "https://www.digital.gov.au/investment/strategic-planning/digital-investment-plans-dips/section-4-digital-roadmap",
+    note: "Australian Government planning guidance: keep a digital roadmap high level, aligned to strategy, and clear about horizons, initiatives, dependencies and genuine off-ramps. It complements—not replaces—the product roadmap used in this course.",
     checked: CONTENT_REVIEWED,
   },
   {
@@ -167,18 +175,18 @@ export const modules: Module[] = [
         ],
         example:
           "Launching an application-status page is an output. Providers resolving their status questions without calling support is an outcome.",
-        sourceIds: ["deck", "scrum"],
+        sourceIds: ["deck", "scrum", "aps-products-services"],
       },
       {
         heading: "The product manager's central judgement",
-        body: "Product management is often described as the intersection of business, technology and user experience — a framing that originates with Martin Eriksson and appears on slides 8 and 54 of the deck without attribution. The role is not to collect every request or write every requirement. It is to make evidence-informed choices where user value, organisational value and technical constraints meet, and to keep the team aligned on why the work matters.",
+        body: "The deck describes product management at the intersection of business, technology and user experience. The Australian Government's product-and-service guidance makes the same practical distinction: product management is about continuously improving a product or service around user needs and outcomes, not merely completing a project's deliverables. The role is not to collect every request or write every requirement. It is to make evidence-informed choices where user value, organisational value and technical constraints meet, and to keep the team aligned on why the work matters.",
         bullets: [
           "Desirable or valuable: people have a meaningful need and will use the result.",
           "Viable: policy, operational, financial, legal and service constraints can sustain it.",
           "Feasible and usable: the team can build and operate it, and people can understand it.",
           "The deck names three accountabilities: vision and strategy, execution and delivery, and product success.",
         ],
-        sourceIds: ["eriksson", "svpg", "ideo", "deck"],
+        sourceIds: ["aps-products-services", "svpg", "ideo", "deck"],
       },
       {
         heading: "Vision gives direction; strategy makes choices",
@@ -191,7 +199,7 @@ export const modules: Module[] = [
         ],
         example:
           "Vision: providers can understand and manage applications with confidence. Strategy: first reduce uncertainty at the three points that generate most avoidable support demand. Deliberate non-priority: no changes to the assessment workflow this year.",
-        sourceIds: ["deck", "svpg", "atlassian-outcomes"],
+        sourceIds: ["deck", "svpg", "atlassian-outcomes", "aps-products-services"],
       },
       {
         heading: "Product thinking survives inside project funding",
@@ -1205,7 +1213,7 @@ export const modules: Module[] = [
           "The further out, the lower the confidence and the coarser the commitment should be.",
           "A dated 18-month feature list is a forecast presented as a promise.",
         ],
-        sourceIds: ["deck", "svpg", "pichler"],
+        sourceIds: ["deck", "svpg", "atlassian-roadmaps", "aus-digital-roadmap"],
       },
           {
         heading: "Worked reasoning: the roadmap that promised dates it could not keep",
@@ -1216,7 +1224,7 @@ export const modules: Module[] = [
           "Removing an approach while keeping its outcome shows the work is being steered, not abandoned.",
         ],
         example: "The sponsor's actual concern turned out to be a Ministerial commitment tied to the outcome, not the feature. Once that was on the table the team could propose a different route to the same outcome — which the date-defence conversation had been hiding for two months.",
-        sourceIds: ["deck", "pichler", "svpg"],
+        sourceIds: ["deck", "atlassian-roadmaps", "aus-digital-roadmap", "svpg"],
       },
     ],
     questions: [
@@ -1388,7 +1396,7 @@ export const modules: Module[] = [
           "The Digital Service Standard should be considered across the whole lifecycle, not at a single gate.",
           "Non-digital channels and end-to-end service impacts remain in scope throughout.",
         ],
-        sourceIds: ["dss", "deck"],
+        sourceIds: ["dss", "deck", "aus-service-process"],
       },
       {
         heading: "Continuous does not mean chaotic",
@@ -1404,7 +1412,7 @@ export const modules: Module[] = [
           "The Beta-to-Live handover is where ownership is either named or lost; everything above follows from which one happened.",
         ],
         example: "The fix was a wording change and took a day. Finding it took four months, because there was no owner, no measure being watched, and no cadence at which anyone would have looked.",
-        sourceIds: ["deck", "dss", "cdh"],
+        sourceIds: ["deck", "dss", "cdh", "aus-service-process"],
       },
     ],
     questions: [
@@ -1557,7 +1565,7 @@ export const modules: Module[] = [
           "Avoid making the Product Owner a requirements courier.",
           "Avoid separating strategic discovery from the team that must deliver and operate the result.",
         ],
-        sourceIds: ["deck", "scrum"],
+        sourceIds: ["deck", "scrum", "aus-digital-roles"],
       },
       {
         heading: "The trio combines product, design and technology",
@@ -1617,7 +1625,7 @@ export const modules: Module[] = [
             ["BAs, Developers, Testers", "Delivery", "Making working increments"],
           ],
         },
-        sourceIds: ["deck"],
+        sourceIds: ["deck", "aus-digital-roles"],
       },
           {
         heading: "Worked reasoning: the Product Owner who became a courier",
@@ -1628,7 +1636,7 @@ export const modules: Module[] = [
           "If decision rights are unstated they default to whoever is most persistent or most available — neither of which is a design.",
         ],
         example: "Of 31 questions raised in one fortnight, 24 were reversible and local. The team had been treating all 31 the same way because nobody had ever said they could decide anything.",
-        sourceIds: ["deck", "scrum", "svpg"],
+        sourceIds: ["deck", "scrum", "svpg", "aus-digital-roles"],
       },
     ],
     questions: [
@@ -1772,7 +1780,7 @@ export const modules: Module[] = [
           "Compliance says what must be true; design still determines how people experience it.",
           "Whole-of-service outcomes include assisted and non-digital channels.",
         ],
-        sourceIds: ["deck", "dss"],
+        sourceIds: ["deck", "dss", "aus-service-process", "aps-products-services"],
       },
       {
         heading: "Ways of Working: behaviours, framework and methods",
@@ -1787,7 +1795,7 @@ export const modules: Module[] = [
           "Framework principles: have a plan but adjust; set clear governance and shared purpose; be disciplined and transparent; collaborate for success.",
           "Methods: Design Thinking, Project Management, Agile and Lean—selected and combined for the work rather than treated as competing brands.",
         ],
-        sourceIds: ["deck"],
+        sourceIds: ["deck", "aus-service-process"],
       },
       {
         heading: "The seven principles in practice",
@@ -1833,7 +1841,7 @@ export const modules: Module[] = [
             ],
           ],
         },
-        sourceIds: ["deck"],
+        sourceIds: ["deck", "aus-service-process"],
       },
       {
         heading: "The four DES delivery phases",
@@ -1880,7 +1888,7 @@ export const modules: Module[] = [
           "Governance evidence should demonstrate how the criteria are being met, not merely that a template was completed.",
           "Staff-facing internal services sit outside the Phase 2 scope; check current DTA guidance before assuming applicability.",
         ],
-        sourceIds: ["dss"],
+        sourceIds: ["dss", "aus-service-process"],
       },
       {
         heading: "Make governance a learning and risk conversation",
@@ -1891,7 +1899,7 @@ export const modules: Module[] = [
           "Preserve a clear owner for benefits and service performance after project closure.",
           "A gate that only checks artefact completeness will approve a well-documented failure.",
         ],
-        sourceIds: ["deck", "dss"],
+        sourceIds: ["deck", "dss", "aus-service-process"],
       },
           {
         heading: "Worked reasoning: the policy requirement that made things worse for users",
@@ -1902,7 +1910,7 @@ export const modules: Module[] = [
           "Take friction data to the owner as a finding. An exemption request invites a no; a finding invites a conversation.",
         ],
         example: "The mandated sentence stayed, in a plain-language frame explaining what it meant and why. Comprehension went from 31% to 78% in testing, and the policy owner used the result to revise the standard wording department-wide.",
-        sourceIds: ["deck", "dss"],
+        sourceIds: ["deck", "dss", "aus-service-process"],
       },
     ],
     questions: [

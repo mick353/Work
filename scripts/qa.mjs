@@ -127,6 +127,9 @@ const unsuitableReferenceTargets = [
   /framework\.scaledagile\.com\/wsjf\/?$/i,
   /melissaperri\.com\/blog\/?$/i,
   /melissaperri\.com\/blog\/2014\/08\/05\/the-build-trap\/?$/i,
+  /romanpichler\.com\/blog\//i,
+  /ashmaurya\.com\/blog\//i,
+  /mindtheproduct\.com\/what-exactly-is-a-product-manager/i,
   /ddat-capability-framework\.service\.gov\.uk\/role\/product-manager\/?$/i,
   /gov\.uk\/service-manual\/?$/i,
   /introduction-to-product-management-now-available-on-futurelearn\/?$/i,
@@ -138,9 +141,43 @@ const unsuitableReferences = bank.trainingPackages.flatMap((entry) =>
     .map((source) => `${entry.manifest.id}:${source.id}=${source.url}`),
 );
 check(
-  "Learner references avoid database records, sign-in, generic and superseded targets",
+  "Learner references avoid database records, blog-only, sign-in, generic and superseded targets",
   unsuitableReferences.length === 0,
   unsuitableReferences.join(" | "),
+);
+
+/*
+ * A source catalogue is useful only when a learner can reach it from the
+ * course. Keep this relationship explicit: every external source must be
+ * attached to at least one lesson, field-guide entry or embedded asset. This
+ * catches the common failure mode where a replacement link is added to the
+ * catalogue but the old source mapping is left behind—or no lesson is mapped
+ * at all.
+ */
+const orphanedExternalSources = bank.trainingPackages.flatMap((entry) => {
+  const used = new Set();
+  const addSection = (section) => {
+    for (const sourceId of section.sourceIds ?? []) used.add(sourceId);
+    for (const reference of section.sourceReferences ?? []) used.add(reference.sourceId);
+  };
+  for (const module of entry.content.modules) {
+    for (const section of module.sections) addSection(section);
+  }
+  for (const guide of entry.content.fieldGuide) {
+    for (const sourceId of guide.sourceIds ?? []) used.add(sourceId);
+    for (const reference of guide.sourceReferences ?? []) used.add(reference.sourceId);
+  }
+  for (const asset of entry.content.assets ?? []) {
+    if (asset.sourceId) used.add(asset.sourceId);
+  }
+  return entry.content.sources
+    .filter((source) => source.url && !used.has(source.id))
+    .map((source) => `${entry.manifest.id}:${source.id}`);
+});
+check(
+  "Every external source is connected to learner content",
+  orphanedExternalSources.length === 0,
+  orphanedExternalSources.join(" | "),
 );
 
 /*

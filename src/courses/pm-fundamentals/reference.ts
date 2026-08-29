@@ -508,8 +508,8 @@ export const divergences: Divergence[] = [
     topic: "Attribution of the PM definition",
     slides: "8, 54",
     deck: "Uses the well-known 'intersection of business, technology and user experience' framing.",
-    here: "Names Martin Eriksson as its author and links his writing.",
-    why: "Eriksson is already on the deck's recommended-reading list at slide 97, so this simply joins the two up — and the original essay is worth the ten minutes.",
+    here: "Keeps the deck's framing, then connects it to the Australian Government's public guide to products, services and outcome-focused product management.",
+    why: "The departmental deck remains the primary local source. The APS Professions guide gives learners a directly relevant Australian Government explanation of the product-versus-project shift and ongoing outcome ownership without sending them to an incidental personal article.",
   },
   {
     id: "d6",
