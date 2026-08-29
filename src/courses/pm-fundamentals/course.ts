@@ -35,6 +35,48 @@ export const sources: Source[] = [
     checked: CONTENT_REVIEWED,
   },
   {
+    id: "dta-discovery",
+    title: "Discovery stage: exploring the problem",
+    publisher: "Australian Government / Digital Transformation Agency",
+    url: "https://www.digital.gov.au/policy/digital-experience/toolkit/service-design-and-delivery-process/discovery-stage-exploring-problem",
+    note: "Practical government guidance for understanding users and the whole experience before designing or building, challenging solution assumptions, mapping journeys and forming hypotheses for Alpha.",
+    checked: CONTENT_REVIEWED,
+  },
+  {
+    id: "dta-research",
+    title: "Planning user research across design and delivery",
+    publisher: "Australian Government / Digital Transformation Agency",
+    url: "https://www.digital.gov.au/policy/digital-experience/toolkit/user-research/planning-user-research-across-design-and-delivery",
+    note: "Australian Government guidance on planning generative and evaluative research through Discovery, Alpha, Beta and Live, including accessibility, offline experiences and iterative learning.",
+    checked: CONTENT_REVIEWED,
+  },
+  {
+    id: "dta-alpha",
+    title: "Alpha stage: testing hypotheses",
+    publisher: "Australian Government / Digital Transformation Agency",
+    url: "https://www.digital.gov.au/policy/digital-experience/toolkit/service-design-and-delivery-process/alpha-stage-testing-hypotheses",
+    note: "Practical guidance for turning Discovery hypotheses into concepts and prototypes, testing with users, recording decisions, defining an MVP and deciding whether to proceed to Beta.",
+    checked: CONTENT_REVIEWED,
+  },
+  {
+    id: "dta-benefits",
+    title: "Benefits Management Policy",
+    publisher: "Australian Government / Digital Transformation Agency",
+    url: "https://www.digital.gov.au/policy/benefits-management-policy",
+    altUrl: "https://www.digital.gov.au/policy/benefits-management-policy/process",
+    altLabel: "Process",
+    note: "Current Australian Government policy, guidance and process for defining purpose, outcomes, measures, ownership, monitoring, realisation and review of digital and ICT-enabled benefits.",
+    checked: CONTENT_REVIEWED,
+  },
+  {
+    id: "aps-principles",
+    title: "APS Experience Design Principles",
+    publisher: "Australian Government / Services Australia and Australian Public Service Commission",
+    url: "https://www.digital.gov.au/policy/digital-experience/toolkit/aps-experience-design-principles",
+    note: "Current APS handbook with seven principles—Simple, Inclusive, Tailored, Connected, Transparent, Safe and Trustworthy—supported by criteria, considerations and examples for every stage of service work.",
+    checked: CONTENT_REVIEWED,
+  },
+  {
     id: "scrum",
     title: "The Scrum Guide (2020)",
     publisher: "Ken Schwaber and Jeff Sutherland",
@@ -51,22 +93,6 @@ export const sources: Source[] = [
     checked: CONTENT_REVIEWED,
   },
   {
-    id: "cdh",
-    title: "Opportunity Solution Trees",
-    publisher: "Teresa Torres, Product Talk",
-    url: "https://www.producttalk.org/opportunity-solution-trees/",
-    note: "Free, full article. Mapping a clear outcome to opportunities, then to solutions and assumption tests, by a product trio.",
-    checked: CONTENT_REVIEWED,
-  },
-  {
-    id: "svpg",
-    title: "The Product Operating Model: An Introduction",
-    publisher: "Marty Cagan, Silicon Valley Product Group",
-    url: "https://www.svpg.com/the-product-operating-model-an-introduction/",
-    note: "Authoritative practitioner guide to outcome-accountable product teams and the value, usability, feasibility and viability risks addressed in discovery.",
-    checked: CONTENT_REVIEWED,
-  },
-  {
     id: "aps-products-services",
     title: "Products and services",
     publisher: "Australian Government / APS Professions",
@@ -79,7 +105,7 @@ export const sources: Source[] = [
     title: "Introduction to Design Thinking",
     publisher: "IDEO",
     url: "https://designthinking.ideo.com/introduction",
-    note: "Human-centred innovation balancing desirability, feasibility and viability.",
+    note: "Recognised industry educational supplement—not government policy—explaining human-centred innovation and the desirability, feasibility and viability lenses used in this section.",
     checked: CONTENT_REVIEWED,
   },
   {
@@ -87,23 +113,25 @@ export const sources: Source[] = [
     title: "Lean canvas template and guide",
     publisher: "Atlassian",
     url: "https://www.atlassian.com/software/confluence/templates/lean-canvas",
-    note: "Public, substantive guide to the Lean Canvas as a one-page model for problems, solutions, key metrics, users and assumptions. Use it as a starting model, then test the assumptions with evidence.",
+    note: "Industry supplement—not a government standard—providing a public, substantive guide to the Lean Canvas as a one-page model for problems, solutions, key metrics, users and assumptions. Use it as a starting model, then test the assumptions with evidence.",
     checked: CONTENT_REVIEWED,
   },
   {
-    id: "atlassian-outcomes",
-    title: "Using outcomes to guide product work",
-    publisher: "Atlassian",
-    url: "https://www.atlassian.com/software/jira/product-discovery/resources/handbook/outcomes",
-    note: "Public practitioner guidance distinguishing outputs from measurable customer and business outcomes, then connecting product goals, prioritisation, learning and iteration to those outcomes.",
-    checked: "29 August 2026",
+    id: "nsw-delivery",
+    title: "Digital NSW Delivery Manual",
+    publisher: "NSW Government / Digital NSW",
+    url: "https://www.digital.nsw.gov.au/delivery/digital-service-toolkit/delivery-manual",
+    note: "End-to-end NSW Government manual covering pre-discovery, Discovery, Alpha, Beta, Live and retirement, with practical guidance for evidence, prototyping, backlog decisions and continuous improvement.",
+    checked: CONTENT_REVIEWED,
   },
   {
     id: "aus-digital-roles",
     title: "Understanding digital roles",
     publisher: "Australian Government / Digital Transformation Agency",
     url: "https://www.digital.gov.au/policy/digital-experience/toolkit/managing-teams/understanding-digital-roles",
-    note: "Australian Government guidance on the product manager's role in a multidisciplinary service team: set strategic direction and vision, work with research and design, manage priorities and help ensure the service meets user needs.",
+    altUrl: "https://www.digital.gov.au/policy/digital-experience/toolkit/managing-teams/building-core-roles-team",
+    altLabel: "Team roles",
+    note: "Australian Government guidance on product-manager accountability and the multidisciplinary team needed to set direction, work with research and design, manage priorities and meet user needs.",
     checked: "29 August 2026",
   },
   {
@@ -115,11 +143,21 @@ export const sources: Source[] = [
     checked: "29 August 2026",
   },
   {
-    id: "atlassian-roadmaps",
-    title: "Agile roadmaps: build, share, use and evolve",
-    publisher: "Atlassian",
-    url: "https://www.atlassian.com/agile/product-management/roadmaps",
-    note: "Public product-management guide explaining roadmaps as dynamic plans linked to product vision, initiatives, outcomes and evidence, with confidence and time horizons made explicit.",
+    id: "nsw-user-stories",
+    title: "User stories",
+    publisher: "NSW Government / Digital NSW",
+    url: "https://www.digital.nsw.gov.au/delivery/digital-service-toolkit/resources/user-experience-and-design/user-stories",
+    note: "Practical government guidance for expressing an actor, need and goal, then writing outcome-focused acceptance criteria and splitting large work into usable increments.",
+    checked: CONTENT_REVIEWED,
+  },
+  {
+    id: "nsw-metrics",
+    title: "Establish metrics",
+    publisher: "NSW Government / Digital NSW",
+    url: "https://www.digital.nsw.gov.au/delivery/digital-service-toolkit/resources/testing-and-improving/establish-metrics",
+    altUrl: "https://www.digital.nsw.gov.au/delivery/digital-service-toolkit/resources/testing-and-improving/monitor-and-improve",
+    altLabel: "Monitor and improve",
+    note: "Practical government guidance for choosing meaningful measures, setting baselines, combining qualitative and quantitative evidence and using findings to improve a service.",
     checked: CONTENT_REVIEWED,
   },
   {
@@ -186,7 +224,7 @@ export const modules: Module[] = [
           "Feasible and usable: the team can build and operate it, and people can understand it.",
           "The deck names three accountabilities: vision and strategy, execution and delivery, and product success.",
         ],
-        sourceIds: ["aps-products-services", "svpg", "ideo", "deck"],
+        sourceIds: ["aps-products-services", "aps-principles", "ideo", "deck"],
       },
       {
         heading: "Vision gives direction; strategy makes choices",
@@ -199,7 +237,7 @@ export const modules: Module[] = [
         ],
         example:
           "Vision: providers can understand and manage applications with confidence. Strategy: first reduce uncertainty at the three points that generate most avoidable support demand. Deliberate non-priority: no changes to the assessment workflow this year.",
-        sourceIds: ["deck", "svpg", "atlassian-outcomes", "aps-products-services"],
+        sourceIds: ["deck", "dta-benefits", "aps-products-services", "aps-principles"],
       },
       {
         heading: "Product thinking survives inside project funding",
@@ -227,7 +265,7 @@ export const modules: Module[] = [
             ["Delivery", "Learning", "Each release is expected to produce evidence that changes the next decision."],
           ],
         },
-        sourceIds: ["deck", "atlassian-outcomes"],
+        sourceIds: ["deck", "dta-benefits"],
       },
           {
         heading: "Worked reasoning: the request that arrives as a solution",
@@ -238,7 +276,7 @@ export const modules: Module[] = [
           "If the answer names a behaviour, a group and a cost, you have a problem statement. If it names a feature, keep going.",
         ],
         example: "The dashboard was built — and so were submission-time expectations and a status notification. Avoidable calls fell 41%. The dashboard accounted for less of that than anyone predicted, which is only knowable because the measure was the calls and not the dashboard.",
-        sourceIds: ["deck", "ideo", "atlassian-outcomes"],
+        sourceIds: ["deck", "ideo", "dta-benefits"],
       },
     ],
     questions: [
@@ -377,7 +415,7 @@ export const modules: Module[] = [
           "Separate direct evidence from interpretation and inherited belief.",
           "Include people with varied access, capability and support needs.",
         ],
-        sourceIds: ["deck", "dss", "cdh"],
+        sourceIds: ["deck", "dss", "dta-discovery", "dta-research"],
       },
       {
         heading: "Four kinds of need — and the one government creates",
@@ -466,7 +504,7 @@ export const modules: Module[] = [
         ],
         example:
           "We believe giving providers timely application-status visibility will reduce avoidable status calls. We will look for lower call volume and higher successful self-service, while checking that unresolved cases still reach support.",
-        sourceIds: ["deck", "cdh"],
+        sourceIds: ["deck", "dta-discovery"],
       },
       {
         heading: "The Lean Canvas as an assumption model",
@@ -494,7 +532,7 @@ export const modules: Module[] = [
           "'The sample is too small' is usually the wrong critique. 'The sample cannot contain the people we are asking about' is the right one.",
         ],
         example: "The redesign the team almost shipped would have addressed roughly a third of the drop-out. Naming the other two causes moved the conversation to the register data owner, who had the actual fix and no idea the problem existed.",
-        sourceIds: ["deck", "cdh", "lean"],
+        sourceIds: ["deck", "dta-discovery", "dta-research", "lean"],
       },
     ],
     questions: [
@@ -647,7 +685,7 @@ export const modules: Module[] = [
           "Learning counts as an outcome. Reducing uncertainty is a legitimate result of a cycle.",
           "Guardrail: accessibility, support demand or error risk does not worsen for other groups.",
         ],
-        sourceIds: ["deck", "dss", "svpg", "atlassian-outcomes"],
+        sourceIds: ["deck", "dss", "dta-benefits", "aps-principles"],
       },
       {
         heading: "OKRs connect direction to evidence",
@@ -711,7 +749,7 @@ export const modules: Module[] = [
           "A guardrail is chosen at the same time as the measure, because after the fact you will pick one that is already satisfied.",
         ],
         example: "The finding was not 'the change failed'. It was 'the change works for people who can complete it online, and we have made the service worse for those who cannot' — which is a different and far more useful thing to take to a governance forum.",
-        sourceIds: ["deck", "dss", "svpg"],
+        sourceIds: ["deck", "dss", "dta-benefits", "nsw-metrics"],
       },
     ],
     questions: [
@@ -867,7 +905,7 @@ export const modules: Module[] = [
             ["None — expedience", "What can we do fastest?", "Easiest to build now, unlikely to deliver the outcome"],
           ],
         },
-        sourceIds: ["deck", "ideo", "svpg"],
+        sourceIds: ["deck", "ideo", "dta-alpha", "aps-principles"],
       },
       {
         heading: "The trade-off pairs tell you what you are risking",
@@ -906,7 +944,7 @@ export const modules: Module[] = [
           "Feasibility: can it be built and operated with the available technology and capability?",
           "Viability: can policy, service, legal, financial and organisational conditions sustain it?",
         ],
-        sourceIds: ["svpg", "ideo", "lean"],
+        sourceIds: ["dta-alpha", "dta-research", "ideo", "lean"],
       },
       {
         heading: "Match the experiment to the uncertainty",
@@ -929,7 +967,7 @@ export const modules: Module[] = [
         ],
         example:
           "Before integrating three legacy systems, use a realistic prototype and manually supplied status data to test whether the proposed information actually reduces uncertainty for providers.",
-        sourceIds: ["cdh", "svpg", "lean"],
+        sourceIds: ["dta-alpha", "dta-research", "lean"],
       },
       {
         heading: "What an MVP is, and what it is not",
@@ -950,7 +988,7 @@ export const modules: Module[] = [
           "If you cannot name the result that would stop the work, you are not running a test.",
         ],
         example: "Contact data reached 71% of active providers, and the failures clustered in the smallest organisations. The service still went ahead — but with an assisted-channel fallback designed in from the start rather than discovered at Beta.",
-        sourceIds: ["deck", "lean", "cdh"],
+        sourceIds: ["deck", "lean", "dta-alpha", "dta-research"],
       },
     ],
     questions: [
@@ -1097,7 +1135,7 @@ export const modules: Module[] = [
           "Sprint Backlog: the Sprint Goal, the selected items and the developers' plan.",
           "Local DES practice allows team contribution; Scrum still leaves the Product Owner accountable for the Product Goal, backlog content, ordering, transparency and value.",
         ],
-        sourceIds: ["scrum", "deck"],
+        sourceIds: ["scrum", "nsw-user-stories", "deck"],
       },
       {
         heading: "Levels exist to preserve traceability, not to create bureaucracy",
@@ -1124,7 +1162,7 @@ export const modules: Module[] = [
             ["Task", "Within a sprint", "The work breakdown beneath a story."],
           ],
         },
-        sourceIds: ["deck", "scrum"],
+        sourceIds: ["deck", "scrum", "nsw-user-stories"],
       },
       {
         heading: "Minimum detail at each level",
@@ -1152,7 +1190,7 @@ export const modules: Module[] = [
           "Feature measurement is not optional — it is how you find out whether the feature worked.",
           "Iteration path must align to the sprint the work is actually expected in, or PI reporting silently drifts.",
         ],
-        sourceIds: ["deck"],
+        sourceIds: ["deck", "nsw-user-stories"],
       },
       {
         heading: "The DES delivery cadence",
@@ -1181,7 +1219,7 @@ export const modules: Module[] = [
           "Operational data and research from live releases feed back into the opportunity and product backlogs.",
           "Continuous does not mean chaotic — it means the loops overlap on a known cadence.",
         ],
-        sourceIds: ["deck", "cdh", "svpg"],
+        sourceIds: ["deck", "nsw-delivery", "dta-research"],
       },
       {
         heading: "Prioritisation is economic judgement made explicit",
@@ -1213,7 +1251,7 @@ export const modules: Module[] = [
           "The further out, the lower the confidence and the coarser the commitment should be.",
           "A dated 18-month feature list is a forecast presented as a promise.",
         ],
-        sourceIds: ["deck", "svpg", "atlassian-roadmaps", "aus-digital-roadmap"],
+        sourceIds: ["deck", "nsw-delivery", "aus-digital-roadmap"],
       },
           {
         heading: "Worked reasoning: the roadmap that promised dates it could not keep",
@@ -1224,7 +1262,7 @@ export const modules: Module[] = [
           "Removing an approach while keeping its outcome shows the work is being steered, not abandoned.",
         ],
         example: "The sponsor's actual concern turned out to be a Ministerial commitment tied to the outcome, not the feature. Once that was on the table the team could propose a different route to the same outcome — which the date-defence conversation had been hiding for two months.",
-        sourceIds: ["deck", "atlassian-roadmaps", "aus-digital-roadmap", "svpg"],
+        sourceIds: ["deck", "nsw-delivery", "aus-digital-roadmap"],
       },
     ],
     questions: [
@@ -1376,7 +1414,7 @@ export const modules: Module[] = [
       {
         heading: "Solve the right problem; build the right thing; build it right",
         body: "These are linked responsibilities, not three isolated departments. Product, design and technology need shared context so that feasibility knowledge improves discovery and user evidence improves delivery. The deck frames the whole lifecycle as moving a service from 'need identified' to 'need met'.",
-        sourceIds: ["deck", "svpg"],
+        sourceIds: ["deck", "aus-service-process", "aps-principles"],
       },
       {
         heading: "Government phases manage increasing confidence",
@@ -1401,7 +1439,7 @@ export const modules: Module[] = [
       {
         heading: "Continuous does not mean chaotic",
         body: "Teams can explore upcoming opportunities while delivering validated work, provided both streams share outcomes, people and feedback. Reviews, operational data and research continuously update the opportunity and product backlogs. The loop is: discover problems or opportunities, define solutions, deliver value, measure outcomes, iterate and improve.",
-        sourceIds: ["deck", "cdh", "svpg"],
+        sourceIds: ["deck", "dta-research", "dta-benefits", "aus-service-process"],
       },
           {
         heading: "Worked reasoning: the service that went Live and quietly decayed",
@@ -1412,7 +1450,7 @@ export const modules: Module[] = [
           "The Beta-to-Live handover is where ownership is either named or lost; everything above follows from which one happened.",
         ],
         example: "The fix was a wording change and took a day. Finding it took four months, because there was no owner, no measure being watched, and no cadence at which anyone would have looked.",
-        sourceIds: ["deck", "dss", "cdh", "aus-service-process"],
+        sourceIds: ["deck", "dss", "dta-benefits", "nsw-metrics", "aus-service-process"],
       },
     ],
     questions: [
@@ -1570,7 +1608,7 @@ export const modules: Module[] = [
       {
         heading: "The trio combines product, design and technology",
         body: "A product trio brings viability, desirability and feasibility into the same discovery conversation — product manager (viable), designer (desirable), technology lead (feasible). It is a collaboration pattern, not a committee that replaces broader research, delivery and stakeholder expertise. The deck shows trios operating at all three organisational layers, not only in delivery teams.",
-        sourceIds: ["cdh", "svpg", "deck"],
+        sourceIds: ["aus-digital-roles", "aps-principles", "deck"],
       },
       {
         heading: "Three layers, three questions",
@@ -1604,7 +1642,7 @@ export const modules: Module[] = [
           "Place reversible, local decisions closest to the team.",
           "Reserve governance attention for material risk, investment and cross-service trade-offs.",
         ],
-        sourceIds: ["deck", "svpg"],
+        sourceIds: ["deck", "aus-digital-roles", "aps-principles"],
       },
       {
         heading: "The roles around you",
@@ -1636,7 +1674,7 @@ export const modules: Module[] = [
           "If decision rights are unstated they default to whoever is most persistent or most available — neither of which is a design.",
         ],
         example: "Of 31 questions raised in one fortnight, 24 were reversible and local. The team had been treating all 31 the same way because nobody had ever said they could decide anything.",
-        sourceIds: ["deck", "scrum", "svpg", "aus-digital-roles"],
+        sourceIds: ["deck", "scrum", "aus-digital-roles", "aps-principles"],
       },
     ],
     questions: [
@@ -2066,7 +2104,7 @@ export const modules: Module[] = [
       {
         heading: "Maintain the chain of evidence",
         body: "Every major item should trace backward to an outcome and forward to a way of learning. If a feature cannot be connected to a user or service problem, an intended result and a measure, its priority is unclear. The deck's closing questions are the shortest version of this test: what problem are we solving, what outcome are we trying to create, what evidence do we have, and what have we learned?",
-        sourceIds: ["deck", "svpg"],
+        sourceIds: ["deck", "dta-benefits", "dss"],
       },
       {
         heading: "What good looks like",

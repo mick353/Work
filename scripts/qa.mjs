@@ -130,6 +130,8 @@ const unsuitableReferenceTargets = [
   /romanpichler\.com\/blog\//i,
   /ashmaurya\.com\/blog\//i,
   /mindtheproduct\.com\/what-exactly-is-a-product-manager/i,
+  /producttalk\.org\//i,
+  /svpg\.com\//i,
   /ddat-capability-framework\.service\.gov\.uk\/role\/product-manager\/?$/i,
   /gov\.uk\/service-manual\/?$/i,
   /introduction-to-product-management-now-available-on-futurelearn\/?$/i,
