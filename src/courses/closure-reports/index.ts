@@ -26,7 +26,7 @@ const modules = withDerivedMinutes(authoredModules);
 export const closureReports: TrainingPackage = {
   manifest: {
     schemaVersion: PACKAGE_SCHEMA_VERSION,
-    version: "1.0.0",
+    version: "1.0.1",
     id: CLOSURE_REPORTS_ID,
     title: "Closure Reports",
     subtitle: "Evidence, benefits and handover at the end of delivery",

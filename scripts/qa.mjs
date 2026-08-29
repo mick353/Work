@@ -116,6 +116,30 @@ check(
 );
 
 /*
+ * A syntactically valid HTTPS URL can still be a poor learner reference. These
+ * exact targets have previously been login-gated, generic indexes, indirect
+ * course-registration notices or superseded publication pages. Keep this
+ * content-policy check offline and deterministic; live availability is audited
+ * during source review rather than making every build depend on third parties.
+ */
+const unsuitableReferenceTargets = [
+  /framework\.scaledagile\.com\/wsjf\/?$/i,
+  /melissaperri\.com\/blog\/?$/i,
+  /introduction-to-product-management-now-available-on-futurelearn\/?$/i,
+  /gateway-review-process-lessons-learned-first-edition\/?$/i,
+];
+const unsuitableReferences = bank.trainingPackages.flatMap((entry) =>
+  entry.content.sources
+    .filter((source) => source.url && unsuitableReferenceTargets.some((pattern) => pattern.test(source.url)))
+    .map((source) => `${entry.manifest.id}:${source.id}=${source.url}`),
+);
+check(
+  "Learner references avoid known sign-in, generic and superseded targets",
+  unsuitableReferences.length === 0,
+  unsuitableReferences.join(" | "),
+);
+
+/*
  * Government Gateway has six project reviews, numbered Gate 0 to Gate 5.
  * A previous content pass invented a Gate 6 and then assessed recall of it.
  * Test the packaged learner-facing data rather than comments or generated HTML.
@@ -1185,7 +1209,7 @@ await page.getByRole("button", { name: "Overview", exact: true }).click();
   /*
     Target size, across views rather than on one screen. WCAG 2.2 SC 2.5.8 sets
     24x24 as the minimum. Three separate lists were shipping at 16-18px tall —
-    the in-stage contents, the guide contents, and the "open primary source"
+    the in-stage contents, the guide contents, and the "open source"
     links — all wide enough to look fine and all too short. None showed up
     until the check walked more than one view.
 
@@ -2589,13 +2613,18 @@ check(
     `old key removed: ${carried.oldGone}, score carried: ${carried.score}, study days carried: ${carried.days}`,
   );
   const versionDialog = freshPage.getByRole("dialog", { name: "Choose what happens to your saved work" });
+  const currentProductVersion = bank.trainingPackages.find((entry) => entry.manifest.id === "pm-fundamentals")?.manifest.version;
   check("Unversioned saved work triggers an explicit curriculum-migration choice", await versionDialog.count() === 1 && /earlier version/i.test(await versionDialog.innerText()));
   await versionDialog.getByRole("button", { name: "Keep my saved work" }).click();
   const keptVersionedWork = await freshPage.evaluate(() => ({
     version: localStorage.getItem("product-practice-v2:pm-fundamentals:content-version"),
     progress: localStorage.getItem("product-practice-v2:pm-fundamentals:progress"),
   }));
-  check("Learner can deliberately keep saved work against the current course version", keptVersionedWork.version === "1.0.0" && Boolean(keptVersionedWork.progress));
+  check(
+    "Learner can deliberately keep saved work against the current course version",
+    keptVersionedWork.version === currentProductVersion && Boolean(keptVersionedWork.progress),
+    `${keptVersionedWork.version} recorded; ${currentProductVersion} current`,
+  );
 
   await freshPage.evaluate(() => {
     localStorage.setItem("product-practice-v2:pm-fundamentals:content-version", "0.9.0");
@@ -2616,8 +2645,16 @@ check(
     toolkit: localStorage.getItem("product-practice-v2:pm-fundamentals:toolkit"),
     theme: localStorage.getItem("product-practice-v2:theme"),
   }));
-  check("Changed version is explained before a learner chooses", /0\.9\.0/.test(versionExplanation) && /1\.0\.0/.test(versionExplanation));
-  check("Starting fresh clears only that course and records the new version", resetVersionedWork.version === "1.0.0" && resetVersionedWork.progress === null && resetVersionedWork.toolkit === null && resetVersionedWork.theme === JSON.stringify("dark"));
+  check(
+    "Changed version is explained before a learner chooses",
+    /0\.9\.0/.test(versionExplanation) && Boolean(currentProductVersion && versionExplanation.includes(currentProductVersion)),
+    versionExplanation,
+  );
+  check(
+    "Starting fresh clears only that course and records the new version",
+    resetVersionedWork.version === currentProductVersion && resetVersionedWork.progress === null && resetVersionedWork.toolkit === null && resetVersionedWork.theme === JSON.stringify("dark"),
+    `${resetVersionedWork.version} recorded; ${currentProductVersion} current`,
+  );
   await fresh.close();
 }
 

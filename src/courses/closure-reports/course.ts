@@ -86,10 +86,10 @@ export const closureSources: Source[] = [
   },
   {
     id: "lessons",
-    title: "Gateway Review Process — Lessons Learned",
+    title: "Lessons Learned — Gateway Reviews",
     publisher: "Australian Government / Department of Finance",
-    url: "https://www.finance.gov.au/publications/lessons-learned/gateway-review-process-lessons-learned-first-edition",
-    note: "Aggregated observations across Australian Government Gateway reviews. The closest thing the Commonwealth has to published reference-class data on why delivery goes wrong.",
+    url: "https://www.finance.gov.au/government/assurance-reviews-and-risk-assessment/lessons-learned-gateway-reviews",
+    note: "Current public Finance guidance drawn from Australian Government Gateway reviews, organised around governance, business cases, stakeholders, risk and resources.",
     checked: CLOSURE_REVIEWED,
   },
   {
@@ -166,10 +166,10 @@ export const closureSources: Source[] = [
   },
   {
     id: "teal",
-    title: "Benefits management — Government Project Delivery (Teal Book)",
-    publisher: "UK Government / Infrastructure and Projects Authority",
-    url: "https://projectdelivery.gov.uk/teal-book/home/part-e-planning-and-control/chapter-19-benefits-management/",
-    note: "Comparator practice. Benefits management as a whole-of-lifecycle discipline owned by the business, not a closure-time activity owned by the project.",
+    title: "Benefits realisation — Government Efficiency Framework",
+    publisher: "UK Government / Cabinet Office and HM Treasury",
+    url: "https://www.gov.uk/government/publications/the-government-efficiency-framework/the-government-efficiency-framework--2#benefits-realisation-risk-and-governance",
+    note: "Public HTML comparator. Benefits management follows the full lifecycle before, during and after delivery, with an identified benefit owner and a deliberate transition into business as usual. The framework links to the Teal Book for the underlying project-delivery practice.",
     checked: CLOSURE_REVIEWED,
   },
 ];

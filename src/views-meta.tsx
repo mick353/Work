@@ -226,12 +226,13 @@ export function SearchView({ navigate }: { navigate: Navigate }) {
 
 export function Sources({ navigate }: { navigate: Navigate }) {
   const builtFromDeck = slides.length > 0;
+  const sourceLinksReviewed = "29 August 2026";
   const frameworkBoundary = builtFromDeck
     ? "This course distinguishes source-deck teaching, Scrum definitions, SAFe prioritisation guidance and Australian Government standards. They can work together, but they are not interchangeable and none of them is a single mandated method. In particular: epics, features and Program Increments are not Scrum terms, and the DES delivery phases are not the DTA service phases."
-    : "This course distinguishes the departmental closure requirements that form its spine from whole-of-government comparators and assurance guidance. The DEWR templates, factsheet and P3M framework govern the departmental process; DTA material tests digital closure quality, Finance and ANAO sources add assurance and performance expectations, National Archives guidance governs records, and the UK Teal Book is explicitly comparator practice.";
+    : "This course distinguishes the departmental closure requirements that form its spine from whole-of-government comparators and assurance guidance. The DEWR templates, factsheet and P3M framework govern the departmental process; DTA material tests digital closure quality, Finance and ANAO sources add assurance and performance expectations, National Archives guidance governs records, and UK Government benefits guidance is explicitly comparator practice.";
   const currencyNote = builtFromDeck
-    ? `All sources checked and content reviewed ${CONTENT_REVIEWED}. This internal learning aid is built from the departmental deck. Use current departmental guidance and the Digital Service Standard for operational decisions; where this material differs, the current source governs.`
-    : `All sources checked and content reviewed ${CONTENT_REVIEWED}. This internal learning aid is built from departmental closure documents. Use current controlled templates and departmental, Finance or DTA guidance for operational decisions; where this material differs, the current source governs.`;
+    ? `Reference links checked ${sourceLinksReviewed}; course content reviewed ${CONTENT_REVIEWED}. This internal learning aid is built from the departmental deck. Use current departmental guidance and the Digital Service Standard for operational decisions; where this material differs, the current source governs.`
+    : `Reference links checked ${sourceLinksReviewed}; course content reviewed ${CONTENT_REVIEWED}. This internal learning aid is built from departmental closure documents. Use current controlled templates and departmental, Finance or DTA guidance for operational decisions; where this material differs, the current source governs.`;
 
   return (
     <div className="page">
@@ -276,7 +277,7 @@ export function Sources({ navigate }: { navigate: Navigate }) {
               <div className="source-links">
                 {source.url && (
                   <a href={source.url} target="_blank" rel="noreferrer">
-                    Open primary source <ExternalLink size={15} aria-hidden="true" />
+                    Open source <ExternalLink size={15} aria-hidden="true" />
                     <span className="visually-hidden"> (opens in a new tab)</span>
                   </a>
                 )}

@@ -257,7 +257,10 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
               {source.url && (
                 <>
                   <br />
-                  <span className="guide-url">{source.url}</span>
+                  <a className="guide-url" href={source.url} target="_blank" rel="noreferrer">
+                    {source.url}
+                    <span className="visually-hidden"> (opens in a new tab)</span>
+                  </a>
                 </>
               )}
             </li>
