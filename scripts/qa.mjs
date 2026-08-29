@@ -125,6 +125,9 @@ check(
 const unsuitableReferenceTargets = [
   /framework\.scaledagile\.com\/wsjf\/?$/i,
   /melissaperri\.com\/blog\/?$/i,
+  /melissaperri\.com\/blog\/2014\/08\/05\/the-build-trap\/?$/i,
+  /ddat-capability-framework\.service\.gov\.uk\/role\/product-manager\/?$/i,
+  /gov\.uk\/service-manual\/?$/i,
   /introduction-to-product-management-now-available-on-futurelearn\/?$/i,
   /gateway-review-process-lessons-learned-first-edition\/?$/i,
 ];
