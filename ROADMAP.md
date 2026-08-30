@@ -40,6 +40,8 @@ The learner-facing product does not change. Course Workshop embeds the existing 
 2. Complete applicable manual keyboard, screen-reader, zoom, text-spacing, forced-colour, touch and print testing with people and real devices. Automated checks are regression evidence, not accessibility certification.
 3. For every released course, retain the real subject-matter, learning-flow, handling and approval evidence named in its release record. The software can bind declarations to content; it cannot manufacture the underlying review.
 
+**Evidence approach.** Course Workshop is the product; the separate local trainer evaluation kit is an optional test method, not a prerequisite for ordinary authoring. Begin with informal trainer exploration. Use its 60-90 minute guided trial when comparable observations would help, and activate the full desktop/tablet, accessibility and release-assurance protocol only after the pilot scope, participants, decision owner and evidence location are agreed. Record the exact Workshop build used in each session rather than treating the kit itself as readiness evidence.
+
 **Deliberately parked:** direct PowerPoint parsing remains out unless trainers demonstrate a need; PDF and ordered PNG/JPEG/WebP import are the supported browser route. Arbitrary multi-course bundle composition also remains parked.
 
 One course per learner export is the agreed default; the combined catalogue remains a controlled repository release surface.

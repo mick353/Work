@@ -40,6 +40,8 @@ Versioned release records and delivery archives are retained for comparison and 
 
 The next product evidence is trainer use with real material: at least one short and one substantial course, on desktop and tablet. That work should test terminology, the strict authoring profile, draft transfer, media/storage limits, review responsibilities and the clarity of the three delivery routes. Applicable manual accessibility/device testing belongs in the same adoption phase.
 
+Course Workshop is the authoring product. A separate local trainer evaluation kit is only the optional method for structuring observations and assurance. Trainers may explore the Workshop without it; the complete protocol is activated only for an agreed formal pilot and remains outside the learner site and repository.
+
 Feedback that changes a settled boundary must be recorded in this file, [ROADMAP.md](ROADMAP.md), or the relevant contract document before implementation. Chat history is not a product decision record.
 
 ## Parked unless evidence changes the need
