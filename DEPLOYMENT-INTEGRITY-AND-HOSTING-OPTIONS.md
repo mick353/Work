@@ -1,18 +1,20 @@
-# Training Learning System — Deployment, Integrity and Hosting Options
+# Product Practice — Deployment, Integrity and Hosting Options
 
 ## Purpose
 
-This paper describes practical options for distributing and hosting the Training Learning System and courses produced through Course Workshop. It is intended for training teams, product owners, governance areas and technical stakeholders who may need to consider how the system could move from a portable browser-based training resource into a more controlled departmental service.
+This paper describes practical options for distributing and hosting the Product Practice learning system and courses produced through Course Workshop. It is intended for training teams, product owners, governance areas and technical stakeholders who may need to consider how the system could move from a portable browser-based training resource into a more controlled departmental service.
 
 The aim is not to prescribe a single implementation. The current model already supports useful low-infrastructure delivery. The purpose of this paper is to explain the available paths, what each path provides, and how the existing architecture can support a staged approach without discarding the work already completed.
 
 The key design principle is that the course itself should remain portable. Hosting, authentication, logging and stronger integrity controls can then be added around the same course package where they are justified.
 
+**Status:** this is an options paper, not an approved departmental architecture or a committed implementation sequence. The current product direction remains in [Learning System Direction](LEARNING-SYSTEM-DIRECTION.md). The immediate evidence priority is real trainer use plus manual accessibility and device testing; any stronger hosting, identity, signing or reporting controls should follow a defined business and assurance need.
+
 ---
 
 ## 1. Current position
 
-The Training Learning System is designed around a reusable course package rather than a single hard-coded course.
+Product Practice is designed around a reusable course package rather than a single hard-coded course.
 
 A course is represented as a `TrainingPackage` containing:
 
@@ -26,10 +28,11 @@ The current system can produce several outputs, including:
 - a self-contained learner HTML file;
 - an isolated hosted-course package;
 - an editable draft;
-- a repository package for controlled installation; and
-- combined browser-based learning and authoring sites.
+- a repository package for controlled installation;
+- a combined multi-course learner site; and
+- a separate browser-based Course Workshop authoring site.
 
-The present architecture already includes substantial validation and release controls. Course packages are structurally validated before use, and generated releases can include SHA-256 hashes so that a file or package can be checked against the version that was originally produced.
+The present architecture already includes substantial validation and release controls. Course packages are structurally validated before use. Isolated release archives and Course Workshop release records include SHA-256 digests so that exact generated files or canonical package data can be checked against the version originally produced.
 
 This provides a strong foundation for future deployment options.
 
@@ -51,7 +54,7 @@ It can:
 
 For many internal training activities, this may be sufficient.
 
-The simplicity of the model is also useful from a governance perspective. A static course that performs no server-side processing, holds no central user database and makes no external service calls has a much smaller technical footprint than a conventional Learning Management System.
+The simplicity of the model is also useful from a governance perspective. The current standalone course performs no server-side processing and does not transmit learner progress or trainer material. The hosted static application retrieves its own files from its host, and a learner may choose to open an external source link, but there is no application API, central user database or telemetry. This is a much smaller technical footprint than a conventional Learning Management System.
 
 However, portable delivery also has limits.
 
@@ -62,7 +65,7 @@ The appropriate objective is therefore not to claim that a portable course canno
 1. make authorised versions identifiable;
 2. make alteration detectable;
 3. preserve evidence of provenance and version;
-4. make unauthorised repackaging more difficult; and
+4. make misleading repackaging or rebadging detectable and less credible; and
 5. use stronger centrally controlled services where access control or formal completion records are required.
 
 ---
@@ -79,11 +82,12 @@ A stronger approach is a digitally signed release.
 
 Under this model:
 
-1. Course Workshop or the publishing process produces the final canonical course package.
-2. A SHA-256 digest is calculated from that package.
-3. The digest and key release information are digitally signed using a departmental or authorised publisher private key.
-4. The learner application contains only the corresponding public key.
-5. When the course is opened, the application can verify both the package integrity and the publisher signature.
+1. Course Workshop or the publishing process produces the final course package as immutable bytes, or through a documented and versioned canonical serialisation.
+2. A SHA-256 digest is calculated from those exact bytes.
+3. A release manifest records the digest, course and schema versions, publisher identifier, signature format and signing-key identifier.
+4. The manifest is digitally signed using an authorised publisher private key held outside the browser tools.
+5. A trusted learner application or separate verifier obtains the corresponding public key from a trusted distribution, certificate or managed key registry.
+6. The verifier checks the publisher-key binding, signature and package digest before reporting the release status.
 
 The result is a distinction between two questions:
 
@@ -91,13 +95,15 @@ The result is a distinction between two questions:
 
 **Authenticity:** Was this release authorised by the recognised publisher?
 
-An altered package could still be opened if someone deliberately removed the verification logic, but it could no longer pass verification as the authorised release without access to the publisher's private signing key.
+An altered package cannot pass a genuine verification against the authorised publisher key without access to the publisher's private signing key.
+
+The verifier itself is part of the trust boundary. A standalone HTML file containing the course, public key, verification code and “Verified” badge cannot independently establish its own authenticity: a person who changes the file can also change the verifier or display. Portable HTML therefore needs either an external trusted verifier and detached signed manifest, or distribution from a trusted location or code-signed application. A departmentally hosted player can instead derive trust from the controlled service, domain and key-management arrangements.
 
 This is an established cryptographic model and is preferable to proprietary obfuscation or an invented protection mechanism.
 
 ---
 
-## 4. Recommended signed-course model
+## 4. Candidate signed-course model
 
 The existing `TrainingPackage` design is well suited to digital signing because the course already has a clear identity, version and canonical content boundary.
 
@@ -111,7 +117,8 @@ Course package
 │   ├── schema version
 │   ├── course version
 │   ├── publisher
-│   └── release metadata
+│   ├── signing-key identifier
+│   └── release and signature-format metadata
 ├── content
 ├── assets
 ├── validation record
@@ -124,7 +131,7 @@ A learner-facing verification result might report:
 ```text
 Course: Product Management Fundamentals
 Version: 1.3.0
-Publisher: Department
+Authorised publisher: [publisher identity]
 Integrity: Verified
 Publisher signature: Valid
 ```
@@ -137,7 +144,9 @@ The private signing key must never be embedded in Course Workshop, a portable le
 
 Anything delivered to a browser must be treated as accessible to the person operating that browser.
 
-The public verification key can safely be distributed with the learner application. The private signing key should remain in a controlled publishing environment.
+The public verification key can be distributed, but its integrity and binding to the claimed publisher must be protected. A substituted public key can make an attacker's signature appear valid. The trusted player, certificate or managed key registry should therefore identify the publisher, key identifier and approved algorithm, and support key rotation, revocation and historical verification. The private signing key should remain in a controlled publishing environment.
+
+The signed scope must also be exact. Sign immutable package bytes or a documented, versioned canonical serialisation—not an undefined in-memory object whose field ordering or encoding may change between tools.
 
 ---
 
@@ -197,9 +206,9 @@ A learner receives one self-contained HTML course file and opens it in a browser
 
 **Possible enhancement**
 
-Add a signed release manifest and verification status to exported learner HTML files.
+Publish a detached signed release manifest that can be checked by a separate trusted verifier or managed release catalogue, or distribute the file from an authoritative departmental location.
 
-This is the lowest-impact next step because it retains the existing delivery model.
+A verification badge generated solely by the same modifiable HTML file is not proof of authenticity. Any offline verification approach also needs browser and `file://` compatibility testing before it is relied upon.
 
 ---
 
@@ -225,6 +234,8 @@ The package could contain course JSON, embedded media, release metadata, hashes 
 A browser normally cannot register a custom file type in the same way as an installed desktop application. A hosted or local player may therefore still need the learner to select or import the package unless an approved wrapper is later introduced.
 
 The format should therefore be considered a packaging and assurance improvement, not a reason to sacrifice browser portability.
+
+The player used to open the package must itself come from a trusted host, managed application distribution or other authenticated channel. Separating the signed course from an untrusted player does not establish authenticity.
 
 ---
 
@@ -326,6 +337,28 @@ Only information that has a defined business purpose should be collected.
 
 This model provides capabilities similar to part of an LMS without requiring the learning application itself to become a large monolithic LMS product.
 
+Before building a bespoke completion service, the department should assess whether an existing learning platform already provides the required identity, assignment, completion, reporting and records functions.
+
+---
+
+### Option F — Integrate with an existing departmental learning platform
+
+If the department already operates a Learning Management System, learning record store or comparable platform, Product Practice may be able to remain the learning experience while the existing platform provides enrolment, access and completion administration.
+
+**Advantages**
+
+- reuses established identity, assignment, reporting and support arrangements;
+- avoids creating a second departmental training record;
+- may already satisfy mandatory-training and records requirements; and
+- keeps the course package and learning interaction separate from administration.
+
+**Considerations**
+
+- the platform's supported integration and package formats must be confirmed rather than assumed;
+- required standards or interfaces may constrain offline operation or some interactive features;
+- completion rules and assessment data need an agreed meaning before they are transmitted; and
+- a proof of integration is required before claiming compatibility with any LMS or reporting standard.
+
 ---
 
 ## 7. Home and mobile access
@@ -378,7 +411,7 @@ The same `TrainingPackage` can remain the canonical course unit.
 
 ---
 
-## 9. Source protection and realistic expectations
+## 9. Authenticity, access and source protection
 
 It is important to distinguish between protecting authenticity and attempting to make browser content unreadable.
 
@@ -391,8 +424,10 @@ The system can:
 - identify the publisher and version;
 - prevent an altered package from passing signature verification;
 - separate official publishing authority from ordinary course authoring;
-- make casual copying or rebadging more difficult; and
-- provide an independent verification trail for released courses.
+- make misleading rebadging detectable; and
+- provide a verifiable release trail for released courses.
+
+A digital signature does not prevent copying, enforce copyright or licensing terms, restrict access, or establish that the course received competent or independent review. It proves only that defined bytes were signed by the holder of a private key whose authority the verifier has reason to trust.
 
 ### What cannot be guaranteed in a client-side browser application
 
@@ -402,7 +437,7 @@ Encoding, minification, bundling or obfuscation can increase the effort required
 
 Encryption has the same fundamental limitation when a course must operate entirely offline: the client needs access to the decryption mechanism in order to display the content.
 
-For that reason, the strongest practical protection for a portable course is signed provenance and integrity rather than an assertion that the source cannot be accessed.
+For that reason, signed provenance and integrity can provide useful assurance for a portable course, provided the verifier and publisher key are trusted. They should not be represented as copy protection.
 
 Where actual access restriction is required, the stronger control is departmental hosting and authentication.
 
@@ -445,21 +480,23 @@ Continue using the existing `TrainingPackage` model and Course Workshop export p
 
 Maintain the current structural validation, release declarations and SHA-256 generation.
 
-This keeps the system easy to evaluate and use.
+This keeps the system easy to evaluate and use. Complete the agreed trainer-use, manual accessibility and supported-device evidence before selecting additional infrastructure. The resulting needs and risks should determine whether signing, hosting, identity or reporting is next.
 
 ### Stage 2 — Add cryptographic release signing
 
-Add a standard digital-signature process for final course releases.
+If a confirmed requirement exists for publisher authentication or tamper-evident portable releases, add a standard digital-signature process for final course releases.
 
 Recommended implementation characteristics:
 
-- SHA-256 for content digests;
-- a recognised modern signature scheme such as Ed25519 or an approved departmental equivalent;
+- SHA-256 or the current department-approved digest standard;
+- a digital-signature algorithm and implementation approved under current departmental security architecture and applicable Australian Government guidance;
 - a controlled private signing key;
-- a public verification key in the learner application; and
+- an exact, versioned signed scope covering immutable package bytes or canonical serialisation;
+- a trusted mechanism for binding the publisher identity to the public verification key;
+- key identifiers, rotation, revocation and historical-verification arrangements;
 - clear verification status available to users and support staff.
 
-The exact cryptographic standard should ultimately align with departmental security architecture and policy.
+The exact cryptographic standard must be selected and reviewed under departmental security architecture and current policy rather than fixed by this options paper. Browser-based verification must also be proven across the supported hosted and offline environments.
 
 ### Stage 3 — Formalise the portable course package
 
@@ -481,7 +518,7 @@ Avoid creating a separate credentials system.
 
 ### Stage 6 — Completion and reporting service
 
-Add a narrowly scoped server-side API and departmental data store only where there is a defined requirement for completion, progress or reporting information.
+Where there is a defined requirement for completion, progress or reporting information, first assess integration with the department's existing learning platform. Add a narrowly scoped server-side API and departmental data store only when the existing platform cannot meet the requirement appropriately.
 
 This can be introduced without changing the underlying course package format.
 
@@ -509,11 +546,11 @@ Use departmental hosting with existing identity services.
 
 ### If completion must be associated with an individual
 
-Use authenticated departmental hosting with a controlled completion service.
+Use authenticated departmental hosting and, where possible, the department's existing learning platform. Introduce a separate controlled completion service only if the established platform cannot meet the defined requirement.
 
 ### If authenticity and unauthorised modification are the primary concerns
 
-Use signed releases regardless of whether the course is portable or hosted.
+Consider signed releases with a trusted verifier and managed publisher key. For hosted delivery, a controlled authoritative service may already address much of the practical authenticity risk.
 
 ### If trainers need to create courses
 
@@ -521,9 +558,9 @@ Retain Course Workshop as the authoring layer, but separate authoring from final
 
 ---
 
-## 13. Recommended target architecture
+## 13. Illustrative extensible architecture
 
-The preferred long-term architecture is not a single distribution format. It is a common course model capable of several controlled delivery modes.
+If stronger controls are justified, the existing common course model can support several controlled delivery modes without prescribing one as the approved departmental target.
 
 ```text
                          COURSE WORKSHOP
@@ -551,7 +588,7 @@ The preferred long-term architecture is not a single distribution format. It is 
                                       optional completion API
 ```
 
-This model preserves the current strengths of the system while providing a clear pathway to stronger departmental control.
+This pattern preserves the current strengths of the system while providing a pathway to stronger departmental control. The signing branch assumes a trusted verifier and publisher-key distribution; it cannot be established by a self-asserted badge inside a modifiable learner file.
 
 It avoids a premature dependency on a specific hosting platform, authentication service or Learning Management System, while allowing those capabilities to be introduced if the business requirement warrants them.
 
@@ -564,6 +601,7 @@ If the system progresses toward production departmental hosting, the relevant te
 - application/service ownership;
 - approved hosting environment;
 - security assessment and accreditation requirements;
+- information classification and handling requirements;
 - identity and access management;
 - external and mobile access policy;
 - privacy and data minimisation;
@@ -571,7 +609,11 @@ If the system progresses toward production departmental hosting, the relevant te
 - accessibility testing;
 - supported browser/device matrix;
 - release and change management;
-- signing-key custody and rotation;
+- exact signed-byte or canonical-serialisation rules;
+- verifier and public-key trust distribution;
+- signing-key custody, rotation, compromise response and revocation;
+- offline browser and secure-context compatibility where cryptography is used;
+- existing learning-platform and interoperability constraints;
 - logging and monitoring requirements;
 - backup and recovery where server-side records exist;
 - support arrangements; and
@@ -583,11 +625,11 @@ Not all of these considerations apply to the current standalone model. They beco
 
 ## 15. Conclusion
 
-The existing Training Learning System does not need to be rebuilt in order to support stronger distribution and departmental hosting models.
+The existing Product Practice learning system does not need to be rebuilt in order to support stronger distribution and departmental hosting models.
 
 Its current separation between the shared learner application and the reusable `TrainingPackage` provides an appropriate foundation for both portable and centrally hosted delivery.
 
-The most useful near-term assurance improvement is digital signing of approved course releases. This would strengthen provenance and tamper detection while retaining the current browser-based and offline capabilities.
+The agreed near-term priority remains trainer use and manual accessibility/device evidence. If that work or departmental review establishes a material need for publisher authentication or tamper-evident portable releases, digital signing is a viable later control—provided the verifier, public-key trust, signed scope and key-management arrangements are also controlled.
 
 If the department later requires central access, authentication or completion records, those capabilities can be added as hosting and service layers around the same course package model.
 
@@ -604,3 +646,9 @@ This provides a practical progression from a low-infrastructure training resourc
 - [Learning System Direction](LEARNING-SYSTEM-DIRECTION.md)
 - [Standards](STANDARDS.md)
 - [Roadmap](ROADMAP.md)
+
+## External technical references
+
+- [Australian Cyber Security Centre — Guidelines for cryptography](https://www.cyber.gov.au/business-government/asds-cyber-security-frameworks/ism/cyber-security-guidelines/guidelines-for-cryptography) — current Australian Government guidance for approved cryptographic algorithms and key-management controls.
+- [NIST FIPS 186-5 — Digital Signature Standard](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf) — explains the distinction between mathematical signature verification and assurance that a public key belongs to the claimed signer.
+- [MDN — `SubtleCrypto.verify()`](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/verify) — browser API and compatibility reference for client-side signature verification, including the secure-context requirement.
