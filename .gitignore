@@ -19,6 +19,7 @@ shot-*.png
 .qa-release/
 .qa-release-run-*/
 .package-player-check-*/
+tmp/
 
 # Editor and OS
 .vscode/

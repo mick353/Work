@@ -42,7 +42,7 @@ The learner-facing product does not change. Course Workshop embeds the existing 
 
 **Deliberately parked:** direct PowerPoint parsing remains out unless trainers demonstrate a need; PDF and ordered PNG/JPEG/WebP import are the supported browser route. Arbitrary multi-course bundle composition also remains parked.
 
-Arbitrary multi-course bundle composition remains parked. One course per learner export is the agreed default; the combined catalogue remains a controlled repository release surface.
+One course per learner export is the agreed default; the combined catalogue remains a controlled repository release surface.
 
 The detailed implemented boundary is in [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md).
 
