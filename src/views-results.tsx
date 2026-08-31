@@ -1,10 +1,10 @@
 import { CONTENT_REVIEWED, diagnosticQuestions, flashcards, manifest, modules, practiceQuestions } from "./content";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ChevronRight, Printer, TrendingUp } from "lucide-react";
 import type { Question } from "./package-model";
-import { DAY_MS, daysAgoKey, localDayKey, type ReviewSchedule, type View } from "./lib";
+import { DAY_MS, daysAgoKey, type ReviewSchedule, type View } from "./lib";
 import { MASTERY_QUIZ_THRESHOLD, masteryState, type HistoryEntry, type ItemStatMap, type ProgressMap, type ReviewMap } from "./state";
-import { BarList, ChartCard, ColumnChart, Heatmap, Radial, StackedBar, TrendChart } from "./charts";
+import { BarList, ChartCard, ColumnChart, Radial, StackedBar, TrendChart } from "./charts";
 import { IllusEmptyResults } from "./illustrations";
 import { EmptyState, PageIntro } from "./components";
 
@@ -27,6 +27,7 @@ export function Results({
   practiceBest: number;
   navigate: (view: View) => void;
 }) {
+  const [showAllRevisit, setShowAllRevisit] = useState(false);
   const mastered = modules.filter((m) => masteryState(progress[m.id], m.scenarios.length).mastered).length;
   const completion = Math.round((mastered / modules.length) * 100);
 
@@ -39,22 +40,23 @@ export function Results({
       colour: stageColour(m.number),
     }));
 
-  /* Where the effort is going: attempts per stage. */
-  const effort = modules
-    .filter((m) => (progress[m.id]?.attempts ?? 0) > 0)
-    .map((m) => {
-      const attempts = progress[m.id]?.attempts ?? 0;
-      const scenarioAttempts = Object.values(progress[m.id]?.scenarioAttempts ?? {}).reduce((a, b) => a + b, 0);
-      const total = attempts + scenarioAttempts;
-      return {
-        label: `${m.number}. ${m.title}`,
-        value: total,
-        colour: stageColour(m.number),
-        detail: `${total} attempt${total === 1 ? "" : "s"}`,
-      };
-    })
-    .sort((a, b) => b.value - a.value);
-  const effortMax = Math.max(1, ...effort.map((e) => e.value));
+  /* Counts every scored activity, including practice that is not stage-owned. */
+  const activity = useMemo(() => {
+    const stageChecks = history.filter((entry) => entry.kind === "quiz").length;
+    const mixedPractice = history.filter((entry) => entry.kind === "practice").length;
+    const diagnostics = history.filter((entry) => entry.kind === "diagnostic").length;
+    const scenarios = modules.reduce(
+      (sum, module) => sum + Object.values(progress[module.id]?.scenarioAttempts ?? {}).reduce((a, b) => a + b, 0),
+      0,
+    );
+    return [
+      { label: "Stage knowledge checks", value: stageChecks, colour: "var(--accent-1)", detail: `${stageChecks} completed` },
+      { label: "Decision scenarios", value: scenarios, colour: "var(--accent-3)", detail: `${scenarios} answered` },
+      { label: "Mixed practice sets", value: mixedPractice, colour: "var(--accent-5)", detail: `${mixedPractice} completed` },
+      { label: "Diagnostics", value: diagnostics, colour: "var(--accent-7)", detail: `${diagnostics} completed` },
+    ];
+  }, [history, progress]);
+  const activityMax = Math.max(1, ...activity.map((item) => item.value));
 
   /* Score trend across every scored attempt, oldest first. */
   const trend = useMemo(
@@ -65,7 +67,7 @@ export function Results({
         .map((entry) => ({
           at: entry.at,
           score: entry.score,
-          label: `${entry.kind === "quiz" ? modules.find((m) => m.id === entry.moduleId)?.title ?? "Quiz" : entry.kind === "practice" ? "Mixed practice" : "Diagnostic"} — ${new Date(entry.at).toLocaleDateString("en-AU", { day: "numeric", month: "short" })}`,
+          label: `${entry.kind === "quiz" ? modules.find((m) => m.id === entry.moduleId)?.title ?? "Stage knowledge check" : entry.kind === "practice" ? "Mixed practice" : "Diagnostic"} — ${new Date(entry.at).toLocaleString("en-AU", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}`,
         })),
     [history],
   );
@@ -104,52 +106,41 @@ export function Results({
     [reviews],
   );
 
-  /* Card maturity — how much of the deck has actually stuck. */
-  const maturity = useMemo(() => {
-    let unseen = 0;
-    let learning = 0;
-    let young = 0;
-    let mature = 0;
+  /* Practical queue state, without treating a long interval as course completion. */
+  const reviewStatus = useMemo(() => {
+    const now = Date.now();
+    let notStarted = 0;
+    let due = 0;
+    let comingUp = 0;
+    let later = 0;
     flashcards.forEach((card) => {
       const schedule = reviews[card.id] as ReviewSchedule | undefined;
-      if (!schedule) unseen += 1;
-      else if (schedule.interval < 1) learning += 1;
-      else if (schedule.interval < 21) young += 1;
-      else mature += 1;
+      if (!schedule) notStarted += 1;
+      else if (schedule.due <= now) due += 1;
+      else if (schedule.due <= now + 7 * DAY_MS) comingUp += 1;
+      else later += 1;
     });
     return [
-      { label: "Not started", value: unseen, colour: "var(--line-strong)" },
-      { label: "Relearning", value: learning, colour: "var(--warning)" },
-      { label: "Young", value: young, colour: "var(--accent-5)" },
-      { label: "Mature", value: mature, colour: "var(--success)" },
-    ].filter((item) => item.value > 0);
+      { label: "Not started", value: notStarted, colour: "var(--line-strong)" },
+      { label: "Due now", value: due, colour: "var(--warning)" },
+      { label: "Returns within 7 days", value: comingUp, colour: "var(--accent-5)" },
+      { label: "Returns later", value: later, colour: "var(--success)" },
+    ];
   }, [reviews]);
 
-  /* Twelve-week study heatmap, weeks as columns. */
-  const heatmap = useMemo(() => {
-    const days = Array.from({ length: 84 }, (_, index) => {
-      const offset = 83 - index;
-      const key = daysAgoKey(offset);
-      const date = new Date();
-      date.setDate(date.getDate() - offset);
+  /* A readable activity history: actual dates instead of an unlabelled grid. */
+  const studyActivity = useMemo(() => {
+    const unique = [...new Set(studyDays)].sort((a, b) => b.localeCompare(a));
+    const recent = unique.slice(0, 6).map((key) => {
+      const date = new Date(`${key}T12:00:00`);
+      const relative = key === daysAgoKey(0) ? "Today" : key === daysAgoKey(1) ? "Yesterday" : "Study day";
       return {
         key,
-        label: `${date.toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" })} — ${studyDays.includes(key) ? "studied" : "no session"}`,
-        active: studyDays.includes(key),
+        relative,
+        date: date.toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long", year: "numeric" }),
       };
     });
-    const weeks: (typeof days)[] = [];
-    for (let index = 0; index < days.length; index += 7) weeks.push(days.slice(index, index + 7));
-    return weeks;
-  }, [studyDays]);
-
-  const currentStreak = useMemo(() => {
-    let streak = 0;
-    for (let offset = 0; offset < 400; offset += 1) {
-      if (studyDays.includes(daysAgoKey(offset))) streak += 1;
-      else if (offset > 0) break;
-    }
-    return streak;
+    return { total: unique.length, recent, earlier: Math.max(0, unique.length - recent.length) };
   }, [studyDays]);
 
   /**
@@ -174,18 +165,19 @@ export function Results({
           prompt: question.prompt,
           moduleId: question.moduleId,
           seen: stat.seen,
+          correct: stat.correct,
           accuracy: Math.round((stat.correct / stat.seen) * 100),
         };
       })
       .filter((row): row is NonNullable<typeof row> => row !== null);
 
-    // Two or more sightings before an item is called hard: one miss is noise.
-    const settled = rows.filter((row) => row.seen >= 2);
+    const revisit = rows
+      .filter((row) => row.accuracy < 100)
+      .sort((a, b) => a.accuracy - b.accuracy || b.seen - a.seen);
     return {
       answered: rows.length,
-      hardest: [...settled].sort((a, b) => a.accuracy - b.accuracy || b.seen - a.seen).slice(0, 5),
-      solid: settled.filter((row) => row.accuracy === 100).length,
-      settled: settled.length,
+      revisit,
+      consistentlyCorrect: rows.filter((row) => row.accuracy === 100).length,
     };
   }, [itemStats]);
 
@@ -194,6 +186,16 @@ export function Results({
   const lifetimeTotal = quizEntries.reduce((sum, entry) => sum + entry.total, 0);
   const lifetimeAccuracy = lifetimeTotal ? Math.round((lifetimeCorrect / lifetimeTotal) * 100) : 0;
   const dueNow = forecast[0].value;
+  const visibleRevisit = showAllRevisit ? itemView.revisit : itemView.revisit.slice(0, 5);
+  const nextStage = modules.find((module) => !masteryState(progress[module.id], module.scenarios.length).mastered);
+  const nextAction = dueNow > 0
+    ? { label: `Review ${dueNow} due card${dueNow === 1 ? "" : "s"}`, view: "review" as View }
+    : nextStage
+      ? { label: `Continue Stage ${nextStage.number}`, view: `module:${nextStage.id}` as View }
+      : { label: "Start mixed practice", view: "practice" as View };
+  const evidenceSummary = lifetimeTotal < 20
+    ? `This is an early snapshot based on ${lifetimeTotal} practice answer${lifetimeTotal === 1 ? "" : "s"}. Use it to choose the next activity, not as a final judgement of your ability.`
+    : `This summary is based on ${lifetimeTotal} practice answers recorded in this browser. Repeated results are more useful than any single score.`;
 
   /**
    * A record of completion.
@@ -270,8 +272,8 @@ export function Results({
             <div className="results-stats">
               <div>
                 <strong>{lifetimeAccuracy || "—"}{lifetimeAccuracy ? "%" : ""}</strong>
-                <span>Lifetime accuracy</span>
-                <small>{lifetimeCorrect} correct of {lifetimeTotal} answered</small>
+                <span>Practice accuracy</span>
+                <small>{lifetimeCorrect} correct of {lifetimeTotal} answered in stage and mixed practice</small>
               </div>
               <div>
                 <strong>{history.length}</strong>
@@ -279,9 +281,9 @@ export function Results({
                 <small>Quizzes, practice sets and diagnostics</small>
               </div>
               <div>
-                <strong>{currentStreak}</strong>
-                <span>Day streak</span>
-                <small>{studyDays.length} study day{studyDays.length === 1 ? "" : "s"} recorded overall</small>
+                <strong>{studyActivity.total}</strong>
+                <span>Study days</span>
+                <small>Distinct dates recorded on this device—not a target or streak</small>
               </div>
               <div>
                 <strong>{practiceBest || "—"}{practiceBest ? "%" : ""}</strong>
@@ -291,18 +293,36 @@ export function Results({
             </div>
           </section>
 
+          <section className="results-guidance" aria-labelledby="results-guidance-title">
+            <TrendingUp size={24} aria-hidden="true" />
+            <div>
+              <span className="eyebrow">Your useful next step</span>
+              <h2 id="results-guidance-title">What these results mean right now</h2>
+              <p>{evidenceSummary}</p>
+              <p>You can complete the course in one day or spread it out. Flashcard return dates are optional follow-up practice, not deadlines and not part of the stage-completion rule.</p>
+            </div>
+            <div className="guidance-summary">
+              <span><strong>{itemView.revisit.length}</strong> question{itemView.revisit.length === 1 ? "" : "s"} to revisit</span>
+              <span><strong>{dueNow}</strong> review card{dueNow === 1 ? "" : "s"} due now</span>
+              <button type="button" className="primary" onClick={() => navigate(nextAction.view)}>{nextAction.label}<ChevronRight size={17} aria-hidden="true" /></button>
+            </div>
+          </section>
+
           <div className="chart-grid">
             <ChartCard
               title="Score trend"
-              hint="Every scored attempt in order. Mixed practice dipping below your quiz scores is normal — interleaving is harder."
+              hint="Your scored activities in order. The list underneath identifies the activity behind each recent score."
               empty={trend.length < 2 ? "Two scored attempts are needed before a trend means anything." : undefined}
             >
               <TrendChart points={trend} ariaLabel="Score for each attempt over time" />
+              <ol className="recent-attempts" aria-label="Most recent scored activities">
+                {trend.slice(-5).reverse().map((entry) => <li key={`${entry.at}-${entry.label}`}><span>{entry.label}</span><strong>{entry.score}%</strong></li>)}
+              </ol>
             </ChartCard>
 
             <ChartCard
               title="Review forecast"
-              hint="Cards falling due over the next fortnight. Flat bars mean a sustainable schedule; a spike means a heavy day."
+              hint="Optional flashcard return dates created by your ratings—not course deadlines. Review when useful; continue the course at your own pace."
             >
               <ColumnChart
                 columns={forecast}
@@ -327,81 +347,68 @@ export function Results({
             <ChartCard
               title="Accuracy by stage"
               hint="Your best knowledge-check score for each stage. Anything under 75% has not met the recall requirement."
-              empty={accuracy.length === 0 ? "Complete a knowledge check to populate this." : undefined}
+              empty={accuracy.length === 0 ? "No stage knowledge check has been completed yet. Diagnostic and mixed-practice scores appear in the trend and activity panels instead." : undefined}
             >
               <BarList series={accuracy} ariaLabel="Best knowledge check score for each stage" />
             </ChartCard>
 
-            {/*
-              The only panel in the app about the questions rather than about
-              the learner. An item everyone gets right teaches nothing; one
-              everyone gets wrong is usually ambiguous rather than hard.
-            */}
             <ChartCard
-              title="Which questions are actually hard"
-              hint="Accuracy per question, from your own attempts. Items seen at least twice, because a single miss is noise."
+              title="Questions to revisit"
+              hint="Questions missed at least once. One miss is an early signal; repeated misses are stronger. This is your revision list, not a judgement on the item."
               empty={
-                itemView.hardest.length === 0
+                itemView.revisit.length === 0
                   ? itemView.answered === 0
                     ? "No questions answered yet."
-                    : "Answer a few more sets — an item needs two sightings before its accuracy means anything."
+                    : "Nothing currently needs another look. Questions you miss will appear here."
                   : undefined
               }
             >
-              {itemView.hardest.length > 0 && (
+              {itemView.revisit.length > 0 && (
                 <>
                   <ul className="item-stats">
-                    {itemView.hardest.map((row) => (
+                    {visibleRevisit.map((row) => (
                       <li key={row.id}>
                         <span className="item-accuracy" data-band={row.accuracy < 50 ? "low" : row.accuracy < 80 ? "mid" : "high"}>
                           {row.accuracy}%
                         </span>
                         <span className="item-prompt">{row.prompt}</span>
                         <span className="item-seen">
-                          seen {row.seen}× · Stage {modules.find((m) => m.id === row.moduleId)?.number ?? "—"}
+                          {row.correct} of {row.seen} correct · Stage {modules.find((m) => m.id === row.moduleId)?.number ?? "—"}
+                          <button type="button" className="text-button" onClick={() => navigate(`module:${row.moduleId}`)}>Review this stage</button>
                         </span>
                       </li>
                     ))}
                   </ul>
                   <p className="item-note">
-                    {itemView.solid} of {itemView.settled} settled items are at 100%. Those are the ones you can stop
-                    revisiting.
+                    {itemView.consistentlyCorrect} answered question{itemView.consistentlyCorrect === 1 ? " has" : "s have"} been correct every time so far.
                   </p>
+                  {itemView.revisit.length > 5 && <button type="button" className="secondary item-expand" onClick={() => setShowAllRevisit((current) => !current)}>{showAllRevisit ? "Show first 5" : `Show all ${itemView.revisit.length}`}</button>}
                 </>
               )}
             </ChartCard>
 
             <ChartCard
-              title="Where the effort went"
-              hint="Total attempts per stage, quizzes and scenarios combined. The longest bar is the idea that fought back hardest."
-              empty={effort.length === 0 ? "No attempts recorded yet." : undefined}
+              title="What you have completed"
+              hint="Counts every scored activity recorded in this browser, including mixed practice and diagnostics."
             >
-              <BarList series={effort} max={effortMax} suffix="" ariaLabel="Attempts per stage" />
+              <BarList series={activity} max={activityMax} suffix="" ariaLabel="Completed learning activities by type" />
             </ChartCard>
 
             <ChartCard
-              title="Is it sticking?"
-              hint="Flashcards by review interval. Mature means an interval of three weeks or more — that is durable recall, not cramming."
+              title="Flashcard review status"
+              hint="Cards not started, due now, returning within seven days or scheduled later. Later reviews are optional reinforcement, not completion requirements."
             >
-              <StackedBar series={maturity} ariaLabel="Flashcards by maturity" />
+              <StackedBar series={reviewStatus} ariaLabel="Flashcards by current review status" />
             </ChartCard>
 
-            <ChartCard title="Study rhythm" hint="Last twelve weeks. Spaced sessions beat one long reread.">
-              <Heatmap weeks={heatmap} ariaLabel="Study activity over the last twelve weeks" />
+            <ChartCard title="Study activity" hint="The actual dates on which this browser recorded learning. This is history, not a target—you may finish in one day or return over time.">
+              <div className="study-day-summary"><strong>{studyActivity.total}</strong><span>study day{studyActivity.total === 1 ? "" : "s"} recorded</span></div>
+              <ul className="study-date-list">
+                {studyActivity.recent.map((day) => <li key={day.key}><strong>{day.relative}</strong><span>{day.date}</span></li>)}
+              </ul>
+              {studyActivity.earlier > 0 && <p className="chart-footnote">Plus {studyActivity.earlier} earlier study day{studyActivity.earlier === 1 ? "" : "s"}.</p>}
             </ChartCard>
           </div>
-
-          <section className="results-note">
-            <TrendingUp size={22} aria-hidden="true" />
-            <div>
-              <h2>Reading these honestly</h2>
-              <p>
-                A high accuracy bar next to a low maturity split means you can recognise the answers but have not yet
-                held them over time. That is the gap spaced review closes — and it is exactly the difference between
-                remembering the slide and being able to use the idea in a meeting six weeks from now.
-              </p>
-            </div>
-          </section>
 
           <section className="record-panel">
             <div className="record-actions no-print">
@@ -439,7 +446,7 @@ export function Results({
                   <dd>{record.answered}</dd>
                 </div>
                 <div>
-                  <dt>Lifetime accuracy</dt>
+                  <dt>Practice accuracy</dt>
                   <dd>{lifetimeAccuracy || "—"}{lifetimeAccuracy ? "%" : ""}</dd>
                 </div>
                 <div>
@@ -499,5 +506,3 @@ export function Results({
     </div>
   );
 }
-
-export { localDayKey };

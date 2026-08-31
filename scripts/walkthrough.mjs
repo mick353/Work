@@ -472,15 +472,15 @@ await page.waitForTimeout(700);
     ok("Results mastery count", `${claimed} of ${stageCount}, agrees with the walkthrough`);
   }
 
-  /* Lifetime accuracy must equal the answers actually given. */
+  /* Practice accuracy must equal the answers actually given. */
   const acc = text.match(/(\d+)\s+correct\s+of\s+(\d+)\s+answered/i);
   if (acc) {
     const [, c, a] = acc.map(Number);
     const pct = Math.round((c / a) * 100);
-    const shownPct = Number(text.match(/(\d+)%\s+Lifetime accuracy/i)?.[1] ?? NaN);
+    const shownPct = Number(text.match(/(\d+)%\s+Practice accuracy/i)?.[1] ?? NaN);
     if (!Number.isNaN(shownPct) && Math.abs(shownPct - pct) > 1) {
       fail("bug", "Results", `lifetime accuracy shows ${shownPct}% but ${c} of ${a} is ${pct}%`);
-    } else ok("Lifetime accuracy", `${c} of ${a} = ${pct}%, internally consistent`);
+    } else ok("Practice accuracy", `${c} of ${a} = ${pct}%, internally consistent`);
   }
 
   const itemStats = await page.locator(".item-stats li").count();

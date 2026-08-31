@@ -2973,6 +2973,45 @@ const resultsDueNow = Number((await page.locator(".chart-footnote strong").first
 const notStartedLabel = await page.locator(".chart-footnote").innerText();
 check("Results counts only scheduled cards as due", resultsDueNow === resurfacedDueNow, `results ${resultsDueNow}; schedules ${resurfacedDueNow}`);
 check("Results reports unscheduled cards separately from the due queue", /card(?:s)? not started/i.test(notStartedLabel), notStartedLabel);
+const resultsText = await page.locator("#main-content").innerText();
+check(
+  "Results explains that review timing does not delay course completion",
+  /complete the course in one day or spread it out/i.test(resultsText) && /not deadlines.*not part of the stage-completion rule/is.test(resultsText),
+);
+check(
+  "Results replaces internal maturity language with practical review states",
+  /Flashcard review status/i.test(resultsText) && /Returns within 7 days/i.test(resultsText) && !/Mature means an interval of three weeks/i.test(resultsText),
+);
+check(
+  "Results names the scored activities behind its charts",
+  /What you have completed/i.test(resultsText) && /Stage knowledge checks/i.test(resultsText) && /Mixed practice sets/i.test(resultsText) && /Diagnostics/i.test(resultsText),
+);
+check(
+  "Results turns item analysis into an actionable revision list",
+  /Questions to revisit/i.test(resultsText) && /Review this stage/i.test(resultsText) && !/Which questions are actually hard/i.test(resultsText),
+);
+const expectedRevisitItems = await page.evaluate(() => {
+  const raw = localStorage.getItem("product-practice-v2:pm-fundamentals:item-stats");
+  const stats = raw ? JSON.parse(raw) : {};
+  return Object.values(stats).filter((item) => item.seen > 0 && item.correct < item.seen).length;
+});
+const visibleRevisitItems = await page.locator(".item-stats li").count();
+check(
+  "A long revision list is capped clearly rather than silently truncated",
+  expectedRevisitItems <= 5
+    ? visibleRevisitItems === expectedRevisitItems
+    : visibleRevisitItems === 5 && (await page.getByRole("button", { name: `Show all ${expectedRevisitItems}` }).count()) === 1,
+  `${visibleRevisitItems} shown from ${expectedRevisitItems}`,
+);
+if (expectedRevisitItems > 5) {
+  await page.getByRole("button", { name: `Show all ${expectedRevisitItems}` }).click();
+  check("A learner can reveal every question needing revision", (await page.locator(".item-stats li").count()) === expectedRevisitItems);
+}
+check("Recent score details identify the activities behind the line", (await page.locator(".recent-attempts li").count()) >= 1);
+check(
+  "Study activity shows actual dates instead of an unlabelled twelve-week grid",
+  (await page.locator(".study-date-list li").count()) >= 1 && !/Last twelve weeks/i.test(resultsText),
+);
 await page.evaluate(() => { window.location.hash = "dashboard"; });
 await page.waitForSelector(".metric-strip");
 const dashboardDueNow = Number((await page.locator(".metric-strip > div").filter({ hasText: "Cards due for review" }).locator("strong").innerText()).trim());

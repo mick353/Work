@@ -261,7 +261,7 @@ export function ColumnChart({
   );
 }
 
-/** Single stacked bar — used for flashcard maturity. */
+/** Single stacked bar — used for the current flashcard queue state. */
 export function StackedBar({ series, ariaLabel }: { series: Series[]; ariaLabel: string }) {
   const total = series.reduce((sum, item) => sum + item.value, 0) || 1;
   return (
