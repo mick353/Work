@@ -973,7 +973,7 @@ check(
   (await page.locator(".hero .button-row .primary").innerText()).includes("Start Stage 1"),
 );
 const firstMetrics = await page.locator(".metric-strip > div").evaluateAll((items) => items.map((item) => item.textContent?.replace(/\s+/g, " ").trim()));
-const dueMetric = page.locator(".metric-strip > div").filter({ hasText: "Cards due today" });
+const dueMetric = page.locator(".metric-strip > div").filter({ hasText: "Cards due for review" });
 check("A first-time learner has no review cards due", (await dueMetric.locator("strong").innerText()).trim() === "0", firstMetrics.join(" | "));
 check("Opening the site does not count as a study day", await page.evaluate(() => localStorage.getItem("product-practice-v2:pm-fundamentals:study-days") === null));
 check("The first study plan begins with understanding, not retrieval", (await page.locator(".plan-list li").first().innerText()).includes("Understand"));
@@ -1856,6 +1856,8 @@ check(
 await page.getByRole("button", { name: "Sources", exact: true }).click();
 const sourceCount = await page.locator(".source-list article").count();
 check("Provenance list is populated", sourceCount >= 14, `found ${sourceCount}`);
+check("Sources are grouped by their role in the course", await page.locator(".source-group").count() >= 3, await page.locator(".source-group > header h2").allInnerTexts());
+check("Sources show where they are used and when they were checked", await page.locator(".source-trace").count() === sourceCount && /Used in:|Course-wide supporting reference/i.test(await page.locator(".source-trace").first().innerText()) && /Checked/i.test(await page.locator(".source-trace").first().innerText()));
 
 /* -- diagnostic pool is separate from the practice pool ----------- */
 
@@ -2964,6 +2966,17 @@ check(
     return Array.from(document.querySelectorAll(".lesson-section h2")).some((h) => h.textContent.trim() === label);
   }),
 );
+
+await page.evaluate(() => { window.location.hash = "results"; });
+await page.getByRole("heading", { name: "What the evidence says about your learning" }).waitFor();
+const resultsDueNow = Number((await page.locator(".chart-footnote strong").first().innerText()).trim());
+const notStartedLabel = await page.locator(".chart-footnote").innerText();
+check("Results counts only scheduled cards as due", resultsDueNow === resurfacedDueNow, `results ${resultsDueNow}; schedules ${resurfacedDueNow}`);
+check("Results reports unscheduled cards separately from the due queue", /card(?:s)? not started/i.test(notStartedLabel), notStartedLabel);
+await page.evaluate(() => { window.location.hash = "dashboard"; });
+await page.waitForSelector(".metric-strip");
+const dashboardDueNow = Number((await page.locator(".metric-strip > div").filter({ hasText: "Cards due for review" }).locator("strong").innerText()).trim());
+check("Dashboard and Results use the same due-card definition", dashboardDueNow === resultsDueNow, `dashboard ${dashboardDueNow}; results ${resultsDueNow}`);
 
 /* -- backup export and import ------------------------------------- */
 

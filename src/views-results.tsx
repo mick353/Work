@@ -96,10 +96,13 @@ export function Results({
       const offset = Math.floor((schedule.due - startOfToday.getTime()) / DAY_MS);
       if (offset >= 0 && offset < 14) buckets[offset].value += 1;
     });
-    const unseen = flashcards.filter((card) => !reviews[card.id]).length;
-    buckets[0].value += unseen;
     return buckets;
   }, [reviews]);
+
+  const notStartedCards = useMemo(
+    () => flashcards.filter((card) => !reviews[card.id]).length,
+    [reviews],
+  );
 
   /* Card maturity — how much of the deck has actually stuck. */
   const maturity = useMemo(() => {
@@ -309,14 +312,15 @@ export function Results({
               <p className="chart-footnote">
                 {dueNow > 0 ? (
                   <>
-                    <strong>{dueNow}</strong> due now.{" "}
+                    <strong>{dueNow}</strong> due for review now.{" "}
                     <button className="text-button" onClick={() => navigate("review")}>
                       Start review <ChevronRight size={15} aria-hidden="true" />
                     </button>
                   </>
                 ) : (
-                  "Nothing due right now."
+                  "Nothing due for review right now."
                 )}
+                {notStartedCards > 0 && <> <span>{notStartedCards} card{notStartedCards === 1 ? "" : "s"} not started; they become available as you work through the lessons.</span></>}
               </p>
             </ChartCard>
 

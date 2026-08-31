@@ -254,7 +254,7 @@ export function Dashboard({
         </div>
         <div>
           <strong>{dueCount}</strong>
-          <span>Cards due today</span>
+          <span>Cards due for review</span>
         </div>
         <div>
           <strong>{studyDays.length}</strong>

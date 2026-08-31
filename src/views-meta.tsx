@@ -233,6 +233,54 @@ export function Sources({ navigate }: { navigate: Navigate }) {
   const currencyNote = builtFromDeck
     ? `Reference links checked ${sourceLinksReviewed}; course content reviewed ${CONTENT_REVIEWED}. This internal learning aid is built from the departmental deck. Use current departmental guidance and the Digital Service Standard for operational decisions; where this material differs, the current source governs.`
     : `Reference links checked ${sourceLinksReviewed}; course content reviewed ${CONTENT_REVIEWED}. This internal learning aid is built from departmental closure documents. Use current controlled templates and departmental, Finance or DTA guidance for operational decisions; where this material differs, the current source governs.`;
+  const sourceGroups = [
+    {
+      id: "foundations",
+      title: "Course foundations and governing material",
+      description: "The material that anchors the course or governs the work it teaches.",
+      matches: (source: (typeof sources)[number]) => !source.url || /govern|primary|departmental|source deck|course foundation|binding|spine/i.test(source.note),
+    },
+    {
+      id: "government",
+      title: "Government standards and guidance",
+      description: "Public-sector standards, policy guidance and assurance material used to test or extend the course.",
+      matches: (source: (typeof sources)[number]) => /Australian Government|Department|Digital Transformation Agency|National Archives|Australian National Audit Office|NSW Government|NSW Department/i.test(source.publisher),
+    },
+    {
+      id: "learning",
+      title: "Learning design evidence",
+      description: "Evidence explaining why the course uses retrieval, spacing, feedback and repeated application.",
+      matches: (source: (typeof sources)[number]) => /learning|retrieval|practice testing|distributed practice|education|AERO/i.test(`${source.title} ${source.publisher} ${source.note}`),
+    },
+    {
+      id: "professional",
+      title: "Professional and industry guidance",
+      description: "Recognised methods and practical guidance that supplement, but do not override, governing material.",
+      matches: () => true,
+    },
+  ];
+  const groupedSources = sourceGroups.map((group) => ({
+    ...group,
+    items: sources.filter((source) => {
+      const firstMatch = sourceGroups.find((candidate) => candidate.matches(source));
+      return firstMatch?.id === group.id;
+    }),
+  })).filter((group) => group.items.length > 0);
+
+  const sourceUsage = (sourceId: string) => {
+    const stageNumbers = modules
+      .filter((module) => module.sections.some((section) =>
+        section.sourceIds?.includes(sourceId) || section.sourceReferences?.some((reference) => reference.sourceId === sourceId),
+      ))
+      .map((module) => module.number);
+    const usedInGuide = fieldGuide.some((entry) =>
+      entry.sourceIds.includes(sourceId) || entry.sourceReferences?.some((reference) => reference.sourceId === sourceId),
+    );
+    return [
+      stageNumbers.length ? `Stage${stageNumbers.length === 1 ? "" : "s"} ${stageNumbers.join(", ")}` : "",
+      usedInGuide ? "Field guide" : "",
+    ].filter(Boolean);
+  };
 
   return (
     <div className="page">
@@ -267,30 +315,44 @@ export function Sources({ navigate }: { navigate: Navigate }) {
       <p className="currency-note">{currencyNote}</p>
 
       <div className="source-list">
-        {sources.map((source, index) => (
-          <article key={source.id}>
-            <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-            <div>
-              <h2>{source.title}</h2>
-              <strong>{source.publisher}</strong>
-              <p>{source.note}</p>
-              <div className="source-links">
-                {source.url && (
-                  <a href={source.url} target="_blank" rel="noreferrer">
-                    Open source <ExternalLink size={15} aria-hidden="true" />
-                    <span className="visually-hidden"> (opens in a new tab)</span>
-                  </a>
-                )}
-                {/* An alternative FORMAT of the same document, not a second source. */}
-                {source.altUrl && (
-                  <a href={source.altUrl} target="_blank" rel="noreferrer" className="source-alt">
-                    {source.altLabel ?? "Alternative format"} <ExternalLink size={14} aria-hidden="true" />
-                    <span className="visually-hidden"> (same document, opens in a new tab)</span>
-                  </a>
-                )}
-              </div>
-            </div>
-          </article>
+        {groupedSources.map((group) => (
+          <section className="source-group" key={group.id} aria-labelledby={`source-group-${group.id}`}>
+            <header>
+              <h2 id={`source-group-${group.id}`}>{group.title}</h2>
+              <p>{group.description}</p>
+            </header>
+            {group.items.map((source) => {
+              const usage = sourceUsage(source.id);
+              const index = sources.findIndex((candidate) => candidate.id === source.id);
+              return <article key={source.id}>
+                <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3>{source.title}</h3>
+                  <strong>{source.publisher}</strong>
+                  <p>{source.note}</p>
+                  <div className="source-trace" aria-label={`Course use and review status for ${source.title}`}>
+                    <span>{usage.length ? `Used in: ${usage.join(" · ")}` : "Course-wide supporting reference"}</span>
+                    {source.checked && <span>Checked {source.checked}</span>}
+                  </div>
+                  <div className="source-links">
+                    {source.url && (
+                      <a href={source.url} target="_blank" rel="noreferrer">
+                        Open source <ExternalLink size={15} aria-hidden="true" />
+                        <span className="visually-hidden"> (opens in a new tab)</span>
+                      </a>
+                    )}
+                    {/* An alternative FORMAT of the same document, not a second source. */}
+                    {source.altUrl && (
+                      <a href={source.altUrl} target="_blank" rel="noreferrer" className="source-alt">
+                        {source.altLabel ?? "Alternative format"} <ExternalLink size={14} aria-hidden="true" />
+                        <span className="visually-hidden"> (same document, opens in a new tab)</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </article>;
+            })}
+          </section>
         ))}
       </div>
     </div>

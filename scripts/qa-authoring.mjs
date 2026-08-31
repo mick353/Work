@@ -343,8 +343,9 @@ check("An incomplete source is labelled and never selected as the deck source", 
 check("Media gives trainers the complete register-import-review-cite sequence", await page.locator(".connection-steps li").count() === 4 && /register.*import.*review.*cite/is.test(await page.locator(".connection-steps").innerText()));
 await page.getByRole("button", { name: /Teach/ }).click();
 check("Teach exposes the active stage's cross-step connections", await page.locator(".stage-linkage-summary").count() === 1 && /diagnostic.*review card.*source slide/is.test(await page.locator(".stage-linkage-summary").innerText()));
+check("Teach gives trainers an explicit stage position and selector", /Stage 1 of 1/i.test(await page.locator(".stage-switcher").innerText()) && await page.getByLabel("Choose course stage").count() === 1);
 await page.evaluate(() => window.scrollTo(0, 700));
-await page.getByRole("button", { name: /^Next/ }).click();
+await page.getByRole("button", { name: "Next", exact: true }).click();
 await page.waitForTimeout(50);
 const navigationState = await page.evaluate(() => ({ scrollY: window.scrollY, tag: document.activeElement?.tagName, text: document.activeElement?.textContent ?? "", id: document.activeElement?.id }));
 check("Step navigation resets scroll and focuses the new heading", navigationState.scrollY < 5 && navigationState.tag === "H1" && /retrievable and usable/i.test(navigationState.text), JSON.stringify(navigationState));
@@ -352,6 +353,7 @@ check("Reinforce explains that its content belongs to the active stage", /active
 await page.getByRole("button", { name: /Review & export/ }).click();
 check("Review checks are grouped by step and filterable", await page.locator(".review-step-summary > div").count() === 6 && await page.getByRole("button", { name: /Blockers/ }).count() === 1);
 check("A blank draft review is calm and starts with issue groups collapsed", await page.locator(".readiness.not-started").count() === 1 && await page.locator("details.issue-group[open]").count() === 0);
+check("Review shows stage coverage and release-gate progress", await page.locator(".coverage-table tbody tr").count() === 1 && await page.locator(".release-progress > div").count() === 3 && /0 of 4 recorded.*0 of 8 complete/is.test(await page.locator(".release-progress").innerText()));
 check("The content review date is recorded at release, not while drafting", await page.getByLabel("Content review date").inputValue() === "");
 check("Review explains issue navigation and the human release boundary", /relevant field.*human learning-flow review/is.test(await page.locator(".step-connection").innerText()));
 check("Draft output explains the complete trainer checkpoint transfer", /Complete editable draft.*another trainer.*embedded slides, images.*approximately.*(?:KB|MB)/is.test(await page.locator("body").innerText()));
@@ -517,12 +519,21 @@ check(
 );
 await featurePage.locator("details.source-editor summary").first().click();
 check("A trainer can expand a source summary to edit its full record", await featurePage.getByLabel("Checked").first().isVisible());
+check("A trainer can open a registered source while checking it", await featurePage.locator(".source-open-link").first().count() === 1 && (await featurePage.locator(".source-open-link").first().getAttribute("target")) === "_blank");
+
+await featurePage.getByRole("button", { name: /Teach/ }).click();
+check("A multi-stage course can be navigated without relying on a clipped tab row", /Stage 1 of 9/i.test(await featurePage.locator(".stage-switcher").innerText()) && await featurePage.getByRole("button", { name: "Next stage" }).isEnabled());
+await featurePage.getByRole("button", { name: "Next stage" }).click();
+check("Stage next control updates the active stage consistently", /Stage 2 of 9/i.test(await featurePage.locator(".stage-switcher").innerText()) && (await featurePage.getByLabel("Choose course stage").inputValue()) !== "product-thinking");
 
 await featurePage.getByRole("button", { name: /Review & export/ }).click();
 check("Advisory warnings are labelled as non-blocking", await featurePage.locator(".advisory-banner").count() === 1 && /do not disable Preview or any final export/i.test(await featurePage.locator(".advisory-banner").innerText()));
 check("Review explains the exact gates behind disabled final outputs", /set Course setup.*Available/i.test(await featurePage.locator(".release-gate-summary").innerText()) && /not caused by advisory warnings/i.test(await featurePage.locator(".export-gate-status").innerText()));
 check("Preview remains available when a cloned course has warnings but no errors", !(await featurePage.getByRole("button", { name: "Preview course" }).isDisabled()));
 check("A trainer can record an optional decision to leave advisories in place", await featurePage.locator(".advisory-option input").count() === 1 && /optional/i.test(await featurePage.locator(".advisory-option").innerText()));
+check("A worked draft opens the first relevant issue group", await featurePage.locator("details.issue-group[open]").count() === 1);
+check("The coverage matrix includes every cloned stage", await featurePage.locator(".coverage-table tbody tr").count() === 9);
+check("Release progress separates status, human decisions and record details", /Course status.*Human decisions.*Release details/is.test(await featurePage.locator(".release-progress").innerText()));
 
 await featurePage.getByRole("button", { name: /Apply & reference/ }).click();
 check("Advanced course elements have dedicated editors", await featurePage.getByRole("heading", { name: "Worked cases" }).count() === 1 && await featurePage.getByRole("heading", { name: "Toolkit templates" }).count() === 1 && await featurePage.getByRole("heading", { name: "Capstone" }).count() === 1 && await featurePage.getByRole("heading", { name: "Field guide" }).count() === 1 && await featurePage.getByRole("heading", { name: "Source differences" }).count() === 1 && await featurePage.getByRole("heading", { name: "Worked documents and exemplars" }).count() === 1);
@@ -728,7 +739,7 @@ check("A complete draft clears every blocking authoring check", (await page.loca
 check("Final outputs require and accept a complete human release record", !(await page.getByRole("button", { name: "Export repository ZIP" }).isDisabled()));
 await page.locator(".advisory-option input").check();
 check("Optional advisory acknowledgement does not change release readiness", !(await page.getByRole("button", { name: "Export repository ZIP" }).isDisabled()));
-await page.getByRole("button", { name: /^All / }).click();
+await page.getByRole("button", { name: /^All / }).click({ force: true });
 check("Optional advanced learning elements remain honest warnings or notes", (await page.locator(".issue.warning, .issue.note").count()) >= 2);
 
 const studioAxe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();

@@ -882,13 +882,19 @@ p { color: var(--muted); line-height: 1.65; }
 .boundary-note p { margin: 7px 0 12px; color: var(--ink); }
 .boundary-note .text-button { color: var(--warning); }
 .currency-note { max-width: 920px; margin-bottom: 30px; font-size: 13.5px; }
-.source-list { border-top: 1px solid var(--line-strong); }
+.source-list { display: grid; gap: 34px; }
+.source-group { border-top: 1px solid var(--line-strong); }
+.source-group > header { max-width: 860px; padding: 22px 0 4px 70px; }
+.source-group > header h2 { margin-bottom: 5px; font-size: 19px; }
+.source-group > header p { margin: 0; color: var(--muted); font-size: 13.5px; }
 .source-list article { display: grid; grid-template-columns: 50px minmax(0, 860px); gap: 20px; padding: 24px 0; border-bottom: 1px solid var(--line); }
 .source-list article > span { color: var(--accent-6); font-family: Georgia, serif; font-size: 17px; }
-.source-list h2 { margin-bottom: 5px; font-size: 23px; }
+.source-list article h3 { margin-bottom: 5px; font-size: 23px; }
 .source-list strong { color: var(--muted); font-size: 12.5px; }
 .source-list p { margin: 9px 0; }
 .source-list a { display: inline-flex; align-items: center; gap: 6px; font-weight: 650; text-decoration: none; color: var(--accent-6); }
+.source-trace { display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0; }
+.source-trace span { padding: 5px 8px; color: var(--ink-soft); border: 1px solid var(--line); border-radius: 999px; background: var(--surface-muted); font-size: 11.5px; font-weight: 650; }
 
 .settings-block { display: grid; grid-template-columns: 42px 1fr; gap: 18px; margin-bottom: 16px; padding: 26px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); box-shadow: var(--shadow); }
 .settings-block svg { color: var(--accent-5); }
@@ -1065,6 +1071,7 @@ p { color: var(--muted); line-height: 1.65; }
   .rubric { padding: 22px 18px; }
   .rubric > div { grid-template-columns: 1fr; gap: 8px; }
   .method-note { grid-template-columns: 1fr; }
+  .source-group > header { padding-left: 44px; }
   .source-list article { grid-template-columns: 34px 1fr; gap: 10px; }
   .settings-block { grid-template-columns: 1fr; }
   .review-status { grid-template-columns: 1fr; gap: 8px; }

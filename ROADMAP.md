@@ -34,6 +34,15 @@ The learner-facing product does not change. Course Workshop embeds the existing 
 - When stored learner work belongs to a different or previously unrecorded course version, the player asks whether to keep it or start that course fresh. It never silently resets another course or person-level settings.
 - The self-contained Workshop has a 12 MB build budget. Exceeding it blocks the build and forces a deliberate decision about embedded templates/media.
 
+**Implemented usability pass:**
+
+- Learner review counts now use one definition everywhere: only scheduled cards can be “due”; cards not yet attempted are reported separately. Existing progress, schedules, mastery and attempt history are read without migration or reset.
+- The learner source register is grouped by role, shows the stages or field-guide areas that cite each source, and shows the source's own checked date.
+- Course Workshop has an explicit stage selector with position and previous/next controls, while retaining the stage tabs for quick switching.
+- Source editors can open the registered learner link directly for checking. Review opens the first relevant issue group for a worked draft, while a blank draft remains calm and collapsed.
+- Review now includes a per-stage coverage matrix and separate progress for course status, four human decisions and eight release-record details. Each incomplete gate can take the trainer to its next field.
+- Autosave reports the latest local save time and the header displays the portable draft revision. These are authoring cues only; they do not alter released course versions.
+
 **External evidence still required before calling the authoring product organisationally production-ready:**
 
 1. Observe trainers building a short and a substantial real course on desktop and tablet. Test terminology, draft transfer, storage limits, release responsibilities and whether the current strict profile suits the training team's actual course types.
@@ -74,3 +83,7 @@ If registration is ever needed, prefer email one-time codes or magic links over 
 - **Two-column treatment** for the field guide, glossary and toolkit on wide screens — flagged, not done.
 - **Diagnostic presentation.** The current all-at-once diagnostic works and is accessible to automated checks, but a paged or one-question-at-a-time mode may reduce mobile and cognitive load.
 - **Catalogue decision information.** Course cards currently emphasise volume. Audience, prerequisite, difficulty, outcome, owner and currency would be more useful selection information as the catalogue grows.
+- **Exact lesson-position resume.** Learner progress resumes at the correct stage, but not yet at the last subsection within a long lesson. Adding this requires a deliberately versioned, course-scoped location record and device testing; it was not mixed into the progress-safe usability pass.
+- **Authoring duplication shortcuts.** Duplicate-section and duplicate-question actions remain candidates. They must mint new stable ids and preserve source links without accidentally reusing assessment identities.
+- **Inline glossary assistance.** Automatic term linking remains parked until it can avoid false matches, repeated links and screen-reader noise.
+- **Built-in trainer feedback capture.** Keep this outside the public static application until the pilot owner, evidence location and handling rules are agreed.

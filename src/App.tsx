@@ -84,7 +84,7 @@ import {
   type TextMap,
 } from "./state";
 import { Dashboard, Diagnostic, LearningPath, ModuleView } from "./views-learn";
-import { Practice, Review, selectDueCards } from "./views-practice";
+import { Practice, Review } from "./views-practice";
 import { Capstone, CaseStudies, FieldGuide, Glossary, Toolkit } from "./views-apply";
 import { Divergences, NotFound, SearchView, Settings, Sources, StorageWarning } from "./views-meta";
 import { Results } from "./views-results";
@@ -575,7 +575,7 @@ export default function App() {
     [progress, reviews],
   );
   const dueCount = useMemo(
-    () => selectDueCards(availableReviewCards, reviews, Date.now(), availableReviewCards.length).length,
+    () => availableReviewCards.filter((card) => reviews[card.id] && reviews[card.id].due <= Date.now()).length,
     [availableReviewCards, reviews],
   );
 

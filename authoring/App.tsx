@@ -8,6 +8,7 @@ import {
   CircleHelp,
   Download,
   Eye,
+  ExternalLink,
   FileJson,
   FileText,
   FolderGit2,
@@ -355,13 +356,31 @@ function QuestionEditor({
 }
 
 function StageTabs({ entry, active, setActive }: { entry: TrainingPackage; active: string; setActive: (id: string) => void }) {
+  const activeIndex = Math.max(0, entry.content.modules.findIndex((stage) => stage.id === active));
+  const activeStage = entry.content.modules[activeIndex];
+  const move = (offset: number) => {
+    const next = entry.content.modules[activeIndex + offset];
+    if (next) setActive(next.id);
+  };
   return (
-    <div className="stage-tabs" role="tablist" aria-label="Course stages">
-      {entry.content.modules.map((stage) => (
-        <button type="button" role="tab" aria-selected={active === stage.id} className={active === stage.id ? "active" : ""} key={stage.id} onClick={() => setActive(stage.id)}>
-          <span>{stage.number}</span>{stage.title || `Stage ${stage.number}`}
-        </button>
-      ))}
+    <div className="stage-navigation">
+      <div className="stage-switcher">
+        <button type="button" className="secondary" disabled={activeIndex === 0} onClick={() => move(-1)}><ChevronLeft size={16} />Previous stage</button>
+        <label>
+          <span>Stage {activeIndex + 1} of {entry.content.modules.length}</span>
+          <select aria-label="Choose course stage" value={activeStage?.id ?? ""} onChange={(event) => setActive(event.target.value)}>
+            {entry.content.modules.map((stage) => <option key={stage.id} value={stage.id}>{stage.number}. {stage.title || `Stage ${stage.number}`}</option>)}
+          </select>
+        </label>
+        <button type="button" className="secondary" disabled={activeIndex >= entry.content.modules.length - 1} onClick={() => move(1)}>Next stage<ChevronRight size={16} /></button>
+      </div>
+      <div className="stage-tabs" role="tablist" aria-label="Course stages">
+        {entry.content.modules.map((stage) => (
+          <button type="button" role="tab" aria-selected={active === stage.id} className={active === stage.id ? "active" : ""} key={stage.id} onClick={() => setActive(stage.id)}>
+            <span>{stage.number}</span>{stage.title || `Stage ${stage.number}`}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -446,7 +465,7 @@ export function App() {
           else window.localStorage.removeItem(DRAFT_STORAGE_KEY);
           LEGACY_DRAFT_STORAGE_KEYS.forEach((key) => window.localStorage.removeItem(key));
         } catch { /* IndexedDB remains the asset-capable primary store. */ }
-        setSaveLabel("Saved in this browser");
+        setSaveLabel(`Saved in this browser at ${new Date(draft.savedAt).toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit" })}`);
       }).catch(() => setSaveLabel("Browser storage unavailable — download a draft"));
     }, (entry.content.assets?.length ?? 0) > 30 ? 900 : 250);
     return () => window.clearTimeout(timer);
@@ -457,6 +476,12 @@ export function App() {
       setActiveStage(entry.content.modules[0]?.id ?? "");
     }
   }, [activeStage, entry.content.modules]);
+
+  useEffect(() => {
+    if (view === "review" && issueFilter === "error" && counts.errors === 0 && counts.warnings > 0) {
+      setIssueFilter("warning");
+    }
+  }, [counts.errors, counts.warnings, issueFilter, view]);
 
   useEffect(() => {
     if (focusRequest === 0) return;
@@ -566,6 +591,7 @@ export function App() {
       setActiveStage(imported.package.content.modules[0]?.id ?? "");
       setStorageLoadError("");
       setBrowserReady(true);
+      setIssueFilter("error");
       setView("instructions");
       setMessage(imported.migrationNotice ?? `Loaded ${file.name} (draft ${imported.lineage.draftId}, revision ${imported.lineage.revision}). Review the checks before exporting.`);
     } catch (error) {
@@ -585,6 +611,7 @@ export function App() {
     setActiveStage(fresh.content.modules[0].id);
     setStorageLoadError("");
     setBrowserReady(true);
+    setIssueFilter("error");
     setView(destination);
     setMessage(recoveringUnreadableDraft ? "Started a new blank course and replaced the unreadable browser draft. Autosave is active again." : untouchedDraft ? "Blank course ready. Start with Course setup." : "Started a new blank course. The previous local draft was replaced.");
   };
@@ -614,6 +641,7 @@ export function App() {
     setActiveStage(clone.content.modules[0]?.id ?? "");
     setStorageLoadError("");
     setBrowserReady(true);
+    setIssueFilter("error");
     setView("setup");
     setMessage(`Created a separate draft from ${template.manifest.title}. The published original was not changed. Give this adaptation its own stable id and complete a fresh review.`);
     const minimumProgressTime = template.content.slides.length > 20 ? 400 : 120;
@@ -757,7 +785,7 @@ npm run verify`}</code></pre>
           <InputField id="manifest-subtitle" label="Subtitle" required value={entry.manifest.subtitle} onChange={(value) => updateManifest("subtitle", value)} />
           <InputField id="manifest-publisher" label="Publisher / owning team" required value={entry.manifest.publisher} onChange={(value) => updateManifest("publisher", value)} />
           <InputField id="manifest-version" label="Content version" required value={entry.manifest.version} onChange={(value) => updateManifest("version", value)} hint="Semantic version, such as 0.1.0 or 1.0.0" />
-          <label className="field"><span>Status</span><select value={entry.manifest.status} onChange={(event) => updateManifest("status", event.target.value as TrainingPackage["manifest"]["status"])}><option value="draft">Draft — still being written</option><option value="in-development">In development — under review</option><option value="available">Available — approved for learners</option><option value="retired">Retired — no new delivery</option></select><small>Status is metadata. Final outputs also require all checks and release confirmations.</small></label>
+          <label className="field"><span>Status</span><select id="manifest-status" value={entry.manifest.status} onChange={(event) => updateManifest("status", event.target.value as TrainingPackage["manifest"]["status"])}><option value="draft">Draft — still being written</option><option value="in-development">In development — under review</option><option value="available">Available — approved for learners</option><option value="retired">Retired — no new delivery</option></select><small>Status is metadata. Final outputs also require all checks and release confirmations.</small></label>
           <InputField label="Source author (optional)" value={entry.manifest.sourceAuthor ?? ""} onChange={(value) => updateManifest("sourceAuthor", value || undefined)} />
         </div>
         <TextAreaField id="manifest-source" label="Governing source description" value={entry.manifest.source} onChange={(value) => updateManifest("source", value)} hint="Name the departmental material, standard or evidence base the course is built from" />
@@ -805,6 +833,7 @@ npm run verify`}</code></pre>
                   const sources = [...entry.content.sources]; sources[index] = { ...sourceItem, url: value || undefined }; updateContent("sources", sources);
                 }} />
                 </div>
+                {sourceItem.url && /^https:\/\//i.test(sourceItem.url) && <a className="source-open-link" href={sourceItem.url} target="_blank" rel="noreferrer">Open this source to check it <ExternalLink size={15} aria-hidden="true" /><span className="visually-hidden"> (opens in a new tab)</span></a>}
                 <TextAreaField id={`source-${index}-note`} label="How this source is used" hint="State whether it governs the course, supports a claim, supplies a worked example or provides comparison practice." value={sourceItem.note} onChange={(value) => {
                   const sources = [...entry.content.sources]; sources[index] = { ...sourceItem, note: value }; updateContent("sources", sources);
                 }} rows={3} />
@@ -969,6 +998,30 @@ npm run verify`}</code></pre>
     const reviewAreas = NAV.filter((item) => item.id !== "instructions");
     const filteredIssues = issues.filter((issue) => issueFilter === "all" || issue.severity === issueFilter);
     const nextIssue = filteredIssues.find((issue) => issue.severity === "error") ?? filteredIssues[0];
+    const firstAreaWithIssues = reviewAreas.find((area) => filteredIssues.some((issue) => issue.area === area.id));
+    const humanDecisionCount = [release.subjectMatterChecked, release.learningFlowChecked, release.handlingChecked, release.releaseApproved].filter(Boolean).length;
+    const releaseDetails = [
+      { id: "manifest-reviewed", complete: Boolean(entry.manifest.reviewed.trim()) },
+      { id: "release-reviewer-name", complete: Boolean(release.reviewerName.trim()) },
+      { id: "release-reviewer-role", complete: Boolean(release.reviewerRole.trim()) },
+      { id: "release-approver-name", complete: Boolean(release.approverName.trim()) },
+      { id: "release-approver-role", complete: Boolean(release.approverRole.trim()) },
+      { id: "release-approval-scope", complete: Boolean(release.approvalScope.trim()) },
+      { id: "release-approval-reference", complete: Boolean(release.approvalReference.trim()) },
+      { id: "release-approval-date", complete: /^\d{4}-\d{2}-\d{2}$/.test(release.approvalDate.trim()) },
+    ];
+    const releaseDetailCount = releaseDetails.filter((item) => item.complete).length;
+    const focusReleaseTarget = (targetId: string, title: string, area: AuthoringIssue["area"] = "review") => navigateIssue({ id: `release-${targetId}`, severity: "note", area, targetId, title, detail: "Complete this release requirement." });
+    const coverageRows = entry.content.modules.map((stage) => ({
+      stage,
+      sections: stage.sections.length,
+      checks: stage.questions.length + stage.scenarios.length,
+      diagnostics: entry.content.diagnosticQuestions.filter((item) => item.moduleId === stage.id).length,
+      cards: entry.content.flashcards.filter((item) => item.moduleId === stage.id).length,
+      cases: entry.content.caseStudies.reduce((total, study) => total + study.steps.filter((step) => step.moduleId === stage.id).length, 0),
+      sources: new Set(stage.sections.flatMap((section) => section.sourceIds ?? [])).size,
+      media: entry.content.slides.filter((slide) => slide.stage === stage.id).length + (stage.visualAssetId ? 1 : 0),
+    }));
     return <div className="workspace-stack">
       <div className="page-heading"><span className="eyebrow">7 · Review and export</span><h1>Separate machine checks from release judgement</h1><p>The Workshop can reject malformed or visibly incomplete packages. People remain responsible for subject-matter accuracy, instructional quality, handling and release.</p></div>
       <StepConnection>Automated issues read the whole connected draft. Select an issue to return to its step, active stage and relevant field. Preview is for human learning-flow review; final outputs also require the recorded approvals and Available status.</StepConnection>
@@ -985,6 +1038,18 @@ npm run verify`}</code></pre>
         </div>
         <div className="issue-totals"><strong>{counts.errors}</strong><span>{untouchedDraft ? "to complete" : "errors"}</span><strong>{counts.warnings}</strong><span>warnings</span><strong>{counts.notes}</strong><span>notes</span></div>
       </section>
+      <Card title="Course coverage" eyebrow="One connected view of every stage">
+        <p className="coverage-intro">This matrix exposes accidental gaps before review. Numbers show linked items, not quality: a reviewer must still read and complete the course.</p>
+        <div className="coverage-table-wrap">
+          <table className="coverage-table">
+            <thead><tr><th>Stage</th><th>Lesson sections</th><th>Questions + scenarios</th><th>Diagnostics</th><th>Review cards</th><th>Case steps</th><th>Sources</th><th>Media</th></tr></thead>
+            <tbody>{coverageRows.map((row) => <tr key={row.stage.id}>
+              <th scope="row"><button type="button" onClick={() => focusReleaseTarget(`stage-${row.stage.id}-title`, `Stage ${row.stage.number}: ${row.stage.title || "Untitled"}`, "stages")}>{row.stage.number}. {row.stage.title || "Untitled"}</button></th>
+              <td>{row.sections}</td><td>{row.checks}</td><td>{row.diagnostics}</td><td>{row.cards}</td><td>{row.cases}</td><td>{row.sources}</td><td>{row.media}</td>
+            </tr>)}</tbody>
+          </table>
+        </div>
+      </Card>
       <Card title="Checks" eyebrow="Grouped by authoring step" actions={nextIssue && <button type="button" className="secondary" onClick={() => navigateIssue(nextIssue)}>Go to next {nextIssue.severity === "error" ? "blocker" : "issue"}<ChevronRight size={16} /></button>}>
         <div id="review-checks">
           <div className="review-step-summary" aria-label="Issues by authoring step">
@@ -1005,29 +1070,34 @@ npm run verify`}</code></pre>
             const areaIssues = filteredIssues.filter((issue) => issue.area === area.id);
             if (!areaIssues.length) return null;
             const areaErrors = areaIssues.filter((issue) => issue.severity === "error").length;
-            return <IssueGroup key={`${area.id}-${issueFilter}`} label={area.label} countLabel={areaErrors ? `${areaErrors} blocker${areaErrors === 1 ? "" : "s"}` : `${areaIssues.length} advisory`} initiallyOpen={false}>
+            return <IssueGroup key={`${area.id}-${issueFilter}`} label={area.label} countLabel={areaErrors ? `${areaErrors} blocker${areaErrors === 1 ? "" : "s"}` : `${areaIssues.length} advisory`} initiallyOpen={!untouchedDraft && area.id === firstAreaWithIssues?.id}>
               {areaIssues.map((issue) => <button type="button" className={`issue ${issue.severity}`} key={issue.id} onClick={() => navigateIssue(issue)}><span className="issue-mark">{issue.severity === "error" ? "!" : issue.severity === "warning" ? "△" : "i"}</span><span><strong>{issue.title}</strong><small>{issue.severity === "warning" ? "Advisory — does not block output. " : ""}{issue.detail}</small></span><ChevronRight size={18} /></button>)}
             </IssueGroup>;
           })}</div>
         </div>
       </Card>
       <Card title="Release checklist" eyebrow="Recorded human decisions">
+        <div className="release-progress" aria-label="Release gate progress">
+          <div className={statusAvailable ? "complete" : "incomplete"}><span>Course status</span><strong>{statusAvailable ? "Available" : "Not available"}</strong>{!statusAvailable && <button type="button" onClick={() => focusReleaseTarget("manifest-status", "Course status", "setup")}>Set status</button>}</div>
+          <div className={humanDecisionCount === 4 ? "complete" : "incomplete"}><span>Human decisions</span><strong>{humanDecisionCount} of 4 recorded</strong>{humanDecisionCount < 4 && <button type="button" onClick={() => focusReleaseTarget(["release-subject-matter", "release-learning-flow", "release-handling", "release-approved"].find((_, index) => ![release.subjectMatterChecked, release.learningFlowChecked, release.handlingChecked, release.releaseApproved][index]) ?? "release-subject-matter", "Human release decision")}>Complete next</button>}</div>
+          <div className={releaseDetailCount === releaseDetails.length ? "complete" : "incomplete"}><span>Release details</span><strong>{releaseDetailCount} of {releaseDetails.length} complete</strong>{releaseDetailCount < releaseDetails.length && <button type="button" onClick={() => focusReleaseTarget(releaseDetails.find((item) => !item.complete)?.id ?? "manifest-reviewed", "Release detail")}>Complete next</button>}</div>
+        </div>
         <div className="release-checklist">
-          <label className="release-option"><input type="checkbox" checked={release.subjectMatterChecked} onChange={(event) => setRelease((current) => ({ ...current, subjectMatterChecked: event.target.checked }))} /><span><strong>Subject matter checked</strong><small>A competent reviewer checked material claims against the named governing sources.</small></span></label>
-          <label className="release-option"><input type="checkbox" checked={release.learningFlowChecked} onChange={(event) => setRelease((current) => ({ ...current, learningFlowChecked: event.target.checked }))} /><span><strong>Learning flow checked</strong><small>A reviewer completed the course in order, including feedback, scenarios and the assignment.</small></span></label>
-          <label className="release-option"><input type="checkbox" checked={release.handlingChecked} onChange={(event) => setRelease((current) => ({ ...current, handlingChecked: event.target.checked }))} /><span><strong>Audience and handling checked</strong><small>The custodian confirmed who may receive it and that no unsuitable or sensitive material will be exposed.</small></span></label>
-          <label className="release-option"><input type="checkbox" checked={release.releaseApproved} onChange={(event) => setRelease((current) => ({ ...current, releaseApproved: event.target.checked }))} /><span><strong>Release approved</strong><small>The accountable team has authorised this version for learner use.</small></span></label>
+          <label className="release-option"><input id="release-subject-matter" type="checkbox" checked={release.subjectMatterChecked} onChange={(event) => setRelease((current) => ({ ...current, subjectMatterChecked: event.target.checked }))} /><span><strong>Subject matter checked</strong><small>A competent reviewer checked material claims against the named governing sources.</small></span></label>
+          <label className="release-option"><input id="release-learning-flow" type="checkbox" checked={release.learningFlowChecked} onChange={(event) => setRelease((current) => ({ ...current, learningFlowChecked: event.target.checked }))} /><span><strong>Learning flow checked</strong><small>A reviewer completed the course in order, including feedback, scenarios and the assignment.</small></span></label>
+          <label className="release-option"><input id="release-handling" type="checkbox" checked={release.handlingChecked} onChange={(event) => setRelease((current) => ({ ...current, handlingChecked: event.target.checked }))} /><span><strong>Audience and handling checked</strong><small>The custodian confirmed who may receive it and that no unsuitable or sensitive material will be exposed.</small></span></label>
+          <label className="release-option"><input id="release-approved" type="checkbox" checked={release.releaseApproved} onChange={(event) => setRelease((current) => ({ ...current, releaseApproved: event.target.checked }))} /><span><strong>Release approved</strong><small>The accountable team has authorised this version for learner use.</small></span></label>
           <label className="release-option advisory-option"><input type="checkbox" checked={release.advisoriesReviewed} onChange={(event) => setRelease((current) => ({ ...current, advisoriesReviewed: event.target.checked }))} /><span><strong>Advisory warnings reviewed (optional)</strong><small>Use this when the reviewer has considered the suggestions and deliberately wants to leave one or more in place. It records the decision but never turns a warning into a blocker.</small></span></label>
         </div>
         <div className="form-grid release-record-fields">
           <InputField id="manifest-reviewed" label="Content review date" required value={entry.manifest.reviewed} onChange={(value) => updateManifest("reviewed", value)} hint="Record this only after a person has completed the content review. Use an unambiguous date, for example 21 August 2026." />
-          <InputField label="Reviewer name" required value={release.reviewerName} onChange={(value) => setRelease((current) => ({ ...current, reviewerName: value }))} hint="Person who completed the subject and learning-flow review" />
-          <InputField label="Reviewer role" required value={release.reviewerRole} onChange={(value) => setRelease((current) => ({ ...current, reviewerRole: value }))} hint="Role or team that establishes the reviewer's competence and remit" />
-          <InputField label="Approver name" required value={release.approverName} onChange={(value) => setRelease((current) => ({ ...current, approverName: value }))} hint="Accountable person authorising learner use" />
-          <InputField label="Approver role" required value={release.approverRole} onChange={(value) => setRelease((current) => ({ ...current, approverRole: value }))} hint="Role or team holding release authority" />
-          <InputField label="Approval scope" required value={release.approvalScope} onChange={(value) => setRelease((current) => ({ ...current, approvalScope: value }))} hint="For example: internal staff, named team, or public learner release" />
-          <InputField label="Approval reference" required value={release.approvalReference} onChange={(value) => setRelease((current) => ({ ...current, approvalReference: value }))} hint="Meeting, email, ticket or document reference — do not include secrets" />
-          <InputField label="Approval date" required type="date" value={release.approvalDate} onChange={(value) => setRelease((current) => ({ ...current, approvalDate: value }))} />
+          <InputField id="release-reviewer-name" label="Reviewer name" required value={release.reviewerName} onChange={(value) => setRelease((current) => ({ ...current, reviewerName: value }))} hint="Person who completed the subject and learning-flow review" />
+          <InputField id="release-reviewer-role" label="Reviewer role" required value={release.reviewerRole} onChange={(value) => setRelease((current) => ({ ...current, reviewerRole: value }))} hint="Role or team that establishes the reviewer's competence and remit" />
+          <InputField id="release-approver-name" label="Approver name" required value={release.approverName} onChange={(value) => setRelease((current) => ({ ...current, approverName: value }))} hint="Accountable person authorising learner use" />
+          <InputField id="release-approver-role" label="Approver role" required value={release.approverRole} onChange={(value) => setRelease((current) => ({ ...current, approverRole: value }))} hint="Role or team holding release authority" />
+          <InputField id="release-approval-scope" label="Approval scope" required value={release.approvalScope} onChange={(value) => setRelease((current) => ({ ...current, approvalScope: value }))} hint="For example: internal staff, named team, or public learner release" />
+          <InputField id="release-approval-reference" label="Approval reference" required value={release.approvalReference} onChange={(value) => setRelease((current) => ({ ...current, approvalReference: value }))} hint="Meeting, email, ticket or document reference — do not include secrets" />
+          <InputField id="release-approval-date" label="Approval date" required type="date" value={release.approvalDate} onChange={(value) => setRelease((current) => ({ ...current, approvalDate: value }))} />
         </div>
         <div className={`release-status-line ${entry.manifest.status === "available" ? "complete" : "incomplete"}`}>
           {entry.manifest.status === "available" ? <Check size={18} /> : <AlertTriangle size={18} />}
@@ -1084,7 +1154,7 @@ npm run verify`}</code></pre>
         </div>
       </aside>
       <main id="studio-main" className="studio-main" tabIndex={-1}>
-        <header className="topbar"><div><span className="course-kicker">Current draft</span><strong>{entry.manifest.title || "Untitled training course"}</strong></div><div className="topbar-meta"><span>v{entry.manifest.version}</span><span>{entry.content.modules.length} stage{entry.content.modules.length === 1 ? "" : "s"}</span><span>{hasDurationEvidence ? `${packageForExport(entry).content.totalMinutes} min` : "Duration pending"}</span></div></header>
+        <header className="topbar"><div><span className="course-kicker">Current draft · revision {lineage.revision}</span><strong>{entry.manifest.title || "Untitled training course"}</strong></div><div className="topbar-meta"><span>v{entry.manifest.version}</span><span>{entry.content.modules.length} stage{entry.content.modules.length === 1 ? "" : "s"}</span><span>{hasDurationEvidence ? `${packageForExport(entry).content.totalMinutes} min` : "Duration pending"}</span></div></header>
         {message && <div className={`notice ${storageLoadError && message === storageLoadError ? "notice-critical" : ""}`} role={storageLoadError && message === storageLoadError ? "alert" : "status"}><CircleHelp size={18} /><span>{message}</span><button type="button" aria-label="Dismiss message" onClick={() => setMessage("")}>×</button></div>}
         <div className="studio-workspace">{view === "instructions" ? renderInstructions() : view === "setup" ? renderSetup() : view === "stages" ? renderStages() : view === "supports" ? renderSupports() : view === "advanced" ? <AdvancedEditor entry={entry} setEntry={setEntry} /> : view === "media" ? <MediaEditor entry={entry} setEntry={setEntry} setMessage={setMessage} /> : renderReview()}</div>
         <footer className="step-footer">
