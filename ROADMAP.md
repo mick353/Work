@@ -42,6 +42,7 @@ The learner-facing product does not change. Course Workshop embeds the existing 
 - Source editors can open the registered learner link directly for checking. Review opens the first relevant issue group for a worked draft, while a blank draft remains calm and collapsed.
 - Review now includes a per-stage coverage matrix and separate progress for course status, four human decisions and eight release-record details. Each incomplete gate can take the trainer to its next field.
 - Autosave reports the latest local save time and the header displays the portable draft revision. These are authoring cues only; they do not alter released course versions.
+- Hidden file inputs used only behind visible import buttons are removed from sequential keyboard focus, while stage-image uploads retain a clearly named, visibly focused keyboard control.
 - Learner Results now opens with a plain-language interpretation and next action, names recent scored activities, counts mixed practice and diagnostics, turns missed items into an expandable revision list, reports practical flashcard queue states without imposing a weeks-long completion path, and shows actual study dates instead of an unlabelled heatmap. The underlying attempts, mastery and review schedules are unchanged.
 
 **External evidence still required before calling the authoring product organisationally production-ready:**

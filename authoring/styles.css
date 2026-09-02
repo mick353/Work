@@ -377,6 +377,10 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .visual-editor header small { margin-top: 2px; overflow: hidden; color: var(--muted); font-size: .64rem; text-overflow: ellipsis; white-space: nowrap; }
 .visual-editor > img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border: 1px solid var(--line); border-radius: 9px; }
 .upload-label { cursor: pointer; }
+.upload-label:focus-within {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
 
 .question-editor { margin-bottom: 10px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-muted); overflow: hidden; }
 .question-editor[open] { border-color: var(--line-strong); box-shadow: 0 7px 20px rgba(62,66,70,.07); }

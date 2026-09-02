@@ -546,10 +546,37 @@ const advancedSerious = advancedAxe.violations.filter((item) => item.impact === 
 check("Advanced editors have no serious or critical automated accessibility violations", advancedSerious.length === 0, advancedSerious.map((item) => item.id).join(", "));
 
 await featurePage.getByRole("button", { name: /Media & source deck/ }).click();
+const proxyFileInputs = featurePage.locator('.sidebar-actions > input[type="file"], .media-import-actions > input[type="file"]');
+const proxyFileInputState = await proxyFileInputs.evaluateAll((inputs) => inputs.map((input) => ({
+  name: input.getAttribute("aria-label")?.trim() ?? "",
+  tabIndex: input.tabIndex,
+})));
+check(
+  "Hidden file inputs behind visible buttons are named and omitted from sequential keyboard focus",
+  proxyFileInputState.length === 3 && proxyFileInputState.every((input) => input.name && input.tabIndex === -1),
+  JSON.stringify(proxyFileInputState),
+);
 check("Large decks render in responsive batches without losing their complete count", await featurePage.locator(".slide-editor").count() === 20 && /Showing 20 of 98 slides/i.test(await featurePage.locator(".slide-render-status").innerText()));
 await featurePage.getByRole("button", { name: "Show next 20 slides" }).click();
 check("A trainer can reveal the next slide-editor batch", await featurePage.locator(".slide-editor").count() === 40);
 const firstVisual = featurePage.locator(".visual-editor").first();
+const visualFileInputs = featurePage.locator('.visual-editor input[type="file"]');
+const visualFileInputNames = await visualFileInputs.evaluateAll((inputs) => inputs.map((input) => input.getAttribute("aria-label")?.trim() ?? ""));
+check(
+  "Every stage-image upload has a unique stage-specific accessible name",
+  visualFileInputNames.length === 9 && new Set(visualFileInputNames).size === visualFileInputNames.length && visualFileInputNames.every((name) => /^Add image for Stage \d+: .+/.test(name)),
+  visualFileInputNames.join(" | "),
+);
+await firstVisual.locator('input[type="file"]').focus();
+const uploadFocusStyle = await firstVisual.locator(".upload-label").evaluate((label) => ({
+  outlineStyle: getComputedStyle(label).outlineStyle,
+  outlineWidth: getComputedStyle(label).outlineWidth,
+}));
+check(
+  "Stage-image uploads expose visible keyboard focus on their labelled control",
+  uploadFocusStyle.outlineStyle !== "none" && parseFloat(uploadFocusStyle.outlineWidth) >= 3,
+  JSON.stringify(uploadFocusStyle),
+);
 await firstVisual.locator('input[type="file"]').setInputFiles({ name: "stage-visual.png", mimeType: "image/png", buffer: tinyPng });
 await firstVisual.locator("img").waitFor();
 await firstVisual.getByLabel("Image description").fill("A single evidence marker used to verify an embedded stage visual.");

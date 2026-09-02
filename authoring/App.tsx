@@ -1146,7 +1146,7 @@ npm run verify`}</code></pre>
         })}</nav>
         <div className="sidebar-status"><span className={releaseReady ? "status-ready" : contentReady || untouchedDraft ? "status-pending" : "status-blocked"}>{releaseReady ? "Ready to release" : untouchedDraft ? "New draft — start with setup" : contentReady ? "Release checks pending" : "Draft incomplete"}</span><small><Save size={13} />{saveLabel}</small></div>
         <div className="sidebar-actions">
-          <input ref={importRef} className="visually-hidden" type="file" accept="application/json,.json" aria-label="Load a Course Workshop draft" onChange={(event) => void handleImport(event.target.files?.[0])} />
+          <input ref={importRef} className="visually-hidden" type="file" accept="application/json,.json" aria-label="Load a Course Workshop draft" tabIndex={-1} onChange={(event) => void handleImport(event.target.files?.[0])} />
           <button type="button" onClick={() => importRef.current?.click()}><Upload size={16} />Load draft</button>
           <button type="button" onClick={downloadPortableDraft}><Download size={16} />Save/share complete draft</button>
           <small className="draft-backup-note">Includes embedded slides and images · approximately {draftSizeLabel}</small>

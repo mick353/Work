@@ -27,7 +27,7 @@ const iconFiles = {
   "apple-touch-icon.png": path.join(iconDir, "workshop-apple-touch-icon.png"),
 };
 const manifestFile = path.join(authoringDir, "manifest.webmanifest");
-const studioVersion = "0.5.4";
+const studioVersion = "0.5.5";
 const MAX_STUDIO_BYTES = 12 * 1024 * 1024;
 
 function escapeForScript(source) {
