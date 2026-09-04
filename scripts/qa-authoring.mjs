@@ -346,7 +346,22 @@ check("Teach exposes the active stage's cross-step connections", await page.loca
 check("Teach gives trainers an explicit stage position and selector", /Stage 1 of 1/i.test(await page.locator(".stage-switcher").innerText()) && await page.getByLabel("Choose course stage").count() === 1);
 await page.evaluate(() => window.scrollTo(0, 700));
 await page.getByRole("button", { name: "Next", exact: true }).click();
-await page.waitForTimeout(50);
+// The focus move to the next heading (queued in a setTimeout) and the scroll
+// reset settle on independent timelines, so a fixed 50ms delay was flaky:
+// under CI load focus/scroll had not both landed (observed scrollY ~698), and a
+// scroll-only wait resolves too early because the shorter next step clamps
+// scrollY to ~0 while focus is still on the Next button. Wait for the intended
+// end-state — heading focused and scrolled to top — then assert it.
+await page
+  .waitForFunction(
+    () =>
+      window.scrollY < 5 &&
+      document.activeElement?.tagName === "H1" &&
+      /retrievable and usable/i.test(document.activeElement?.textContent ?? ""),
+    null,
+    { timeout: 5000 },
+  )
+  .catch(() => {});
 const navigationState = await page.evaluate(() => ({ scrollY: window.scrollY, tag: document.activeElement?.tagName, text: document.activeElement?.textContent ?? "", id: document.activeElement?.id }));
 check("Step navigation resets scroll and focuses the new heading", navigationState.scrollY < 5 && navigationState.tag === "H1" && /retrievable and usable/i.test(navigationState.text), JSON.stringify(navigationState));
 check("Reinforce explains that its content belongs to the active stage", /active stage/i.test(await page.locator(".step-connection").innerText()));
