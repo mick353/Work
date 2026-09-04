@@ -1,47 +1,34 @@
-# Product Practice — Departmental Copilot Integration Proposal
+# Product Practice Departmental Copilot Integration
 
-## Purpose and status
+## Purpose and current position
 
-This paper describes a possible future integration between Product Practice, Course Workshop and an approved departmental Microsoft Copilot capability.
+Product Practice already works without an AI service. Course Workshop helps trainers create and review a structured course; the learner player delivers it; the versioned `TrainingPackage` holds the released course content; and human review and deterministic checks govern release.
 
-It is a **future-state proposal**. It does not assert that the Department's current Copilot implementation already exposes every capability described here, and it is not an approved architecture, procurement decision or committed implementation sequence.
+This paper describes a possible later use of an approved departmental Microsoft Copilot capability. It is written for training, digital, architecture and service owners considering whether AI could add useful assistance to the existing learning system.
 
-The proposal deliberately preserves the current Product Practice direction:
+**Current decision:** retain the existing standalone model. Do not build or commit to a Copilot integration until there is a defined business need and an approved departmental service boundary.
 
-- **Course Workshop remains the trainer-facing authoring product.** Non-technical trainers can plan, create, review, transfer and export a complete course without writing code.
-- **The `TrainingPackage` remains the governed course boundary.** Course identity, content, assessment, sources, provenance and release evidence continue to use the existing versioned package model.
-- **The learner package remains complete without AI.** A course can still be distributed as a self-contained learner HTML file or as an isolated hosted course.
-- **Existing deterministic controls remain authoritative for what they measure.** Package validation, course quality profiles, learner mechanics, release gates, SHA-256 content binding and repository verification are not replaced by generative AI.
-- **Human authority remains load-bearing.** AI cannot manufacture subject-matter review, learning-flow review, accessibility evidence or approval authority.
+This is a future option, not an approved architecture, procurement decision or assertion about the Department's current Copilot capability.
 
-The core principle is therefore:
+## The rule that protects the product
 
-> **AI assistance should be additive, governed and optional — not load-bearing.**
+> AI may propose, explain and analyse. Product Practice governs course structure and release. People retain authority.
 
-If Product Practice later operates within an approved departmental environment that exposes suitable Copilot capabilities, Copilot could augment both trainer and learner workflows while Course Workshop and the learner player remain the governing applications.
+The existing product must remain useful when AI is unavailable, unsuitable for the information being handled or not authorised for a particular user or course.
 
-This proposal should be read with:
+| Product Practice remains responsible for | Copilot may assist with |
+| --- | --- |
+| Course structure, identifiers, versions and source relationships | Drafting, rewriting and structured suggestions |
+| Deterministic package validation and encoded quality checks | Semantic critique that fixed checks cannot reliably perform |
+| Learner progress, scoring, mastery and spaced review | Explanation, guided practice and error-aware coaching |
+| Human review, approval and publication | Finding likely impacts, gaps or inconsistencies for human decision |
+| Portable learner delivery and local drafts | Optional intelligence in an approved connected environment |
 
-- [LEARNING-SYSTEM-DIRECTION.md](LEARNING-SYSTEM-DIRECTION.md) — settled product direction;
-- [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md) — current trainer workflow and output model;
-- [ARCHITECTURE.md](ARCHITECTURE.md) — current course/player separation and state model;
-- [STANDARDS.md](STANDARDS.md) — measurable quality and verification rules;
-- [ROADMAP.md](ROADMAP.md) — remaining evidence and deliberately parked work; and
-- [DEPLOYMENT-INTEGRITY-AND-HOSTING-OPTIONS.md](DEPLOYMENT-INTEGRITY-AND-HOSTING-OPTIONS.md) — possible future hosting, identity, integrity and service models.
+Copilot must not become the course format, system of record, release authority, learner-progress store, scoring authority, invisible editor of released content or substitute for subject-matter, learning-design or accessibility review.
 
----
+## What already exists
 
-## 1. Current baseline: what already exists
-
-Product Practice is already designed as a reusable learning system rather than a single hard-coded course.
-
-The architectural rule is:
-
-> **A course is data. The player is code. They meet at one versioned interface.**
-
-`TrainingPackage` is the course-neutral contract. The learner player renders a validated package; Course Workshop produces that same package shape. Ordinary course creation is therefore a data operation rather than a new software build.
-
-The current product boundary is intentionally clear:
+The current architecture deliberately separates authoring, course data, release and learning:
 
 ```text
 Trainer
@@ -50,728 +37,185 @@ Course Workshop
   ↓
 validated TrainingPackage
   ↓
-human review + release record
+human review and release record
   ↓
 standalone learner course / hosted course / controlled repository package
   ↓
 Learner player
 ```
 
-The current system also deliberately has a small infrastructure footprint:
+Course Workshop can run locally in a browser. Drafts stay on that device unless a trainer deliberately exports them. Learner progress is also local by default. A course can be distributed as a self-contained learner HTML file or as an individually hosted course without an account, application database, AI connection or central telemetry.
 
-- Course Workshop can run as a self-contained browser application;
-- trainer drafts remain in browser storage unless deliberately exported;
-- learner progress remains in the learner's browser unless deliberately backed up;
-- no application account, login, central user database or telemetry is required;
-- one-course exports contain only that course and no other catalogue content;
-- release records are bound to exact canonical package content with SHA-256 digests; and
-- repository installation and publication remain deliberate release-custodian actions.
+That low-infrastructure, portable model is a strength. A connected AI capability should extend it when justified, not weaken it.
 
-A future Copilot integration should extend this architecture, not replace it.
+See [LEARNING-SYSTEM-DIRECTION.md](LEARNING-SYSTEM-DIRECTION.md), [COURSE-WORKSHOP.md](COURSE-WORKSHOP.md), [ARCHITECTURE.md](ARCHITECTURE.md), [STANDARDS.md](STANDARDS.md) and [ROADMAP.md](ROADMAP.md) for the current product and release model.
 
----
+## Where Copilot could add value
 
-## 2. Strategic position
+### Trainer assistance is the sensible first use
 
-Product Practice already separates four concerns that should remain separate:
+Course Workshop already knows the active course, stage, source register, assessment item and quality profile. That makes small, bounded assistance more useful and safer than an unstructured general chat.
 
-1. **Authoring** — Course Workshop guides a trainer through planning, sources, lesson content, assessments, reinforcement, applied material, media, review and release preparation.
-2. **Course data** — the `TrainingPackage` is the structured, versioned representation of the course.
-3. **Governance and release** — deterministic validation, quality profiles, review declarations, exact-content binding and controlled publication determine what can become an official release.
-4. **Learning** — the learner player presents approved package content and manages deterministic progress, assessment, mastery and spaced-repetition behaviour.
+Possible trainer capabilities include:
 
-Copilot should operate as an **approved intelligence service around these boundaries**.
+- proposing learning objectives, lesson structure or plain-English explanations from approved sources;
+- suggesting stronger distractors, feedback, scenarios, flashcards or worked examples;
+- identifying an assessment item that can be answered without understanding the lesson;
+- finding inconsistent terminology, duplicated ideas or unsupported claims across a draft;
+- explaining which approved source supports a paragraph or question; and
+- comparing a changed governing source with a course to identify content that may need review.
 
-It should not become:
+Every result is a candidate for the trainer to accept, edit, compare or dismiss. Course Workshop remains the place where the result is checked, linked to sources and stored in the valid course shape.
 
-- the course format;
-- the source of truth;
-- the release authority;
-- the owner of learner progress;
-- the replacement for Course Workshop;
-- the replacement for the learner player; or
-- the authority over deterministic validation.
+### Source change impact is a high-value later capability
 
-The architectural relationship should therefore be:
+When a governing source changes, Copilot could compare the old and new material against a selected course and return a review list such as:
 
 ```text
-                       Approved departmental environment
-
-        ┌─────────────────────────────────────────────────────┐
-        │ Departmental Copilot / Copilot Studio capability   │
-        │                                                     │
-        │ agents · tools · prompts · knowledge · connectors  │
-        │ governed retrieval · organisational identity       │
-        └──────────────────────┬──────────────────────────────┘
-                               │ optional governed use
-                    ┌──────────┴──────────┐
-                    │                     │
-            ┌───────▼────────┐    ┌──────▼──────────┐
-            │ Course Workshop │    │ Learner player  │
-            │ trainer-facing  │    │ participant use │
-            └───────┬────────┘    └──────┬──────────┘
-                    │                     │
-                    ▼                     ▼
-            TrainingPackage       bounded course/progress context
-                    │
-                    ▼
-             existing release model
-```
-
-If Copilot is unavailable, unsuitable for the information being handled or not authorised for a particular use, Product Practice should continue in its current non-AI mode.
-
----
-
-## 3. Integration is a later maturity layer
-
-The current static/offline architecture should not be weakened merely to obtain AI functionality.
-
-A production Copilot integration becomes relevant only when there is a defined business need and an approved departmental service boundary. Likely prerequisites include:
-
-- an approved hosting or execution environment;
-- authenticated departmental identity and appropriate role/permission controls;
-- an approved Microsoft Copilot, Copilot Studio or equivalent integration mechanism;
-- clear information-classification and data-handling rules for prompts, retrieved content, learner context and generated outputs;
-- approved knowledge sources and connectors where organisational retrieval is required;
-- audit, logging, retention and support arrangements appropriate to the service;
-- service ownership, change management and model/agent lifecycle controls;
-- cost, quota, availability and performance arrangements;
-- controls over which tools, agents, prompts, knowledge sources or connectors may be invoked; and
-- a defined boundary between local browser state and centrally processed AI context.
-
-**Being on the departmental network should not by itself be treated as the trust boundary.** Network location may form part of a future access policy, but connected AI capability should rely on approved identity, authentication, authorisation, hosting and information-handling controls. A managed device, departmental network, conditional access and authenticated identity may all contribute, subject to the Department's architecture.
-
-This means Copilot integration is best treated as a **maturity layer above Product Practice**, not a prerequisite for using Product Practice.
-
----
-
-## 4. Microsoft capability model and terminology
-
-The exact Departmental implementation would need to be confirmed at the time of design. Microsoft Copilot Studio currently provides concepts that map well to this proposal, including agents, tools, prompts, knowledge sources, connectors, flows and orchestration. Microsoft also uses the term **skills** in current agent tooling.
-
-This proposal uses two product-level concepts:
-
-### 4.1 Bounded capability
-
-A bounded capability is a narrowly defined AI operation with a known purpose and an input/output contract. Depending on the approved Microsoft architecture, it might be implemented as a Copilot Studio tool, prompt, skill, topic, flow, connected agent or another supported mechanism.
-
-Examples:
-
-- propose learning objectives;
-- review one assessment item;
-- compare two policy versions;
-- find possible unsupported claims;
-- explain one learner error; or
-- generate supplementary practice.
-
-The product should not depend on one Microsoft label remaining unchanged over time.
-
-### 4.2 Context binding
-
-**Context binding** is a Product Practice design concept, not a claim about a specific Microsoft feature name.
-
-It means that an AI request is explicitly bound to the smallest authorised scope necessary for the task, for example:
-
-- course id and version;
-- current Course Workshop draft;
-- selected stage, lesson section or assessment item;
-- the exact registered sources relevant to that item;
-- package manifest and provenance metadata;
-- the applicable quality profile;
-- a selected authoritative departmental document or retrieval set;
-- learner stage and recent error pattern; or
-- a minimal progress summary.
-
-The interaction can then say, in effect:
-
-> You are working on Course X, version Y, Stage 4, for this defined task, using these approved sources. Return a candidate result matching this contract and identify the evidence used.
-
-This is materially different from copying arbitrary content into a general-purpose chat session.
-
----
-
-## 5. Trainer-facing Copilot capability
-
-Trainer assistance is the most natural first production use because Course Workshop already supplies the workflow, package schema, source relationships and review gates.
-
-Copilot should improve individual authoring steps while **Course Workshop remains the authoring system**.
-
-### 5.1 Source-to-course assistance
-
-A trainer could select approved source material and request candidate learning content.
-
-Copilot could propose:
-
-- intended audience and course purpose;
-- learning objectives;
-- curriculum arc and stage sequence;
-- lesson explanations;
-- worked reasoning and examples;
-- knowledge-check questions;
-- plausible distractors and per-option feedback;
-- decision scenarios;
-- stage assignments;
-- diagnostic items;
-- flashcards;
-- glossary entries;
-- practice contrasts;
-- worked cases;
-- toolkit material;
-- capstone tasks; and
-- field-guide content.
-
-The important word is **candidate**.
-
-Generated material should enter the Workshop as suggestions for trainer review, not silently become a released course. The Workshop should still determine the valid data shape, identifiers, relationships and release state.
-
-### 5.2 Point-of-authoring assistance
-
-Many trainer requests will be smaller and more useful than generating a whole course.
-
-Examples:
-
-- "Improve this explanation without changing the supported meaning."
-- "Give me three better distractors for this question."
-- "Make this scenario require judgement rather than simple recall."
-- "Suggest a worked example using only the sources linked to this stage."
-- "Show why this learning outcome is not adequately assessed."
-- "Find evidence in the approved sources relevant to this paragraph."
-- "Rewrite this in clearer plain English while retaining the technical meaning."
-- "Identify terminology that is inconsistent with the rest of this course."
-
-This is where integration inside Course Workshop has a major advantage over a separate chatbot: the product already knows which course, stage, source, assessment item and quality rules are relevant.
-
-### 5.3 Source grounding and traceability
-
-High-value trainer integration should preserve evidence relationships.
-
-Where practicable, every generated suggestion should identify:
-
-- the source or sources used;
-- the specific source locator, excerpt or retrieval reference;
-- whether the result is a transformation, synthesis or inference;
-- material ambiguity or conflict between sources;
-- unsupported assumptions introduced by the model; and
-- points requiring subject-matter judgement.
-
-The desired chain is:
-
-```text
-Authoritative source
-        ↓
-Supported proposition
-        ↓
-Lesson / worked example
-        ↓
-Assessment / scenario
-        ↓
-Review and release evidence
-```
-
-Copilot should strengthen that chain, not bypass it.
-
-### 5.4 Change-impact analysis
-
-This is potentially one of the strongest future organisational uses.
-
-If a governing source changes, a bounded Copilot capability could compare the previous and new versions and then inspect a released or draft `TrainingPackage` for likely impacts.
-
-A useful output would distinguish evidence from judgement, for example:
-
-```text
-Source change detected
-
 Potentially affected
-- Stage 3, section 2
+- Stage 3 explanation
 - Question CR-3-07
 - Scenario CR-S3-02
 - Flashcard CR-F21
-- Field-guide entry 5
 
 No apparent impact found
-- Stages 1, 2 and 5–12
-- Capstone marking rubric
+- Stages 1, 2 and 5 to 12
 
 Human judgement required
-- interpretation of the changed delegation wording
+- Meaning of revised delegation wording
 ```
 
-The result is a **change-impact candidate**, not an approved course amendment. A trainer or authorised reviewer still decides what must change, and any amended release still goes through the normal controls.
+That is a change-impact candidate, not an approved course amendment. A qualified reviewer must still assess the source, decide what changes and release a new package through the ordinary process.
 
-### 5.5 Semantic quality review
+### Learner assistance comes later
 
-The existing QA suite is intentionally strong at deterministic and measurable checks. Copilot could complement it with semantic critique that is difficult to express as fixed code.
+A later, course-bound tutor could explain a section in another way, help a learner understand an error, provide an additional scenario or direct the learner to the relevant approved source.
 
-Examples include:
+The first learner implementation should be strictly **course-grounded**: it should use the released course and its approved sources, not present broad general assistance in the same interface. During a scored activity, it should guide reasoning without revealing the keyed answer. Generated practice remains temporary and must never silently alter released assessment, completion or mastery.
 
-- whether a question can be answered without understanding the lesson;
-- whether a distractor is obviously implausible;
-- whether wording or answer length leaks the keyed answer;
-- whether two questions are semantic duplicates despite different text;
-- whether an assessment measures recall when the objective requires judgement;
-- whether a capstone assumes knowledge that has not been taught;
-- whether an explanation overstates what its source establishes;
-- whether a scenario introduces an unsupported departmental-policy claim;
-- whether a worked example conflicts with a registered source; and
-- whether language is inconsistent across stages.
+## Context, evidence and data handling
 
-These findings should normally appear as recommendations or review issues, not automatic edits.
+Each AI request should contain the smallest authorised context that can do the job. A request about one question should not automatically send the entire course, complete learner history or trainer draft.
 
-### 5.6 Draft transformation with explicit acceptance
+| Information | Intended position |
+| --- | --- |
+| Released course content and approved learner sources | May be used only through an approved service and within the authorised course scope. |
+| Trainer draft content | Requires explicit trainer action and approved handling rules; it is not automatically treated as approved course content. |
+| Learner progress and answers | Send only the minimum summary needed for the requested assistance, and only when the connected service and user are authorised. |
+| Restricted, personal, sensitive or otherwise unsuitable material | Do not send unless the Department has explicitly approved that data type, source and service path. |
+| Credentials, tokens and service secrets | Never embed them in standalone HTML, browser-delivered JavaScript or exported course packages. |
 
-A mature implementation could return structured candidate objects matching the Workshop's package contract rather than unstructured prose.
+For source-grounded responses, the product should show the source used, a human-readable locator where available, whether the result is a transformation, synthesis or inference, and any uncertainty or source conflict. Retrieved documents are evidence, not instructions to the AI system. Product instructions and tool permissions must remain outside untrusted source material.
 
-For example, a question-review capability could return:
+## A credible first pilot
 
-```json
-{
-  "finding": "correct answer is materially longer than distractors",
-  "risk": "answer-length cue",
-  "suggestedOptions": ["...", "...", "...", "..."],
-  "sourceRefs": ["source-3:p7"],
-  "confidence": "medium",
-  "requiresHumanReview": true
-}
-```
+The first connected pilot should be trainer-facing, small and measurable. It should use one agreed source pack and one real but suitably handled course, with a defined service owner and a limited participant group.
 
-Course Workshop could then show **Accept**, **Edit**, **Compare** or **Dismiss** rather than allowing invisible AI mutation.
+Start with only three capabilities:
 
----
+1. Source-grounded rewrite of one selected course section.
+2. Question and distractor critique.
+3. Source-change impact analysis.
 
-## 6. Learner-facing Copilot capability
+Do not begin with automatic publication, repository mutation, broad organisational retrieval, learner completion decisions or a general-purpose learner chat.
 
-Learner AI is a separate maturity step from trainer AI. It should not be required for the base learner package.
+The pilot should measure whether the capability is worth operating, not merely whether it can produce fluent text.
 
-Where a course is used inside an approved connected environment, an optional course-aware assistant could provide substantial value.
+| Measure | What good looks like |
+| --- | --- |
+| Source fidelity | Reviewers can trace useful suggestions to permitted sources and reject unsupported claims. |
+| Trainer value | Trainers accept, adapt or reuse suggestions often enough to justify the additional service. |
+| Quality and safety | Unsupported, misleading or unsafe output is detected, visible and manageable before it enters a course. |
+| Time and effort | The capability improves a real authoring or review task rather than adding a second workflow. |
+| Reliability | Latency, availability, quota and cost are acceptable for the intended use. |
+| Governance fit | Identity, access, logging, retention, support and release responsibilities are understood and workable. |
 
-### 6.1 Course-bound tutor
+The pilot should have defined success, stop and escalation criteria before it begins. AI output is not proof of quality; the evidence is the reviewed result and the observed pilot outcome.
 
-Instead of exposing a generic assistant, Product Practice could provide a tutor bound to the released course and its approved source set.
+## Connected operating model
 
-Typical learner actions could include:
-
-- "Explain this section another way."
-- "Give me an example relevant to an APS project."
-- "Why was my answer wrong?"
-- "Compare the two options I was considering."
-- "Quiz me again on this concept."
-- "Give me another scenario at the same difficulty."
-- "What should I revise next?"
-- "Show the course source that supports this explanation."
-
-For course-specific claims, the released package and approved sources should remain the grounding boundary.
-
-### 6.2 Error-aware tutoring
-
-The learner player already knows the learner's deterministic progress, attempts, mastery and review state. It could provide a minimal relevant summary to a tutoring capability without transmitting the complete browser history.
-
-For example:
+The detailed Microsoft pattern should be selected by departmental architecture at the time. The essential boundary is stable:
 
 ```text
-Course: Closure Reports
-Stage: 6
-Recent difficulty:
-- benefits-realisation evidence
-- closure approval responsibility
-Already mastered:
-- document structure
-- lessons-learned distinction
+Approved hosted Course Workshop or learner player
+        ↓
+authenticated departmental identity and role checks
+        ↓
+approved service boundary applies handling and context rules
+        ↓
+bounded Copilot capability with approved sources and tools
+        ↓
+structured, attributable suggestion returned to Product Practice
+        ↓
+explicit human acceptance or dismissal
 ```
 
-Copilot could then provide a targeted explanation, Socratic prompt or additional practice.
+Whether that service boundary is a Product Practice service, a Copilot Studio agent or another approved pattern is a later architecture decision. The product should depend on a small, stable request-and-response contract rather than a particular Microsoft label or user interface.
 
-The existing learner logic remains authoritative for progress, scoring, mastery and spaced repetition.
+If a connected service fails, the core Workshop, learner player, drafts and learner state must continue to work. A loss of network or Copilot service must never corrupt local work.
 
-### 6.3 Generated practice versus released assessment
+## Conditions before any build
 
-A strict distinction should be maintained:
+No production integration should start until the responsible parties can answer the following questions.
 
-- **Released assessment** — versioned package content approved through the ordinary release process.
-- **Generated practice** — transient supplemental examples, questions or scenarios created for the current learner.
+### Business and ownership
 
-Generated practice should not silently change the assessment bank, alter the package version or become official completion evidence.
+- What specific trainer or learner problem is being solved?
+- Why is Copilot better than a deterministic Product Practice feature for that problem?
+- Who owns, supports and funds the capability?
 
-### 6.4 Assessment-integrity mode
+### Identity, architecture and service
 
-Learner assistance should respect where the learner is in the activity.
+- Where will the connected product be hosted?
+- How will users be authenticated and authorised?
+- Which approved Microsoft capability, environment, connectors and knowledge sources are available?
+- What happens when the service, a source or a tool is unavailable?
 
-During a scored item, the assistant may need to avoid directly revealing the keyed answer. It could instead clarify terminology, ask guiding questions or defer the explanation until the attempt is submitted. The exact behaviour should be an explicit learning-design decision rather than an accidental property of the model.
+### Information and records
 
-### 6.5 Course, department and general modes
+- Which information classifications and course fields may be sent?
+- What prompts, outputs, retrieved content and operational logs are retained, where and for how long?
+- Which sources are approved, and how is their authority and currency managed?
 
-The learner interface should make the authority boundary visible.
+### Learning, release and assurance
 
-Possible modes are:
+- Which outputs are suggestions and which are released content?
+- How will assessment integrity be protected?
+- What human reviewer and approver roles remain required?
+- How will capability instructions, sources, tools, evaluation sets and material service changes be versioned and tested?
+- What accessibility, device and user testing is needed for the new interface?
 
-1. **Course-grounded** — answer from the released package and its registered sources.
-2. **Department-grounded** — use additional approved departmental knowledge/connectors where the learner is authorised to access them.
-3. **General assistance** — use ordinary Copilot capability, clearly labelled as broader assistance rather than approved course content.
+If these conditions are not met, the correct boundary is the current standalone Product Practice model.
 
-This helps prevent a generated answer from being mistaken for an authoritative departmental instruction.
+## Maturity path
 
----
+| Stage | Position |
+| --- | --- |
+| 0. Current product | Standalone Workshop and learner packages; deterministic checks; human review; no AI dependency. |
+| 1. Development support | AI may assist development, content analysis and quality review outside the production product boundary. |
+| 2. Trainer pilot | Limited, approved, trainer-facing capabilities with explicit acceptance and measured outcomes. |
+| 3. Mature trainer service | Expand only where the pilot demonstrates value, safety and operational ownership. |
+| 4. Learner pilot | Test a course-grounded tutor with explicit source, privacy and assessment-integrity controls. |
+| 5. Broader service | Consider identity, central hosting, completion records, LMS integration or wider retrieval only as separate decisions with their own business case. |
 
-## 7. Portable mode and connected mode
+## Summary
 
-The same course format should support both operating modes.
+Product Practice provides the governed learning structure: course packages, source relationships, trainer workflow, deterministic validation, release control and portable delivery.
 
-### 7.1 Portable / standalone mode
+An approved departmental Copilot capability could later add intelligence around that structure: source-grounded drafting, semantic review, source-change impact analysis, targeted explanation and temporary practice.
 
-```text
-Course Workshop or learner HTML
-        ↓
-local browser operation
-        ↓
-no Copilot dependency
-```
+The sequence matters. Product Practice should remain a complete learning system on its own. Copilot should be added only when the Department can provide the identity, hosting, information handling, governance and service ownership that a connected AI capability requires.
 
-This preserves the current strengths:
+## References
 
-- offline use;
-- simple distribution;
-- no mandatory application account;
-- no central application server;
-- no AI availability dependency;
-- minimal infrastructure; and
-- usefulness outside a connected departmental deployment where policy permits.
+- [Product Practice learning system direction](LEARNING-SYSTEM-DIRECTION.md)
+- [Course Workshop guide](COURSE-WORKSHOP.md)
+- [Product architecture](ARCHITECTURE.md)
+- [Product standards](STANDARDS.md)
+- [Product roadmap](ROADMAP.md)
+- [Microsoft Copilot Studio documentation](https://learn.microsoft.com/en-us/microsoft-copilot-studio/)
+- [Microsoft Copilot Studio security and governance](https://learn.microsoft.com/en-us/microsoft-copilot-studio/security-and-governance)
+- [Microsoft guidance for governing Copilot Studio projects](https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/sec-gov-intro)
+- [Microsoft guidance for testing Copilot Studio agents](https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/sec-gov-phase4)
 
-### 7.2 Department-connected mode
-
-```text
-Approved hosted Workshop or learner player
-        ↓
-authenticated departmental identity
-        ↓
-policy / role / handling checks
-        ↓
-approved Copilot agent or integration service
-        ↓
-bounded capability + governed context
-        ↓
-structured result returned to Product Practice
-```
-
-The same `TrainingPackage` remains usable in both modes.
-
-A connected build may expose AI controls that the standalone build simply does not display. Loss of network or AI service should not corrupt the local course or learner state.
-
----
-
-## 8. Possible Microsoft integration patterns
-
-The final pattern should be selected by departmental architecture rather than hard-coded into Product Practice now.
-
-Microsoft Copilot Studio currently supports agents that can use tools, prompts, knowledge, connectors, flows and other agents. That creates several plausible future patterns.
-
-### Pattern A — Product Practice calls a departmentally managed service boundary
-
-```text
-Course Workshop / learner player
-        │
-        │ authenticated request
-        ▼
-Department-controlled Product Practice AI service
-        │
-        ├─ verify identity and role
-        ├─ validate requested capability
-        ├─ enforce information-handling policy
-        ├─ construct least-context request
-        ├─ restrict knowledge/tool scope
-        ├─ attach approved instructions
-        ├─ apply logging/monitoring policy
-        └─ invoke approved Copilot capability
-                │
-                ▼
-        structured result
-                │
-                ▼
-Course Workshop / learner UI
-```
-
-This gives Product Practice a stable product-specific contract even if the underlying AI service evolves.
-
-### Pattern B — Copilot Studio agent is the approved service boundary
-
-If departmental architecture supports it, a purpose-built Copilot Studio agent could itself hold the approved tools, knowledge, prompts and orchestration. Product Practice would invoke only the permitted operations or embed/access the agent through an approved client pattern.
-
-### Pattern C — Product Practice capability exposed to Copilot
-
-A later integration could also work in the opposite direction: Copilot could call approved Product Practice tools to retrieve a package section, validate a candidate object or inspect a course version. This should still respect role, course and release boundaries.
-
-The correct pattern depends on departmental identity, hosting, licensing, security, records, support and integration standards.
-
-### Security rule
-
-A reusable Copilot/API credential, service secret or high-value token must never be embedded in a standalone HTML file or browser-delivered JavaScript.
-
-Anything shipped to a browser must be assumed visible to the person operating that browser.
-
----
-
-## 9. Least-context and information-handling design
-
-AI integration changes the data-flow boundary of a system that is currently intentionally local.
-
-The design principle should be:
-
-> **Send the minimum authorised context required to perform the requested task.**
-
-A request about one assessment item should not automatically transmit the entire course, complete learner history and current trainer draft.
-
-A request envelope might contain:
-
-```text
-request
-├── authenticated role
-├── requested capability
-├── course id and version
-├── selected stage/item
-├── approved source excerpts or retrieval references
-├── minimum relevant trainer/learner context
-├── handling/classification metadata where required
-└── required output contract
-```
-
-The implementation should also distinguish between:
-
-- package content already approved for the course;
-- trainer draft content that may not yet be approved;
-- learner-generated responses;
-- departmental knowledge retrieved through approved connectors; and
-- general model knowledge.
-
-Those categories have different authority and potentially different handling requirements.
-
----
-
-## 10. AI-specific assurance risks
-
-Adding Copilot would introduce risks that do not exist in the present deterministic, local-only workflow.
-
-### 10.1 Hallucination and overstatement
-
-The model may produce plausible but unsupported content. Source-grounding, evidence references, structured output and human review reduce this risk but do not eliminate it.
-
-### 10.2 Prompt injection and hostile source content
-
-Imported or retrieved documents can contain text that attempts to influence an AI system. Retrieved/source content should be treated as evidence, not trusted instructions. System instructions, tool permissions and source scopes should remain outside untrusted content.
-
-### 10.3 Authority confusion
-
-A fluent model response can appear more authoritative than the evidence supports. The UI should distinguish:
-
-- released course content;
-- approved source material;
-- AI-generated suggestion;
-- AI-generated learner practice; and
-- broader departmental/general assistance.
-
-### 10.4 Model and service drift
-
-Models, agents, prompts, tools and retrieval behaviour may change over time. AI capabilities used in production should therefore be versioned, evaluated and regression-tested at the service boundary where practicable.
-
-### 10.5 Availability, latency and cost
-
-AI is a network service with quotas, latency and operating cost. The core authoring and learner workflows should continue to work when that service is unavailable.
-
-### 10.6 Data minimisation and retention
-
-Prompts, outputs and retrieved content may create records or logs depending on departmental configuration. The approved architecture must define what is logged, retained and accessible rather than assuming conversational AI is ephemeral.
-
----
-
-## 11. What Copilot must not become
-
-Even in a mature implementation, Copilot should not automatically become:
-
-- the `TrainingPackage` system of record;
-- the release authority;
-- a substitute for subject-matter review;
-- a substitute for learning-design review;
-- a substitute for accessibility testing with people and real devices;
-- a source of invented review or approval evidence;
-- a mechanism for bypassing information-classification controls;
-- the sole way to create or consume a course;
-- an unrestricted repository mutation path;
-- an invisible editor of released content;
-- the scoring or mastery authority;
-- a mechanism that can overwrite local trainer or learner state without explicit product logic; or
-- an authority that overrules deterministic package validation.
-
-The software can bind AI suggestions to content and evidence. It cannot manufacture the human authority required for a real release.
-
----
-
-## 12. Governance and release implications
-
-Copilot-generated material should be governed by the same release model as human-authored material once it is accepted into a course.
-
-The important distinction is not whether a sentence originated from AI. It is whether the final released package has been properly reviewed and approved.
-
-A future release record may optionally capture additional AI provenance, for example:
-
-- AI assistance used: yes/no;
-- capability/agent identifier;
-- model/service version where available;
-- date of assistance;
-- source set used; and
-- human reviewer disposition.
-
-This should be added only if it serves an identified governance or audit need. The release record should not accumulate speculative metadata with no operational purpose.
-
-Existing principles remain unchanged:
-
-- automated checks are evidence, not factual approval;
-- warnings are not automatically release blockers unless deliberately encoded as such;
-- source authority still requires human judgement;
-- manual accessibility/device evidence remains necessary where applicable; and
-- the accountable release decision remains human.
-
----
-
-## 13. Recommended maturity path
-
-The safest path is staged.
-
-### Stage 0 — Current standalone product
-
-Retain the present model:
-
-- Course Workshop for non-technical trainer authoring;
-- standalone or isolated hosted learner packages;
-- local drafts and learner progress;
-- deterministic validation and QA;
-- human review and release controls; and
-- no AI dependency.
-
-This remains the baseline even if later stages are adopted.
-
-### Stage 1 — Development use only
-
-Use frontier AI, including future models, as an engineering and content-analysis aid during Product Practice development.
-
-This can accelerate coding, QA, documentation, architecture review, semantic analysis and preparation of candidate course material without changing the production product boundary.
-
-### Stage 2 — Trainer pilot in an approved connected environment
-
-If departmental architecture supports it, pilot a small number of bounded Course Workshop capabilities, such as:
-
-- source-grounded rewrite;
-- question critique;
-- learning-objective review; and
-- source-change impact analysis.
-
-Keep explicit trainer acceptance and collect evidence on usefulness, accuracy, latency and trust.
-
-### Stage 3 — Mature trainer integration
-
-Expand only after the pilot proves value. Possible capabilities include structured course drafting, semantic QA, source traceability and governed organisational retrieval.
-
-### Stage 4 — Learner pilot
-
-Pilot a course-bound tutor on a limited course set with clear assessment-integrity and source-grounding rules.
-
-### Stage 5 — Broader departmental learning service
-
-Only if justified, consider deeper identity, central hosting, completion records, cross-device progress, LMS integration or broader departmental knowledge retrieval. These are separate architecture decisions; Copilot integration does not require them automatically.
-
----
-
-## 14. Decision criteria before implementation
-
-Before moving from proposal to implementation, the project should be able to answer:
-
-### Business
-
-- What trainer or learner problem is being solved?
-- Is Copilot materially better than a deterministic Product Practice feature for that problem?
-- Who owns the capability and supports it?
-
-### Architecture
-
-- Where is Product Practice hosted?
-- How is the user authenticated and authorised?
-- Which approved Microsoft integration mechanism is available?
-- What happens when Copilot is unavailable?
-
-### Information handling
-
-- Which information classifications may be sent?
-- Which course/draft/learner fields are permitted?
-- Which departmental knowledge sources may be retrieved?
-- What is logged and retained?
-
-### Learning and governance
-
-- Which outputs are suggestions versus approved content?
-- How are source references shown?
-- What human review is required?
-- How is assessment integrity protected?
-- Does the AI change any completion or mastery semantics?
-
-### Assurance
-
-- How will prompts/agents/tools be versioned and tested?
-- What evaluation set proves the capability does what it claims?
-- How are unsafe or unsupported outputs detected and handled?
-- What accessibility and device testing is required for the new UI?
-
-If those questions cannot yet be answered, the current standalone Product Practice model remains the correct production boundary.
-
----
-
-## 15. Summary position
-
-The future opportunity is not to replace Course Workshop with Copilot or to make every learner course dependent on an AI service.
-
-The opportunity is to combine two different strengths:
-
-**Product Practice provides the governed structure:**
-
-- a course-neutral package contract;
-- trainer workflow;
-- deterministic validation;
-- source/provenance relationships;
-- release controls;
-- portable delivery; and
-- a consistent learner experience.
-
-**Departmental Copilot could provide optional intelligence:**
-
-- source-grounded drafting;
-- semantic review;
-- source-change impact analysis;
-- organisational retrieval;
-- personalised explanation; and
-- targeted learner practice.
-
-The resulting principle is:
-
-```text
-Product Practice remains useful alone.
-Copilot makes it more capable when the Department is ready.
-AI proposes and explains.
-Course Workshop governs authoring.
-TrainingPackage governs released course data.
-Deterministic logic governs scoring and encoded checks.
-Humans govern approval and authority.
-```
-
-That preserves the portability and low-infrastructure strengths of the existing system while leaving a credible path to a much richer departmental learning service if the Department later chooses to provide the hosting, identity, Copilot and governance foundations required.
-
----
-
-## References and implementation notes
-
-The proposal is intentionally platform-aware but implementation-neutral. At the time of writing, Microsoft Copilot Studio documentation describes agents that can use knowledge, tools, prompts, connectors, flows, connected agents and generative orchestration. Those capabilities make the patterns in this paper technically plausible, but the actual DEWR service, licensing, permissions, approved connectors and integration surface must be confirmed before implementation.
-
-Relevant Microsoft documentation areas include:
-
-- Microsoft Copilot Studio documentation;
-- agent tools and prompts;
-- knowledge sources and retrieval;
-- connectors and integration patterns;
-- generative orchestration; and
-- agent evaluation, publishing and governance.
-
-This paper should be updated if a departmental architecture decision establishes a specific approved Copilot integration pattern.
+Review this paper when a departmental architecture decision, approved Copilot service or defined pilot proposal changes the available options.

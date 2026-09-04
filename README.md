@@ -25,6 +25,7 @@ Each document has one job. Start with the one that matches what you are doing.
 | **[COURSE-WORKSHOP.md](COURSE-WORKSHOP.md)** | You are using or maintaining the separate trainer-facing course authoring tool |
 | **[ROADMAP.md](ROADMAP.md)** | You want to know what remains beyond the implemented player, exports and authoring profile |
 | **[LEARNING-SYSTEM-DIRECTION.md](LEARNING-SYSTEM-DIRECTION.md)** | You need the settled training-managed product and deployment decisions |
+| **[COPILOT-INTEGRATION-PROPOSAL.md](COPILOT-INTEGRATION-PROPOSAL.md)** | You are considering an optional future departmental Copilot capability; it is not a current feature or approved architecture |
 | **[DEPLOYMENT-INTEGRITY-AND-HOSTING-OPTIONS.md](DEPLOYMENT-INTEGRITY-AND-HOSTING-OPTIONS.md)** | You are comparing possible future hosting, authentication, signing and completion-record approaches; it is an options paper, not an approved architecture |
 | **[DEWR-VISUAL-THEME.md](DEWR-VISUAL-THEME.md)** | You need the departmental colour, typography, logo-use and accessibility rules |
 | **[LICENSE](LICENSE)** | The current proprietary permission terms and historical licence note |
