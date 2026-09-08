@@ -158,6 +158,31 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .notice button { color: inherit; border: 0; background: transparent; font-size: 1.35rem; line-height: 1; }
 .notice-critical { color: var(--warning); border-color: #dfca8a; background: var(--warning-soft); }
 .studio-workspace { max-width: 1220px; margin: 0 auto; padding: 44px clamp(24px, 4vw, 58px) 86px; }
+.learner-reference { margin: 0 0 23px; border: 1px solid #b8d8d4; border-radius: 13px; background: var(--information-soft); overflow: hidden; }
+.learner-reference > summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px 17px; cursor: pointer; list-style: none; }
+.learner-reference > summary::-webkit-details-marker { display: none; }
+.learner-reference > summary > span { display: grid; gap: 3px; }
+.learner-reference > summary strong { color: var(--forest-950); font-size: .84rem; }
+.learner-reference > summary small { color: var(--muted); font-size: .69rem; font-weight: 700; }
+.learner-reference[open] > summary { border-bottom: 1px solid #b8d8d4; background: rgba(255,255,255,.42); }
+.learner-reference-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(230px, .7fr); gap: 14px; padding: 14px; }
+.learner-reference-surface { padding: 19px 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); box-shadow: 0 5px 16px rgba(62,66,70,.06); }
+.learner-reference-surface h2 { margin: 6px 0 7px; color: var(--forest-950); font-family: "Aptos Display", "Aptos", "Segoe UI", Arial, sans-serif; font-size: clamp(1.35rem, 2.4vw, 1.9rem); font-weight: 550; letter-spacing: -.03em; }
+.learner-reference-surface > p { margin: 0; color: var(--muted); font-size: .79rem; line-height: 1.5; }
+.learner-reference-stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
+.learner-reference-stats > div { min-width: 100px; padding: 8px 10px; border-left: 3px solid var(--dewr-eucalyptus); background: var(--forest-50); }
+.learner-reference-stats dt { color: var(--muted); font-size: .61rem; font-weight: 800; text-transform: uppercase; }
+.learner-reference-stats dd { margin: 2px 0 0; color: var(--forest-950); font-size: .85rem; font-weight: 850; }
+.learner-reference-outcome, .learner-reference-parts { display: grid; gap: 4px; padding: 10px 12px; border-left: 3px solid var(--dewr-spruce); background: var(--forest-50); font-size: .72rem; line-height: 1.5; }
+.learner-reference-outcome strong, .learner-reference-parts > strong { color: var(--forest-950); font-size: .67rem; letter-spacing: .06em; text-transform: uppercase; }
+.learner-reference-outcome span { color: var(--muted); }
+.learner-reference-parts { margin-top: 10px; }
+.learner-reference-parts ul { display: grid; gap: 3px; margin: 2px 0 0; padding-left: 18px; color: var(--muted); }
+.learner-reference-parts p { margin: 0; color: var(--muted); }
+.learner-reference-note { display: grid; align-content: start; gap: 10px; padding: 17px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.7); }
+.learner-reference-note h3 { margin: 0; color: var(--forest-950); font-size: .83rem; }
+.learner-reference-note p { margin: 0; color: var(--muted); font-size: .73rem; line-height: 1.55; }
+.learner-reference-note small { color: var(--muted); font-size: .66rem; line-height: 1.45; }
 .workspace-stack { display: grid; gap: 23px; }
 .instruction-hero {
   display: grid;
@@ -204,6 +229,12 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .template-grid dl div { display: grid; gap: 2px; }
 .template-grid dt { color: var(--muted); font-size: .61rem; font-weight: 800; text-transform: uppercase; }
 .template-grid dd { margin: 0; color: var(--forest-950); font-size: .75rem; font-weight: 800; }
+.first-pass-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 11px; }
+.first-pass-grid article { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-muted); }
+.first-pass-grid article > span { display: grid; place-items: center; width: 28px; height: 28px; color: white; border-radius: 8px; background: var(--forest-700); font-size: .7rem; font-weight: 900; }
+.first-pass-grid strong { display: block; color: var(--forest-950); font-size: .78rem; }
+.first-pass-grid p { margin: 5px 0 0; color: var(--muted); font-size: .7rem; line-height: 1.48; }
+.first-pass-grid + .section-intro { margin-top: 16px; }
 .page-heading { max-width: 790px; }
 .page-heading.with-action { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; max-width: none; }
 .page-heading h1 { margin: 7px 0 10px; color: var(--forest-950); font-family: "Aptos Display", "Aptos", "Segoe UI", Arial, sans-serif; font-size: clamp(2rem, 3.7vw, 3.35rem); font-weight: 500; letter-spacing: -.045em; line-height: 1.02; }
@@ -549,6 +580,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
   .topbar { top: 0; }
   .step-footer { left: 0; }
   .workflow-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .learner-reference-body { grid-template-columns: 1fr; }
+  .first-pass-grid { grid-template-columns: 1fr; }
   .support-grid, .export-grid { grid-template-columns: 1fr; }
   .stage-switcher { grid-template-columns: 1fr 1fr; }
   .stage-switcher label { grid-column: 1 / -1; grid-row: 1; }
@@ -562,6 +595,11 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
   .topbar strong { max-width: 43vw; }
   .studio-workspace { padding: 30px 16px 86px; }
   .notice { margin-right: 16px; margin-left: 16px; }
+  .learner-reference > summary { align-items: flex-start; padding: 12px 14px; }
+  .learner-reference > summary small { max-width: 92px; text-align: right; }
+  .learner-reference-body { padding: 10px; }
+  .learner-reference-surface, .learner-reference-note { padding: 14px; }
+  .learner-reference-stats > div { min-width: 0; flex: 1 1 86px; }
   .page-heading h1 { font-size: 2.18rem; }
   .page-heading.with-action { display: grid; align-items: start; }
   .instruction-hero, .instruction-grid, .workflow-list, .form-grid, .contrast-editor, .release-checklist, .release-progress, .connection-map, .connection-steps { grid-template-columns: 1fr; }

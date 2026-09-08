@@ -150,7 +150,7 @@ export function evaluateCourse(source: TrainingPackage): AuthoringIssue[] {
 
   const allQuestionIds: string[] = [];
   for (const stage of entry.content.modules) {
-    const stageLabel = `Stage ${stage.number}`;
+    const stageLabel = `Section ${stage.number}`;
     if (!stage.id.trim() || !stage.title.trim() || !stage.subtitle.trim()) {
       add({ severity: "error", area: "stages", stageId: stage.id, targetId: `stage-${stage.id}-title`, title: `${stageLabel} needs its identity`, detail: "Add a stable id, learner-facing title and subtitle." });
     }
@@ -204,7 +204,7 @@ export function evaluateCourse(source: TrainingPackage): AuthoringIssue[] {
 
     const diagnostics = entry.content.diagnosticQuestions.filter((item) => item.moduleId === stage.id);
     if (!diagnostics.length) {
-      add({ severity: "error", area: "supports", stageId: stage.id, targetId: `support-${stage.id}-diagnostic`, title: `${stageLabel} is absent from the diagnostic`, detail: "Add at least one independent diagnostic question for this stage." });
+      add({ severity: "error", area: "supports", stageId: stage.id, targetId: `support-${stage.id}-diagnostic`, title: `${stageLabel} is absent from the diagnostic`, detail: "Add at least one independent diagnostic question for this course section." });
     }
     diagnostics.forEach((question, index) => {
       allQuestionIds.push(question.id);
@@ -239,13 +239,13 @@ export function evaluateCourse(source: TrainingPackage): AuthoringIssue[] {
     add({ severity: "error", area: "review", targetId: "review-checks", title: "Question ids are not unique", detail: "Every question, scenario and diagnostic item needs a unique id across the course." });
   }
 
-  if (!entry.content.caseStudies.length) add({ severity: "warning", area: "advanced", targetId: "advanced-cases", title: "No worked case is included", detail: "The core course will work, but learners will not see the stages connected in one realistic example." });
+  if (!entry.content.caseStudies.length) add({ severity: "warning", area: "advanced", targetId: "advanced-cases", title: "No worked case is included", detail: "The core course will work, but learners will not see the course sections connected in one realistic example." });
   entry.content.caseStudies.forEach((study, index) => {
     if (!study.id.trim() || !study.title.trim() || !study.subtitle.trim() || !study.summary.trim() || !study.closing.trim() || !study.steps.length) {
-      add({ severity: "error", area: "advanced", targetId: "advanced-cases", title: `Complete worked case ${index + 1}`, detail: "A case needs its identity, opening, at least one stage-linked step and closing lesson." });
+      add({ severity: "error", area: "advanced", targetId: "advanced-cases", title: `Complete worked case ${index + 1}`, detail: "A case needs its identity, opening, at least one course-section-linked step and closing lesson." });
     }
     if (study.steps.some((step) => !step.moduleId.trim() || !step.heading.trim() || !step.body.trim() || !step.insight.trim())) {
-      add({ severity: "error", area: "advanced", targetId: "advanced-cases", title: `${study.title || `Case ${index + 1}`} has an incomplete step`, detail: "Every case step needs a course stage, heading, event and teaching insight." });
+      add({ severity: "error", area: "advanced", targetId: "advanced-cases", title: `${study.title || `Case ${index + 1}`} has an incomplete step`, detail: "Every case step needs a course section, heading, event and teaching insight." });
     }
   });
 
@@ -284,7 +284,7 @@ export function evaluateCourse(source: TrainingPackage): AuthoringIssue[] {
 
   const assets = entry.content.assets ?? [];
   if (entry.content.slides.some((slide) => !slide.title.trim())) add({ severity: "error", area: "media", targetId: "media-slides", title: "A source slide has no title", detail: "Give every slide a concise title so learners and citations can identify it." });
-  if (assets.some((asset) => !asset.alt.trim())) add({ severity: "error", area: "media", targetId: "media-assets", title: "An image has no text alternative", detail: "Describe the useful information in every imported slide and stage visual." });
+  if (assets.some((asset) => !asset.alt.trim())) add({ severity: "error", area: "media", targetId: "media-assets", title: "An image has no text alternative", detail: "Describe the useful information in every imported slide and section visual." });
 
   return issues;
 }

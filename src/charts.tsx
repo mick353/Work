@@ -254,7 +254,7 @@ export function ColumnChart({
       </div>
       <DataTable
         caption={ariaLabel}
-        head={["Day", "Cards due"]}
+        head={["Day", "Cards ready to revisit"]}
         rows={columns.map((column) => [column.title, String(column.value)])}
       />
     </>

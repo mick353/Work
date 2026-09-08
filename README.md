@@ -49,7 +49,7 @@ If you are an AI agent picking this up cold: read AUTHORING.md end to end before
 
 **DEWR visual theme:** the normal learner link above now uses the departmental colour and Aptos typography treatment. Existing bookmarks containing `?brand=dewr` remain compatible, but the parameter is no longer needed. See [DEWR-VISUAL-THEME.md](DEWR-VISUAL-THEME.md).
 
-**For trainers creating a course:** <https://mick353.github.io/Work/course-workshop/>. Its first page is the complete author/review/release guide. A trainer can start blank or safely clone a maintained course, edit the complete learning package, import a PDF/image source deck and stage visuals, preview it, and export one learner course. Drafts remain in that browser; using the published tool does not add anything to the learner site.
+**For trainers creating a course:** <https://mick353.github.io/Work/course-workshop/>. Its first page is the complete author/review/release guide. A trainer can start blank or safely clone a maintained course, edit the complete learning package, import a PDF/image source deck and course-section visuals, use the live learner reference and full preview, then export one learner course. Drafts remain in that browser; using the published tool does not add anything to the learner site.
 
 **On your phone:** open that link, then add it to your home screen — *Share → Add to Home Screen* on iOS, or *⋮ → Install app* on Android. It installs with its own icon, opens without browser chrome, and works offline afterwards.
 
@@ -67,7 +67,7 @@ The recommended loop:
 
 ## What a learner gets
 
-Common to both packages: substantial staged lessons with worked reasoning and applied examples, knowledge checks with feedback on *every* option, decision scenarios, a spaced-repetition card deck, mixed practice, a diagnostic that recommends where to start, worked case studies, a multi-part capstone with a self-assessment rubric, a toolkit of templates, a field guide, a glossary, a printable full-course guide, full-text search, results charts, light and dark themes, JSON backup and restore, and a printable record of completion.
+Common to both packages: substantial course sections with worked reasoning and applied examples, knowledge checks with feedback on *every* option, decision scenarios, a spaced-repetition card deck, mixed practice, a diagnostic that recommends where to start, worked case studies, a multi-part capstone with a self-assessment rubric, a toolkit of templates, a field guide, a glossary, a printable full-course guide, full-text search, results charts, light and dark themes, JSON backup and restore, and a printable record of completion.
 
 Per package:
 

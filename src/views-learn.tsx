@@ -240,7 +240,7 @@ export function Dashboard({
         </div>
         <div>
           <strong>{dueCount}</strong>
-          <span>Cards due for review</span>
+          <span>Cards ready to revisit</span>
         </div>
         <div>
           <strong>{studyDays.length}</strong>

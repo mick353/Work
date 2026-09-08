@@ -995,8 +995,8 @@ check(
   (await page.locator(".hero .button-row .primary").innerText()).includes("Start Section 1"),
 );
 const firstMetrics = await page.locator(".metric-strip > div").evaluateAll((items) => items.map((item) => item.textContent?.replace(/\s+/g, " ").trim()));
-const dueMetric = page.locator(".metric-strip > div").filter({ hasText: "Cards due for review" });
-check("A first-time learner has no review cards due", (await dueMetric.locator("strong").innerText()).trim() === "0", firstMetrics.join(" | "));
+const dueMetric = page.locator(".metric-strip > div").filter({ hasText: "Cards ready to revisit" });
+check("A first-time learner has no review cards ready", (await dueMetric.locator("strong").innerText()).trim() === "0", firstMetrics.join(" | "));
 check("Opening the site does not count as a study day", await page.evaluate(() => localStorage.getItem("product-practice-v2:pm-fundamentals:study-days") === null));
 check(
   "The overview makes one clear first learning step prominent",
@@ -1033,7 +1033,7 @@ check(
   (await page.getByRole("button", { name: "Diagnostic", exact: true }).count()) === 1,
 );
 await page.getByRole("button", { name: "Review", exact: true }).click();
-check("Review cards remain locked until their lesson has been encountered", await page.getByRole("heading", { name: "Review queue clear" }).count() === 1);
+check("Review cards remain locked until their lesson has been encountered", await page.getByRole("heading", { name: "No cards ready to revisit" }).count() === 1);
 await page.evaluate(() => { window.location.hash = "dashboard"; });
 await page.waitForTimeout(150);
 await openCourseSections(page);
@@ -2994,8 +2994,8 @@ check(
 );
 await page.evaluate(() => { window.location.hash = "dashboard"; });
 await page.waitForSelector(".metric-strip");
-const dashboardDueNow = Number((await page.locator(".metric-strip > div").filter({ hasText: "Cards due for review" }).locator("strong").innerText()).trim());
-check("Dashboard and Results use the same due-card definition", dashboardDueNow === resultsDueNow, `dashboard ${dashboardDueNow}; results ${resultsDueNow}`);
+const dashboardReadyNow = Number((await page.locator(".metric-strip > div").filter({ hasText: "Cards ready to revisit" }).locator("strong").innerText()).trim());
+check("Dashboard and Results use the same ready-card definition", dashboardReadyNow === resultsDueNow, `dashboard ${dashboardReadyNow}; results ${resultsDueNow}`);
 
 /* -- backup export and import ------------------------------------- */
 

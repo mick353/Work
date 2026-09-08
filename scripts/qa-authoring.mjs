@@ -330,7 +330,8 @@ const instructionSerious = instructionAxe.violations.filter((item) => item.impac
 check("Workshop instructions have no serious or critical automated accessibility violations", instructionSerious.length === 0, instructionSerious.map((item) => `${item.id}: ${item.nodes[0]?.html ?? ""}`).join(" | "));
 
 check("Instructions include a five-part course blueprint", await page.locator(".blueprint-list li").count() === 5);
-check("Instructions explain how sources, stages, review and outputs connect", await page.locator(".connection-map > div").count() === 4);
+check("Instructions explain how sources, course sections, review and outputs connect", await page.locator(".connection-map > div").count() === 4);
+check("Every authoring step includes a live learner reference", await page.locator(".learner-reference").count() === 1 && /Live learner reference/i.test(await page.locator(".learner-reference").innerText()));
 check("Blank and template starting choices are presented together before the workflow", await page.locator(".start-options article").count() === 3 && await page.locator(".start-options").evaluate((element) => {
   const workflow = document.querySelector(".workflow-list");
   return Boolean(workflow && element.closest(".editor-card")?.compareDocumentPosition(workflow) & Node.DOCUMENT_POSITION_FOLLOWING);
@@ -342,8 +343,8 @@ await page.getByRole("button", { name: /Media & source deck/ }).click();
 check("An incomplete source is labelled and never selected as the deck source", await page.getByLabel("Deck source").inputValue() === "" && /source-1 — incomplete/i.test(await page.getByLabel("Deck source").innerText()));
 check("Media gives trainers the complete register-import-review-cite sequence", await page.locator(".connection-steps li").count() === 4 && /register.*import.*review.*cite/is.test(await page.locator(".connection-steps").innerText()));
 await page.getByRole("button", { name: /Teach/ }).click();
-check("Teach exposes the active stage's cross-step connections", await page.locator(".stage-linkage-summary").count() === 1 && /diagnostic.*review card.*source slide/is.test(await page.locator(".stage-linkage-summary").innerText()));
-check("Teach gives trainers an explicit stage position and selector", /Stage 1 of 1/i.test(await page.locator(".stage-switcher").innerText()) && await page.getByLabel("Choose course stage").count() === 1);
+check("Teach exposes the active course section's cross-step connections", await page.locator(".stage-linkage-summary").count() === 1 && /diagnostic.*review card.*source slide/is.test(await page.locator(".stage-linkage-summary").innerText()));
+check("Teach gives trainers an explicit section position and selector", /Section 1 of 1/i.test(await page.locator(".stage-switcher").innerText()) && await page.getByLabel("Choose course section").count() === 1);
 await page.evaluate(() => window.scrollTo(0, 700));
 await page.getByRole("button", { name: "Next", exact: true }).click();
 // The focus move to the next heading (queued in a setTimeout) and the scroll
@@ -364,11 +365,11 @@ await page
   .catch(() => {});
 const navigationState = await page.evaluate(() => ({ scrollY: window.scrollY, tag: document.activeElement?.tagName, text: document.activeElement?.textContent ?? "", id: document.activeElement?.id }));
 check("Step navigation resets scroll and focuses the new heading", navigationState.scrollY < 5 && navigationState.tag === "H1" && /retrievable and usable/i.test(navigationState.text), JSON.stringify(navigationState));
-check("Reinforce explains that its content belongs to the active stage", /active stage/i.test(await page.locator(".step-connection").innerText()));
+check("Reinforce explains that its content belongs to the active course section", /active course section/i.test(await page.locator(".step-connection").innerText()));
 await page.getByRole("button", { name: /Review & export/ }).click();
 check("Review checks are grouped by step and filterable", await page.locator(".review-step-summary > div").count() === 6 && await page.getByRole("button", { name: /Blockers/ }).count() === 1);
 check("A blank draft review is calm and starts with issue groups collapsed", await page.locator(".readiness.not-started").count() === 1 && await page.locator("details.issue-group[open]").count() === 0);
-check("Review shows stage coverage and release-gate progress", await page.locator(".coverage-table tbody tr").count() === 1 && await page.locator(".release-progress > div").count() === 3 && /0 of 4 recorded.*0 of 8 complete/is.test(await page.locator(".release-progress").innerText()));
+check("Review shows course-section coverage and release-gate progress", await page.locator(".coverage-table tbody tr").count() === 1 && await page.locator(".release-progress > div").count() === 3 && /0 of 4 recorded.*0 of 8 complete/is.test(await page.locator(".release-progress").innerText()));
 check("The content review date is recorded at release, not while drafting", await page.getByLabel("Content review date").inputValue() === "");
 check("Review explains issue navigation and the human release boundary", /relevant field.*human learning-flow review/is.test(await page.locator(".step-connection").innerText()));
 check("Draft output explains the complete trainer checkpoint transfer", /Complete editable draft.*another trainer.*embedded slides, images.*approximately.*(?:KB|MB)/is.test(await page.locator("body").innerText()));
@@ -537,9 +538,9 @@ check("A trainer can expand a source summary to edit its full record", await fea
 check("A trainer can open a registered source while checking it", await featurePage.locator(".source-open-link").first().count() === 1 && (await featurePage.locator(".source-open-link").first().getAttribute("target")) === "_blank");
 
 await featurePage.getByRole("button", { name: /Teach/ }).click();
-check("A multi-stage course can be navigated without relying on a clipped tab row", /Stage 1 of 9/i.test(await featurePage.locator(".stage-switcher").innerText()) && await featurePage.getByRole("button", { name: "Next stage" }).isEnabled());
-await featurePage.getByRole("button", { name: "Next stage" }).click();
-check("Stage next control updates the active stage consistently", /Stage 2 of 9/i.test(await featurePage.locator(".stage-switcher").innerText()) && (await featurePage.getByLabel("Choose course stage").inputValue()) !== "product-thinking");
+check("A multi-section course can be navigated without relying on a clipped tab row", /Section 1 of 9/i.test(await featurePage.locator(".stage-switcher").innerText()) && await featurePage.getByRole("button", { name: "Next section" }).isEnabled());
+await featurePage.getByRole("button", { name: "Next section" }).click();
+check("Section next control updates the active section consistently", /Section 2 of 9/i.test(await featurePage.locator(".stage-switcher").innerText()) && (await featurePage.getByLabel("Choose course section").inputValue()) !== "product-thinking");
 
 await featurePage.getByRole("button", { name: /Review & export/ }).click();
 check("Advisory warnings are labelled as non-blocking", await featurePage.locator(".advisory-banner").count() === 1 && /do not disable Preview or any final export/i.test(await featurePage.locator(".advisory-banner").innerText()));
@@ -578,8 +579,8 @@ const firstVisual = featurePage.locator(".visual-editor").first();
 const visualFileInputs = featurePage.locator('.visual-editor input[type="file"]');
 const visualFileInputNames = await visualFileInputs.evaluateAll((inputs) => inputs.map((input) => input.getAttribute("aria-label")?.trim() ?? ""));
 check(
-  "Every stage-image upload has a unique stage-specific accessible name",
-  visualFileInputNames.length === 9 && new Set(visualFileInputNames).size === visualFileInputNames.length && visualFileInputNames.every((name) => /^Add image for Stage \d+: .+/.test(name)),
+  "Every section-image upload has a unique section-specific accessible name",
+  visualFileInputNames.length === 9 && new Set(visualFileInputNames).size === visualFileInputNames.length && visualFileInputNames.every((name) => /^Add image for Section \d+: .+/.test(name)),
   visualFileInputNames.join(" | "),
 );
 await firstVisual.locator('input[type="file"]').focus();
@@ -588,14 +589,14 @@ const uploadFocusStyle = await firstVisual.locator(".upload-label").evaluate((la
   outlineWidth: getComputedStyle(label).outlineWidth,
 }));
 check(
-  "Stage-image uploads expose visible keyboard focus on their labelled control",
+  "Section-image uploads expose visible keyboard focus on their labelled control",
   uploadFocusStyle.outlineStyle !== "none" && parseFloat(uploadFocusStyle.outlineWidth) >= 3,
   JSON.stringify(uploadFocusStyle),
 );
 await firstVisual.locator('input[type="file"]').setInputFiles({ name: "stage-visual.png", mimeType: "image/png", buffer: tinyPng });
 await firstVisual.locator("img").waitFor();
 await firstVisual.getByLabel("Image description").fill("A single evidence marker used to verify an embedded stage visual.");
-check("Stage images can be embedded and described", await firstVisual.locator("img").count() === 1);
+check("Section images can be embedded and described", await firstVisual.locator("img").count() === 1);
 
 await featurePage.getByRole("button", { name: /Teach/ }).click();
 check(

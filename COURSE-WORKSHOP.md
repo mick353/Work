@@ -16,10 +16,10 @@ The online Workshop is public, but it contains no draft or course content from i
 The first page in the Workshop is the trainer instruction page. Before entering detailed content, use its five-part blueprint to agree the audience, final performance, evidence base, learning sequence and assessment approach. The controlled path is:
 
 1. **Course setup** — record stable identity, ownership, version, status and governing sources.
-2. **Teach** — write stages in learner order, with explanations, checks, scenarios, an assignment and precise source locators.
+2. **Teach** — write course sections in learner order, with lesson parts, checks, scenarios, an assignment and precise source locators.
 3. **Reinforce** — add a diagnostic, recall cards, glossary terms and observable practice contrasts.
 4. **Apply and reference** — add the worked cases, toolkit, capstone, field guide, source differences and exemplars the course needs.
-5. **Media and source deck** — import a PDF or ordered slide images, assign slides to stages, and add course-owned stage visuals with text alternatives.
+5. **Media and source deck** — import a PDF or ordered slide images, assign slides to course sections, and add course-owned section visuals with text alternatives.
 6. **Review** — clear encoded checks and preview the course in the real learner player.
 7. **Release** — record the subject-matter, learning-flow, audience/handling and release decisions; set the course status to **Available**; choose an output.
 
@@ -35,7 +35,7 @@ When a valid authored draft is recovered from browser storage after a reload, th
 
 An existing browser may still contain a draft saved by an earlier Workshop build. Draft schema v2 preserves the course content but clears the old review date, source-checked dates, release declarations and **Available** status because the earlier format could not prove who confirmed them or when. The Workshop explains the migration and saves the upgraded draft under the current key. A raw released package loaded for editing is handled the same way: it becomes a fresh Draft that requires fresh review.
 
-Each authoring step contains a concise **How this step connects** explanation. Course setup reports where every source is currently used; source-rich courses begin with compact expandable source summaries so the register remains scannable. Teach reports the diagnostic, cards, glossary, contrast, cases and media connected to the active stage; Apply and reference explains the learner destination or stage/source relationship for every optional content type; Media shows the complete register → import → review → cite sequence. These are guidance and live summaries, not extra course fields.
+Each authoring step contains a concise **How this step connects** explanation and a compact **Live learner reference**. Course setup reports where every source is currently used; source-rich courses begin with compact expandable source summaries so the register remains scannable. Teach reports the diagnostic, cards, glossary, contrast, cases and media connected to the active course section; Apply and reference explains the learner destination or section/source relationship for every optional content type; Media shows the complete register → import → review → cite sequence. The reference updates from the current draft and leads to the full learner preview when structural checks pass. These are guidance and live summaries, not extra course fields.
 
 The persistent draft header updates as the trainer works. A blank course shows **Duration pending** rather than presenting a false estimate; the derived minute estimate appears after lesson explanation content exists. On tablet and phone widths, one step selector replaces the desktop step rail so navigation does not require horizontal scrolling.
 
@@ -44,21 +44,21 @@ The persistent draft header updates as the trainer works. A blank course shows *
 The complete editable profile includes:
 
 - course identity, ownership, semantic version and source register;
-- ordered stages with outcomes, core ideas and sourced lesson sections;
+- ordered course sections with outcomes, core ideas and sourced lesson parts;
 - four-option questions with keyed answers, rationales and feedback for every distractor;
 - applied decision scenarios;
-- stage assignments with worked answers and review criteria;
+- section assignments with worked answers and review criteria;
 - a separate diagnostic pool;
 - definition, application and discrimination review cards;
 - glossary terms and observable practice contrasts;
-- worked cases, including stage-linked decisions, tempting alternatives, artefacts and teaching insights;
+- worked cases, including course-section-linked decisions, tempting alternatives, artefacts and teaching insights;
 - toolkit templates with reusable prompts and worked examples;
 - capstone briefs, production steps, completion checks and a rubric;
 - field-guide entries with precise source and slide references;
 - explicit source differences where the course deliberately explains or applies a source differently;
 - complete worked documents and exemplars, including metadata, paragraphs, tables, artefact blocks and coaching notes;
 - a complete source deck imported from PDF or ordered PNG/JPEG/WebP images;
-- one optional PNG/JPEG/WebP visual per course stage, with required alternative text and optional caption/source;
+- one optional PNG/JPEG/WebP visual per course section, with required alternative text and optional caption/source;
 - asset-capable local autosave, draft backup/restore, live checks and the shared learner preview.
 
 The Workshop uses a deliberately light baseline for new courses: at least 120 body words and a 50-word worked answer per course section, alongside four knowledge questions, two applied scenarios, the three review-card kinds, a glossary entry and a practice contrast. These are stub checks, not a claim that word count proves quality. A reviewed course can set a more demanding, course-specific profile where that is genuinely justified.
@@ -91,7 +91,7 @@ The URL is a learner destination, not merely a citation locator. Open it while s
 
 Imported media is resized to a maximum 1,600-pixel edge and embedded as validated image data inside the draft/package. This keeps tablet authoring, standalone learner HTML and repository transfer self-contained. Limits are 50 MB per selected source file, 150 PDF pages and 80 MB of embedded package data.
 
-PDF import renders each page, extracts searchable text where available, and creates editable slide title, stage, text and alternative-text fields. Image import uses natural filename order. The Workshop recalculates each stage's slide range whenever slides are added, removed or reassigned.
+PDF import renders each page, extracts searchable text where available, and creates editable slide title, course-section, text and alternative-text fields. Image import uses natural filename order. The Workshop recalculates each course section's slide range whenever slides are added, removed or reassigned.
 
 Large decks are retained in full but their editors are displayed in batches of 20. This prevents a 98- or 150-slide source deck from rendering every editor at once. Template cloning displays progress, and asset-rich autosave is deferred briefly so it does not compete with the immediate interaction.
 
@@ -99,7 +99,7 @@ Large decks are retained in full but their editors are displayed in batches of 2
 
 ### Editable draft JSON
 
-The only re-editable Workshop source. It includes all course content, the current release checklist, imported slide images, stage visuals, image descriptions and source links. The Workshop shows its approximate backup size before download. It remains available even when incomplete and is not a learner course or repository package.
+The only re-editable Workshop source. It includes all course content, the current release checklist, imported slide images, section visuals, image descriptions and source links. The Workshop shows its approximate backup size before download. It remains available even when incomplete and is not a learner course or repository package.
 
 A trainer can send this JSON file to another trainer, who uses **Load draft** and continues from the same editable state. The receiving browser then keeps its own local autosave. This is a portable draft transfer, not live synchronisation: later changes made by the two trainers are separate and are not automatically merged. Draft schema v2 carries a stable draft id, revision, creation/export timestamps and clone/import origin. Two copies can therefore be identified and compared before one replaces the other, but the Workshop does not merge them automatically or infer which copy is authoritative.
 

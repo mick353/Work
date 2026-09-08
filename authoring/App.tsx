@@ -74,10 +74,10 @@ const STORAGE_RECOVERY_MESSAGE = "A browser-saved draft could not be opened. Aut
 const NAV: Array<{ id: View; label: string; description: string; icon: typeof Settings2 }> = [
   { id: "instructions", label: "How it works", description: "Author, review and release safely", icon: Info },
   { id: "setup", label: "Course setup", description: "Identity, ownership and sources", icon: Settings2 },
-  { id: "stages", label: "Teach", description: "Lessons, questions and assignments", icon: Layers3 },
+  { id: "stages", label: "Teach", description: "Course sections, checks and assignments", icon: Layers3 },
   { id: "supports", label: "Reinforce", description: "Diagnostic, cards and reference aids", icon: GraduationCap },
   { id: "advanced", label: "Apply & reference", description: "Cases, capstone, tools and exemplars", icon: Library },
-  { id: "media", label: "Media & source deck", description: "Stage images and cited slides", icon: FileText },
+  { id: "media", label: "Media & source deck", description: "Section visuals and cited slides", icon: FileText },
   { id: "review", label: "Review & export", description: "Checks and controlled outputs", icon: ShieldCheck },
 ];
 
@@ -349,23 +349,84 @@ function StageTabs({ entry, active, setActive }: { entry: TrainingPackage; activ
   return (
     <div className="stage-navigation">
       <div className="stage-switcher">
-        <button type="button" className="secondary" disabled={activeIndex === 0} onClick={() => move(-1)}><ChevronLeft size={16} />Previous stage</button>
+        <button type="button" className="secondary" disabled={activeIndex === 0} onClick={() => move(-1)}><ChevronLeft size={16} />Previous section</button>
         <label>
-          <span>Stage {activeIndex + 1} of {entry.content.modules.length}</span>
-          <select aria-label="Choose course stage" value={activeStage?.id ?? ""} onChange={(event) => setActive(event.target.value)}>
-            {entry.content.modules.map((stage) => <option key={stage.id} value={stage.id}>{stage.number}. {stage.title || `Stage ${stage.number}`}</option>)}
+          <span>Section {activeIndex + 1} of {entry.content.modules.length}</span>
+          <select aria-label="Choose course section" value={activeStage?.id ?? ""} onChange={(event) => setActive(event.target.value)}>
+            {entry.content.modules.map((stage) => <option key={stage.id} value={stage.id}>{stage.number}. {stage.title || `Section ${stage.number}`}</option>)}
           </select>
         </label>
-        <button type="button" className="secondary" disabled={activeIndex >= entry.content.modules.length - 1} onClick={() => move(1)}>Next stage<ChevronRight size={16} /></button>
+        <button type="button" className="secondary" disabled={activeIndex >= entry.content.modules.length - 1} onClick={() => move(1)}>Next section<ChevronRight size={16} /></button>
       </div>
-      <div className="stage-tabs" role="tablist" aria-label="Course stages">
+      <div className="stage-tabs" role="tablist" aria-label="Course sections">
         {entry.content.modules.map((stage) => (
           <button type="button" role="tab" aria-selected={active === stage.id} className={active === stage.id ? "active" : ""} key={stage.id} onClick={() => setActive(stage.id)}>
-            <span>{stage.number}</span>{stage.title || `Stage ${stage.number}`}
+            <span>{stage.number}</span>{stage.title || `Section ${stage.number}`}
           </button>
         ))}
       </div>
     </div>
+  );
+}
+
+const LEARNER_REFERENCE_NOTES: Record<View, string> = {
+  instructions: "This compact panel follows the current draft. Start with course setup and one course section; the fuller learner preview becomes available after structural checks pass.",
+  setup: "The course title, publisher and summary appear on the learner overview. Use plain language so a learner knows the promise before they begin.",
+  stages: "This section opens with its title, outcome and visual. Lesson parts, knowledge questions, decisions and the assignment follow in this order.",
+  supports: "Diagnostic questions, review cards and reference aids support the section without changing the learner's course-completion rules.",
+  advanced: "Cases, toolkit, field guide, exemplars and capstone are available after the guided course path when the learner needs them.",
+  media: "A selected visual appears near the start of this section. Learners can open cited source-deck slides from the exact lesson that refers to them.",
+  review: "This is a shape check, not a substitute for reviewing the full learner experience. Use the full preview before release.",
+};
+
+function LearnerReference({
+  entry,
+  stage,
+  view,
+  canPreview,
+  onPreview,
+}: {
+  entry: TrainingPackage;
+  stage: Module | undefined;
+  view: View;
+  canPreview: boolean;
+  onPreview: () => void;
+}) {
+  const lessonParts = (stage?.sections ?? []).filter((section) => section.heading.trim()).slice(0, 3);
+  const checkCount = stage ? stage.questions.length + stage.scenarios.length : 0;
+  const sourceCount = stage ? new Set(stage.sections.flatMap((section) => section.sourceIds ?? [])).size : entry.content.sources.length;
+  const learnerTitle = stage?.title.trim() || entry.manifest.title.trim() || "Your course title";
+  const learnerSubtitle = stage?.subtitle.trim() || entry.manifest.summary.trim() || "A concise learner-facing promise appears here.";
+
+  return (
+    <details className="learner-reference" open>
+      <summary>
+        <span><span className="eyebrow">Live learner reference</span><strong>{stage ? `Section ${stage.number}: ${stage.title || "Untitled"}` : "Course overview"}</strong></span>
+        <small>Updates as you write</small>
+      </summary>
+      <div className="learner-reference-body">
+        <section className="learner-reference-surface" aria-label="Compact learner preview">
+          <span className="eyebrow">Learner view · {stage ? `Section ${stage.number} of ${entry.content.modules.length}` : "Course overview"}</span>
+          <h2>{learnerTitle}</h2>
+          <p>{learnerSubtitle}</p>
+          {stage && <>
+            <dl className="learner-reference-stats">
+              <div><dt>Lesson parts</dt><dd>{stage.sections.length}</dd></div>
+              <div><dt>Knowledge checks</dt><dd>{checkCount}</dd></div>
+              <div><dt>Sources</dt><dd>{sourceCount}</dd></div>
+            </dl>
+            <div className="learner-reference-outcome"><strong>Capability outcome</strong><span>{stage.outcome.trim() || "Add a clear, observable outcome for the learner."}</span></div>
+            <div className="learner-reference-parts"><strong>Lesson parts</strong>{lessonParts.length ? <ul>{lessonParts.map((part, index) => <li key={`${part.heading}-${index}`}>{part.heading}</li>)}</ul> : <p>Add lesson-part headings to show the learner how this section will unfold.</p>}</div>
+          </>}
+        </section>
+        <aside className="learner-reference-note">
+          <h3>What this means for the learner</h3>
+          <p>{LEARNER_REFERENCE_NOTES[view]}</p>
+          <button type="button" className="secondary" disabled={!canPreview} onClick={onPreview} title={canPreview ? "Open the current learner course in a new tab" : "Complete the structural checks before opening the full preview"}><Eye size={16} />Preview full learner course</button>
+          {!canPreview && <small>The compact reference still updates as you write. The full preview unlocks when there are no structural blockers.</small>}
+        </aside>
+      </div>
+    </details>
   );
 }
 
@@ -550,10 +611,10 @@ export function App() {
 
   const deleteStage = (stage: Module) => {
     if (entry.content.modules.length === 1) {
-      setMessage("A course must retain at least one stage.");
+      setMessage("A course must retain at least one section.");
       return;
     }
-    if (!window.confirm(`Remove Stage ${stage.number}, “${stage.title || stage.id}”, and its linked support content?`)) return;
+    if (!window.confirm(`Remove Section ${stage.number}, “${stage.title || stage.id}”, and its linked support content?`)) return;
     setEntry((current) => removeStage(current, stage.id));
   };
 
@@ -605,7 +666,7 @@ export function App() {
     const startedAt = performance.now();
     setCloneProgress(`Preparing ${template.manifest.title}…`);
     await new Promise<void>((resolve) => window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve())));
-    setCloneProgress(`Copying ${template.content.modules.length} stages and ${template.content.slides.length} source slides…`);
+    setCloneProgress(`Copying ${template.content.modules.length} course sections and ${template.content.slides.length} source slides…`);
     await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
     const clone = structuredClone(template);
     clone.manifest = {
@@ -669,39 +730,48 @@ export function App() {
       <Card title="Choose how to start" eyebrow="Blank course or editable copy">
         <p className="section-intro">Start with a clean structure, or copy a maintained course when its learning pattern is genuinely useful. A copy becomes a separate local draft and never alters the published original.</p>
         <div className="template-grid start-options">
-          <article><span className="pill">Blank course</span><h3>Start from a clean structure</h3><p>Use the guided seven-step form to design a new course from its audience, final performance and evidence base.</p><dl><div><dt>Stages</dt><dd>1 starter</dd></div><div><dt>Review</dt><dd>Fresh record</dd></div></dl><button type="button" className="primary" onClick={() => startBlankCourse("setup")}><Plus size={17} />Start blank course</button></article>
-          {__COURSE_TEMPLATES__.map((template) => <article key={template.manifest.id}><span className="pill">Published template</span><h3>{template.manifest.title}</h3><p>{template.manifest.summary}</p><dl><div><dt>Stages</dt><dd>{template.content.modules.length}</dd></div><div><dt>Deck</dt><dd>{template.content.slides.length ? `${template.content.slides.length} slides` : "None"}</dd></div><div><dt>Version</dt><dd>{template.manifest.version}</dd></div></dl><button type="button" className="secondary" onClick={() => cloneTemplate(template)}><Library size={17} />Clone as new course</button></article>)}
+          <article><span className="pill">Blank course</span><h3>Start from a clean structure</h3><p>Use the guided seven-step form to design a new course from its audience, final performance and evidence base.</p><dl><div><dt>Course sections</dt><dd>1 starter</dd></div><div><dt>Review</dt><dd>Fresh record</dd></div></dl><button type="button" className="primary" onClick={() => startBlankCourse("setup")}><Plus size={17} />Start blank course</button></article>
+          {__COURSE_TEMPLATES__.map((template) => <article key={template.manifest.id}><span className="pill">Published template</span><h3>{template.manifest.title}</h3><p>{template.manifest.summary}</p><dl><div><dt>Course sections</dt><dd>{template.content.modules.length}</dd></div><div><dt>Deck</dt><dd>{template.content.slides.length ? `${template.content.slides.length} slides` : "None"}</dd></div><div><dt>Version</dt><dd>{template.manifest.version}</dd></div></dl><button type="button" className="secondary" onClick={() => cloneTemplate(template)}><Library size={17} />Clone as new course</button></article>)}
         </div>
+      </Card>
+
+      <Card title="Start with these three essentials" eyebrow="A simple first pass">
+        <div className="first-pass-grid">
+          <article><span>1</span><div><strong>Set the course promise</strong><p>Add the audience, title, outcome and sources. These explain why the course exists and what learners will be able to do.</p></div></article>
+          <article><span>2</span><div><strong>Build one course section</strong><p>Write the lesson parts first. Then add the questions, decisions and assignment that let learners practise the idea.</p></div></article>
+          <article><span>3</span><div><strong>Preview before perfecting</strong><p>Use the live learner reference as you work. Complete the supporting material and release record only when the course shape is sound.</p></div></article>
+        </div>
+        <p className="section-intro">You do not need every optional feature before the first preview. Start with Course setup and Teach; the other steps extend the learner experience when the subject calls for them.</p>
       </Card>
 
       <Card title="The complete workflow" eyebrow="Seven controlled steps">
         <ol className="workflow-list">
           <li><span>1</span><div><strong>Set up the course</strong><p>Name the owner, version and governing sources. Keep the status as Draft while the shape is changing.</p></div></li>
-          <li><span>2</span><div><strong>Teach the subject</strong><p>Write stages in learner order, then add knowledge checks, applied scenarios and a worked assignment.</p></div></li>
+          <li><span>2</span><div><strong>Teach the subject</strong><p>Write course sections in learner order, then add knowledge checks, applied scenarios and a worked assignment.</p></div></li>
           <li><span>3</span><div><strong>Reinforce it</strong><p>Add an independent diagnostic, review cards, glossary terms and observable practice contrasts.</p></div></li>
           <li><span>4</span><div><strong>Connect it to practice</strong><p>Add the cases, toolkit, capstone, field guide, source differences and exemplars the subject needs.</p></div></li>
-          <li><span>5</span><div><strong>Add useful media</strong><p>Import a source deck and stage visuals. Describe every image and connect precise citations to relevant slides.</p></div></li>
+          <li><span>5</span><div><strong>Add useful media</strong><p>Import a source deck and section visuals. Describe every image and connect precise citations to relevant slides.</p></div></li>
           <li><span>6</span><div><strong>Review the whole course</strong><p>Clear the automated checks, preview the real learner player and complete the human release checklist.</p></div></li>
           <li><span>7</span><div><strong>Choose the delivery route</strong><p>Share one offline HTML course, host it at its own URL, or install its package into the combined catalogue.</p></div></li>
         </ol>
       </Card>
 
       <Card title="Plan the course before filling the form" eyebrow="Five-part course blueprint">
-        <p className="section-intro">A short blueprint prevents a collection of content from masquerading as a course. Agree these five decisions before writing detailed stages.</p>
+        <p className="section-intro">A short blueprint prevents a collection of content from masquerading as a course. Agree these five decisions before writing detailed course sections.</p>
         <ol className="blueprint-list">
           <li><strong>Audience</strong><span>Who will use the capability, and what can they already do?</span></li>
           <li><strong>Final performance</strong><span>What must the learner be able to decide, produce or demonstrate?</span></li>
           <li><strong>Evidence base</strong><span>Which governing documents, standards or subject-matter sources support the teaching?</span></li>
-          <li><strong>Learning sequence</strong><span>What three to nine stages move the learner from starting point to final performance?</span></li>
+          <li><strong>Learning sequence</strong><span>What three to nine course sections move the learner from starting point to final performance?</span></li>
           <li><strong>Assessment approach</strong><span>What questions, scenarios and produced work will show that the capability transfers to practice?</span></li>
         </ol>
       </Card>
 
       <Card title="How information travels through the Workshop" eyebrow="Connect once, reuse safely">
         <div className="connection-map">
-          <div><strong>Sources</strong><span>Register each source once in Course setup. Reuse it in lesson citations, field-guide entries, source-deck slides and stage visuals.</span></div>
-          <div><strong>Stages</strong><span>Each stable stage id connects its lesson, questions, diagnostic, review cards, glossary, practice contrast, cases and media.</span></div>
-          <div><strong>Review</strong><span>Checks read the complete connected course. Selecting an issue returns to the relevant step, stage and field.</span></div>
+          <div><strong>Sources</strong><span>Register each source once in Course setup. Reuse it in lesson citations, field-guide entries, source-deck slides and section visuals.</span></div>
+          <div><strong>Course sections</strong><span>Each stable section id connects its lesson parts, questions, diagnostic, review cards, glossary, practice contrast, cases and media.</span></div>
+          <div><strong>Review</strong><span>Checks read the complete connected course. Selecting an issue returns to the relevant step, course section and field.</span></div>
           <div><strong>Outputs</strong><span>Preview, learner HTML and ZIP outputs are generated from the same draft. You do not re-enter content for each delivery route.</span></div>
         </div>
       </Card>
@@ -831,7 +901,7 @@ npm run verify`}</code></pre>
   );
 
   const renderStages = () => {
-    if (!currentStage) return <div className="empty-panel"><h1>No stage</h1><EmptyButton onClick={addCourseStage}>Add the first stage</EmptyButton></div>;
+    if (!currentStage) return <div className="empty-panel"><h1>No course section</h1><EmptyButton onClick={addCourseStage}>Add the first course section</EmptyButton></div>;
     const stage = currentStage;
     const linkedDiagnostics = entry.content.diagnosticQuestions.filter((item) => item.moduleId === stage.id).length;
     const linkedCards = entry.content.flashcards.filter((item) => item.moduleId === stage.id).length;
@@ -850,28 +920,28 @@ npm run verify`}</code></pre>
     return (
       <div className="workspace-stack">
         <div className="page-heading with-action">
-          <div><span className="eyebrow">3 · Teach</span><h1>Build the learning sequence</h1><p>Explain the idea before testing it. A stage combines lesson sections, recall, applied decisions and a writing task.</p></div>
-          <EmptyButton onClick={addCourseStage}>Add stage</EmptyButton>
+          <div><span className="eyebrow">3 · Teach</span><h1>Build the learning sequence</h1><p>Explain the idea before testing it. A course section combines lesson parts, recall, applied decisions and a writing task.</p></div>
+          <EmptyButton onClick={addCourseStage}>Add course section</EmptyButton>
         </div>
-        <StepConnection>The active stage is the shared anchor for Teach, Reinforce, case steps and media. Changing its stable id updates those links together; changing its learner-facing title does not break them.</StepConnection>
+        <StepConnection>The active course section is the shared anchor for Teach, Reinforce, case steps and media. Changing its stable id updates those links together; changing its learner-facing title does not break them.</StepConnection>
         <StageTabs entry={entry} active={stage.id} setActive={setActiveStage} />
-        <div className="stage-linkage-summary" aria-label={`Connections for Stage ${stage.number}`}>
-          <strong>Connected to this stage</strong>
+        <div className="stage-linkage-summary" aria-label={`Connections for Section ${stage.number}`}>
+          <strong>Connected to this section</strong>
           <span>{linkedDiagnostics} diagnostic{linkedDiagnostics === 1 ? "" : "s"}</span>
           <span>{linkedCards} review card{linkedCards === 1 ? "" : "s"}</span>
           <span>{linkedGlossary} glossary entr{linkedGlossary === 1 ? "y" : "ies"}</span>
           <span>{linkedContrasts} contrast{linkedContrasts === 1 ? "" : "s"}</span>
           <span>{linkedCaseSteps} case step{linkedCaseSteps === 1 ? "" : "s"}</span>
           <span>{linkedSlides} source slide{linkedSlides === 1 ? "" : "s"}</span>
-          <span>{stage.visualAssetId ? "Custom stage visual" : "Default stage illustration"}</span>
+          <span>{stage.visualAssetId ? "Custom section visual" : "Default section illustration"}</span>
         </div>
-        <Card title={`Stage ${stage.number}: ${stage.title || "Untitled"}`} eyebrow="Identity and outcome" actions={<button type="button" className="icon-danger" title="Remove stage" aria-label={`Remove Stage ${stage.number}`} onClick={() => deleteStage(stage)}><Trash2 size={18} /></button>}>
-          <GuidancePanel title="Show a well-shaped stage">
+        <Card title={`Section ${stage.number}: ${stage.title || "Untitled"}`} eyebrow="Identity and outcome" actions={<button type="button" className="icon-danger" title="Remove course section" aria-label={`Remove Section ${stage.number}`} onClick={() => deleteStage(stage)}><Trash2 size={18} /></button>}>
+          <GuidancePanel title="Show a well-shaped course section">
             <p><strong>Outcome:</strong> “Assess whether the evidence supports closing the project and identify the next accountable action.”</p>
             <p><strong>Core idea:</strong> One memorable explanation—not a list of topics. Each lesson section should establish, demonstrate or apply that idea.</p>
           </GuidancePanel>
           <div className="form-grid">
-            <InputField id={`stage-${stage.id}-id`} label="Stable stage id" value={stage.id} onChange={(value) => changeStageId(stage.id, value)} hint="Used by questions, progress and support content" />
+            <InputField id={`stage-${stage.id}-id`} label="Stable section id" value={stage.id} onChange={(value) => changeStageId(stage.id, value)} hint="Used by questions, progress and support content" />
             <InputField id={`stage-${stage.id}-title`} label="Title" value={stage.title} onChange={(value) => updateStage(stage.id, (item) => ({ ...item, title: value }))} />
             <InputField id={`stage-${stage.id}-subtitle`} label="Subtitle" value={stage.subtitle} onChange={(value) => updateStage(stage.id, (item) => ({ ...item, subtitle: value }))} />
             <div className="read-only-field"><span>Source deck coverage</span><strong>{stage.slides || "No deck slides assigned"}</strong><small>Assign imported slides to this section in Media & source deck. The learner reference is updated automatically.</small></div>
@@ -879,14 +949,14 @@ npm run verify`}</code></pre>
           <TextAreaField id={`stage-${stage.id}-outcome`} label="Learning outcome" value={stage.outcome} onChange={(value) => updateStage(stage.id, (item) => ({ ...item, outcome: value }))} rows={2} hint="Start with an observable verb: assess, distinguish, decide, produce…" />
           <TextAreaField id={`stage-${stage.id}-core-idea`} label="The idea to keep" value={stage.coreIdea} onChange={(value) => updateStage(stage.id, (item) => ({ ...item, coreIdea: value }))} rows={3} hint="The one explanation worth remembering after the detail fades" />
         </Card>
-        <div id={`stage-${stage.id}-sections`}><Card title="Lesson sections" eyebrow={`${stage.sections.reduce((sum, section) => sum + wordCount(section.body), 0)} of ${qualityProfile.minimumStageBodyWords} minimum body words`} actions={<EmptyButton onClick={() => updateStage(stage.id, (item) => ({ ...item, sections: [...item.sections, { heading: "", body: "", sourceIds: [] }] }))}>Add section</EmptyButton>}>
-          <GuidancePanel title="Show a useful lesson-section pattern">
+        <div id={`stage-${stage.id}-sections`}><Card title="Lesson parts" eyebrow={`${stage.sections.reduce((sum, section) => sum + wordCount(section.body), 0)} of ${qualityProfile.minimumStageBodyWords} minimum body words`} actions={<EmptyButton onClick={() => updateStage(stage.id, (item) => ({ ...item, sections: [...item.sections, { heading: "", body: "", sourceIds: [] }] }))}>Add lesson part</EmptyButton>}>
+          <GuidancePanel title="Show a useful lesson-part pattern">
             <p>Start with the decision or problem, explain the principle in plain language, then demonstrate it with a realistic example. Cite the source supporting the claim—not merely a source related to the general topic.</p>
           </GuidancePanel>
           <div className="lesson-list">
             {stage.sections.map((section, index) => (
               <section className="lesson-editor" key={index}>
-                <header><strong>{index + 1}</strong><h3>{section.heading || "Untitled lesson section"}</h3>{stage.sections.length > 2 && <button type="button" className="icon-danger" aria-label={`Remove lesson section ${index + 1}`} onClick={() => updateStage(stage.id, (item) => ({ ...item, sections: item.sections.filter((_, sectionIndex) => sectionIndex !== index) }))}><Trash2 size={17} /></button>}</header>
+                <header><strong>{index + 1}</strong><h3>{section.heading || "Untitled lesson part"}</h3>{stage.sections.length > 2 && <button type="button" className="icon-danger" aria-label={`Remove lesson part ${index + 1}`} onClick={() => updateStage(stage.id, (item) => ({ ...item, sections: item.sections.filter((_, sectionIndex) => sectionIndex !== index) }))}><Trash2 size={17} /></button>}</header>
                 <InputField id={`stage-${stage.id}-section-${index}-heading`} label="Heading" value={section.heading} onChange={(value) => updateStage(stage.id, (item) => {
                   const sections = [...item.sections]; sections[index] = { ...section, heading: value }; return { ...item, sections };
                 })} />
@@ -927,13 +997,13 @@ npm run verify`}</code></pre>
             ))}
           </div>
         </Card></div>
-        <div id={`stage-${stage.id}-questions`}><Card title="Knowledge questions" eyebrow={`${stage.questions.length} in this stage`} actions={<EmptyButton onClick={() => updateStage(stage.id, (item) => ({ ...item, questions: [...item.questions, blankQuestion(item.id, nextNumericId(`${item.id}-question`, item.questions.map((question) => question.id)))] }))}>Add question</EmptyButton>}>
+        <div id={`stage-${stage.id}-questions`}><Card title="Knowledge questions" eyebrow={`${stage.questions.length} in this course section`} actions={<EmptyButton onClick={() => updateStage(stage.id, (item) => ({ ...item, questions: [...item.questions, blankQuestion(item.id, nextNumericId(`${item.id}-question`, item.questions.map((question) => question.id)))] }))}>Add question</EmptyButton>}>
           {stage.questions.map((question, index) => <QuestionEditor key={question.id} question={question} label={`Question ${index + 1}`} onChange={(next) => updateStageQuestion(stage.id, "questions", index, next)} onRemove={stage.questions.length > 4 ? () => updateStage(stage.id, (item) => ({ ...item, questions: item.questions.filter((_, itemIndex) => itemIndex !== index) })) : undefined} />)}
         </Card></div>
         <div id={`stage-${stage.id}-scenarios`}><Card title="Decision scenarios" eyebrow="Two applied choices are required">
           {stage.scenarios.map((scenario, index) => <QuestionEditor key={scenario.id} question={scenario} label={`Scenario ${index + 1}`} scenario onChange={(next) => updateStageQuestion(stage.id, "scenarios", index, next)} />)}
         </Card></div>
-        <Card title="Stage assignment" eyebrow="Write, compare, self-check">
+        <Card title="Section assignment" eyebrow="Write, compare, self-check">
           <GuidancePanel title="Show a strong assignment pattern">
             <p>Ask the learner to produce something they could genuinely use at work, provide a worked answer that demonstrates the reasoning, and write criteria that can be observed in the response rather than judged by taste.</p>
           </GuidancePanel>
@@ -966,9 +1036,9 @@ npm run verify`}</code></pre>
     return (
       <div className="workspace-stack">
         <div className="page-heading"><span className="eyebrow">4 · Reinforce</span><h1>Make the learning retrievable and usable</h1><p>These elements are short by design. They help learners find gaps, recall the idea later and distinguish good practice from a plausible substitute.</p></div>
-        <StepConnection>Everything on this page is attached to the active stage shown below. Use the stage tabs before editing. Diagnostics identify gaps; review cards support later recall; glossary and contrast entries appear in the course reference views.</StepConnection>
+        <StepConnection>Everything on this page is attached to the active course section shown below. Use the section tabs before editing. Diagnostics identify gaps; review cards support later recall; glossary and contrast entries appear in the course reference views.</StepConnection>
         <StageTabs entry={entry} active={stage.id} setActive={setActiveStage} />
-        <div id={`support-${stage.id}-diagnostic`}><Card title="Diagnostic question" eyebrow="Kept separate from the stage quiz" actions={<EmptyButton onClick={() => replaceStageItems("diagnosticQuestions", stage.id, [...diagnostics, blankQuestion(stage.id, nextNumericId(`${stage.id}-diagnostic`, diagnostics.map((question) => question.id)))])}>Add diagnostic</EmptyButton>}>
+        <div id={`support-${stage.id}-diagnostic`}><Card title="Diagnostic question" eyebrow="Kept separate from the section knowledge check" actions={<EmptyButton onClick={() => replaceStageItems("diagnosticQuestions", stage.id, [...diagnostics, blankQuestion(stage.id, nextNumericId(`${stage.id}-diagnostic`, diagnostics.map((question) => question.id)))])}>Add diagnostic</EmptyButton>}>
           {diagnostics.map((question, index) => <QuestionEditor key={question.id} question={question} label={`Diagnostic ${index + 1}`} onChange={(next) => {
             const items = [...diagnostics]; items[index] = next as Question; replaceStageItems("diagnosticQuestions", stage.id, items);
           }} onRemove={diagnostics.length > 1 ? () => replaceStageItems("diagnosticQuestions", stage.id, diagnostics.filter((_, itemIndex) => itemIndex !== index)) : undefined} />)}
@@ -1016,7 +1086,7 @@ npm run verify`}</code></pre>
     }));
     return <div className="workspace-stack">
       <div className="page-heading"><span className="eyebrow">7 · Review and export</span><h1>Separate machine checks from release judgement</h1><p>The Workshop can reject malformed or visibly incomplete packages. People remain responsible for subject-matter accuracy, instructional quality, handling and release.</p></div>
-      <StepConnection>Automated issues read the whole connected draft. Select an issue to return to its step, active stage and relevant field. Preview is for human learning-flow review; final outputs also require the recorded approvals and Available status.</StepConnection>
+      <StepConnection>Automated issues read the whole connected draft. Select an issue to return to its step, active course section and relevant field. Preview is for human learning-flow review; final outputs also require the recorded approvals and Available status.</StepConnection>
       {counts.warnings > 0 && <section className="advisory-banner" role="note">
         <Info size={21} aria-hidden="true" />
         <div><strong>{counts.warnings} advisory warning{counts.warnings === 1 ? "" : "s"} — not blockers</strong><p>These are improvement suggestions, such as an answer option being longer than its distractors or a source check date being missing. They do not disable Preview or any final export. Review them when practical, or record that the advisories were considered below.</p><button type="button" className="secondary" onClick={() => { setIssueFilter("warning"); document.getElementById("review-checks")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>Review warnings <ChevronRight size={16} /></button></div>
@@ -1030,13 +1100,13 @@ npm run verify`}</code></pre>
         </div>
         <div className="issue-totals"><strong>{counts.errors}</strong><span>{untouchedDraft ? "to complete" : "errors"}</span><strong>{counts.warnings}</strong><span>warnings</span><strong>{counts.notes}</strong><span>notes</span></div>
       </section>
-      <Card title="Course coverage" eyebrow="One connected view of every stage">
+      <Card title="Course coverage" eyebrow="One connected view of every course section">
         <p className="coverage-intro">This matrix exposes accidental gaps before review. Numbers show linked items, not quality: a reviewer must still read and complete the course.</p>
         <div className="coverage-table-wrap">
           <table className="coverage-table">
-            <thead><tr><th>Stage</th><th>Lesson sections</th><th>Questions + scenarios</th><th>Diagnostics</th><th>Review cards</th><th>Case steps</th><th>Sources</th><th>Media</th></tr></thead>
+            <thead><tr><th>Course section</th><th>Lesson parts</th><th>Questions + scenarios</th><th>Diagnostics</th><th>Review cards</th><th>Case steps</th><th>Sources</th><th>Media</th></tr></thead>
             <tbody>{coverageRows.map((row) => <tr key={row.stage.id}>
-              <th scope="row"><button type="button" onClick={() => focusReleaseTarget(`stage-${row.stage.id}-title`, `Stage ${row.stage.number}: ${row.stage.title || "Untitled"}`, "stages")}>{row.stage.number}. {row.stage.title || "Untitled"}</button></th>
+              <th scope="row"><button type="button" onClick={() => focusReleaseTarget(`stage-${row.stage.id}-title`, `Section ${row.stage.number}: ${row.stage.title || "Untitled"}`, "stages")}>{row.stage.number}. {row.stage.title || "Untitled"}</button></th>
               <td>{row.sections}</td><td>{row.checks}</td><td>{row.diagnostics}</td><td>{row.cards}</td><td>{row.cases}</td><td>{row.sources}</td><td>{row.media}</td>
             </tr>)}</tbody>
           </table>
@@ -1146,9 +1216,9 @@ npm run verify`}</code></pre>
         </div>
       </aside>
       <main id="studio-main" className="studio-main" tabIndex={-1}>
-        <header className="topbar"><div><span className="course-kicker">Current draft · revision {lineage.revision}</span><strong>{entry.manifest.title || "Untitled training course"}</strong></div><div className="topbar-meta"><span>v{entry.manifest.version}</span><span>{entry.content.modules.length} stage{entry.content.modules.length === 1 ? "" : "s"}</span><span>{hasDurationEvidence ? `${packageForExport(entry).content.totalMinutes} min` : "Duration pending"}</span></div></header>
+        <header className="topbar"><div><span className="course-kicker">Current draft · revision {lineage.revision}</span><strong>{entry.manifest.title || "Untitled training course"}</strong></div><div className="topbar-meta"><span>v{entry.manifest.version}</span><span>{entry.content.modules.length} section{entry.content.modules.length === 1 ? "" : "s"}</span><span>{hasDurationEvidence ? `${packageForExport(entry).content.totalMinutes} min` : "Duration pending"}</span></div></header>
         {message && <div className={`notice ${storageLoadError && message === storageLoadError ? "notice-critical" : ""}`} role={storageLoadError && message === storageLoadError ? "alert" : "status"}><CircleHelp size={18} /><span>{message}</span><button type="button" aria-label="Dismiss message" onClick={() => setMessage("")}>×</button></div>}
-        <div className="studio-workspace">{view === "instructions" ? renderInstructions() : view === "setup" ? renderSetup() : view === "stages" ? renderStages() : view === "supports" ? renderSupports() : view === "advanced" ? <AdvancedEditor entry={entry} setEntry={setEntry} /> : view === "media" ? <MediaEditor entry={entry} setEntry={setEntry} setMessage={setMessage} /> : renderReview()}</div>
+        <div className="studio-workspace"><LearnerReference entry={entry} stage={currentStage} view={view} canPreview={contentReady} onPreview={preview} />{view === "instructions" ? renderInstructions() : view === "setup" ? renderSetup() : view === "stages" ? renderStages() : view === "supports" ? renderSupports() : view === "advanced" ? <AdvancedEditor entry={entry} setEntry={setEntry} /> : view === "media" ? <MediaEditor entry={entry} setEntry={setEntry} setMessage={setMessage} /> : renderReview()}</div>
         <footer className="step-footer">
           <button type="button" className="secondary" disabled={currentIndex === 0} onClick={() => navigateTo(NAV[currentIndex - 1]?.id ?? "instructions")}><ChevronLeft size={17} />Previous</button>
           <span>{viewIssues ? `${viewIssues} blocker${viewIssues === 1 ? "" : "s"} in this step · ${counts.errors} across the course` : counts.errors ? `No blockers in this step · ${counts.errors} across the course` : "No blocking issues in this step or course"}</span>

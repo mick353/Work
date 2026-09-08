@@ -83,7 +83,7 @@ export function Results({
         label: index === 0 ? "Now" : day.toLocaleDateString("en-AU", { weekday: "narrow" }),
         title:
           index === 0
-            ? "Due now"
+            ? "Ready now"
             : day.toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" }),
         value: 0,
       };
@@ -122,7 +122,7 @@ export function Results({
     });
     return [
       { label: "Not started", value: notStarted, colour: "var(--line-strong)" },
-      { label: "Due now", value: due, colour: "var(--warning)" },
+      { label: "Ready now", value: due, colour: "var(--warning)" },
       { label: "Returns within 7 days", value: comingUp, colour: "var(--accent-5)" },
       { label: "Returns later", value: later, colour: "var(--success)" },
     ];
@@ -189,7 +189,7 @@ export function Results({
   const visibleRevisit = showAllRevisit ? itemView.revisit : itemView.revisit.slice(0, 5);
   const nextStage = modules.find((module) => !masteryState(progress[module.id], module.scenarios.length).mastered);
   const nextAction = dueNow > 0
-    ? { label: `Review ${dueNow} due card${dueNow === 1 ? "" : "s"}`, view: "review" as View }
+    ? { label: "Review a short set", view: "review" as View }
     : nextStage
       ? { label: `Continue Section ${nextStage.number}`, view: `module:${nextStage.id}` as View }
       : { label: "Start mixed practice", view: "practice" as View };
@@ -246,7 +246,7 @@ export function Results({
       <PageIntro
         eyebrow="Results"
         title="What the evidence says about your learning"
-        body="Best scores, where the effort is going, whether it is sticking, and what is due next. Everything here is computed from your own attempts on this device."
+        body="Best scores, where the effort is going, whether it is sticking, and what is ready to revisit. Everything here is computed from your own attempts on this device."
       />
 
       {nothingYet ? (
@@ -303,7 +303,7 @@ export function Results({
             </div>
             <div className="guidance-summary">
               <span><strong>{itemView.revisit.length}</strong> question{itemView.revisit.length === 1 ? "" : "s"} to revisit</span>
-              <span><strong>{dueNow}</strong> review card{dueNow === 1 ? "" : "s"} due now</span>
+              <span><strong>{dueNow}</strong> review card{dueNow === 1 ? "" : "s"} ready to revisit</span>
               <button type="button" className="primary" onClick={() => navigate(nextAction.view)}>{nextAction.label}<ChevronRight size={17} aria-hidden="true" /></button>
             </div>
           </section>
@@ -326,19 +326,19 @@ export function Results({
             >
               <ColumnChart
                 columns={forecast}
-                ariaLabel="Flashcards due each day over the next fourteen days"
+                ariaLabel="Flashcards ready to revisit each day over the next fourteen days"
                 highlightFirst
               />
               <p className="chart-footnote">
                 {dueNow > 0 ? (
                   <>
-                    <strong>{dueNow}</strong> due for review now.{" "}
+                    <strong>{dueNow}</strong> ready to revisit. The next session is a short set of up to 8 cards.{" "}
                     <button className="text-button" onClick={() => navigate("review")}>
-                      Start review <ChevronRight size={15} aria-hidden="true" />
+                      Review a short set <ChevronRight size={15} aria-hidden="true" />
                     </button>
                   </>
                 ) : (
-                  "Nothing due for review right now."
+                  "No review cards are ready right now."
                 )}
                 {notStartedCards > 0 && <> <span>{notStartedCards} card{notStartedCards === 1 ? "" : "s"} not started; they become available as you work through the lessons.</span></>}
               </p>
@@ -396,7 +396,7 @@ export function Results({
 
             <ChartCard
               title="Flashcard review status"
-              hint="Cards not started, due now, returning within seven days or scheduled later. Later reviews are optional reinforcement, not completion requirements."
+              hint="Cards not started, ready to revisit now, returning within seven days or scheduled later. Every review is optional reinforcement, not a completion requirement."
             >
               <StackedBar series={reviewStatus} ariaLabel="Flashcards by current review status" />
             </ChartCard>

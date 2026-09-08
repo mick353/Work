@@ -144,19 +144,19 @@ export function Review({
         </figure>
         <PageIntro
           eyebrow="Spaced review"
-          title={finishedSome ? "Batch complete" : "Review queue clear"}
+          title={finishedSome ? "Short review complete" : "No cards ready to revisit"}
           body={
             remainingDue > 0
-              ? `${remainingDue} card${remainingDue === 1 ? " is" : "s are"} still due. Reviewing in batches keeps sessions short — pull the next batch when you are ready.`
+              ? `${remainingDue} card${remainingDue === 1 ? " is" : "s are"} ready to revisit. Reviewing in short sets keeps the task manageable — open the next set only when useful.`
               : upcoming
-                ? `Your next scheduled card is due ${formatDue(upcoming.due)}.`
+                ? `Your next scheduled card is ready ${formatDue(upcoming.due)}.`
                 : "Complete a lesson, then return here to strengthen the concepts over time."
           }
         />
         <div className="button-row">
           {remainingDue > 0 && (
             <button className="primary" onClick={startNextBatch}>
-              Review {Math.min(remainingDue, SESSION_SIZE)} more
+              Review a short set ({Math.min(remainingDue, SESSION_SIZE)})
               <ChevronRight size={18} aria-hidden="true" />
             </button>
           )}
