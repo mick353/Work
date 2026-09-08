@@ -33,7 +33,7 @@ export function Library({
       <PageIntro
         eyebrow="Training library"
         title="Available training"
-        body="Each package is self-contained: its own stages, question bank, review queue and results. Progress is kept separately for each, so finishing one does not look like partly finishing another."
+        body="Each package is self-contained: its own course sections, question bank, review queue and results. Progress is kept separately for each, so finishing one does not look like partly finishing another."
       />
 
       <ul className="library-grid">
@@ -56,7 +56,7 @@ export function Library({
       <section className="library-note">
         <h2>Adding another package</h2>
         <p>
-          A package is a manifest plus its content — stages, questions, cards, glossary, worked cases, source slides
+          A package is a manifest plus its content — course sections, questions, cards, glossary, worked cases, source slides
           and references. Nothing in the player is specific to product management, so a new package is authored
           rather than built: it appears here, keeps its own progress, and shares nothing with another course except the
           person using it.
@@ -106,7 +106,7 @@ function PackageCard({
 
       <dl className="package-stats">
         <div>
-          <dt>Stages</dt>
+          <dt>Course sections</dt>
           <dd>{stats.stages}</dd>
         </div>
         <div>
@@ -134,14 +134,14 @@ function PackageCard({
           aria-valuenow={percent}
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-label={`${entry.manifest.title}: ${percent} per cent of stages demonstrated`}
+          aria-label={`${entry.manifest.title}: ${percent} per cent of course sections demonstrated`}
         >
           <i style={{ width: `${percent}%` }} />
         </div>
         <span>
           {started ? (
             <>
-              <CheckCircle2 size={14} aria-hidden="true" /> {mastered} of {stats.stages} stages demonstrated
+              <CheckCircle2 size={14} aria-hidden="true" /> {mastered} of {stats.stages} sections demonstrated
             </>
           ) : (
             <>

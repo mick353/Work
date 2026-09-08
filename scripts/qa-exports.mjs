@@ -19,6 +19,13 @@ function check(name, condition, detail = "") {
   if (!condition) failures.push(`${name}${detail ? ` — ${detail}` : ""}`);
 }
 
+async function openCourseSections(page) {
+  await page.getByRole("button", { name: "Open course menu", exact: true }).click();
+  const header = page.locator(".sidebar-modules .nav-section-header");
+  if ((await header.getAttribute("aria-expanded")) !== "true") await header.click();
+  await page.locator(".sidebar-modules nav button").first().waitFor();
+}
+
 async function runExports() {
   await new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [path.join(projectDir, "scripts", "export-all.mjs")], {
@@ -135,10 +142,12 @@ for (const entry of trainingPackages) {
   check(`${label}: overview names the selected course`, (await page.locator(".hero h1").innerText()).trim() === title);
   check(`${label}: browser title follows the selected course`, (await page.title()).includes(title), await page.title());
   check(`${label}: package switcher is omitted`, (await page.locator(".package-switch").count()) === 0);
+  await openCourseSections(page);
   check(
-    `${label}: sidebar contains exactly this course's stages`,
+    `${label}: course menu contains exactly this course's sections`,
     (await page.locator(".sidebar-modules nav button").count()) === entry.content.modules.length,
   );
+  await page.locator(".course-menu-button").click();
 
   await page.evaluate(() => { window.location.hash = "library"; });
   await page.waitForTimeout(250);

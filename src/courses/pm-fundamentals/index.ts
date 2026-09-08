@@ -36,7 +36,7 @@ export const pmFundamentals: TrainingPackage = {
     reviewed: CONTENT_REVIEWED,
     status: "available",
     summary:
-      "Nine stages from user need to measured value, built from the departmental deck and turned into something you practise rather than sit through.",
+      "Nine course sections from user need to measured value, built from the departmental deck and turned into something you practise rather than sit through.",
     arc: "From user need to measured value",
   },
   qualityProfile: courseQualityProfiles[PM_FUNDAMENTALS_ID],

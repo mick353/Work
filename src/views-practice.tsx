@@ -261,7 +261,7 @@ export function Practice({
         <PageIntro
           eyebrow="Interleaved practice"
           title="Make the frameworks compete"
-          body={`Ten questions drawn at random from ${practiceQuestions.length} across strategy, discovery, measurement, delivery, roles and government. Choosing between similar ideas builds discrimination — which is why the questions are mixed rather than grouped by stage.`}
+          body={`Ten questions drawn at random from ${practiceQuestions.length} across strategy, discovery, measurement, delivery, roles and government. Choosing between similar ideas builds discrimination — which is why the questions are mixed rather than grouped by course section.`}
         />
         <div className="practice-launch">
           <Brain size={42} aria-hidden="true" />
@@ -288,7 +288,7 @@ export function Practice({
           <p>
             {score >= 80
               ? "Strong transfer. Revisit any rationale you could not have explained yourself before reading it."
-              : "The mixed context exposed useful gaps. Review the relevant stages, then try another set."}
+              : "The mixed context exposed useful gaps. Review the relevant course sections, then try another set."}
           </p>
           {resurfaced > 0 && (
             <p className="resurfaced-note">

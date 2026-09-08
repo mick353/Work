@@ -1,5 +1,5 @@
 /**
- * The Deck view — all 98 slides, browsable, filtered by the stage that covers
+ * The Deck view — all 98 slides, browsable, filtered by the course section that covers
  * them. The lightbox and the citation controls live in slide-viewer.tsx.
  */
 
@@ -47,7 +47,7 @@ export function Deck({ initial }: { initial?: number }) {
         body={`${manifest.source}${manifest.sourceAuthor ? `, written by ${manifest.sourceAuthor}` : ""}, from ${manifest.publisher}. These slides are the source material; the course built around them is separate. Every slide citation in the course opens the slide it names, so you can check the course against its source rather than take it on trust.`}
       />
 
-      <div className="deck-filter" role="group" aria-label="Filter slides by stage">
+      <div className="deck-filter" role="group" aria-label="Filter slides by course section">
         <button className={stage === "all" ? "active" : ""} onClick={() => setStage("all")} aria-pressed={stage === "all"}>
           All {SLIDE_COUNT}
         </button>
@@ -68,7 +68,7 @@ export function Deck({ initial }: { initial?: number }) {
 
       <p className="deck-count" role="status">
         Showing {shown.length} slide{shown.length === 1 ? "" : "s"}
-        {stage === "all" ? "" : ` from Stage ${modules.find((m) => m.id === stage)?.number}`}.
+        {stage === "all" ? "" : ` from Section ${modules.find((m) => m.id === stage)?.number}`}.
       </p>
 
       <ul className="deck-grid">

@@ -135,7 +135,7 @@ export function Capstone({
   if (!hasCapstone) {
     return (
       <div className="page">
-        <PageIntro eyebrow="Capstone" title="No capstone in this package" body="This package does not include a capstone brief. Everything else — stages, checks, review and results — works as normal." />
+        <PageIntro eyebrow="Capstone" title="No capstone in this package" body="This package does not include a capstone brief. Everything else — course sections, checks, review and results — works as normal." />
       </div>
     );
   }
@@ -275,7 +275,7 @@ export function FieldGuide() {
   if (!fieldGuide.length) {
     return (
       <div className="page">
-        <PageIntro eyebrow="Field guide" title="No field guide in this package" body="This package does not include a reference field guide. The stages and the complete guide carry the same material in context." />
+        <PageIntro eyebrow="Field guide" title="No field guide in this package" body="This package does not include a reference field guide. The course sections and the complete guide carry the same material in context." />
       </div>
     );
   }
@@ -427,7 +427,7 @@ export function CaseStudies({ navigate }: { navigate: (view: View) => void }) {
   if (!caseStudies.length) {
     return (
       <div className="page">
-        <PageIntro eyebrow="Worked cases" title="No worked cases in this package" body="This package does not include worked cases. The stages, the question bank and the review queue all work as normal." />
+        <PageIntro eyebrow="Worked cases" title="No worked cases in this package" body="This package does not include worked cases. The course sections, the question bank and the review queue all work as normal." />
       </div>
     );
   }
@@ -437,11 +437,11 @@ export function CaseStudies({ navigate }: { navigate: (view: View) => void }) {
       <PageIntro
         eyebrow="Worked cases"
         title="The whole method, worked on real decisions"
-        body={`Knowing what good looks like is not the same as having seen one derived. ${caseStudies.length} cases run the method on real departmental decisions, step by step, across ${caseStudies.reduce((set, study) => { study.steps.forEach((s) => set.add(s.moduleId)); return set; }, new Set()).size} stages of the course. Each step names the decision that was on the table before it says what the team did — so you can answer it first.`}
+        body={`Knowing what good looks like is not the same as having seen one derived. ${caseStudies.length} cases run the method on real departmental decisions, step by step, across ${caseStudies.reduce((set, study) => { study.steps.forEach((s) => set.add(s.moduleId)); return set; }, new Set()).size} course sections. Each step names the decision that was on the table before it says what the team did — so you can answer it first.`}
       />
 
       {/*
-        The tab strip now carries a stage-coverage map. The cases exercise
+        The tab strip now carries a course-section coverage map. The cases exercise
         different parts of the curriculum, and a learner who knows they are
         weak on lifecycle should be able to see which case will make them
         practise it without opening all four.
@@ -459,7 +459,7 @@ export function CaseStudies({ navigate }: { navigate: (view: View) => void }) {
             >
               <strong>{c.title}</strong>
               <span>{c.subtitle}</span>
-              <span className="case-coverage" aria-label={`Exercises stages ${stages.join(", ")}`}>
+              <span className="case-coverage" aria-label={`Exercises course sections ${stages.join(", ")}`}>
                 {modules.map((m) => (
                   <i
                     key={m.id}
@@ -468,7 +468,7 @@ export function CaseStudies({ navigate }: { navigate: (view: View) => void }) {
                     aria-hidden="true"
                   />
                 ))}
-                <span className="case-coverage-label">{stages.length} stages</span>
+                <span className="case-coverage-label">{stages.length} sections</span>
               </span>
             </button>
           );
@@ -501,7 +501,7 @@ export function CaseStudies({ navigate }: { navigate: (view: View) => void }) {
                 {/* The stage mark is a link — a case is the best possible
                     prompt to go and read the stage it exercises. */}
                 <button className="case-stage-link" onClick={() => navigate(`module:${step.moduleId}`)}>
-                  Stage {step.stage} · {modules.find((m) => m.id === step.moduleId)?.title}
+                  Section {step.stage} · {modules.find((m) => m.id === step.moduleId)?.title}
                 </button>
                 <h2>{step.heading}</h2>
                 <LessonBody text={step.body} />

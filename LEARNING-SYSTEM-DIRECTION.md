@@ -8,6 +8,10 @@ The intended destination is a training-managed learning product. Trainers should
 
 The source material and the learning platform remain distinct. A source author or governing document supplies subject matter; the package supplies the learning sequence, practice, feedback, applied work and learner experience. Attribution must preserve that distinction.
 
+## Learner experience
+
+The learner player opens with orientation, current progress and one clear recommended next action. It guides people through **course sections** in order; the smaller headings within a course section are **lesson parts**. Practice, workplace application and reference material remain available from the Course menu and through contextual links, rather than competing with the learning path on every screen. This is a learner-facing language and navigation decision only: source material, package identifiers, saved learner progress and authoring data remain unchanged.
+
 ## Default delivery shape
 
 One course per learner export is the default. A trainer can distribute one self-contained offline HTML file or request an individually hosted `training/<course-id>/` route. The combined catalogue remains a controlled demonstration and repository-managed surface, not the ordinary trainer delivery route.

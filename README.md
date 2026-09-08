@@ -1,10 +1,10 @@
 # Product Practice — a player for training packages
 
-An offline learning system that runs self-contained **training packages**. Nothing in the player is specific to any one course: a package supplies its own stages, questions, flashcards, glossary, cases and sources, and the app reads all of it through a single interface.
+An offline learning system that runs self-contained **training packages**. Nothing in the player is specific to any one course: a package supplies its own course sections, questions, flashcards, glossary, cases and sources, and the app reads all of it through a single interface.
 
 Two packages ship today.
 
-| Package | Stages | Questions | Cards | Built from |
+| Package | Course sections | Questions | Cards | Built from |
 |---|---|---|---|---|
 | **Product Management Fundamentals** | 9 | 122 | 92 | The 98-slide *Product Management Fundamentals* deck by Simon Morris, DEWR Digital Experience and Solutions |
 | **Closure Reports** | 12 | 119 | 98 | The DEWR Project Closure Report Template, Tier 3 form, Project Closure Factsheet and closure announcement |
@@ -59,7 +59,7 @@ Learner progress is stored in the browser's local storage and is not transmitted
 
 The recommended loop:
 
-1. Take the diagnostic, or begin at Stage 1.
+1. Take the diagnostic, or begin at Section 1.
 2. Read a short lesson, then explain the idea from memory.
 3. Complete the knowledge check and both decision scenarios.
 4. Return to **Review** on later days for scheduled retrieval practice.
@@ -73,7 +73,7 @@ Per package:
 
 | | Product Management Fundamentals | Closure Reports |
 |---|---|---|
-| Stages | 9 | 12 |
+| Course sections | 9 | 12 |
 | Knowledge checks | 74 | 81 |
 | Decision scenarios | 18 | 24 |
 | Diagnostic pool | 30 | 14 |

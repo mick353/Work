@@ -94,35 +94,11 @@ import { Library } from "./views-library";
 import { Deck } from "./views-deck";
 import { SlideViewerProvider } from "./slide-viewer";
 
-const MOBILE_QUERY = "(max-width: 820px)";
-
 /**
- * Sidebar structure.
- *
- * Fourteen destinations plus nine stages had been one flat list: 23 buttons,
- * 1136px of it, in a column 834px tall on a normal laptop. Everything looked
- * equally important, which meant nothing did, and the last few items were
- * below the fold on every screen.
- *
- * Grouping alone would have made it taller, so the groups collapse. They are
- * split by what you are doing rather than by what the thing is — "Results"
- * sits with practice because you look at it after drilling, not with the
- * reference material it superficially resembles.
- *
- * Grouping was necessary and not sufficient: the groups were still ordered as
- * a taxonomy of the software, which left the course itself last. See the note
- * above NAV_GROUPS for what changed and why.
- *
- * Everything starts EXPANDED. An earlier version started Apply and Reference
- * collapsed to win back vertical space, on the reasoning that their labels
- * stayed visible so nothing was really hidden. That reasoning failed its first
- * contact with a user: the person who commissioned the guide could not find it
- * in the menu, because "Read the guide" was inside a collapsed group.
- *
- * A sidebar that scrolls is a small cost. A destination nobody can find is not
- * a small cost. The grouping already fixed the real problem — everything
- * looking equally important — and collapsing stays available for anyone who
- * wants to tidy it away, with the choice remembered.
+ * The course menu is deliberately a drawer rather than a permanent catalogue
+ * of every feature. Learners arrive to learn one course section, not to choose
+ * from the entire product. The drawer still exposes every destination by a
+ * clear purpose when it is needed.
  */
 type NavGroup = {
   id: string;
@@ -133,37 +109,26 @@ type NavGroup = {
 };
 
 /*
- * The order is the learner's journey, not a taxonomy of the software.
- *
- * It used to be Learn / Practise / Apply / Reference, with the stages — the
- * actual course, where nearly all the reading is — rendered last, below four
- * groups of activities. Three things were wrong with that at once:
- *
- *   - the substance came after the assessment of it;
- *   - the group called "Learn" contained no lesson, only a dashboard and an
- *     index, because the lessons were in the list at the bottom;
- *   - the complete guide, which is the whole course in continuous reading
- *     form, sat under "Reference" beside the glossary and the source list.
- *
- * Study now comes first and carries the stages inside it. Everything that
- * tests, applies or supports the material follows it, which is also the order
- * a learner actually needs them in.
+ * The menu follows the learner's journey. The top-level course sections are
+ * kept distinct from the smaller lesson parts inside each section.
  */
 const NAV_GROUPS: NavGroup[] = [
   {
-    id: "study",
-    label: "Study",
-    /** The stage list renders directly beneath this group — it belongs to it. */
+    id: "course",
+    label: "Your course",
+    /** The section list renders directly beneath the course destinations. */
     curriculumAfter: true,
     items: [
-      { id: "path", label: "Learning path", icon: <Compass size={18} aria-hidden="true" /> },
-      { id: "guide", label: "Read the whole course", icon: <FileText size={18} aria-hidden="true" /> },
+      { id: "dashboard", label: "Course overview", icon: <Home size={18} aria-hidden="true" /> },
+      { id: "path", label: "Course map", icon: <Compass size={18} aria-hidden="true" /> },
+      { id: "guide", label: "Read the full course", icon: <FileText size={18} aria-hidden="true" /> },
       { id: "example", label: "A finished report", icon: <FileCheck2 size={18} aria-hidden="true" /> },
+      { id: "settings", label: "Learning settings", icon: <Settings2 size={18} aria-hidden="true" /> },
     ],
   },
   {
     id: "practise",
-    label: "Practise",
+    label: "Practise & progress",
     items: [
       // Was reachable only from a button on the dashboard, which made the
       // "where should I start" entry point invisible to anyone who navigated.
@@ -175,7 +140,7 @@ const NAV_GROUPS: NavGroup[] = [
   },
   {
     id: "apply",
-    label: "Apply",
+    label: "Apply at work",
     items: [
       { id: "toolkit", label: "Toolkit", icon: <Wrench size={18} aria-hidden="true" /> },
       { id: "cases", label: "Worked cases", icon: <BookOpen size={18} aria-hidden="true" /> },
@@ -184,7 +149,7 @@ const NAV_GROUPS: NavGroup[] = [
   },
   {
     id: "reference",
-    label: "Reference",
+    label: "Resources",
     items: [
       { id: "fieldguide", label: "Field guide", icon: <BookMarked size={18} aria-hidden="true" /> },
       { id: "glossary", label: "Glossary", icon: <BookA size={18} aria-hidden="true" /> },
@@ -195,7 +160,12 @@ const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
-const DEFAULT_COLLAPSED: Record<string, boolean> = {};
+const DEFAULT_COLLAPSED: Record<string, boolean> = {
+  curriculum: true,
+  practise: true,
+  apply: true,
+  reference: true,
+};
 
 /*
  * The key is versioned because the DEFAULT changed. Anyone who had already
@@ -204,13 +174,12 @@ const DEFAULT_COLLAPSED: Record<string, boolean> = {};
  * exists to reveal. A new key gives everyone the new default once, and leaves
  * any deliberate collapsing they do from here on intact.
  */
-const NAV_STATE_KEY = "nav-collapsed-v2";
+const NAV_STATE_KEY = "nav-collapsed-v3";
 
 /**
- * Keep the active stage visible inside the stage list's own scroll area.
- * Without this, opening Stage 9 of 11 leaves the sidebar showing stages 1-5.
+ * Keep the active course section visible when the learner opens the course map.
  */
-function useScrollActiveStageIntoView(view: View) {
+function useScrollActiveSectionIntoView(view: View) {
   useEffect(() => {
     if (!view.startsWith("module:")) return;
     document
@@ -227,9 +196,8 @@ function groupForView(view: View): string {
 }
 
 /**
- * Stage count, spelled out. Hardcoded as "Nine" once, which was true of exactly
- * one package. Falls through to the numeral past twelve — "The 13 stages" is
- * fine; "Nine" on an eleven-stage course is not.
+ * Section count, spelled out. Hardcoded as "Nine" once, which was true of exactly
+ * one package. Falls through to the numeral past twelve.
  */
 const NUMBER_WORDS = [
   "", "One", "Two", "Three", "Four", "Five", "Six",
@@ -297,21 +265,6 @@ function NavSection({
       )}
     </div>
   );
-}
-
-function useMediaQuery(query: string) {
-  const [matches, setMatches] = useState(
-    () => typeof matchMedia === "function" && matchMedia(query).matches,
-  );
-  useEffect(() => {
-    if (typeof matchMedia !== "function") return;
-    const list = matchMedia(query);
-    const onChange = (event: MediaQueryListEvent) => setMatches(event.matches);
-    list.addEventListener("change", onChange);
-    setMatches(list.matches);
-    return () => list.removeEventListener("change", onChange);
-  }, [query]);
-  return matches;
 }
 
 function CurriculumVersionDialog({
@@ -485,7 +438,7 @@ export default function App() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
-  useScrollActiveStageIntoView(view);
+  useScrollActiveSectionIntoView(view);
 
 
   const openPackage = useCallback(
@@ -832,13 +785,12 @@ function Shell({
   packagePosition: number;
   packageCount: number;
 }) {
-  const isMobile = useMediaQuery(MOBILE_QUERY);
   const sidebarRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const drawerHidden = isMobile && !mobileOpen;
+  const drawerHidden = !mobileOpen;
 
   /**
-   * When the drawer is closed on mobile it is translated off-screen but still
+   * When the drawer is closed it is translated off-screen but still
    * in the DOM. Without `inert` a keyboard user tabs from the menu button
    * straight into sixteen invisible navigation buttons — which is what the
    * previous build did.
@@ -850,9 +802,9 @@ function Shell({
     else element.removeAttribute("inert");
   }, [drawerHidden]);
 
-  // Focus management and Escape-to-close for the mobile drawer.
+  // Focus management and Escape-to-close for the course drawer.
   useEffect(() => {
-    if (!isMobile || !mobileOpen) return;
+    if (!mobileOpen) return;
     const element = sidebarRef.current;
     if (!element) return;
 
@@ -889,7 +841,7 @@ function Shell({
       window.clearTimeout(focusTimer);
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [isMobile, mobileOpen, setMobileOpen]);
+  }, [mobileOpen, setMobileOpen]);
 
   return (
     <div className="app-shell">
@@ -906,12 +858,13 @@ function Shell({
         <div className="course-bar">
           <button
             ref={menuButtonRef}
-            className="mobile-menu"
+            className="course-menu-button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
+            aria-label={mobileOpen ? "Close course menu" : "Open course menu"}
             aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+            <span>{mobileOpen ? "Close" : "Course"}</span>
           </button>
           <button className="brand" onClick={() => navigate("dashboard")} aria-label={`${manifest.title} home`}>
             <span>
@@ -949,14 +902,14 @@ function Shell({
             >
               <Keyboard size={19} aria-hidden="true" />
             </button>
-            <button className="icon-button" onClick={() => navigate("settings")} aria-label="Learning settings">
+            <button className="icon-button settings-button" onClick={() => navigate("settings")} aria-label="Learning settings">
               <Settings2 size={19} aria-hidden="true" />
             </button>
           </div>
         </div>
       </header>
 
-      <aside ref={sidebarRef} className={`sidebar ${mobileOpen ? "open" : ""}`} aria-label="Course navigation">
+      <aside ref={sidebarRef} className={`sidebar ${mobileOpen ? "open" : ""}`} aria-label="Course menu">
         {/*
           Everything below this belongs to one package. Naming it here is what
           stops the sidebar reading as though it were the whole product once
@@ -973,20 +926,6 @@ function Shell({
             <span className="package-switch-action">Library</span>
           </button>
         )}
-
-        {/*
-          Overview is a destination, not a category. It sat inside a group
-          called "Learn" that contained no lesson; on its own at the top it
-          reads as what it is — where you are, and what to do next.
-        */}
-        <button
-          className={`nav-standalone ${view === "dashboard" ? "active" : ""}`}
-          aria-current={view === "dashboard" ? "page" : undefined}
-          onClick={() => navigate("dashboard")}
-        >
-          <Home size={18} aria-hidden="true" />
-          <span>Overview</span>
-        </button>
 
         {NAV_GROUPS.map((group) => [
           <NavSection
@@ -1012,7 +951,7 @@ function Shell({
           <NavSection
             key="curriculum"
             id="curriculum"
-            label={`The ${NUMBER_WORDS[modules.length]?.toLowerCase() ?? modules.length} stages`}
+            label={`The ${NUMBER_WORDS[modules.length]?.toLowerCase() ?? modules.length} course sections`}
             expanded={!collapsedNav.curriculum}
             onToggle={() => toggleNavGroup("curriculum")}
             className="sidebar-modules"
@@ -1039,7 +978,7 @@ function Shell({
                   className={view === `module:${module.id}` ? "active" : ""}
                   data-stage={module.number}
                   data-state={state}
-                  title={`Stage ${module.number}: ${module.title}${label}`}
+                  title={`Section ${module.number}: ${module.title}${label}`}
                   aria-current={view === `module:${module.id}` ? "page" : undefined}
                   onClick={() => navigate(`module:${module.id}`)}
                 >
@@ -1065,7 +1004,7 @@ function Shell({
 
       {shortcutsOpen && <ShortcutHelp onClose={() => setShortcutsOpen(false)} />}
 
-      {mobileOpen && <button className="scrim" aria-label="Close navigation" onClick={() => setMobileOpen(false)} />}
+      {mobileOpen && <button className="scrim" aria-label="Close course menu" onClick={() => setMobileOpen(false)} />}
 
       <main id="main-content" className="main-content" tabIndex={-1}>
         {!storageOk && <StorageWarning />}

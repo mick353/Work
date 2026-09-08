@@ -50,7 +50,7 @@ export function Results({
       0,
     );
     return [
-      { label: "Stage knowledge checks", value: stageChecks, colour: "var(--accent-1)", detail: `${stageChecks} completed` },
+      { label: "Section knowledge checks", value: stageChecks, colour: "var(--accent-1)", detail: `${stageChecks} completed` },
       { label: "Decision scenarios", value: scenarios, colour: "var(--accent-3)", detail: `${scenarios} answered` },
       { label: "Mixed practice sets", value: mixedPractice, colour: "var(--accent-5)", detail: `${mixedPractice} completed` },
       { label: "Diagnostics", value: diagnostics, colour: "var(--accent-7)", detail: `${diagnostics} completed` },
@@ -67,7 +67,7 @@ export function Results({
         .map((entry) => ({
           at: entry.at,
           score: entry.score,
-          label: `${entry.kind === "quiz" ? modules.find((m) => m.id === entry.moduleId)?.title ?? "Stage knowledge check" : entry.kind === "practice" ? "Mixed practice" : "Diagnostic"} — ${new Date(entry.at).toLocaleString("en-AU", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}`,
+          label: `${entry.kind === "quiz" ? modules.find((m) => m.id === entry.moduleId)?.title ?? "Section knowledge check" : entry.kind === "practice" ? "Mixed practice" : "Diagnostic"} — ${new Date(entry.at).toLocaleString("en-AU", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}`,
         })),
     [history],
   );
@@ -191,7 +191,7 @@ export function Results({
   const nextAction = dueNow > 0
     ? { label: `Review ${dueNow} due card${dueNow === 1 ? "" : "s"}`, view: "review" as View }
     : nextStage
-      ? { label: `Continue Stage ${nextStage.number}`, view: `module:${nextStage.id}` as View }
+      ? { label: `Continue Section ${nextStage.number}`, view: `module:${nextStage.id}` as View }
       : { label: "Start mixed practice", view: "practice" as View };
   const evidenceSummary = lifetimeTotal < 20
     ? `This is an early snapshot based on ${lifetimeTotal} practice answer${lifetimeTotal === 1 ? "" : "s"}. Use it to choose the next activity, not as a final judgement of your ability.`
@@ -256,7 +256,7 @@ export function Results({
           body="Complete a knowledge check or a practice set and this page fills with your accuracy, trend and review forecast."
           action={
             <button className="primary" onClick={() => navigate("path")}>
-              Start Stage 1 <ChevronRight size={18} aria-hidden="true" />
+              Start Section 1 <ChevronRight size={18} aria-hidden="true" />
             </button>
           }
         />
@@ -266,14 +266,14 @@ export function Results({
             <Radial
               value={completion}
               label="Mastered"
-              caption={`${mastered} of ${modules.length} stages complete`}
+              caption={`${mastered} of ${modules.length} sections complete`}
               colour="var(--accent-3)"
             />
             <div className="results-stats">
               <div>
                 <strong>{lifetimeAccuracy || "—"}{lifetimeAccuracy ? "%" : ""}</strong>
                 <span>Practice accuracy</span>
-                <small>{lifetimeCorrect} correct of {lifetimeTotal} answered in stage and mixed practice</small>
+                <small>{lifetimeCorrect} correct of {lifetimeTotal} answered in section and mixed practice</small>
               </div>
               <div>
                 <strong>{history.length}</strong>
@@ -288,7 +288,7 @@ export function Results({
               <div>
                 <strong>{practiceBest || "—"}{practiceBest ? "%" : ""}</strong>
                 <span>Best mixed practice</span>
-                <small>Interleaved questions across all stages</small>
+                <small>Interleaved questions across all course sections</small>
               </div>
             </div>
           </section>
@@ -299,7 +299,7 @@ export function Results({
               <span className="eyebrow">Your useful next step</span>
               <h2 id="results-guidance-title">What these results mean right now</h2>
               <p>{evidenceSummary}</p>
-              <p>You can complete the course in one day or spread it out. Flashcard return dates are optional follow-up practice, not deadlines and not part of the stage-completion rule.</p>
+              <p>You can complete the course in one day or spread it out. Flashcard return dates are optional follow-up practice, not deadlines and not part of the section-completion rule.</p>
             </div>
             <div className="guidance-summary">
               <span><strong>{itemView.revisit.length}</strong> question{itemView.revisit.length === 1 ? "" : "s"} to revisit</span>
@@ -345,11 +345,11 @@ export function Results({
             </ChartCard>
 
             <ChartCard
-              title="Accuracy by stage"
-              hint="Your best knowledge-check score for each stage. Anything under 75% has not met the recall requirement."
-              empty={accuracy.length === 0 ? "No stage knowledge check has been completed yet. Diagnostic and mixed-practice scores appear in the trend and activity panels instead." : undefined}
+              title="Accuracy by course section"
+              hint="Your best knowledge-check score for each course section. Anything under 75% has not met the recall requirement."
+              empty={accuracy.length === 0 ? "No course-section knowledge check has been completed yet. Diagnostic and mixed-practice scores appear in the trend and activity panels instead." : undefined}
             >
-              <BarList series={accuracy} ariaLabel="Best knowledge check score for each stage" />
+              <BarList series={accuracy} ariaLabel="Best knowledge check score for each course section" />
             </ChartCard>
 
             <ChartCard
@@ -373,8 +373,8 @@ export function Results({
                         </span>
                         <span className="item-prompt">{row.prompt}</span>
                         <span className="item-seen">
-                          {row.correct} of {row.seen} correct · Stage {modules.find((m) => m.id === row.moduleId)?.number ?? "—"}
-                          <button type="button" className="text-button" onClick={() => navigate(`module:${row.moduleId}`)}>Review this stage</button>
+                          {row.correct} of {row.seen} correct · Section {modules.find((m) => m.id === row.moduleId)?.number ?? "—"}
+                          <button type="button" className="text-button" onClick={() => navigate(`module:${row.moduleId}`)}>Review this section</button>
                         </span>
                       </li>
                     ))}
@@ -438,7 +438,7 @@ export function Results({
 
               <dl className="record-summary">
                 <div>
-                  <dt>Stages demonstrated</dt>
+                  <dt>Sections demonstrated</dt>
                   <dd>{record.masteredCount} of {modules.length}</dd>
                 </div>
                 <div>
@@ -464,10 +464,10 @@ export function Results({
               </dl>
 
               <table className="record-table">
-                <caption>Per-stage outcome. Mastery requires the lesson read, {MASTERY_QUIZ_THRESHOLD}% on the knowledge check, and both decision scenarios correct.</caption>
+                <caption>Per-section outcome. Mastery requires the lesson read, {MASTERY_QUIZ_THRESHOLD}% on the knowledge check, and both decision scenarios correct.</caption>
                 <thead>
                   <tr>
-                    <th scope="col">Stage</th>
+                    <th scope="col">Section</th>
                     <th scope="col">Best check</th>
                     <th scope="col">Attempts</th>
                     <th scope="col">Scenarios</th>

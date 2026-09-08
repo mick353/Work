@@ -26,9 +26,9 @@ function buildIndex(): SearchRecord[] {
   modules.forEach((module) => {
     records.push({
       id: `m-${module.id}`,
-      title: `Stage ${module.number}: ${module.title}`,
+      title: `Section ${module.number}: ${module.title}`,
       body: `${module.subtitle} ${module.outcome} ${module.coreIdea}`,
-      kind: "Stage",
+      kind: "Course section",
       view: `module:${module.id}`,
     });
     module.sections.forEach((section, index) => {
@@ -39,7 +39,7 @@ function buildIndex(): SearchRecord[] {
         id: `s-${module.id}-${index}`,
         title: section.heading,
         body: `${section.body} ${(section.bullets ?? []).join(" ")} ${section.example ?? ""} ${tableText}`,
-        kind: `Stage ${module.number} lesson`,
+        kind: `Section ${module.number} lesson`,
         view: `module:${module.id}`,
       });
     });
@@ -81,7 +81,7 @@ function buildIndex(): SearchRecord[] {
       id: `ct-${index}`,
       title: `In practice: ${item.good.slice(0, 60)}`,
       body: `${item.good} ${item.usual} ${item.tell}`,
-      kind: `Stage ${stage?.number ?? ""} contrast`,
+      kind: `Section ${stage?.number ?? ""} contrast`,
       view: `module:${item.moduleId}`,
     });
   });
@@ -277,7 +277,7 @@ export function Sources({ navigate }: { navigate: Navigate }) {
       entry.sourceIds.includes(sourceId) || entry.sourceReferences?.some((reference) => reference.sourceId === sourceId),
     );
     return [
-      stageNumbers.length ? `Stage${stageNumbers.length === 1 ? "" : "s"} ${stageNumbers.join(", ")}` : "",
+      stageNumbers.length ? `Section${stageNumbers.length === 1 ? "" : "s"} ${stageNumbers.join(", ")}` : "",
       usedInGuide ? "Field guide" : "",
     ].filter(Boolean);
   };
@@ -635,8 +635,8 @@ export function NotFound({ navigate }: { navigate: Navigate }) {
     <div className="page narrow-page">
       <PageIntro
         eyebrow="Not found"
-        title="That learning stage is unavailable"
-        body="Return to the learning path and choose one of the nine course stages."
+        title="That course section is unavailable"
+        body="Return to the course map and choose one of the available course sections."
       />
       <button className="primary" onClick={() => navigate("path")}>
         Learning path

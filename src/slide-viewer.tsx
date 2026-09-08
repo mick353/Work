@@ -200,7 +200,7 @@ function Lightbox({
           <div>
             <span className="eyebrow">
               Source deck · slide {slide.n} of {SLIDE_COUNT}
-              {stage ? ` · Stage ${stage.number}` : ""}
+              {stage ? ` · Section ${stage.number}` : ""}
             </span>
             <h2>{slideLabel(slide)}</h2>
           </div>

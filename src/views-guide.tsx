@@ -7,12 +7,12 @@ import { SlideRangeLink } from "./slide-viewer";
 /**
  * The full guide, as a document.
  *
- * The app is built for drilling: short pages, retrieval, one stage at a time.
+ * The app is built for drilling: short pages, retrieval, one course section at a time.
  * That is the right shape for learning and the wrong shape for reading. People
  * also want to print the thing, read it on a train, or hand it to someone —
- * and printing nine separate stage pages produced nine separate documents.
+ * and printing nine separate section pages produced nine separate documents.
  *
- * This is one continuous read: cover, contents, all nine stages in order with
+ * This is one continuous read: cover, contents, all nine course sections in order with
  * their tables and contrasts, both worked cases, the toolkit, the field guide,
  * the glossary and the sources. It is deliberately assessment-free — questions
  * and scenarios do not belong in a printed reference.
@@ -37,7 +37,7 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
         <PageIntro
           eyebrow="The whole thing, in one read"
           title={`${manifest.title} — the complete guide`}
-          body="Every stage in order, with the tables, the contrasts, both worked cases, the templates, the field guide and the glossary. No questions — this is the reading copy. Print it and it comes out as a proper booklet."
+          body="Every course section in order, with the tables, the contrasts, both worked cases, the templates, the field guide and the glossary. No questions — this is the reading copy. Print it and it comes out as a proper booklet."
         />
         <div className="button-row">
           <button className="primary" onClick={() => window.print()}>
@@ -89,12 +89,12 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
       <section id="how" className="guide-section">
         <h2>How to use this guide</h2>
         <p>
-          Read a stage, then close the guide and try to say the core idea out loud. That small act of retrieval is
-          worth more than reading the stage twice — it is the single most robust finding in the learning literature and
+          Read a course section, then close the guide and try to say the core idea out loud. That small act of retrieval is
+          worth more than reading the section twice — it is the single most robust finding in the learning literature and
           the reason the interactive version withholds answers until you have committed to one.
         </p>
         <p>
-          Each stage ends with a set of contrasts: what good looks like, what usually happens, and{" "}
+          Each course section ends with a set of contrasts: what good looks like, what usually happens, and{" "}
           <strong>the tell</strong> — an observable check you can run on your own team this week. Those are the parts
           worth arguing with. If a tell describes you, that is the useful outcome, not a failing.
         </p>
@@ -105,7 +105,7 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
         return (
           <section key={module.id} id={`stage-${module.number}`} className="guide-stage" data-stage={module.number}>
             <header>
-              <span className="guide-stage-num">Stage {module.number}</span>
+              <span className="guide-stage-num">Section {module.number}</span>
               <h2>{module.title}</h2>
               <p className="guide-stage-sub">{module.subtitle}</p>
               <p className="guide-stage-meta">
@@ -181,7 +181,7 @@ export function Guide({ navigate }: { navigate: (view: View) => void }) {
             {study.steps.map((step, index) => (
               <div key={`${step.moduleId}-${index}`} className="guide-case-step">
                 <h4>
-                  Stage {step.stage} — {step.heading}
+                  Section {step.stage} — {step.heading}
                 </h4>
                 <p>{step.body}</p>
                 {step.artefact && <pre>{step.artefact}</pre>}

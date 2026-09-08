@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import type { Module, Question } from "./package-model";
 import { SlideRangeLink } from "./slide-viewer";
-import { daysAgoKey, estimateHours, prefersReducedMotion, scrollBehavior, scrollToSection, shuffle, type View } from "./lib";
+import { estimateHours, prefersReducedMotion, scrollBehavior, scrollToSection, shuffle, type View } from "./lib";
 import { sectionsToRevisit } from "./recall";
 import {
   emptyModuleProgress,
@@ -146,23 +146,6 @@ export function Dashboard({
   studyDays: string[];
   navigate: Navigate;
 }) {
-  const recentDays = useMemo(
-    () =>
-      Array.from({ length: 14 }, (_, index) => {
-        const offset = 13 - index;
-        const key = daysAgoKey(offset);
-        const date = new Date();
-        date.setDate(date.getDate() - offset);
-        return {
-          key,
-          label: date.toLocaleDateString("en-AU", { weekday: "narrow" }),
-          full: date.toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" }),
-          active: studyDays.includes(key),
-        };
-      }),
-    [studyDays],
-  );
-
   const started = Object.keys(progress).length > 0;
   const shownCompletion = useCountUp(completion);
   const shownMastered = useCountUp(mastered, 520);
@@ -180,12 +163,12 @@ export function Dashboard({
           <span className="eyebrow">Internal training · {manifest.publisher}</span>
           <h1>{manifest.title}</h1>
           <p className="hero-lead">
-            {manifest.summary} Four moves, in order: understand the idea, retrieve it from memory, apply it to a
-            real service decision, then review it later.
+            {manifest.summary} Work through one course section at a time: understand the idea, retrieve it from
+            memory, apply it to a real service decision, then review it later.
           </p>
           <ul className="hero-facts">
             <li>
-              <strong>{modules.length} stages</strong>
+              <strong>{modules.length} course sections</strong>
               <span>{manifest.arc}</span>
             </li>
             <li>
@@ -203,13 +186,16 @@ export function Dashboard({
           </ul>
           <div className="button-row">
             <button className="primary" onClick={() => navigate(`module:${nextModule.id}`)}>
-              {started ? `Continue with Stage ${nextModule.number}` : "Start Stage 1"}
+              {started ? `Continue Section ${nextModule.number}` : "Start Section 1"}
               <ChevronRight size={18} aria-hidden="true" />
             </button>
-            <button className="secondary" onClick={() => navigate("diagnostic")}>
-              {started ? "Take the diagnostic" : "Not sure where to start? Take the diagnostic"}
+            <button className="secondary" onClick={() => navigate("path")}>
+              View course map
             </button>
           </div>
+          <p className="dashboard-support">
+            Not sure where to begin? <button className="text-button" onClick={() => navigate("diagnostic")}>Take the diagnostic</button> for a recommendation.
+          </p>
           <p className="commitment">
             Built for an hour here and there. Nothing needs finishing in a sitting, and the review queue picks up
             wherever you left off.
@@ -217,15 +203,15 @@ export function Dashboard({
           {/*
             Provenance, not a headline. It sits at the foot of the hero because
             that is what it is worth, and it names the source author only for
-            the source — the stages, questions, practice and worked material
+            the source — the course sections, questions, practice and worked material
             are separate work, and an earlier byline under the title credited
             them to him.
           */}
           <p className="hero-credits">
             {manifest.sourceAuthor
               ? <>Source material: the <em>{manifest.source}</em> deck by <strong>{manifest.sourceAuthor}</strong>.
-                  The stages, questions, practice and worked material in this package were built around it.</>
-              : <>Source material: {manifest.source}. The stages, questions, practice and worked material in this
+                  The course sections, questions, practice and worked material in this package were built around it.</>
+              : <>Source material: {manifest.source}. The course sections, questions, practice and worked material in this
                   package were built around them.</>}
           </p>
         </div>
@@ -233,7 +219,7 @@ export function Dashboard({
           <MasteryRing
             value={shownCompletion}
             label="Mastered"
-            sub={`${mastered} of ${modules.length} stages demonstrated`}
+            sub={`${mastered} of ${modules.length} sections demonstrated`}
           />
         </div>
       </section>
@@ -243,7 +229,7 @@ export function Dashboard({
           <strong>
             {shownMastered}/{modules.length}
           </strong>
-          <span>Stages mastered</span>
+          <span>Sections mastered</span>
         </div>
         <div>
           <strong>
@@ -262,121 +248,33 @@ export function Dashboard({
         </div>
       </section>
 
-      <div className="dashboard-grid">
-        <section className="study-plan">
-          <header className="section-heading">
-            <div>
-              <span className="eyebrow">Today's deliberate practice</span>
-              <h2>Three useful moves</h2>
-            </div>
-            <Clock3 size={22} aria-hidden="true" />
-          </header>
-          {dueCount > 0 ? (
-            <ol className="plan-list">
-              <li>
-                <span aria-hidden="true">01</span>
-                <div>
-                  <strong>Retrieve</strong>
-                  <p>Clear the due review queue before rereading anything.</p>
-                </div>
-                <button onClick={() => navigate("review")}>Start review</button>
-              </li>
-              <li>
-                <span aria-hidden="true">02</span>
-                <div>
-                  <strong>Build the model</strong>
-                  <p>Complete the next lesson and explain its core idea in your own words.</p>
-                </div>
-                <button onClick={() => navigate(`module:${nextModule.id}`)}>Open stage</button>
-              </li>
-              <li>
-                <span aria-hidden="true">03</span>
-                <div>
-                  <strong>Transfer</strong>
-                  <p>Answer mixed scenarios so the idea works outside the slide where you first saw it.</p>
-                </div>
-                <button onClick={() => navigate("practice")}>Practise</button>
-              </li>
-            </ol>
-          ) : (
-            <ol className="plan-list">
-              <li>
-                <span aria-hidden="true">01</span>
-                <div>
-                  <strong>Understand</strong>
-                  <p>Start the next lesson and build the idea before trying to retrieve it.</p>
-                </div>
-                <button onClick={() => navigate(`module:${nextModule.id}`)}>Open stage</button>
-              </li>
-              <li>
-                <span aria-hidden="true">02</span>
-                <div>
-                  <strong>Apply</strong>
-                  <p>Use the lesson questions and scenarios to make the idea work in a real decision.</p>
-                </div>
-                <button onClick={() => navigate(`module:${nextModule.id}`)}>Start learning</button>
-              </li>
-              <li>
-                <span aria-hidden="true">03</span>
-                <div>
-                  <strong>Review later</strong>
-                  <p>Review cards unlock after their lesson, then return when your memory needs them.</p>
-                </div>
-                <button onClick={() => navigate("path")}>View learning path</button>
-              </li>
-            </ol>
-          )}
-        </section>
-
-        <section className="study-rhythm">
-          <span className="eyebrow">Last 14 days</span>
-          <h2>Study rhythm</h2>
-          <ul className="day-grid" aria-label="Study activity over the last fourteen days">
-            {recentDays.map((day) => (
-              <li key={day.key}>
-                <i className={day.active ? "active" : ""} aria-hidden="true" />
-                <span aria-hidden="true">{day.label}</span>
-                <span className="visually-hidden">{day.full}: {day.active ? "studied" : "no session"}</span>
-              </li>
-            ))}
-          </ul>
-          <p>
-            Short, spaced sessions beat one long reread. The review queue adapts to the confidence rating you give each
-            card.
-          </p>
-          <button className="text-button" onClick={() => navigate("sources")}>
-            Why the learning design works <ChevronRight size={16} aria-hidden="true" />
-          </button>
-        </section>
-      </div>
-
-      <section className="course-rail">
-        <div className="section-heading">
+      <section className="next-step" aria-labelledby="next-step-title">
+        <span className="eyebrow">Your next step</span>
+        <div>
           <div>
-            <span className="eyebrow">The complete reasoning chain</span>
-            <h2>{manifest.arc}</h2>
+            <h2 id="next-step-title">
+              {dueCount > 0 && started
+                ? `${dueCount} card${dueCount === 1 ? "" : "s"} ready to review`
+                : `${started ? "Continue" : "Begin"} with Section ${nextModule.number}`}
+            </h2>
+            <p>
+              {dueCount > 0 && started
+                ? "A short review now will bring the ideas you have already studied back at the right time. Your next course section will still be ready afterwards."
+                : <><strong>Section {nextModule.number}: {nextModule.title}</strong> — {nextModule.subtitle}</>}
+            </p>
           </div>
-          <button className="text-button" onClick={() => navigate("path")}>
-            View full path <ChevronRight size={16} aria-hidden="true" />
-          </button>
-        </div>
-        <div className="rail-track">
-          {modules.map((module) => {
-            const done = masteryState(progress[module.id], module.scenarios.length).mastered;
-            return (
-              <button
-                key={module.id}
-                className={done ? "done" : ""}
-                data-stage={module.number}
-                onClick={() => navigate(`module:${module.id}`)}
-              >
-                <span aria-hidden="true">{done ? <Check size={15} /> : module.number}</span>
-                <strong>{module.title}</strong>
-                {done && <span className="visually-hidden">(mastered)</span>}
+          <div className="next-step-actions">
+            {dueCount > 0 && started && (
+              <button className="primary" onClick={() => navigate("review")}>
+                Start review <ChevronRight size={18} aria-hidden="true" />
               </button>
-            );
-          })}
+            )}
+            <button className={dueCount > 0 && started ? "secondary" : "primary"} onClick={() => navigate(`module:${nextModule.id}`)}>
+              {started ? `Continue Section ${nextModule.number}` : "Start Section 1"} <ChevronRight size={18} aria-hidden="true" />
+            </button>
+          </div>
         </div>
+        <p className="next-step-note">Practice, results and reference material remain available from the <strong>Course</strong> menu when you need them.</p>
       </section>
     </div>
   );
@@ -386,12 +284,12 @@ export function LearningPath({ progress, navigate }: { progress: ProgressMap; na
   return (
     <div className="page">
       <PageIntro
-        eyebrow={`${modules.length}-stage curriculum`}
-        title="Build the complete capability chain"
-        body={`Each stage names a capability, not just a topic. Mastery requires reading the lesson, scoring at least ${MASTERY_QUIZ_THRESHOLD}% on the knowledge check, and answering both decision scenarios correctly.`}
+        eyebrow={`${modules.length}-section course`}
+        title="Your course map"
+        body={`Each course section builds one capability, not just a topic. Work through them in order, or return to a completed section whenever you need it.`}
       />
       <p className="path-total">
-        {estimateHours(totalMinutes).replace("about", "About")} across {modules.length} stages. Take one at a time — each is a self-contained hour or less.
+        {estimateHours(totalMinutes).replace("about", "About")} across {modules.length} course sections. Each section includes learning, a knowledge check and applied scenarios.
       </p>
       <div className="path-list">
         {modules.map((module) => {
@@ -409,7 +307,7 @@ export function LearningPath({ progress, navigate }: { progress: ProgressMap; na
                   {state.mastered && <span className="mastered-label">Mastered</span>}
                 </div>
                 <h2>
-                  <span className="visually-hidden">Stage {module.number}: </span>
+                  <span className="visually-hidden">Section {module.number}: </span>
                   {module.title}
                 </h2>
                 <p>{module.subtitle}</p>
@@ -420,9 +318,9 @@ export function LearningPath({ progress, navigate }: { progress: ProgressMap; na
                 </ul>
               </div>
               <button className="secondary" onClick={() => navigate(`module:${module.id}`)}>
-                {state.mastered ? "Revisit" : "Open stage"}
+                {state.mastered ? "Revisit" : "Open section"}
                 <ChevronRight size={17} aria-hidden="true" />
-                <span className="visually-hidden"> stage {module.number}, {module.title}</span>
+                <span className="visually-hidden"> section {module.number}, {module.title}</span>
               </button>
             </article>
           );
@@ -565,7 +463,7 @@ export function ModuleView({
       </div>
 
       <button className="back-button" onClick={() => navigate("path")}>
-        <ArrowLeft size={17} aria-hidden="true" /> Learning path
+        <ArrowLeft size={17} aria-hidden="true" /> Course map
       </button>
 
       <header className="module-hero">
@@ -574,13 +472,14 @@ export function ModuleView({
         </div>
         <div>
           <div className="path-meta">
+            <span>Section {module.number} of {modules.length}</span>
             <span>
               <Clock3 size={14} aria-hidden="true" /> {module.minutes} minutes
             </span>
             <SlideRangeLink range={module.slides} />
           </div>
           <h1>
-            <span className="visually-hidden">Stage {module.number}: </span>
+            <span className="visually-hidden">Section {module.number}: </span>
             {module.title}
           </h1>
           <p className="module-subtitle">{module.subtitle}</p>
@@ -590,16 +489,16 @@ export function ModuleView({
           </div>
 
           {/*
-            The shape of the stage, before you start it. Microlearning works
-            largely by making the size of the commitment visible — a stage that
-            announces "4 sections, 10 minutes, 6 questions" is a different
+            The shape of the course section, before you start it. Microlearning works
+            largely by making the size of the commitment visible — a section that
+            announces "4 lesson parts, 10 minutes, 6 questions" is a different
             proposition from an unmarked 13,000px page. Each part marks itself
             done as you complete it.
           */}
           <ul className="stage-shape">
             <li className={progress.lessonRead ? "is-done" : ""}>
               {progress.lessonRead && <Check size={14} aria-hidden="true" />}
-              <strong>{module.sections.length}</strong> sections
+              <strong>{module.sections.length}</strong> lesson parts
             </li>
             <li>
               <Clock3 size={14} aria-hidden="true" />
@@ -619,7 +518,7 @@ export function ModuleView({
             <p className="stage-mastered-note">
               <Check size={18} aria-hidden="true" />
               <span>
-                Stage {module.number} demonstrated — read, recalled and applied. It stays in your review queue so
+                Section {module.number} demonstrated — read, recalled and applied. It stays in your review queue so
                 it does not fade.
               </span>
             </p>
@@ -636,7 +535,7 @@ export function ModuleView({
         ) : <StageIllustration />}
       </figure>
 
-      <section className="core-idea" aria-label="The core idea of this stage">
+      <section className="core-idea" aria-label="The core idea of this course section">
         <span className="eyebrow">The idea to keep</span>
         <blockquote>{module.coreIdea}</blockquote>
       </section>
@@ -645,7 +544,7 @@ export function ModuleView({
         In-page contents, and on a wide screen the sticky rail beside the
         lesson.
 
-        A stage runs to about 13,000px. Prose is held at a 68-character
+        A course section runs to about 13,000px. Prose is held at a 68-character
         measure, which is right for reading and left a 649px empty gutter
         beside every paragraph — wider than the text column itself. The
         contents used to sit inline at the top and scroll away, so the reader
@@ -653,8 +552,8 @@ export function ModuleView({
         doing nothing. Putting one in the other solves both.
       */}
       <div className="lesson-layout">
-        <nav className="stage-contents" aria-label="Sections in this stage">
-          <span className="eyebrow">In this stage</span>
+        <nav className="stage-contents" aria-label="Lesson parts in this course section">
+          <span className="eyebrow">In this section</span>
           <ol>
             {module.sections.map((section, index) => (
               <li key={section.heading}>
@@ -734,9 +633,9 @@ export function ModuleView({
       <section className="reflection-panel">
         <span className="eyebrow">Retrieval pause</span>
         <h2>Explain the core idea without copying it</h2>
-        <p>Imagine a colleague asks why this stage changes a product decision. Write two or three sentences from memory.</p>
+        <p>Imagine a colleague asks why this section changes a product decision. Write two or three sentences from memory.</p>
         <label>
-          <span className="visually-hidden">Your explanation of this stage's core idea</span>
+          <span className="visually-hidden">Your explanation of this section's core idea</span>
           <textarea
             value={progress.reflection}
             onChange={(event) => update({ reflection: event.target.value })}
@@ -767,7 +666,7 @@ export function ModuleView({
         </div>
         <p className="check-note">
           {MASTERY_QUIZ_THRESHOLD}% or better completes the Recall requirement. Each attempt draws{" "}
-          {quizQuestions.length} questions at random from {quizPool.length} for this stage, and answer order is
+          {quizQuestions.length} questions at random from {quizPool.length} for this section, and answer order is
           shuffled — so retaking is a fresh test, not a memory check.
         </p>
         {quizQuestions.map((question, index) => (
@@ -976,7 +875,7 @@ export function ModuleView({
           <div>
             <span className="eyebrow">See it applied</span>
             <p>
-              This stage is worked end to end in{" "}
+              This course section is worked end to end in{" "}
               {workedIn.map((c, i) => (
                 <span key={c.id}>
                   {i > 0 && (i === workedIn.length - 1 ? " and " : ", ")}
@@ -994,7 +893,7 @@ export function ModuleView({
       )}
 
       <section className="source-note">
-        <span className="eyebrow">Sources used in this stage</span>
+        <span className="eyebrow">Sources used in this section</span>
         <SourceChips ids={allSourceIds} />
       </section>
 
@@ -1007,7 +906,7 @@ export function ModuleView({
         {/* h2, not h1: the visible stage heading already owns the h1 on this
             page, and two of them breaks the document outline. */}
         <header>
-          <span>Stage {module.number} · {manifest.title}</span>
+          <span>Section {module.number} · {manifest.title}</span>
           <h2>{module.title}</h2>
           <p>{module.subtitle}</p>
         </header>
@@ -1052,7 +951,7 @@ export function ModuleView({
 
       <footer className="module-footer">
         <div>
-          <strong>Stage status</strong>
+          <strong>Section status</strong>
           <span>
             {state.mastered
               ? `Mastered — lesson, recall and application complete. Quiz best ${progress.quizScore}% over ${progress.attempts} attempt${progress.attempts === 1 ? "" : "s"}; scenarios solved in ${scenarioAttemptTotal} attempt${scenarioAttemptTotal === 1 ? "" : "s"}.`
@@ -1063,7 +962,7 @@ export function ModuleView({
         </div>
         {next ? (
           <button className="primary" onClick={() => navigate(`module:${next.id}`)}>
-            Next: {next.title}
+            Next section: {next.title}
             <ChevronRight size={18} aria-hidden="true" />
           </button>
         ) : (
@@ -1078,9 +977,9 @@ export function ModuleView({
 }
 
 /**
- * The diagnostic samples ONE question per stage rather than nine at random
+ * The diagnostic samples ONE question per course section rather than nine at random
  * from the pool. Random sampling could miss stages entirely, which matters
- * because the result recommends a starting stage — a recommendation drawn from
+ * because the result recommends a starting course section — a recommendation drawn from
  * a set that never tested half the curriculum is not worth much.
  */
 function sampleDiagnostic() {
@@ -1116,7 +1015,7 @@ export function Diagnostic({
 
   const correct = questions.filter((question) => answers[question.id] === question.answer).length;
 
-  // Recommend the earliest stage with a wrong answer, so the learner starts at
+  // Recommend the earliest section with a wrong answer, so the learner starts at
   // the first break in the chain rather than the most-missed topic.
   const missedModuleIds = questions
     .filter((question) => answers[question.id] !== question.answer)
@@ -1165,7 +1064,7 @@ export function Diagnostic({
       <PageIntro
         eyebrow="Five-minute diagnostic"
         title="Find the first weak link"
-        body={`This is not a grade. It draws one question per stage from a ${diagnosticQuestions.length}-item pool kept separate from the course quizzes, so every stage is tested and a good score means the ideas transfer rather than that you remember the wording.`}
+        body={`This is not a grade. It draws one question per course section from a ${diagnosticQuestions.length}-item pool kept separate from the course quizzes, so every section is tested and a good score means the ideas transfer rather than that you remember the wording.`}
       />
       {!complete ? (
         <section className="knowledge-check diagnostic-list">
@@ -1221,11 +1120,11 @@ export function Diagnostic({
             <div>
               <span className="eyebrow">Recommended starting point</span>
               <h2>
-                Stage {recommendation.number}: {recommendation.title}
+                Section {recommendation.number}: {recommendation.title}
               </h2>
               <p>
                 {allCorrect
-                  ? "You answered every question correctly. Start at the integration stage and use the capstone to pressure-test the whole chain."
+                  ? "You answered every question correctly. Start at the integration section and use the capstone to pressure-test the whole chain."
                   : recommendation.outcome}
               </p>
               {resurfacedCards > 0 && (

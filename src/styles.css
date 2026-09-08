@@ -464,30 +464,21 @@ kbd { display: inline-block; border: 1px solid var(--line-strong); border-bottom
 .brand strong { font-family: Georgia, serif; font-size: 17px; font-weight: 600; }
 .brand small { color: var(--muted); font-size: 11.5px; }
 .topbar-actions { display: flex; align-items: center; gap: 8px; }
-.icon-button, .mobile-menu { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line-strong); border-radius: 11px; background: var(--paper); color: var(--muted); cursor: pointer; flex: 0 0 auto; }
-.icon-button:hover, .mobile-menu:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
-.mobile-menu { display: none; }
+.icon-button { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line-strong); border-radius: 11px; background: var(--paper); color: var(--muted); cursor: pointer; flex: 0 0 auto; }
+.icon-button:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.course-menu-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 92px; height: 44px; margin-right: 10px; border: 1px solid var(--line-strong); border-radius: 11px; background: var(--paper); color: var(--ink); cursor: pointer; font-size: 14px; font-weight: 700; }
+.course-menu-button:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 .top-progress { width: 158px; margin-right: 6px; }
 .top-progress span { display: block; margin-bottom: 5px; font-size: 11.5px; color: var(--muted); text-align: right; }
 .top-progress > div, .progress-track { height: 6px; background: var(--line); overflow: hidden; border-radius: 4px; }
 .top-progress i, .progress-track i { display: block; height: 100%; background: var(--brand-bright); border-radius: 4px; }
 
-.sidebar { position: fixed; z-index: 90; inset: var(--app-header-height) auto 0 0; width: 268px; overflow-y: auto; border-right: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(14px); padding: 12px 14px 20px; }
+.sidebar { position: fixed; z-index: 150; inset: var(--app-header-height) auto 0 0; width: min(356px, calc(100vw - 22px)); overflow-y: auto; border-right: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 96%, transparent); backdrop-filter: blur(14px); padding: 16px 16px 24px; box-shadow: var(--shadow); transform: translateX(-104%); visibility: hidden; transition: transform 180ms ease, visibility 180ms; }
+.sidebar.open { transform: translateX(0); visibility: visible; }
 .sidebar nav { display: grid; gap: 2px; }
-/* Groups now carry the rhythm; the single divider under a flat list is gone. */
-/* Overview sits above the groups, so it needs the nav button treatment
-   without a NavSection wrapper around it. */
-.nav-standalone { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 36px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); padding: 7px 10px; margin-bottom: 2px; text-align: left; cursor: pointer; font: inherit; transition: background 140ms ease, color 140ms ease; }
-.nav-standalone svg { color: var(--muted); transition: color 140ms ease; }
-.nav-standalone:hover { background: var(--surface-alt); color: var(--ink); }
-.nav-standalone.active { background: var(--accent-soft); color: var(--accent); font-weight: 650; }
-.nav-standalone.active svg { color: var(--accent); }
-/* The stage list belongs to Study now rather than sitting at the foot of the
-   nav, so the separating rule above it would read as a peer group. Indent and
-   tuck it under instead: it is the contents of the group before it. */
+/* The course-section list belongs to the course group, not to the entire product. */
 .sidebar-modules { margin-top: -2px; padding-left: 10px; border-left: 2px solid var(--line); margin-left: 9px; }
-/* The sidebar is the single scroll surface. A compact two-column stage map
-   keeps every group discoverable without adding a second wheel/touch region. */
+/* A compact two-column course map keeps navigation concise inside the drawer. */
 .sidebar-modules nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 4px; max-height: none; overflow: visible; }
 .sidebar nav button { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 36px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); padding: 7px 10px; text-align: left; cursor: pointer; transition: background 140ms ease, color 140ms ease; }
 .sidebar nav button svg { color: var(--muted); transition: color 140ms ease; }
@@ -506,7 +497,7 @@ kbd { display: inline-block; border: 1px solid var(--line-strong); border-bottom
 :root[data-theme="dark"] .module-dot.done { color: #0d1117; }
 .privacy-note { margin: 20px 10px 0; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
 
-.main-content { min-height: 100vh; padding: var(--app-header-height) 0 0 268px; }
+.main-content { min-height: 100vh; padding: var(--app-header-height) 0 0; }
 .page { width: min(var(--page-max, 1160px), calc(100% - 64px)); margin: 0 auto; padding: 52px 0 78px; }
 /*
   The container grows on wide screens. It was pinned at 1160px, so at 1920 the
@@ -1010,7 +1001,7 @@ p { color: var(--muted); line-height: 1.65; }
 .path-item:hover { border-color: var(--line-strong); box-shadow: var(--shadow); }
 .hero-index strong { color: var(--ink); }
 
-.scrim { display: none; }
+.scrim { display: block; position: fixed; z-index: 140; inset: var(--app-header-height) 0 0; border: 0; background: rgba(8, 12, 20, 0.5); }
 
 @media (max-width: 1050px) {
   .chart-grid { grid-template-columns: 1fr; }
@@ -1025,12 +1016,8 @@ p { color: var(--muted); line-height: 1.65; }
 
 @media (max-width: 820px) {
   .department-banner, .course-bar { padding-left: 13px; padding-right: 13px; }
-  .mobile-menu { display: grid; }
   .brand small, .top-progress { display: none; }
-  .sidebar { z-index: 150; transform: translateX(-104%); visibility: hidden; transition: transform 180ms ease, visibility 180ms; box-shadow: var(--shadow); }
-  .sidebar.open { transform: translateX(0); visibility: visible; }
-  .scrim { display: block; position: fixed; z-index: 140; inset: var(--app-header-height) 0 0; border: 0; background: rgba(8, 12, 20, 0.5); }
-  .main-content { padding-left: 0; }
+  .shortcut-button, .settings-button { display: none; }
   .page, .narrow-page, .storage-warning, .app-footer { width: min(100% - 34px, 760px); }
   .page { padding-top: 36px; }
   .hero { grid-template-columns: 1fr; gap: 28px; }
@@ -1055,7 +1042,9 @@ p { color: var(--muted); line-height: 1.65; }
   .brand strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .topbar-actions { gap: 4px; }
   /* Kept at 44px on mobile too — this is where target size matters most. */
-  .icon-button, .mobile-menu { width: 44px; height: 44px; }
+  .course-menu-button { min-width: 44px; width: 44px; margin-right: 6px; }
+  .course-menu-button span { display: none; }
+  .icon-button { width: 44px; height: 44px; }
   .hero h1, .page-intro h1 { font-size: 37px; }
   .hero p, .page-intro p { font-size: 16px; }
   .metric-strip { grid-template-columns: 1fr 1fr; }
@@ -1580,6 +1569,20 @@ p { color: var(--muted); line-height: 1.65; }
 .hero-facts strong { display: block; color: var(--ink); font-size: 16px; font-weight: 700; line-height: 1.3; }
 .hero-facts span { display: block; margin-top: 4px; color: var(--muted); font-size: 12.5px; line-height: 1.4; }
 .hero .commitment { margin: 24px 0 0; }
+.dashboard-support { margin: 13px 0 0; font-size: 14px; }
+.dashboard-support .text-button { display: inline; min-height: 0; padding: 0; vertical-align: baseline; }
+.next-step { margin-top: 34px; padding: 28px 30px; border: 1px solid var(--line); border-left: 5px solid var(--brand); border-radius: 16px; background: linear-gradient(120deg, color-mix(in srgb, var(--brand) 9%, transparent), transparent 58%), var(--paper); }
+.next-step > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 26px; }
+.next-step h2 { margin: 8px 0 8px; }
+.next-step p { margin: 0; }
+.next-step p strong { color: var(--ink); }
+.next-step-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
+.next-step-note { margin-top: 19px !important; padding-top: 15px; border-top: 1px solid var(--line); font-size: 13.5px; }
+@media (max-width: 700px) {
+  .next-step { padding: 23px 20px; }
+  .next-step > div { grid-template-columns: 1fr; gap: 18px; }
+  .next-step-actions { justify-content: flex-start; }
+}
 @media (max-width: 1100px) { .hero-facts { grid-template-columns: repeat(2, 1fr); row-gap: 16px; } .hero-facts li:nth-child(3) { padding-left: 0; border-left: 0; } }
 @media (max-width: 560px) { .hero-facts { grid-template-columns: 1fr; } .hero-facts li { padding-left: 0; border-left: 0; } }
 

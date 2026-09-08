@@ -61,6 +61,28 @@ function watchPage(page, label) {
   });
 }
 
+/* The learner catalogue is intentionally a closed drawer on arrival. These
+ * helpers exercise that real interaction before inspecting its course map. */
+async function openCourseMenu(page) {
+  const sidebar = page.locator(".sidebar");
+  if ((await sidebar.getAttribute("inert")) !== null) {
+    await page.getByRole("button", { name: "Open course menu", exact: true }).click();
+    await sidebar.locator(".nav-section-header").first().waitFor();
+  }
+}
+
+async function openCourseSections(page) {
+  await openCourseMenu(page);
+  const header = page.locator(".sidebar-modules .nav-section-header");
+  if ((await header.getAttribute("aria-expanded")) !== "true") await header.click();
+  await page.locator(".sidebar-modules nav button").first().waitFor();
+}
+
+async function openCourseSection(page, index) {
+  await openCourseSections(page);
+  await page.locator(".sidebar-modules nav button").nth(index).click();
+}
+
 /* ---------------------------------------------------------------- *
  * Question-bank integrity (runs against the source, before the browser)
  *
@@ -970,74 +992,56 @@ check(
 );
 check(
   "First-time visitor is told where to start",
-  (await page.locator(".hero .button-row .primary").innerText()).includes("Start Stage 1"),
+  (await page.locator(".hero .button-row .primary").innerText()).includes("Start Section 1"),
 );
 const firstMetrics = await page.locator(".metric-strip > div").evaluateAll((items) => items.map((item) => item.textContent?.replace(/\s+/g, " ").trim()));
 const dueMetric = page.locator(".metric-strip > div").filter({ hasText: "Cards due for review" });
 check("A first-time learner has no review cards due", (await dueMetric.locator("strong").innerText()).trim() === "0", firstMetrics.join(" | "));
 check("Opening the site does not count as a study day", await page.evaluate(() => localStorage.getItem("product-practice-v2:pm-fundamentals:study-days") === null));
-check("The first study plan begins with understanding, not retrieval", (await page.locator(".plan-list li").first().innerText()).includes("Understand"));
+check(
+  "The overview makes one clear first learning step prominent",
+  /Begin with Section 1/i.test(await page.locator(".next-step").innerText()),
+);
 await page.setViewportSize({ width: 1440, height: 768 });
 const firstActionVisible = await page.locator(".hero .button-row .primary").evaluate((element) => element.getBoundingClientRect().bottom <= window.innerHeight);
 check("The primary first-time action is visible on a common laptop screen", firstActionVisible);
 await page.setViewportSize({ width: 1440, height: 1000 });
 
-// Grouped nav. The flat list overflowed every laptop viewport.
+// The course opens into learning, not a wall of destinations. The menu still
+// exposes every tool by purpose when the learner asks for it.
+check("Course menu is closed on arrival", (await page.locator(".sidebar").getAttribute("inert")) !== null);
+await openCourseMenu(page);
 const groupLabels = await page.locator(".nav-section-header span").allInnerTexts();
-const normalisedGroups = groupLabels.map((label) => label.toLowerCase());
 check(
-  "Sidebar is grouped by activity",
-  ["study", "practise", "apply", "reference"].every((label) => normalisedGroups.includes(label)),
+  "Course menu groups destinations by learner purpose",
+  ["your course", "practise & progress", "apply at work", "resources"].every((label) =>
+    groupLabels.some((actual) => actual.toLowerCase() === label)),
   groupLabels.join(" | "),
 );
-/*
- * Every group starts open. Collapsing Apply and Reference by default hid
- * "Read the guide" well enough that the person who asked for the guide could
- * not find it. Nothing in the sidebar may start hidden.
- */
 check(
-  "No navigation group starts collapsed",
-  (await page.locator('.nav-section-header[aria-expanded="false"]').count()) === 0,
-);
-const visibleDestinations = await page.locator(".sidebar .nav-section nav button").count();
-check(
-  "Every destination is present in the sidebar on arrival",
-  visibleDestinations === 23,
-  `${visibleDestinations} of 23 (14 destinations + 9 stages)`,
+  "Course sections and optional tool groups start collapsed",
+  (await page.locator('.sidebar-modules .nav-section-header[aria-expanded="false"]').count()) === 1 &&
+    (await page.locator('.nav-section-header[aria-expanded="false"]').count()) >= 4,
 );
 check(
-  "The complete guide is reachable from the sidebar without opening anything",
-  (await page.getByRole("button", { name: "Read the whole course", exact: true }).count()) === 1,
+  "The complete guide is reachable from the course menu",
+  (await page.getByRole("button", { name: "Read the full course", exact: true }).count()) === 1,
+);
+await page.getByRole("button", { name: "Practise & progress", exact: true }).click();
+check(
+  "The diagnostic is available from the practice and progress group",
+  (await page.getByRole("button", { name: "Diagnostic", exact: true }).count()) === 1,
 );
 await page.getByRole("button", { name: "Review", exact: true }).click();
 check("Review cards remain locked until their lesson has been encountered", await page.getByRole("heading", { name: "Review queue clear" }).count() === 1);
-await page.getByRole("button", { name: "Overview", exact: true }).click();
-/*
-  The reading material must come before the assessment of it. The sidebar used
-  to run Learn / Practise / Apply / Reference with the stages last, so the
-  substance sat below four groups of activities. Assert the order rather than
-  trusting it: Study, then the stages, then everything that tests or supports
-  them.
-*/
+await page.evaluate(() => { window.location.hash = "dashboard"; });
+await page.waitForTimeout(150);
+await openCourseSections(page);
+check(
+  "The menu reveals all course sections only when requested",
+  (await page.locator(".sidebar-modules nav button").count()) === 9,
+);
 {
-  const order = await page.evaluate(() =>
-    [...document.querySelectorAll(".sidebar .nav-section")].map(
-      (el) => el.querySelector(".nav-section-header span")?.textContent?.trim() ?? "",
-    ),
-  );
-  check(
-    "Study and the stages come before Practise in the sidebar",
-    order[0] === "Study" && /^The .+ stages$/.test(order[1] ?? "") && order[2] === "Practise",
-    order.join(" / "),
-  );
-  check(
-    "Overview is a standalone item above the groups",
-    (await page.locator(".sidebar .nav-standalone").count()) === 1,
-  );
-  check(
-    "The diagnostic is reachable from the sidebar",
-    (await page.getByRole("button", { name: "Diagnostic", exact: true }).count()) === 1,
-  );
   /*
     Every stage needs a diagram. The second package shipped with none at all,
     because illustrations are keyed by package id plus stage id and a missing key renders
@@ -1049,7 +1053,7 @@ await page.getByRole("button", { name: "Overview", exact: true }).click();
   for (let i = 0; i < stageCount; i += 1) {
     await page.evaluate(() => { window.location.hash = "path"; });
     await page.waitForTimeout(80);
-    await page.locator(".sidebar-modules nav button").nth(i).click();
+    await openCourseSection(page, i);
     await page.waitForTimeout(180);
     if (!(await page.locator("#main-content svg.illus").count())) {
       noIllustration.push(await page.locator("#main-content h1").innerText());
@@ -1323,14 +1327,14 @@ await page.getByRole("button", { name: "Overview", exact: true }).click();
       localStorage.setItem("product-practice-v2:active-package", JSON.stringify("closure-reports")),
     );
     await hp.goto(artifactUrl, { waitUntil: "load" });
-    await hp.waitForSelector(".sidebar-modules nav button");
+    await openCourseSections(hp);
     const stageTotal = await hp.locator(".sidebar-modules nav button").count();
     let worstRatio = 21;
     let worstWhere = "";
     for (let i = 0; i < stageTotal; i += 1) {
       await hp.evaluate(() => { window.location.hash = "path"; });
       await hp.waitForTimeout(80);
-      await hp.locator(".sidebar-modules nav button").nth(i).click();
+      await openCourseSection(hp, i);
       await hp.waitForTimeout(260);
       const r = await hp.evaluate(() => {
         const lum = (c) => {
@@ -1526,51 +1530,11 @@ await page.getByRole("button", { name: "Overview", exact: true }).click();
   await page.evaluate(() => { window.location.hash = "dashboard"; });
   await page.waitForTimeout(150);
 }
+await openCourseSections(page);
 check(
-  "The learner sidebar has one scroll surface rather than a nested stage scrollbar",
+  "The course-section list has one scroll surface rather than a nested scrollbar",
   await page.locator(".sidebar-modules nav").evaluate((element) => getComputedStyle(element).overflowY === "visible"),
 );
-/*
- * The real requirement is not that the whole sidebar fits — the nine-stage
- * list is a long list and long lists scroll. It is that every way into the
- * app is reachable without scrolling, which is what failed before: the last
- * four destinations sat below the fold on every laptop.
- */
-const headersInView = await page.locator(".sidebar").evaluate((el) => {
-  const box = el.getBoundingClientRect();
-  return Array.from(el.querySelectorAll(".nav-section-header")).every((header) => {
-    const r = header.getBoundingClientRect();
-    return r.top >= box.top - 1 && r.bottom <= box.bottom + 1;
-  });
-});
-check("Every navigation group is reachable without scrolling", headersInView);
-/*
-  And at a realistic laptop height, not just the generous test viewport. The
-  full nav genuinely cannot fit 14 destinations, 5 headers and 11 stages on a
-  800px screen, so the requirement here is bounded: at most one group header
-  below the fold, and it must not be the stage list — the course itself is the
-  one thing that must never be the part you have to scroll to find.
-*/
-{
-  const short = await browser.newContext({ viewport: { width: 1280, height: 800 } });
-  const shortPage = await short.newPage();
-  watchPage(shortPage, "short-viewport");
-  await shortPage.goto(artifactUrl, { waitUntil: "load" });
-  await shortPage.waitForSelector(".sidebar");
-  const below = await shortPage.evaluate(() => {
-    const sb = document.querySelector(".sidebar");
-    const box = sb.getBoundingClientRect();
-    return [...sb.querySelectorAll(".nav-section-header")]
-      .filter((h) => h.getBoundingClientRect().bottom > box.bottom + 1)
-      .map((h) => h.textContent.trim());
-  });
-  await check(
-    "At 1280x800 at most one group is below the fold, and it is not the stages",
-    below.length <= 1 && !below.some((label) => /stages/i.test(label)),
-    below.length ? below.join(", ") : "none below the fold",
-  );
-  await short.close();
-}
 check(
   "Every group header reports its state to assistive tech",
   await page.locator(".nav-section-header").evaluateAll((els) =>
@@ -1580,17 +1544,19 @@ check(
 // Navigating into a collapsed group must reveal it, or the nav looks lost.
 await page.evaluate(() => { window.location.hash = "glossary"; });
 await page.waitForTimeout(400);
+await openCourseMenu(page);
 check(
   "Navigating into a collapsed group opens it",
-  await page.locator(".nav-section").filter({ hasText: "Reference" }).locator("button.active").isVisible(),
+  await page.locator(".nav-section").filter({ hasText: "Resources" }).locator("button.active").isVisible(),
 );
 await page.evaluate(() => { window.location.hash = ""; });
 await page.waitForTimeout(300);
 
 /* -- structure ---------------------------------------------------- */
 
+await openCourseSections(page);
 const stageButtons = await page.locator(".sidebar-modules nav button").count();
-check("Nine stages listed in the sidebar", stageButtons === 9, `found ${stageButtons}`);
+check("Nine course sections are available from the course menu", stageButtons === 9, `found ${stageButtons}`);
 
 /*
   Tone. This is training, and the closure package was written in a deficit
@@ -1620,23 +1586,23 @@ check("Nine stages listed in the sidebar", stageButtons === 9, `found ${stageBut
   );
 }
 
-await page.getByRole("button", { name: "Learning path", exact: true }).click();
-await page.getByRole("heading", { name: "Build the complete capability chain" }).waitFor();
+await page.getByRole("button", { name: "Course map", exact: true }).click();
+await page.getByRole("heading", { name: "Your course map" }).waitFor();
 const pathItems = await page.locator(".path-item").count();
-check("Nine stages on the learning path", pathItems === 9, `found ${pathItems}`);
+check("Nine course sections on the course map", pathItems === 9, `found ${pathItems}`);
 
 /* -- scoring arithmetic ------------------------------------------- */
 // Answer everything with the first option, read which options were actually
 // correct, retry, and select those. This verifies the score is computed from
 // the answers rather than merely that submission works.
 
-await page.locator(".path-item").first().getByRole("button", { name: /Open stage/ }).click();
-// Headings carry a visually-hidden "Stage N: " prefix, so match on substring.
+await page.locator(".path-item").first().getByRole("button", { name: /Open section/ }).click();
+// Headings carry a visually-hidden section prefix, so match on substring.
 await page.getByRole("heading", { name: /Product thinking and strategy/ }).first().waitFor();
 
 const quiz = page.locator(".knowledge-check .question-block");
 const quizCount = await quiz.count();
-check("Stage quiz presents five sampled questions", quizCount === 5, `found ${quizCount}`);
+check("Section quiz presents five sampled questions", quizCount === 5, `found ${quizCount}`);
 
 for (let index = 0; index < quizCount; index += 1) {
   await quiz.nth(index).locator(".answer-option").first().click();
@@ -1797,9 +1763,12 @@ check(
 
 /* -- persistence and the diagnostic pool -------------------------- */
 
-// Apply and Reference start collapsed, so open a group before clicking into it.
+// Supporting tools live in purpose-led menu groups, so open the menu and the
+// relevant group before taking the same path a learner would take.
 const openNavGroup = async (label) => {
-  const header = page.locator(".nav-section-header").filter({ hasText: label });
+  await openCourseMenu(page);
+  const menuLabel = label === "Apply" ? "Apply at work" : label === "Reference" ? "Resources" : label;
+  const header = page.locator(".nav-section-header").filter({ hasText: menuLabel });
   if ((await header.getAttribute("aria-expanded")) === "false") await header.click();
   await page.waitForTimeout(120);
 };
@@ -1817,6 +1786,7 @@ check(
   (await page.locator(".toolkit-item textarea").first().inputValue()) === toolkitDraft,
 );
 
+await openNavGroup("Apply");
 await page.getByRole("button", { name: "Capstone", exact: true }).click();
 const capstoneCount = await page.locator(".capstone-steps > section").count();
 check("Nine capstone sections", capstoneCount === 9, `found ${capstoneCount}`);
@@ -1834,6 +1804,7 @@ for (const term of ["Pre-Approval", "Program Increment", "Iteration path", "Seni
   check(`Field guide covers ${term}`, guideText.toLowerCase().includes(term.toLowerCase()));
 }
 
+await openNavGroup("Reference");
 await page.getByRole("button", { name: "Course additions", exact: true }).click();
 const divergenceCount = await page.locator(".divergence").count();
 check("Course additions are populated", divergenceCount >= 5, `found ${divergenceCount}`);
@@ -1853,6 +1824,7 @@ check(
   additionsText.includes("nothing here replaces the deck"),
 );
 
+await openNavGroup("Reference");
 await page.getByRole("button", { name: "Sources", exact: true }).click();
 const sourceCount = await page.locator(".source-list article").count();
 check("Provenance list is populated", sourceCount >= 14, `found ${sourceCount}`);
@@ -1923,8 +1895,8 @@ check(
   (await page.locator(".diagnostic-result").count()) === 1,
 );
 check(
-  "The recommendation names a stage to start from",
-  /Stage \d/.test(await page.locator(".diagnostic-result h2").innerText()),
+  "The recommendation names a course section to start from",
+  /Section \d/.test(await page.locator(".diagnostic-result h2").innerText()),
 );
 
 /* -- obsolete status disclaimers do not return --------------------- */
@@ -2011,8 +1983,8 @@ check(
   (await page.locator(".package-stats dt").count()) >= 4,
 );
 check(
-  "The sidebar names the package it belongs to",
-  (await page.locator(".package-switch strong").innerText()).trim().length > 3,
+  "The course menu names the package it belongs to",
+  (await page.locator(".package-switch strong").textContent() ?? "").trim().length > 3,
   "without this the navigation reads as though one course were the whole product",
 );
 
@@ -2054,7 +2026,8 @@ check(
   const swapPage = await swap.newPage();
   watchPage(swapPage, "package-switch");
   await swapPage.goto(artifactUrl, { waitUntil: "load" });
-  await swapPage.waitForSelector(".sidebar");
+  await swapPage.waitForSelector(".sidebar", { state: "attached" });
+  await openCourseSections(swapPage);
 
   const read = () =>
     swapPage.evaluate(() => ({
@@ -2084,6 +2057,7 @@ check(
     const cards = await swapPage.$$(".package-card");
     await cards[otherIndex].$eval("footer button", (b) => b.click());
     await swapPage.waitForTimeout(1600);
+    await openCourseSections(swapPage);
     const after = await read();
 
     await check(
@@ -2097,7 +2071,7 @@ check(
       `${before.h1} -> ${after.h1}`,
     );
     await check(
-      "Switching package changes the curriculum to the other package's stages",
+      "Switching package changes the course-section map to the other package",
       after.firstStage !== before.firstStage && after.firstStage.length > 0 && after.stages > 0,
       `${before.firstStage} -> ${after.firstStage}`,
     );
@@ -2169,7 +2143,7 @@ check(
   const cp = await cred.newPage();
   watchPage(cp, "credit");
   await cp.goto(artifactUrl, { waitUntil: "load" });
-  await cp.waitForSelector(".sidebar");
+  await cp.waitForSelector(".sidebar", { state: "attached" });
 
   await cp.evaluate(() => { window.location.hash = "library"; });
   await cp.waitForSelector(".package-card");
@@ -2243,6 +2217,7 @@ check(
   await cp.waitForTimeout(250);
 
   /* Now the package with no source author, through the control a learner clicks. */
+  await openCourseMenu(cp);
   await cp.click(".package-switch");
   await cp.waitForTimeout(400);
   const closureIndex = (
@@ -2290,7 +2265,7 @@ check(
   const pp = await pr.newPage();
   watchPage(pp, "print-content");
   await pp.goto(artifactUrl, { waitUntil: "load" });
-  await pp.waitForSelector(".sidebar");
+  await pp.waitForSelector(".sidebar", { state: "attached" });
   await pp.evaluate(() => { window.location.hash = "guide"; });
   await pp.waitForSelector(".guide-contents");
   await pp.emulateMedia({ media: "print" });
@@ -2398,7 +2373,7 @@ check(
     await np.addInitScript((id) =>
       localStorage.setItem("product-practice-v2:active-package", JSON.stringify(id)), pkg);
     await np.goto(artifactUrl, { waitUntil: "load" });
-    await np.waitForSelector(".sidebar");
+    await np.waitForSelector(".sidebar", { state: "attached" });
 
     const scan = () => np.evaluate(() => {
       const out = [];
@@ -2427,11 +2402,12 @@ check(
       await np.waitForTimeout(420);
       for (const h of await scan()) dbl.push(`${pkg}/${view}: ${h}`);
     }
+    await openCourseSections(np);
     const stages = await np.locator(".sidebar-modules nav button").count();
     for (let i = 0; i < stages; i += 1) {
       await np.evaluate(() => { window.location.hash = "dashboard"; });
       await np.waitForTimeout(110);
-      await np.locator(".sidebar-modules nav button").nth(i).click();
+      await openCourseSection(np, i);
       await np.waitForTimeout(420);
       for (const h of await scan()) dbl.push(`${pkg}/stage ${i + 1}: ${h}`);
     }
@@ -2449,7 +2425,7 @@ check(
   const pp = await pr.newPage();
   watchPage(pp, "print-tail");
   await pp.goto(artifactUrl, { waitUntil: "load" });
-  await pp.waitForSelector(".sidebar");
+  await pp.waitForSelector(".sidebar", { state: "attached" });
   await pp.evaluate(() => { window.location.hash = "guide"; });
   await pp.waitForSelector(".guide-contents");
   await pp.emulateMedia({ media: "print" });
@@ -2499,7 +2475,7 @@ check(
     }));
   });
   await op.goto(artifactUrl, { waitUntil: "load" });
-  await op.waitForSelector(".sidebar");
+  await op.waitForSelector(".sidebar", { state: "attached" });
 
   const NOUNS = "day|days|attempt|attempts|question|questions|card|cards|stage|stages|slide|slides|"
     + "week|weeks|item|items|section|sections|answer|answers|time|times|point|points|word|words";
@@ -2571,14 +2547,14 @@ check(
           localStorage.setItem("product-practice-v2:theme", JSON.stringify(t));
         }, [theme, pkg]);
         await cpage.goto(targetUrl, { waitUntil: "load" });
-        await cpage.waitForSelector(".sidebar-modules nav button");
+        await openCourseSections(cpage);
 
         const stages = await cpage.locator(".sidebar-modules nav button").count();
         for (let i = 0; i < stages; i += 1) {
           visitedStagePages += 1;
           await cpage.evaluate(() => { window.location.hash = "dashboard"; });
           await cpage.waitForTimeout(110);
-          await cpage.locator(".sidebar-modules nav button").nth(i).click();
+          await openCourseSection(cpage, i);
           await cpage.waitForTimeout(400);
 
           const bad = await cpage.evaluate(() => {
@@ -2976,7 +2952,7 @@ check("Results reports unscheduled cards separately from the due queue", /card(?
 const resultsText = await page.locator("#main-content").innerText();
 check(
   "Results explains that review timing does not delay course completion",
-  /complete the course in one day or spread it out/i.test(resultsText) && /not deadlines.*not part of the stage-completion rule/is.test(resultsText),
+  /complete the course in one day or spread it out/i.test(resultsText) && /not deadlines.*not part of the section-completion rule/is.test(resultsText),
 );
 check(
   "Results replaces internal maturity language with practical review states",
@@ -2984,11 +2960,11 @@ check(
 );
 check(
   "Results names the scored activities behind its charts",
-  /What you have completed/i.test(resultsText) && /Stage knowledge checks/i.test(resultsText) && /Mixed practice sets/i.test(resultsText) && /Diagnostics/i.test(resultsText),
+  /What you have completed/i.test(resultsText) && /Section knowledge checks/i.test(resultsText) && /Mixed practice sets/i.test(resultsText) && /Diagnostics/i.test(resultsText),
 );
 check(
   "Results turns item analysis into an actionable revision list",
-  /Questions to revisit/i.test(resultsText) && /Review this stage/i.test(resultsText) && !/Which questions are actually hard/i.test(resultsText),
+  /Questions to revisit/i.test(resultsText) && /Review this section/i.test(resultsText) && !/Which questions are actually hard/i.test(resultsText),
 );
 const expectedRevisitItems = await page.evaluate(() => {
   const raw = localStorage.getItem("product-practice-v2:pm-fundamentals:item-stats");
@@ -3019,7 +2995,8 @@ check("Dashboard and Results use the same due-card definition", dashboardDueNow 
 
 /* -- backup export and import ------------------------------------- */
 
-await page.getByRole("button", { name: "Learning settings" }).click();
+await page.evaluate(() => { window.location.hash = "settings"; });
+await page.getByRole("heading", { name: "Back up, restore or reset your progress" }).waitFor();
 const download = await Promise.all([
   page.waitForEvent("download"),
   page.getByRole("button", { name: "Download backup" }).click(),
@@ -3040,7 +3017,7 @@ await page.getByText("Backup restored", { exact: false }).waitFor();
 await page.evaluate(() => {
   window.location.hash = "path";
 });
-await page.getByRole("heading", { name: "Build the complete capability chain" }).waitFor();
+await page.getByRole("heading", { name: "Your course map" }).waitFor();
 const masteredLabels = await page.locator(".mastered-label").count();
 check("Imported backup restores mastery", masteredLabels >= 1, `found ${masteredLabels}`);
 
@@ -3459,7 +3436,7 @@ await mobilePage.getByRole("heading", { name: "Product Management Fundamentals" 
 const drawerInert = await mobilePage.locator(".sidebar").evaluate((el) => el.hasAttribute("inert"));
 check("Closed mobile drawer is inert", drawerInert);
 
-await mobilePage.getByRole("button", { name: "Open navigation" }).click();
+await mobilePage.getByRole("button", { name: "Open course menu" }).click();
 await mobilePage.locator(".sidebar.open").waitFor();
 await mobilePage.waitForTimeout(300);
 
@@ -3482,7 +3459,7 @@ await mobilePage.keyboard.press("Escape");
 await mobilePage.waitForTimeout(250);
 check("Escape closes the drawer", (await mobilePage.locator(".sidebar.open").count()) === 0);
 const focusReturned = await mobilePage.evaluate(() =>
-  document.activeElement?.classList.contains("mobile-menu"),
+  document.activeElement?.classList.contains("course-menu-button"),
 );
 check("Escape returns focus to the menu button", focusReturned);
 
