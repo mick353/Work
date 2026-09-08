@@ -14,11 +14,13 @@ export function workshopQualityProfile(stageCount: number): CourseQualityProfile
   return {
     profileVersion: COURSE_QUALITY_PROFILE_VERSION,
     stageCount,
-    minimumLessonWords: stageCount * 300,
-    minimumStageBodyWords: 300,
+    // A Workshop draft can be a short, focused course. These floors catch an
+    // empty stub without forcing trainers to pad a sound lesson with prose.
+    minimumLessonWords: stageCount * 120,
+    minimumStageBodyWords: 120,
     minimumKnowledgeQuestionsPerStage: 4,
     scenariosPerStage: 2,
-    minimumAssignmentWords: 100,
+    minimumAssignmentWords: 50,
     minimumAssignmentCriteria: 2,
     minimumWorkedReasoningPassages: 0,
     minimumWorkedReasoningWords: 0,

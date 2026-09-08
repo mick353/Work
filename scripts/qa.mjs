@@ -1680,7 +1680,7 @@ check("Stage quiz samples five questions", retakeCount === 5, `found ${retakeCou
 
 const statusBefore = (await page.locator(".module-footer span").first().textContent()) ?? "";
 check(
-  "Stage is not mastered before the lesson check and scenarios",
+  "Stage is not demonstrated before the knowledge check and scenarios",
   statusBefore.startsWith("Outstanding"),
   statusBefore,
 );
@@ -1700,7 +1700,11 @@ await page.locator(".quiz-result").waitFor();
 const masteryText = (await page.locator(".quiz-result strong").textContent()) ?? "";
 check("Answering from the bank scores 100% on a resampled set", /scored 100%/.test(masteryText), masteryText);
 
-await page.getByLabel("I can explain the lesson without relying on the slide wording.").check();
+check(
+  "Personal reading reflection remains optional",
+  !(await page.getByLabel("Mark the reading and reflection as complete for your own study record.").isChecked()),
+  "it is recorded for the learner, not used as a hidden completion gate",
+);
 
 const scenarios = page.locator(".scenario-panel .question-block");
 const scenarioCount = await scenarios.count();
@@ -1721,7 +1725,7 @@ for (let index = 0; index < scenarioCount; index += 1) {
 }
 
 const statusAfter = (await page.locator(".module-footer span").first().textContent()) ?? "";
-check("Stage reports mastered once all three requirements are met", statusAfter.startsWith("Mastered"), statusAfter);
+check("Section is demonstrated once recall and both decisions are complete", statusAfter.startsWith("Mastered"), statusAfter);
 check("Mastery reports how it was earned", /attempt/.test(statusAfter), statusAfter);
 
 /* -- option shuffling --------------------------------------------- */
@@ -3067,6 +3071,17 @@ await page.evaluate(() => { window.location.hash = "capstone"; });
 await page.waitForTimeout(400);
 const briefCount = await page.locator(".brief-switch button").count();
 check("Capstone offers multiple briefs", briefCount === 3, `found ${briefCount}`);
+
+check(
+  "Capstone ends with a direct results action",
+  (await page.getByRole("button", { name: "Review learning results" }).count()) === 1,
+  "a learner can see their course record without reopening the menu",
+);
+await page.getByRole("button", { name: "Review learning results" }).click();
+await page.waitForTimeout(250);
+check("Capstone results action opens the learner record", (await page.evaluate(() => window.location.hash)) === "#results");
+await page.evaluate(() => { window.location.hash = "capstone"; });
+await page.waitForTimeout(250);
 
 // Answers must be scoped per brief, or switching would silently overwrite work.
 const firstAnswer = await page.locator(".capstone-steps textarea").first().inputValue();

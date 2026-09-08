@@ -89,8 +89,9 @@ export function normaliseModuleProgress(value: Partial<ModuleProgress> | undefin
  * only achievable scores were 0, 50 and 100 — so "70%" actually meant "both
  * correct" while implying a gradation that did not exist. Each stage now has
  * four knowledge questions and two scenarios, and mastery states the rule
- * plainly: read it, score at least 75% on the quiz, and get both scenarios
- * right.
+ * plainly: score at least 75% on the quiz and get both scenarios right. The
+ * reading tick is retained as a learner's own study record, but should not
+ * quietly withhold a demonstrated result after all scored evidence is complete.
  */
 export const MASTERY_QUIZ_THRESHOLD = 75;
 
@@ -99,7 +100,7 @@ export function masteryState(progress: ModuleProgress | undefined, scenarioCount
   const learn = item.lessonRead;
   const recall = item.quizScore >= MASTERY_QUIZ_THRESHOLD;
   const apply = item.scenariosCorrect.length >= scenarioCount;
-  return { learn, recall, apply, mastered: learn && recall && apply };
+  return { learn, recall, apply, mastered: recall && apply };
 }
 
 /**

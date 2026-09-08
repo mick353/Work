@@ -68,6 +68,7 @@ export function Capstone({
   setRubric,
   briefId,
   setBriefId,
+  navigate,
 }: {
   values: TextMap;
   setValues: (updater: (current: TextMap) => TextMap) => void;
@@ -75,6 +76,7 @@ export function Capstone({
   setRubric: (updater: (current: RubricMap) => RubricMap) => void;
   briefId: string;
   setBriefId: (id: string) => void;
+  navigate: (view: View) => void;
 }) {
   const brief = capstoneBriefs.find((b) => b.id === briefId) ?? capstoneBriefs[0];
   const hasCapstone = capstoneBriefs.length > 0 && capstoneSteps.length > 0;
@@ -83,6 +85,7 @@ export function Capstone({
   const drafted = capstoneSteps.filter((step) => wordCount(values[key(step.id)] ?? "") >= CAPSTONE_MIN_WORDS).length;
   const totalChecks = capstoneSteps.length * capstoneRubric.length;
   const confirmedChecks = capstoneSteps.reduce((sum, step) => sum + (rubric[key(step.id)]?.length ?? 0), 0);
+  const capstoneReady = drafted === capstoneSteps.length && confirmedChecks === totalChecks;
 
   const toggleRubric = (stepId: string, rubricId: string) => {
     setRubric((current) => {
@@ -135,7 +138,8 @@ export function Capstone({
   if (!hasCapstone) {
     return (
       <div className="page">
-        <PageIntro eyebrow="Capstone" title="No capstone in this package" body="This package does not include a capstone brief. Everything else — course sections, checks, review and results — works as normal." />
+        <PageIntro eyebrow="Capstone" title="No capstone in this package" body="This package does not include a capstone brief. Review the learning results to see which course sections are demonstrated and what remains." />
+        <div className="button-row"><button className="primary" onClick={() => navigate("results")}>Review learning results <ChevronRight size={18} aria-hidden="true" /></button></div>
       </div>
     );
   }
@@ -266,6 +270,21 @@ export function Capstone({
         <p className="rubric-note">
           Text export is the reliable option — printed text areas are clipped to their visible height by most browsers.
         </p>
+      </section>
+
+      <section className="results-guidance capstone-finish" aria-labelledby="capstone-finish-title">
+        <div>
+          <span className="eyebrow">Next step</span>
+          <h2 id="capstone-finish-title">{capstoneReady ? "Review your completed course" : "Review your learning results"}</h2>
+          <p>{capstoneReady
+            ? "Your capstone draft and self-review are complete. Results shows the course sections your quiz and scenario evidence has demonstrated, plus a record you can print or save."
+            : "The capstone can be finished now or later. Results shows exactly which course sections your quiz and scenario evidence has demonstrated, and what remains."}</p>
+        </div>
+        <div className="guidance-summary">
+          <span><strong>{drafted}/{capstoneSteps.length}</strong> capstone sections drafted</span>
+          <span><strong>{confirmedChecks}/{totalChecks}</strong> self-review checks confirmed</span>
+          <button type="button" className="primary" onClick={() => navigate("results")}>Review learning results <ChevronRight size={17} aria-hidden="true" /></button>
+        </div>
       </section>
     </div>
   );

@@ -1,4 +1,4 @@
-import { assets, caseStudies, contrasts, diagnosticQuestions, manifest, modules, quizPoolFor, supplementaryQuestions, totalMinutes } from "./content";
+import { assets, capstoneBriefs, capstoneSteps, caseStudies, contrasts, diagnosticQuestions, manifest, modules, quizPoolFor, supplementaryQuestions, totalMinutes } from "./content";
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
@@ -452,6 +452,7 @@ export function ModuleView({
   const stageContrasts = contrasts.filter((c) => c.moduleId === module.id);
   const allSourceIds = [...new Set(module.sections.flatMap((section) => section.sourceIds ?? []))];
   const next = modules.find((item) => item.number === module.number + 1);
+  const hasCapstone = capstoneBriefs.length > 0 && capstoneSteps.length > 0;
 
   return (
     // data-stage drives the accent colour for everything inside this page.
@@ -518,8 +519,8 @@ export function ModuleView({
             <p className="stage-mastered-note">
               <Check size={18} aria-hidden="true" />
               <span>
-                Section {module.number} demonstrated — read, recalled and applied. It stays in your review queue so
-                it does not fade.
+                Section {module.number} demonstrated — recalled and applied. Your optional reading/reflection record
+                stays separate; review cards help the learning hold over time.
               </span>
             </p>
           )}
@@ -649,7 +650,7 @@ export function ModuleView({
             checked={progress.lessonRead}
             onChange={(event) => update({ lessonRead: event.target.checked })}
           />
-          <span>I can explain the lesson without relying on the slide wording.</span>
+          <span>Mark the reading and reflection as complete for your own study record.</span>
         </label>
       </section>
 
@@ -954,8 +955,8 @@ export function ModuleView({
           <strong>Section status</strong>
           <span>
             {state.mastered
-              ? `Mastered — lesson, recall and application complete. Quiz best ${progress.quizScore}% over ${progress.attempts} attempt${progress.attempts === 1 ? "" : "s"}; scenarios solved in ${scenarioAttemptTotal} attempt${scenarioAttemptTotal === 1 ? "" : "s"}.`
-              : `Outstanding: ${[!state.learn && "Learn", !state.recall && "Recall", !state.apply && "Apply"]
+              ? `Mastered — recall and application complete. Quiz best ${progress.quizScore}% over ${progress.attempts} attempt${progress.attempts === 1 ? "" : "s"}; scenarios solved in ${scenarioAttemptTotal} attempt${scenarioAttemptTotal === 1 ? "" : "s"}.`
+              : `Outstanding: ${[!state.recall && "Recall", !state.apply && "Apply"]
                   .filter(Boolean)
                   .join(", ")}.`}
           </span>
@@ -966,8 +967,8 @@ export function ModuleView({
             <ChevronRight size={18} aria-hidden="true" />
           </button>
         ) : (
-          <button className="primary" onClick={() => navigate("capstone")}>
-            Open the capstone
+          <button className="primary" onClick={() => navigate(hasCapstone ? "capstone" : "results")}>
+            {hasCapstone ? "Open the capstone" : "Review learning results"}
             <ChevronRight size={18} aria-hidden="true" />
           </button>
         )}

@@ -62,6 +62,7 @@ import {
 import { evaluateCourse, issueCounts, type AuthoringIssue } from "./quality";
 import { AdvancedEditor } from "./AdvancedEditor";
 import { MediaEditor } from "./MediaEditor";
+import { SlideReferencePicker } from "./SlideReferencePicker";
 import { readBrowserDraft, writeBrowserDraft } from "./storage";
 
 type View = "instructions" | "setup" | "stages" | "supports" | "advanced" | "media" | "review";
@@ -155,23 +156,6 @@ function nextNumericId(prefix: string, used: Iterable<string>): string {
   let number = 1;
   while (existing.has(`${prefix}-${number}`)) number += 1;
   return `${prefix}-${number}`;
-}
-
-function parseNumberRanges(value: string): number[] {
-  const numbers = new Set<number>();
-  for (const token of value.split(/[,;\s]+/).filter(Boolean)) {
-    const range = token.match(/^(\d+)[-–](\d+)$/);
-    if (range) {
-      const first = Number(range[1]);
-      const last = Number(range[2]);
-      if (last >= first && last - first <= 200) for (let number = first; number <= last; number += 1) numbers.add(number);
-    } else if (/^\d+$/.test(token)) numbers.add(Number(token));
-  }
-  return [...numbers].filter((number) => number > 0).sort((a, b) => a - b);
-}
-
-function formatNumberRanges(numbers: number[] | undefined): string {
-  return (numbers ?? []).join(", ");
 }
 
 function InputField({
@@ -855,6 +839,14 @@ npm run verify`}</code></pre>
     const linkedContrasts = entry.content.contrasts.filter((item) => item.moduleId === stage.id).length;
     const linkedCaseSteps = entry.content.caseStudies.reduce((total, study) => total + study.steps.filter((step) => step.moduleId === stage.id).length, 0);
     const linkedSlides = entry.content.slides.filter((slide) => slide.stage === stage.id).length;
+    // Older Workshop drafts stored the former generic 300/100 profile. Treat
+    // that shape as the Workshop baseline so its editor and its exported
+    // package agree after the lighter baseline was introduced.
+    const storedProfile = entry.qualityProfile;
+    const qualityProfile = storedProfile && storedProfile.minimumAssignmentCriteria === 2 &&
+      storedProfile.minimumWorkedReasoningPassages === 0 && storedProfile.minimumCaseStageCoverage === 0
+      ? workshopQualityProfile(entry.content.modules.length)
+      : storedProfile ?? workshopQualityProfile(entry.content.modules.length);
     return (
       <div className="workspace-stack">
         <div className="page-heading with-action">
@@ -882,12 +874,12 @@ npm run verify`}</code></pre>
             <InputField id={`stage-${stage.id}-id`} label="Stable stage id" value={stage.id} onChange={(value) => changeStageId(stage.id, value)} hint="Used by questions, progress and support content" />
             <InputField id={`stage-${stage.id}-title`} label="Title" value={stage.title} onChange={(value) => updateStage(stage.id, (item) => ({ ...item, title: value }))} />
             <InputField id={`stage-${stage.id}-subtitle`} label="Subtitle" value={stage.subtitle} onChange={(value) => updateStage(stage.id, (item) => ({ ...item, subtitle: value }))} />
-            <InputField label="Source slide range (optional)" value={stage.slides} onChange={(value) => updateStage(stage.id, (item) => ({ ...item, slides: value }))} hint="Leave blank unless slide images will travel with the course" />
+            <div className="read-only-field"><span>Source deck coverage</span><strong>{stage.slides || "No deck slides assigned"}</strong><small>Assign imported slides to this section in Media & source deck. The learner reference is updated automatically.</small></div>
           </div>
           <TextAreaField id={`stage-${stage.id}-outcome`} label="Learning outcome" value={stage.outcome} onChange={(value) => updateStage(stage.id, (item) => ({ ...item, outcome: value }))} rows={2} hint="Start with an observable verb: assess, distinguish, decide, produce…" />
           <TextAreaField id={`stage-${stage.id}-core-idea`} label="The idea to keep" value={stage.coreIdea} onChange={(value) => updateStage(stage.id, (item) => ({ ...item, coreIdea: value }))} rows={3} hint="The one explanation worth remembering after the detail fades" />
         </Card>
-        <div id={`stage-${stage.id}-sections`}><Card title="Lesson sections" eyebrow={`${stage.sections.reduce((sum, section) => sum + wordCount(section.body), 0)} of 300 minimum body words`} actions={<EmptyButton onClick={() => updateStage(stage.id, (item) => ({ ...item, sections: [...item.sections, { heading: "", body: "", sourceIds: [] }] }))}>Add section</EmptyButton>}>
+        <div id={`stage-${stage.id}-sections`}><Card title="Lesson sections" eyebrow={`${stage.sections.reduce((sum, section) => sum + wordCount(section.body), 0)} of ${qualityProfile.minimumStageBodyWords} minimum body words`} actions={<EmptyButton onClick={() => updateStage(stage.id, (item) => ({ ...item, sections: [...item.sections, { heading: "", body: "", sourceIds: [] }] }))}>Add section</EmptyButton>}>
           <GuidancePanel title="Show a useful lesson-section pattern">
             <p>Start with the decision or problem, explain the principle in plain language, then demonstrate it with a realistic example. Cite the source supporting the claim—not merely a source related to the general topic.</p>
           </GuidancePanel>
@@ -922,11 +914,11 @@ npm run verify`}</code></pre>
                     references.push({ sourceId: sourceItem.id, locator: value || undefined, slideNumbers: reference?.slideNumbers });
                     sections[index] = { ...currentSection, sourceReferences: references };
                     return { ...item, sections };
-                  })} /><InputField label="Imported slide numbers" value={formatNumberRanges(reference?.slideNumbers)} hint="For example: 6, 9–11. These become openable citations." onChange={(value) => updateStage(stage.id, (item) => {
+                  })} /><SlideReferencePicker slides={entry.content.slides} assets={entry.content.assets ?? []} value={reference?.slideNumbers} onChange={(slideNumbers) => updateStage(stage.id, (item) => {
                     const sections = [...item.sections];
                     const currentSection = sections[index];
                     const references = (currentSection.sourceReferences ?? []).filter((item) => item.sourceId !== sourceItem.id);
-                    references.push({ sourceId: sourceItem.id, locator: reference?.locator, slideNumbers: parseNumberRanges(value) });
+                    references.push({ sourceId: sourceItem.id, locator: reference?.locator, slideNumbers: slideNumbers.length ? slideNumbers : undefined });
                     sections[index] = { ...currentSection, sourceReferences: references };
                     return { ...item, sections };
                   })} /></div>}</div>;
@@ -947,7 +939,7 @@ npm run verify`}</code></pre>
           </GuidancePanel>
           <div className="form-grid"><InputField id={`stage-${stage.id}-assignment-title`} label="Assignment title" value={stage.assignment.title} onChange={(value) => updateStage(stage.id, (item) => ({ ...item, assignment: { ...item.assignment, title: value } }))} /><InputField id={`stage-${stage.id}-assignment-instruction`} label="Instruction" value={stage.assignment.instruction} onChange={(value) => updateStage(stage.id, (item) => ({ ...item, assignment: { ...item.assignment, instruction: value } }))} /></div>
           <TextAreaField label="Learner prompts (one per line)" value={stage.assignment.prompts.join("\n")} onChange={(value) => updateStage(stage.id, (item) => ({ ...item, assignment: { ...item.assignment, prompts: value.split("\n") } }))} rows={4} />
-          <TextAreaField id={`stage-${stage.id}-assignment-answer`} label="Worked answer" value={stage.assignment.modelAnswer ?? ""} onChange={(value) => updateStage(stage.id, (item) => ({ ...item, assignment: { ...item.assignment, modelAnswer: value } }))} rows={8} minimum={100} />
+          <TextAreaField id={`stage-${stage.id}-assignment-answer`} label="Worked answer" value={stage.assignment.modelAnswer ?? ""} onChange={(value) => updateStage(stage.id, (item) => ({ ...item, assignment: { ...item.assignment, modelAnswer: value } }))} rows={8} minimum={qualityProfile.minimumAssignmentWords} />
           <TextAreaField id={`stage-${stage.id}-assignment-criteria`} label="Self-review criteria (one per line)" value={(stage.assignment.criteria ?? []).join("\n")} onChange={(value) => updateStage(stage.id, (item) => ({ ...item, assignment: { ...item.assignment, criteria: value.split("\n") } }))} rows={4} />
         </Card>
       </div>

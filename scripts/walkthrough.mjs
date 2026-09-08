@@ -345,9 +345,9 @@ for (let s = 0; s < stageCount; s += 1) {
     }
   }
 
-  /* --- Mark the lesson read, then mastery should appear --- */
+  /* --- Recall and application are sufficient for a demonstrated result. --- */
   const readBox = page.locator(".completion-check input");
-  if (await readBox.count()) await readBox.check().catch(() => {});
+  const reflectionLeftUnticked = await readBox.count() ? !(await readBox.isChecked()) : true;
   await page.waitForTimeout(220);
 
   /*
@@ -359,8 +359,9 @@ for (let s = 0; s < stageCount; s += 1) {
   const mastered = /\bMastered\b/.test(footer);
   if (!mastered) {
     fail("bug", `Stage ${s + 1} (${stageName})`,
-      `all three requirements met but the stage footer does not report mastery — "${footer.slice(0, 120)}"`);
+      `recall and application were complete but the stage footer does not report mastery — "${footer.slice(0, 120)}"`);
   }
+  if (!reflectionLeftUnticked) fail("weak", `Stage ${s + 1} (${stageName})`, "the optional reflection was already ticked, so this run could not prove it does not gate mastery");
   rec.mastered = mastered;
   rec.footer = footer.slice(0, 160);
   ledger.stages.push(rec);

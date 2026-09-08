@@ -61,7 +61,7 @@ The complete editable profile includes:
 - one optional PNG/JPEG/WebP visual per course stage, with required alternative text and optional caption/source;
 - asset-capable local autosave, draft backup/restore, live checks and the shared learner preview.
 
-This is the current strict authoring profile, not a universal claim that every valid learning intervention needs the same volume. The Workshop currently expects at least 300 body words, four knowledge questions, exactly two scenarios, the three review-card kinds, a glossary entry, a practice contrast and a substantial worked answer for each stage. Whether shorter course profiles should use different gates is a trainer-pilot decision recorded in [ROADMAP.md](ROADMAP.md).
+The Workshop uses a deliberately light baseline for new courses: at least 120 body words and a 50-word worked answer per course section, alongside four knowledge questions, two applied scenarios, the three review-card kinds, a glossary entry and a practice contrast. These are stub checks, not a claim that word count proves quality. A reviewed course can set a more demanding, course-specific profile where that is genuinely justified.
 
 Direct PowerPoint parsing is deliberately not built into the browser. Save the deck as PDF, or export its slides as PNG/JPEG/WebP, before import. SVG upload is excluded because the exported package treats media as inert images and does not accept script-capable image content.
 
@@ -81,9 +81,9 @@ The trainer must give the adaptation its own permanent id, review its inherited 
 The **Sources for this section** checkbox is meaningful even without a deck: it displays a source attribution chip under the lesson section. The adjacent fields make that attribution precise:
 
 - **Page, section or locator** records human-readable detail such as `page 7`, `section 3.2` or `slides 12–14`.
-- **Imported slide numbers** links that attribution to slide records in the course. In the learner player, the source chip becomes a button that opens the cited slide.
+- **Imported slides** are chosen from the deck picker and link that attribution to the real slide records in the course. In the learner player, the source chip becomes a button that opens the cited slide.
 
-Field-guide entries use the same source-reference model. Source ids are renamed consistently across lessons, field-guide entries and course-owned media.
+Field-guide entries use the same source-reference model. Once a source deck is imported, trainers choose its actual slide titles from a picker; the Workshop stores the selected slide numbers and shows a small preview, rather than asking people to type and guess them. Non-deck locators, such as a section of an external template, remain clearly labelled as such. Source ids are renamed consistently across lessons, field-guide entries and course-owned media.
 
 The URL is a learner destination, not merely a citation locator. Open it while signed out and confirm that the actual guide, standard, full text or substantive explanation is on that page. PubMed and other database records, search results, generic home pages, abstract-only pages, blog-only commentary and sign-in-gated courses are not suitable learner links. Where the underlying evidence is a restricted or highly technical paper, keep its formal citation in the source note and link learners to a credible open synthesis or practical guide that teaches the same supported claim. Prefer a governing authority or canonical guide over a personal blog when one exists.
 

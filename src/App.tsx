@@ -653,6 +653,7 @@ export default function App() {
         setRubric={setRubricWithStudy}
         briefId={briefId}
         setBriefId={setBriefWithStudy}
+        navigate={navigate}
       />
     );
   } else if (view === "results") {

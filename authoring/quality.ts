@@ -1,6 +1,7 @@
 import type { Question, TrainingPackage } from "../src/package-model";
 import { validateTrainingPackage } from "../src/package-validation";
 import { packageForExport } from "./draft";
+import { workshopQualityProfile } from "../src/course-quality-profiles";
 
 export type IssueSeverity = "error" | "warning" | "note";
 export type IssueArea = "setup" | "stages" | "supports" | "advanced" | "media" | "review";
@@ -111,6 +112,7 @@ export function evaluateCourse(source: TrainingPackage): AuthoringIssue[] {
     });
     return issues;
   }
+  const profile = entry.qualityProfile ?? workshopQualityProfile(entry.content.modules.length);
 
   const requiredManifest: Array<[keyof typeof entry.manifest, string]> = [
     ["title", "course title"],
@@ -159,8 +161,8 @@ export function evaluateCourse(source: TrainingPackage): AuthoringIssue[] {
       add({ severity: "error", area: "stages", stageId: stage.id, targetId: `stage-${stage.id}-sections`, title: `${stageLabel} needs at least two lesson sections`, detail: "One section rarely establishes and then applies an idea." });
     }
     const bodyWords = stage.sections.reduce((sum, section) => sum + words(section.body), 0);
-    if (bodyWords < 300) {
-      add({ severity: "error", area: "stages", stageId: stage.id, targetId: `stage-${stage.id}-section-0-body`, title: `${stageLabel} is still a stub`, detail: `${bodyWords} of the minimum 300 body words are present.` });
+    if (bodyWords < profile.minimumStageBodyWords) {
+      add({ severity: "error", area: "stages", stageId: stage.id, targetId: `stage-${stage.id}-section-0-body`, title: `${stageLabel} is still a stub`, detail: `${bodyWords} of the minimum ${profile.minimumStageBodyWords} body words are present.` });
     }
     stage.sections.forEach((section, index) => {
       if (!section.heading.trim() || !section.body.trim()) {
@@ -193,8 +195,8 @@ export function evaluateCourse(source: TrainingPackage): AuthoringIssue[] {
     if (!assignment.title.trim() || !assignment.instruction.trim() || !assignment.prompts.length || assignment.prompts.some((prompt) => !prompt.trim())) {
       add({ severity: "error", area: "stages", stageId: stage.id, targetId: `stage-${stage.id}-assignment-title`, title: `${stageLabel} needs a complete assignment`, detail: "Add a title, instruction and at least one concrete writing prompt." });
     }
-    if (words(assignment.modelAnswer) < 100) {
-      add({ severity: "error", area: "stages", stageId: stage.id, targetId: `stage-${stage.id}-assignment-answer`, title: `${stageLabel}'s worked answer is too thin`, detail: `${words(assignment.modelAnswer)} of the minimum 100 words are present.` });
+    if (words(assignment.modelAnswer) < profile.minimumAssignmentWords) {
+      add({ severity: "error", area: "stages", stageId: stage.id, targetId: `stage-${stage.id}-assignment-answer`, title: `${stageLabel}'s worked answer is too thin`, detail: `${words(assignment.modelAnswer)} of the minimum ${profile.minimumAssignmentWords} words are present.` });
     }
     if ((assignment.criteria ?? []).filter((item) => item.trim()).length < 2) {
       add({ severity: "error", area: "stages", stageId: stage.id, targetId: `stage-${stage.id}-assignment-criteria`, title: `${stageLabel} needs at least two review criteria`, detail: "Criteria let learners judge their response against observable qualities." });

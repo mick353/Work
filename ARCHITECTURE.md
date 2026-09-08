@@ -110,7 +110,7 @@ The repository ZIP is an output boundary, not a repository mutation. It carries 
 | Seeded option shuffling | `lib.ts` | Mulberry32 seeded from question id + per-install salt. Stable per person, different between people. |
 | Spaced repetition | `lib.ts` | SM-2. Ease, interval, lapses, due date. |
 | Error-driven recall | `recall.ts` | A wrong answer brings forward cards covering it. Moves the **due date only** — never ease or lapse count, because rating a card the learner has not seen would corrupt it. |
-| Mastery rules | `state.ts` | Lesson read + ≥75% on the check + both scenarios correct. |
+| Mastery rules | `state.ts` | ≥75% on the knowledge check + both decision scenarios correct. The reading/reflection tick is a separate learner study record. |
 | Question pools | `content.ts` | `quizPoolFor()` merges a stage's own items with package supplements. Diagnostic and mixed-practice pools are kept separate so a diagnostic score means transfer, not recognition. |
 | Reading time | derived | Word count plus an allowance per question. Never typed by hand. |
 

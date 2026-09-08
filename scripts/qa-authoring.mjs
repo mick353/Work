@@ -598,8 +598,19 @@ await firstVisual.getByLabel("Image description").fill("A single evidence marker
 check("Stage images can be embedded and described", await firstVisual.locator("img").count() === 1);
 
 await featurePage.getByRole("button", { name: /Teach/ }).click();
+check(
+  "Course-section deck coverage is generated from Media assignments, not guessed in a text field",
+  (await featurePage.getByText("Source deck coverage", { exact: true }).count()) === 1 &&
+    (await featurePage.getByLabel("Source slide range (optional)").count()) === 0,
+  "the imported deck is the only source of learner slide ranges",
+);
 await featurePage.getByLabel("Page, section or locator").first().fill("slides 1–2");
-await featurePage.getByLabel("Imported slide numbers").first().fill("1–2");
+const firstSlidePicker = featurePage.locator(".slide-reference-picker").first();
+await firstSlidePicker.getByLabel("Choose an imported slide").selectOption("1");
+await firstSlidePicker.getByRole("button", { name: "Add slide" }).click();
+await firstSlidePicker.getByLabel("Choose an imported slide").selectOption("2");
+await firstSlidePicker.getByRole("button", { name: "Add slide" }).click();
+check("Source citations use imported slide titles instead of guessed numbers", await firstSlidePicker.locator(".selected-slides li").count() === 2 && /Slide 1/.test(await firstSlidePicker.innerText()));
 await featurePage.waitForTimeout(1200);
 const indexedDraft = await featurePage.evaluate(() => new Promise((resolve, reject) => {
   const request = indexedDB.open("product-practice-course-workshop", 1);
@@ -625,7 +636,7 @@ check(
   cloneDownload.suggestedFilename(),
 );
 check("Clone resets identity, version, status, review evidence and approvals", cloneDraft.package.manifest.id === "pm-fundamentals-adapted" && cloneDraft.package.manifest.version === "0.1.0" && cloneDraft.package.manifest.status === "draft" && cloneDraft.package.manifest.reviewed === "" && cloneDraft.package.content.sources.every((source) => !source.checked) && cloneDraft.release.releaseApproved === false);
-check("Clone receives the portable Workshop quality profile instead of inheriting a hidden course-specific gate", cloneDraft.package.qualityProfile?.stageCount === 9 && cloneDraft.package.qualityProfile?.minimumLessonWords === 2700 && cloneDraft.package.qualityProfile?.minimumWorkedReasoningPassages === 0);
+check("Clone receives the portable Workshop quality profile instead of inheriting a hidden course-specific gate", cloneDraft.package.qualityProfile?.stageCount === 9 && cloneDraft.package.qualityProfile?.minimumLessonWords === 1080 && cloneDraft.package.qualityProfile?.minimumStageBodyWords === 120 && cloneDraft.package.qualityProfile?.minimumAssignmentWords === 50 && cloneDraft.package.qualityProfile?.minimumWorkedReasoningPassages === 0);
 check("Portable clone draft records stable lineage and a shareable revision", cloneDraft.draftSchemaVersion === 2 && cloneDraft.lineage?.origin === "clone" && cloneDraft.lineage?.basedOn?.packageId === "pm-fundamentals" && cloneDraft.lineage?.revision === 2 && Boolean(cloneDraft.lineage?.lastExportedAt));
 check("Clone preserves advanced course content and embeds the source deck", cloneDraft.package.content.caseStudies.length > 0 && cloneDraft.package.content.toolkitTemplates.length > 0 && cloneDraft.package.content.capstoneSteps.length > 0 && cloneDraft.package.content.fieldGuide.length > 0 && cloneDraft.package.content.slides.length === 98 && cloneDraft.package.content.assets.length === 99);
 check("Precise lesson citations survive the editable draft", cloneDraft.package.content.modules.some((module) => module.sections.some((section) => section.sourceReferences?.some((reference) => reference.locator === "slides 1–2" && reference.slideNumbers?.join(",") === "1,2"))));

@@ -2,7 +2,7 @@
  * Offline service worker for the GitHub Pages build.
  *
  * The shell is one HTML file, so the precache is tiny: the document, the
- * manifest and the icons. b7d0c125f409 is replaced at build time with a
+ * manifest and the icons. ff91b224fbd2 is replaced at build time with a
  * hash of the generated HTML, so a new release always busts the cache rather
  * than leaving someone stuck on an old copy of the course.
  *
@@ -17,7 +17,7 @@
  * fallback whenever the network is unavailable.
  */
 
-const VERSION = "b7d0c125f409";
+const VERSION = "ff91b224fbd2";
 const CACHE = `product-practice-${VERSION}`;
 const SCOPE_URL = new URL(self.registration.scope);
 const ROOT_PATH = SCOPE_URL.pathname.endsWith("/") ? SCOPE_URL.pathname : `${SCOPE_URL.pathname}/`;

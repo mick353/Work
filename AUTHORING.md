@@ -83,7 +83,7 @@ Rules that apply to every section — thresholds in [STANDARDS.md](STANDARDS.md)
 
 **Produce:** every stage's `Module`.
 
-**Gate:** `npm run typecheck` passes. Every stage has an outcome, a core idea, and at least the minimum body words.
+**Gate:** `npm run typecheck` passes. Every course section has an outcome, a core idea, and enough teaching detail to clear the selected profile's lightweight stub check (120 body words for a new Workshop course).
 
 ---
 
@@ -215,7 +215,7 @@ Then, by hand:
 
 1. **Walk every view in the new package.** Not the default one. Anything keyed by id fails silently, and the default package will not show you.
 2. **Switch packages by clicking the button**, both directions. Seeding `localStorage` proves the content layer resolved and nothing else.
-3. **Complete a stage end to end**: read, fail the knowledge check deliberately, confirm it names what to reread, retry and pass, answer a scenario wrongly and retry, write the assignment, reveal the model answer, confirm mastery appears only when all three requirements are met.
+3. **Complete a course section end to end**: read, fail the knowledge check deliberately, confirm it names what to reread, retry and pass, answer a scenario wrongly and retry, write the assignment, reveal the model answer, confirm the section is demonstrated only after the knowledge check and both scenarios are complete. The reading/reflection tick remains a personal study record, not a hidden release gate.
 4. **Check the reporting agrees** with what you actually answered.
 5. **Print the guide and the completion record** and read them. Measuring the PDF is not reading it.
 6. `scripts/walkthrough.mjs <packageId>` automates 3 and 4 across every stage.

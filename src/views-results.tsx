@@ -464,7 +464,7 @@ export function Results({
               </dl>
 
               <table className="record-table">
-                <caption>Per-section outcome. Mastery requires the lesson read, {MASTERY_QUIZ_THRESHOLD}% on the knowledge check, and both decision scenarios correct.</caption>
+                <caption>Per-section outcome. Demonstration requires {MASTERY_QUIZ_THRESHOLD}% on the knowledge check and both decision scenarios correct. Reading and reflection are a separate personal study record.</caption>
                 <thead>
                   <tr>
                     <th scope="col">Section</th>
