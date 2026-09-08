@@ -607,10 +607,18 @@ check(
 );
 await featurePage.getByLabel("Page, section or locator").first().fill("slides 1–2");
 const firstSlidePicker = featurePage.locator(".slide-reference-picker").first();
+const addFirstSelectedSlide = async () => {
+  const addSlide = firstSlidePicker.getByRole("button", { name: "Add slide" });
+  // The authoring shell has fixed controls above and below the editor. Centre the
+  // target before clicking so this remains a real pointer interaction on short CI viewports.
+  await addSlide.evaluate((element) => element.scrollIntoView({ block: "center", inline: "nearest" }));
+  await featurePage.waitForTimeout(100);
+  await addSlide.click();
+};
 await firstSlidePicker.getByLabel("Choose an imported slide").selectOption("1");
-await firstSlidePicker.getByRole("button", { name: "Add slide" }).click();
+await addFirstSelectedSlide();
 await firstSlidePicker.getByLabel("Choose an imported slide").selectOption("2");
-await firstSlidePicker.getByRole("button", { name: "Add slide" }).click();
+await addFirstSelectedSlide();
 check("Source citations use imported slide titles instead of guessed numbers", await firstSlidePicker.locator(".selected-slides li").count() === 2 && /Slide 1/.test(await firstSlidePicker.innerText()));
 await featurePage.waitForTimeout(1200);
 const indexedDraft = await featurePage.evaluate(() => new Promise((resolve, reject) => {
