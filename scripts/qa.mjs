@@ -2501,6 +2501,41 @@ check(
 }
 
 /*
+  Course completion is a finish line, not an instruction to repeat the final
+  section. Seed every mastery condition and check the learner is sent to a
+  useful reflection of the evidence instead.
+*/
+{
+  const complete = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const completePage = await complete.newPage();
+  watchPage(completePage, "course-complete");
+  const allMastered = Object.fromEntries(bank.modules.map((module) => [module.id, {
+    lessonRead: true,
+    quizScore: 100,
+    scenariosCorrect: module.scenarios.map((scenario) => scenario.id),
+    scenarioAttempts: Object.fromEntries(module.scenarios.map((scenario) => [scenario.id, 1])),
+    reflection: "",
+    assignment: [],
+    assignmentChecks: {},
+    attempts: 1,
+  }]));
+  await completePage.addInitScript((progress) => {
+    localStorage.setItem("product-practice-v2:pm-fundamentals:progress", JSON.stringify(progress));
+  }, allMastered);
+  await completePage.goto(artifactUrl, { waitUntil: "load" });
+  await completePage.waitForSelector(".next-step");
+  const completionPrompt = await completePage.locator(".next-step").innerText();
+  check(
+    "A completed course directs the learner to results rather than the final section",
+    /Course complete.*review your results/i.test(completionPrompt) &&
+      !/Continue Section 9/i.test(completionPrompt) &&
+      (await completePage.getByRole("button", { name: "View results", exact: true }).count()) >= 1,
+    completionPrompt,
+  );
+  await complete.close();
+}
+
+/*
   The package author is not named, anywhere.
 
   This is a deliberate choice, not an oversight, and it is easy to undo by

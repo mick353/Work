@@ -323,7 +323,7 @@ check("A new course is presented as a calm not-started draft", /new draft.*start
 check("A blank course does not claim a duration before lesson content exists", /Duration pending/i.test(await page.locator(".topbar-meta").innerText()));
 check("The built-in instructional page explains all three learner delivery routes", /offline HTML course.*host it at its own URL.*combined catalogue/is.test(await page.locator("body").innerText()));
 check("The studio makes its local-only boundary visible", /not uploaded/i.test(await page.locator(".privacy-banner").innerText()));
-check("Draft controls disclose portable embedded media and estimated size", /save.share complete draft/i.test(await page.locator(".sidebar-actions").innerText()) && /embedded slides and images.*approximately.*(?:KB|MB)/is.test(await page.locator(".draft-backup-note").innerText()));
+check("Draft controls disclose portable embedded media and estimated size", /save.share draft/i.test(await page.locator(".sidebar-actions").innerText()) && /embedded slides and images.*approximately.*(?:KB|MB)/is.test(await page.locator(".draft-backup-note").innerText()));
 check("The studio makes no network requests", networkRequests.length === 0, networkRequests[0] ?? "offline only");
 const instructionAxe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
 const instructionSerious = instructionAxe.violations.filter((item) => item.impact === "serious" || item.impact === "critical");
@@ -331,6 +331,8 @@ check("Workshop instructions have no serious or critical automated accessibility
 
 check("Instructions include a five-part course blueprint", await page.locator(".blueprint-list li").count() === 5);
 check("Instructions explain how sources, course sections, review and outputs connect", await page.locator(".connection-map > div").count() === 4);
+const starterTerms = (await page.locator(".start-options article").first().locator("dt").allInnerTexts()).map((term) => term.trim());
+check("A one-section starter uses singular course language", starterTerms.some((term) => /^course section$/i.test(term)), starterTerms.join(" | "));
 check("Every authoring step includes a live learner reference", await page.locator(".learner-reference").count() === 1 && /Live learner reference/i.test(await page.locator(".learner-reference").innerText()));
 check("Blank and template starting choices are presented together before the workflow", await page.locator(".start-options article").count() === 3 && await page.locator(".start-options").evaluate((element) => {
   const workflow = document.querySelector(".workflow-list");
@@ -634,7 +636,7 @@ check("Asset-rich drafts autosave in IndexedDB", indexedDraft?.package?.content?
 
 const [cloneDownload] = await Promise.all([
   featurePage.waitForEvent("download"),
-  featurePage.locator(".sidebar-actions").getByRole("button", { name: "Save/share complete draft" }).click(),
+  featurePage.locator(".sidebar-actions").getByRole("button", { name: "Save/share draft" }).click(),
 ]);
 const cloneFile = path.join(qaDir, "adapted-pm-course-draft.json");
 await cloneDownload.saveAs(cloneFile);
@@ -711,7 +713,7 @@ await page.getByRole("button", { name: /Review & export/ }).click();
 check("Legacy drafts cannot carry old review declarations into a current release", await page.getByRole("button", { name: "Export repository ZIP" }).isDisabled());
 const [migratedDownload] = await Promise.all([
   page.waitForEvent("download"),
-  page.locator(".sidebar-actions").getByRole("button", { name: "Save/share complete draft" }).click(),
+  page.locator(".sidebar-actions").getByRole("button", { name: "Save/share draft" }).click(),
 ]);
 const migratedFile = path.join(qaDir, "migrated-v2-course-draft.json");
 await migratedDownload.saveAs(migratedFile);
@@ -788,6 +790,13 @@ await page.waitForSelector("text=Loaded workshop-fixture-under-review.json");
 await page.getByRole("button", { name: /Review & export/ }).click();
 await page.waitForSelector(".readiness.pending");
 check("Clean content remains unreleased until its status is Available", await page.getByRole("button", { name: "Export training HTML" }).isDisabled());
+check(
+  "A clean draft uses calm status wording and names the release action only on Review",
+  /Draft in progress/i.test(await page.locator(".sidebar-status").innerText()) &&
+    !/release checks pending/i.test(await page.locator(".sidebar-status").innerText()) &&
+    /complete the release record here to unlock final outputs/i.test(await page.locator(".step-footer").innerText()),
+  `${await page.locator(".sidebar-status").innerText()} | ${await page.locator(".step-footer").innerText()}`,
+);
 
 await page.locator('input[type="file"]').setInputFiles({
   name: "workshop-fixture-course-draft.json",
@@ -863,6 +872,35 @@ await learner.goto(pathToFileURL(learnerFile).href);
 await learner.waitForSelector(".app-shell");
 check("Exported learner course boots in the real shared player", /Evidence to Action/i.test(await learner.locator("body").innerText()));
 check("Single-course export omits package-switching chrome", await learner.locator(".package-switcher, .library-link").count() === 0);
+const oneSectionOverview = await learner.locator(".hero").innerText();
+check(
+  "One-section learner export uses singular course language",
+  /1 course section/i.test(oneSectionOverview) && /0 of 1 section demonstrated/i.test(oneSectionOverview),
+  oneSectionOverview,
+);
+await learner.evaluate(() => {
+  const key = "product-practice-v2:workshop-fixture:progress";
+  localStorage.setItem(key, JSON.stringify({
+    "evidence-to-action": {
+      lessonRead: true,
+      quizScore: 100,
+      scenariosCorrect: ["scenario-1", "scenario-2"],
+      scenarioAttempts: { "scenario-1": 1, "scenario-2": 1 },
+      reflection: "",
+      assignment: [],
+      assignmentChecks: {},
+      attempts: 1,
+    },
+  }));
+});
+await learner.reload({ waitUntil: "load" });
+await learner.locator(".next-step").waitFor();
+const oneSectionComplete = await learner.locator(".next-step").innerText();
+check(
+  "A completed one-section learner course uses singular completion language",
+  /All 1 course section is demonstrated/i.test(oneSectionComplete) && /View results/i.test(oneSectionComplete),
+  oneSectionComplete,
+);
 await learner.evaluate(() => { window.location.hash = "module/evidence-to-action"; });
 await learner.waitForSelector(".stage-illustration svg.illus");
 // The shared player uses a 260 ms page-entry fade. Axe measures the transient

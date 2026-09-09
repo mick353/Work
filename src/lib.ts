@@ -168,6 +168,19 @@ export function formatMinutes(total: number): string {
 }
 
 /**
+ * Keep count labels grammatical for short, trainer-authored courses as well
+ * as the current nine- and twelve-section packages.  This lives here rather
+ * than in individual views so the learner player, single-course exports and
+ * Workshop all use the same wording.
+ */
+export function pluralize(count: number, singular: string, plural = `${singular}s`): string {
+  return count === 1 ? singular : plural;
+}
+
+/** A review session is deliberately small: the queue can be large, the next action is not. */
+export const REVIEW_SESSION_SIZE = 8;
+
+/**
  * Course-length estimate, rounded to the nearest half hour.
  *
  * "8 hr 10 min" is false precision: the underlying numbers are guesses about

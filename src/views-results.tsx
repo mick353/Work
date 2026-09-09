@@ -2,7 +2,7 @@ import { CONTENT_REVIEWED, diagnosticQuestions, flashcards, manifest, modules, p
 import { useMemo, useState } from "react";
 import { ChevronRight, Printer, TrendingUp } from "lucide-react";
 import type { Question } from "./package-model";
-import { DAY_MS, daysAgoKey, type ReviewSchedule, type View } from "./lib";
+import { DAY_MS, daysAgoKey, pluralize, REVIEW_SESSION_SIZE, type ReviewSchedule, type View } from "./lib";
 import { MASTERY_QUIZ_THRESHOLD, masteryState, type HistoryEntry, type ItemStatMap, type ProgressMap, type ReviewMap } from "./state";
 import { BarList, ChartCard, ColumnChart, Radial, StackedBar, TrendChart } from "./charts";
 import { IllusEmptyResults } from "./illustrations";
@@ -266,7 +266,7 @@ export function Results({
             <Radial
               value={completion}
               label="Mastered"
-              caption={`${mastered} of ${modules.length} sections complete`}
+              caption={`${mastered} of ${modules.length} ${pluralize(modules.length, "section")} complete`}
               colour="var(--accent-3)"
             />
             <div className="results-stats">
@@ -288,7 +288,7 @@ export function Results({
               <div>
                 <strong>{practiceBest || "—"}{practiceBest ? "%" : ""}</strong>
                 <span>Best mixed practice</span>
-                <small>Interleaved questions across all course sections</small>
+                <small>Interleaved questions across the course</small>
               </div>
             </div>
           </section>
@@ -303,7 +303,7 @@ export function Results({
             </div>
             <div className="guidance-summary">
               <span><strong>{itemView.revisit.length}</strong> question{itemView.revisit.length === 1 ? "" : "s"} to revisit</span>
-              <span><strong>{dueNow}</strong> review card{dueNow === 1 ? "" : "s"} ready to revisit</span>
+              <span><strong>{dueNow}</strong> review card{dueNow === 1 ? "" : "s"} available to revisit</span>
               <button type="button" className="primary" onClick={() => navigate(nextAction.view)}>{nextAction.label}<ChevronRight size={17} aria-hidden="true" /></button>
             </div>
           </section>
@@ -332,7 +332,7 @@ export function Results({
               <p className="chart-footnote">
                 {dueNow > 0 ? (
                   <>
-                    <strong>{dueNow}</strong> ready to revisit. The next session is a short set of up to 8 cards.{" "}
+                    <strong>{dueNow}</strong> available to revisit. The next session is a short set of up to {REVIEW_SESSION_SIZE} cards.{" "}
                     <button className="text-button" onClick={() => navigate("review")}>
                       Review a short set <ChevronRight size={15} aria-hidden="true" />
                     </button>

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import type { Module, Question } from "./package-model";
 import { SlideRangeLink } from "./slide-viewer";
-import { estimateHours, prefersReducedMotion, scrollBehavior, scrollToSection, shuffle, type View } from "./lib";
+import { estimateHours, pluralize, prefersReducedMotion, REVIEW_SESSION_SIZE, scrollBehavior, scrollToSection, shuffle, type View } from "./lib";
 import { sectionsToRevisit } from "./recall";
 import {
   emptyModuleProgress,
@@ -147,6 +147,9 @@ export function Dashboard({
   navigate: Navigate;
 }) {
   const started = Object.keys(progress).length > 0;
+  const courseComplete = modules.length > 0 && mastered === modules.length;
+  const reviewAvailable = !courseComplete && dueCount > 0 && started;
+  const reviewBatchSize = Math.min(dueCount, REVIEW_SESSION_SIZE);
   const shownCompletion = useCountUp(completion);
   const shownMastered = useCountUp(mastered, 520);
 
@@ -168,7 +171,7 @@ export function Dashboard({
           </p>
           <ul className="hero-facts">
             <li>
-              <strong>{modules.length} course sections</strong>
+              <strong>{modules.length} course {pluralize(modules.length, "section")}</strong>
               <span>{manifest.arc}</span>
             </li>
             <li>
@@ -185,8 +188,8 @@ export function Dashboard({
             </li>
           </ul>
           <div className="button-row">
-            <button className="primary" onClick={() => navigate(`module:${nextModule.id}`)}>
-              {started ? `Continue Section ${nextModule.number}` : "Start Section 1"}
+            <button className="primary" onClick={() => navigate(courseComplete ? "results" : `module:${nextModule.id}`)}>
+              {courseComplete ? "View results" : started ? `Continue Section ${nextModule.number}` : "Start Section 1"}
               <ChevronRight size={18} aria-hidden="true" />
             </button>
             <button className="secondary" onClick={() => navigate("path")}>
@@ -219,7 +222,7 @@ export function Dashboard({
           <MasteryRing
             value={shownCompletion}
             label="Mastered"
-            sub={`${mastered} of ${modules.length} sections demonstrated`}
+            sub={`${mastered} of ${modules.length} ${pluralize(modules.length, "section")} demonstrated`}
           />
         </div>
       </section>
@@ -229,7 +232,7 @@ export function Dashboard({
           <strong>
             {shownMastered}/{modules.length}
           </strong>
-          <span>Sections mastered</span>
+          <span>{pluralize(modules.length, "Section")} mastered</span>
         </div>
         <div>
           <strong>
@@ -253,25 +256,36 @@ export function Dashboard({
         <div>
           <div>
             <h2 id="next-step-title">
-              {dueCount > 0 && started
-                ? `${dueCount} card${dueCount === 1 ? "" : "s"} ready to review`
-                : `${started ? "Continue" : "Begin"} with Section ${nextModule.number}`}
+              {courseComplete
+                ? "Course complete — review your results"
+                : reviewAvailable
+                  ? `${dueCount} card${dueCount === 1 ? "" : "s"} available for review`
+                  : `${started ? "Continue" : "Begin"} with Section ${nextModule.number}`}
             </h2>
             <p>
-              {dueCount > 0 && started
-                ? "A short review now will bring the ideas you have already studied back at the right time. Your next course section will still be ready afterwards."
-                : <><strong>Section {nextModule.number}: {nextModule.title}</strong> — {nextModule.subtitle}</>}
+              {courseComplete
+                ? `All ${modules.length} course ${pluralize(modules.length, "section")} ${modules.length === 1 ? "is" : "are"} demonstrated. Results brings your evidence together; optional review remains available whenever it is useful.`
+                : reviewAvailable
+                  ? `Review works in small sets. Your next set has ${reviewBatchSize} card${reviewBatchSize === 1 ? "" : "s"}; you can return to the course whenever you prefer.`
+                  : <><strong>Section {nextModule.number}: {nextModule.title}</strong> — {nextModule.subtitle}</>}
             </p>
           </div>
           <div className="next-step-actions">
-            {dueCount > 0 && started && (
+            {courseComplete ? (
+              <>
+                <button className="primary" onClick={() => navigate("results")}>
+                  View results <ChevronRight size={18} aria-hidden="true" />
+                </button>
+                <button className="secondary" onClick={() => navigate("path")}>Revisit a section</button>
+              </>
+            ) : reviewAvailable && (
               <button className="primary" onClick={() => navigate("review")}>
-                Start review <ChevronRight size={18} aria-hidden="true" />
+                Review {reviewBatchSize} card{reviewBatchSize === 1 ? "" : "s"} <ChevronRight size={18} aria-hidden="true" />
               </button>
             )}
-            <button className={dueCount > 0 && started ? "secondary" : "primary"} onClick={() => navigate(`module:${nextModule.id}`)}>
+            {!courseComplete && <button className={reviewAvailable ? "secondary" : "primary"} onClick={() => navigate(`module:${nextModule.id}`)}>
               {started ? `Continue Section ${nextModule.number}` : "Start Section 1"} <ChevronRight size={18} aria-hidden="true" />
-            </button>
+            </button>}
           </div>
         </div>
         <p className="next-step-note">Practice, results and reference material remain available from the <strong>Course</strong> menu when you need them.</p>
@@ -289,7 +303,7 @@ export function LearningPath({ progress, navigate }: { progress: ProgressMap; na
         body={`Each course section builds one capability, not just a topic. Work through them in order, or return to a completed section whenever you need it.`}
       />
       <p className="path-total">
-        {estimateHours(totalMinutes).replace("about", "About")} across {modules.length} course sections. Each section includes learning, a knowledge check and applied scenarios.
+        {estimateHours(totalMinutes).replace("about", "About")} across {modules.length} course {pluralize(modules.length, "section")}. Each section includes learning, a knowledge check and applied scenarios.
       </p>
       <div className="path-list">
         {modules.map((module) => {

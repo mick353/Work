@@ -2,12 +2,11 @@ import { findModule, practiceQuestions } from "./content";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Brain, ChevronRight, RefreshCw, Trophy } from "lucide-react";
 import { FLASHCARD_KIND_LABEL, type Flashcard, type PracticeQuestion, type Question } from "./package-model";
-import { describeInterval, formatDue, shuffle, type Rating, type ReviewSchedule } from "./lib";
+import { describeInterval, formatDue, REVIEW_SESSION_SIZE, shuffle, type Rating, type ReviewSchedule } from "./lib";
 import type { HistoryEntry, ReviewMap } from "./state";
 import { Feedback, PageIntro, ProgressBar, QuestionCard } from "./components";
 import { IllusEmptyQueue } from "./illustrations";
 
-const SESSION_SIZE = 8;
 const PRACTICE_SIZE = 10;
 
 const RATINGS: { key: Rating; label: string; hint: string; shortcut: string }[] = [
@@ -77,7 +76,7 @@ export function Review({
   // current one is finished, instead of being told the queue is clear when it
   // is not — which is what the previous build did once eight cards were done.
   const queue = useMemo(
-    () => selectDueCards(cards, reviews, Date.now(), SESSION_SIZE),
+    () => selectDueCards(cards, reviews, Date.now(), REVIEW_SESSION_SIZE),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [sessionSeed],
   );
@@ -156,7 +155,7 @@ export function Review({
         <div className="button-row">
           {remainingDue > 0 && (
             <button className="primary" onClick={startNextBatch}>
-              Review a short set ({Math.min(remainingDue, SESSION_SIZE)})
+              Review a short set ({Math.min(remainingDue, REVIEW_SESSION_SIZE)})
               <ChevronRight size={18} aria-hidden="true" />
             </button>
           )}

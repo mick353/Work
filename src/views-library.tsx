@@ -12,7 +12,7 @@
  */
 
 import { ArrowRight, BookOpen, CheckCircle2, Clock3 } from "lucide-react";
-import { estimateHours, type View } from "./lib";
+import { estimateHours, pluralize, type View } from "./lib";
 import { masteryState, type ProgressMap } from "./state";
 import { packageStats, trainingPackages, type TrainingPackage } from "./packages";
 import { PageIntro } from "./components";
@@ -106,7 +106,7 @@ function PackageCard({
 
       <dl className="package-stats">
         <div>
-          <dt>Course sections</dt>
+          <dt>{pluralize(stats.stages, "Course section")}</dt>
           <dd>{stats.stages}</dd>
         </div>
         <div>
@@ -134,14 +134,14 @@ function PackageCard({
           aria-valuenow={percent}
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-label={`${entry.manifest.title}: ${percent} per cent of course sections demonstrated`}
+          aria-label={`${entry.manifest.title}: ${percent} per cent of course ${pluralize(stats.stages, "section")} demonstrated`}
         >
           <i style={{ width: `${percent}%` }} />
         </div>
         <span>
           {started ? (
             <>
-              <CheckCircle2 size={14} aria-hidden="true" /> {mastered} of {stats.stages} sections demonstrated
+              <CheckCircle2 size={14} aria-hidden="true" /> {mastered} of {stats.stages} {pluralize(stats.stages, "section")} demonstrated
             </>
           ) : (
             <>

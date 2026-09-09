@@ -51,6 +51,7 @@ import {
   type ReleaseChecklist,
 } from "./draft";
 import { workshopQualityProfile } from "../src/course-quality-profiles";
+import { pluralize } from "../src/lib";
 import {
   exportDeveloperPackage,
   exportDraft,
@@ -666,7 +667,7 @@ export function App() {
     const startedAt = performance.now();
     setCloneProgress(`Preparing ${template.manifest.title}…`);
     await new Promise<void>((resolve) => window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve())));
-    setCloneProgress(`Copying ${template.content.modules.length} course sections and ${template.content.slides.length} source slides…`);
+    setCloneProgress(`Copying ${template.content.modules.length} course ${pluralize(template.content.modules.length, "section")} and ${template.content.slides.length} source ${pluralize(template.content.slides.length, "slide")}…`);
     await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
     const clone = structuredClone(template);
     clone.manifest = {
@@ -730,8 +731,8 @@ export function App() {
       <Card title="Choose how to start" eyebrow="Blank course or editable copy">
         <p className="section-intro">Start with a clean structure, or copy a maintained course when its learning pattern is genuinely useful. A copy becomes a separate local draft and never alters the published original.</p>
         <div className="template-grid start-options">
-          <article><span className="pill">Blank course</span><h3>Start from a clean structure</h3><p>Use the guided seven-step form to design a new course from its audience, final performance and evidence base.</p><dl><div><dt>Course sections</dt><dd>1 starter</dd></div><div><dt>Review</dt><dd>Fresh record</dd></div></dl><button type="button" className="primary" onClick={() => startBlankCourse("setup")}><Plus size={17} />Start blank course</button></article>
-          {__COURSE_TEMPLATES__.map((template) => <article key={template.manifest.id}><span className="pill">Published template</span><h3>{template.manifest.title}</h3><p>{template.manifest.summary}</p><dl><div><dt>Course sections</dt><dd>{template.content.modules.length}</dd></div><div><dt>Deck</dt><dd>{template.content.slides.length ? `${template.content.slides.length} slides` : "None"}</dd></div><div><dt>Version</dt><dd>{template.manifest.version}</dd></div></dl><button type="button" className="secondary" onClick={() => cloneTemplate(template)}><Library size={17} />Clone as new course</button></article>)}
+          <article><span className="pill">Blank course</span><h3>Start from a clean structure</h3><p>Use the guided seven-step form to design a new course from its audience, final performance and evidence base.</p><dl><div><dt>Course section</dt><dd>1 starter</dd></div><div><dt>Review</dt><dd>Fresh record</dd></div></dl><button type="button" className="primary" onClick={() => startBlankCourse("setup")}><Plus size={17} />Start blank course</button></article>
+          {__COURSE_TEMPLATES__.map((template) => <article key={template.manifest.id}><span className="pill">Published template</span><h3>{template.manifest.title}</h3><p>{template.manifest.summary}</p><dl><div><dt>{pluralize(template.content.modules.length, "Course section")}</dt><dd>{template.content.modules.length}</dd></div><div><dt>Deck</dt><dd>{template.content.slides.length ? `${template.content.slides.length} ${pluralize(template.content.slides.length, "slide")}` : "None"}</dd></div><div><dt>Version</dt><dd>{template.manifest.version}</dd></div></dl><button type="button" className="secondary" onClick={() => cloneTemplate(template)}><Library size={17} />Clone as new course</button></article>)}
         </div>
       </Card>
 
@@ -1206,22 +1207,22 @@ npm run verify`}</code></pre>
           const errors = issues.filter((issue) => issue.area === item.id && issue.severity === "error").length;
           return <button type="button" key={item.id} className={view === item.id ? "active" : ""} aria-current={view === item.id ? "step" : undefined} onClick={() => navigateTo(item.id)}><span className="nav-number">{index + 1}</span><Icon size={19} /><span><strong>{item.label}</strong><small>{item.description}</small></span>{errors > 0 && (untouchedDraft ? <b className="pending-label" title={`${item.label} has not started`}>New</b> : <b title={`${errors} blocking issue${errors === 1 ? "" : "s"} in this step`} aria-label={`${errors} blocking issue${errors === 1 ? "" : "s"} in ${item.label}`}>{errors}</b>)}</button>;
         })}</nav>
-        <div className="sidebar-status"><span className={releaseReady ? "status-ready" : contentReady || untouchedDraft ? "status-pending" : "status-blocked"}>{releaseReady ? "Ready to release" : untouchedDraft ? "New draft — start with setup" : contentReady ? "Release checks pending" : "Draft incomplete"}</span><small><Save size={13} />{saveLabel}</small></div>
+        <div className="sidebar-status"><span className={releaseReady ? "status-ready" : contentReady || untouchedDraft ? "status-pending" : "status-blocked"}>{releaseReady ? "Ready for controlled release" : untouchedDraft ? "New draft — start with setup" : contentReady ? "Draft in progress" : `${counts.errors} content blocker${counts.errors === 1 ? "" : "s"} to resolve`}</span><small><Save size={13} />{saveLabel}</small></div>
         <div className="sidebar-actions">
           <input ref={importRef} className="visually-hidden" type="file" accept="application/json,.json" aria-label="Load a Course Workshop draft" tabIndex={-1} onChange={(event) => void handleImport(event.target.files?.[0])} />
           <button type="button" onClick={() => importRef.current?.click()}><Upload size={16} />Load draft</button>
-          <button type="button" onClick={downloadPortableDraft}><Download size={16} />Save/share complete draft</button>
+          <button type="button" onClick={downloadPortableDraft}><Download size={16} />Save/share draft</button>
           <small className="draft-backup-note">Includes embedded slides and images · approximately {draftSizeLabel}</small>
           <button type="button" onClick={() => startBlankCourse("instructions")}><RotateCcw size={16} />New course</button>
         </div>
       </aside>
       <main id="studio-main" className="studio-main" tabIndex={-1}>
-        <header className="topbar"><div><span className="course-kicker">Current draft · revision {lineage.revision}</span><strong>{entry.manifest.title || "Untitled training course"}</strong></div><div className="topbar-meta"><span>v{entry.manifest.version}</span><span>{entry.content.modules.length} section{entry.content.modules.length === 1 ? "" : "s"}</span><span>{hasDurationEvidence ? `${packageForExport(entry).content.totalMinutes} min` : "Duration pending"}</span></div></header>
+        <header className="topbar"><div><span className="course-kicker">Current draft · revision {lineage.revision}</span><strong>{entry.manifest.title || "Untitled training course"}</strong></div><div className="topbar-meta"><span>v{entry.manifest.version}</span><span>{entry.content.modules.length} {pluralize(entry.content.modules.length, "section")}</span><span>{hasDurationEvidence ? `${packageForExport(entry).content.totalMinutes} min` : "Duration pending"}</span></div></header>
         {message && <div className={`notice ${storageLoadError && message === storageLoadError ? "notice-critical" : ""}`} role={storageLoadError && message === storageLoadError ? "alert" : "status"}><CircleHelp size={18} /><span>{message}</span><button type="button" aria-label="Dismiss message" onClick={() => setMessage("")}>×</button></div>}
         <div className="studio-workspace"><LearnerReference entry={entry} stage={currentStage} view={view} canPreview={contentReady} onPreview={preview} />{view === "instructions" ? renderInstructions() : view === "setup" ? renderSetup() : view === "stages" ? renderStages() : view === "supports" ? renderSupports() : view === "advanced" ? <AdvancedEditor entry={entry} setEntry={setEntry} /> : view === "media" ? <MediaEditor entry={entry} setEntry={setEntry} setMessage={setMessage} /> : renderReview()}</div>
         <footer className="step-footer">
           <button type="button" className="secondary" disabled={currentIndex === 0} onClick={() => navigateTo(NAV[currentIndex - 1]?.id ?? "instructions")}><ChevronLeft size={17} />Previous</button>
-          <span>{viewIssues ? `${viewIssues} blocker${viewIssues === 1 ? "" : "s"} in this step · ${counts.errors} across the course` : counts.errors ? `No blockers in this step · ${counts.errors} across the course` : "No blocking issues in this step or course"}</span>
+          <span>{viewIssues ? `${viewIssues} content blocker${viewIssues === 1 ? "" : "s"} in this step · ${counts.errors} across the course` : counts.errors ? `No content blockers in this step · ${counts.errors} across the course` : view === "review" && !releaseReady ? "Content is clear. Complete the release record here to unlock final outputs." : "No content blockers in this step"}</span>
           <button type="button" className="primary" disabled={currentIndex === NAV.length - 1} onClick={() => navigateTo(NAV[currentIndex + 1]?.id ?? "review")}>Next<ChevronRight size={17} /></button>
         </footer>
       </main>

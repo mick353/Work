@@ -58,6 +58,7 @@ import {
   matchView,
   migrateToPackageNamespace,
   parseView,
+  pluralize,
   resetPackageForCurriculumVersion,
   setActivePackageId,
   scheduleNext,
@@ -952,7 +953,7 @@ function Shell({
           <NavSection
             key="curriculum"
             id="curriculum"
-            label={`The ${NUMBER_WORDS[modules.length]?.toLowerCase() ?? modules.length} course sections`}
+            label={`The ${NUMBER_WORDS[modules.length]?.toLowerCase() ?? modules.length} course ${pluralize(modules.length, "section")}`}
             expanded={!collapsedNav.curriculum}
             onToggle={() => toggleNavGroup("curriculum")}
             className="sidebar-modules"
