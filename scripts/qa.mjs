@@ -3532,6 +3532,31 @@ watchPage(mobilePage, "mobile");
 await mobilePage.goto(artifactUrl, { waitUntil: "load" });
 await mobilePage.getByRole("heading", { name: "Product Management Fundamentals" }).waitFor();
 
+// Portrait phones still need the complete course toolbar. Hiding settings and
+// shortcut help made those functions look as though they had disappeared; the
+// title may truncate, but every 44px control must stay visible and on-screen.
+const mobileToolbar = await mobilePage.evaluate(() => {
+  const labels = ["Search the course", "Switch to dark theme", "Keyboard shortcuts", "Learning settings"];
+  const controls = labels.map((label) => {
+    const el = document.querySelector(`[aria-label="${label}"]`);
+    if (!el) return { label, found: false };
+    const rect = el.getBoundingClientRect();
+    return {
+      label,
+      found: true,
+      visible: rect.width > 0 && rect.height > 0,
+      onScreen: rect.left >= 0 && rect.right <= window.innerWidth && rect.top >= 0 && rect.bottom <= window.innerHeight,
+      width: Math.round(rect.width), height: Math.round(rect.height),
+    };
+  });
+  return { controls, overflow: document.documentElement.scrollWidth > window.innerWidth };
+});
+check(
+  "Portrait header retains every course action without horizontal overflow",
+  !mobileToolbar.overflow && mobileToolbar.controls.every((item) => item.found && item.visible && item.onScreen && item.width >= 44 && item.height >= 44),
+  JSON.stringify(mobileToolbar),
+);
+
 // The closed drawer must not be reachable by keyboard. Previously it was
 // translated off-screen but still in the tab order, so a keyboard user tabbed
 // into sixteen invisible navigation buttons.
