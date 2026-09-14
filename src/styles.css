@@ -1577,6 +1577,7 @@ p { color: var(--muted); line-height: 1.65; }
 .next-step p { margin: 0; }
 .next-step p strong { color: var(--ink); }
 .next-step-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
+.next-step-review-note { margin-top: 16px !important; color: var(--muted); font-size: 13.5px; }
 .next-step-note { margin-top: 19px !important; padding-top: 15px; border-top: 1px solid var(--line); font-size: 13.5px; }
 @media (max-width: 700px) {
   .next-step { padding: 23px 20px; }

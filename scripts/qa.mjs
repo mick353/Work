@@ -2536,6 +2536,58 @@ check(
 }
 
 /*
+  The Overview should resume genuine course work before it offers optional
+  review. A due card is useful, but it must not hijack a learner who was in
+  the middle of a different section; the selected section is their most recent
+  unfinished scored work, not merely the first section in the course order.
+*/
+{
+  const guided = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const guidedPage = await guided.newPage();
+  watchPage(guidedPage, "smart-next-action");
+  const current = bank.modules[1];
+  const reviewCard = bank.flashcards[0];
+  const currentVersion = bank.trainingPackages.find((entry) => entry.manifest.id === "pm-fundamentals")?.manifest.version;
+  await guidedPage.addInitScript(({ module, card, version }) => {
+    const p = "product-practice-v2:pm-fundamentals:";
+    localStorage.setItem(`${p}content-version`, version);
+    localStorage.setItem(`${p}progress`, JSON.stringify({
+      [module.id]: {
+        lessonRead: true, quizScore: 50, scenariosCorrect: [], scenarioAttempts: {},
+        reflection: "", assignment: [], assignmentChecks: {}, attempts: 1,
+      },
+    }));
+    localStorage.setItem(`${p}history`, JSON.stringify([{
+      at: Date.now(), kind: "quiz", moduleId: module.id, score: 50, correct: 2, total: 4,
+    }]));
+    localStorage.setItem(`${p}reviews`, JSON.stringify({
+      [card.id]: { due: Date.now() - 1, interval: 0, ease: 2.4, repetitions: 0, lapses: 0, lastRated: Date.now() - 1 },
+    }));
+  }, { module: current, card: reviewCard, version: currentVersion });
+  await guidedPage.goto(artifactUrl, { waitUntil: "load" });
+  await guidedPage.waitForSelector(".next-step");
+  const nextActionText = await guidedPage.locator(".next-step").innerText();
+  const primaryAction = await guidedPage.locator(".next-step-actions .primary").innerText();
+  const reviewAction = await guidedPage.locator(".next-step-actions .secondary").innerText();
+  check(
+    "The Overview resumes unfinished course work before optional review",
+    nextActionText.includes(`Continue with Section ${current.number}`) &&
+      primaryAction.includes(`Continue Section ${current.number}`) &&
+      reviewAction.includes("Review 1 available card") &&
+      /does not hold up your course progress/i.test(nextActionText),
+    nextActionText,
+  );
+  await guidedPage.locator(".next-step-actions .primary").click();
+  await guidedPage.waitForTimeout(300);
+  check(
+    "The persistent next action opens the section it recommends",
+    (await guidedPage.evaluate(() => window.location.hash)) === `#module/${current.id}`,
+    await guidedPage.evaluate(() => window.location.hash),
+  );
+  await guided.close();
+}
+
+/*
   The package author is not named, anywhere.
 
   This is a deliberate choice, not an oversight, and it is easy to undo by

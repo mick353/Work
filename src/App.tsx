@@ -631,6 +631,7 @@ export default function App() {
         dueCount={dueCount}
         nextModule={nextModule}
         progress={progress}
+        history={history}
         studyDays={studyDays}
         navigate={navigate}
       />

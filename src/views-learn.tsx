@@ -127,6 +127,28 @@ const sectionId = (moduleId: string, index: number) => `s-${moduleId}-${index + 
 
 type Navigate = (view: View) => void;
 
+/**
+ * A course can be opened at any section, so "first incomplete" is not always
+ * where a returning learner was working. Prefer the most recently attempted
+ * unfinished section, then fall back to the first unfinished section. This is
+ * deliberately an orientation aid on the Overview, not a lock or a schedule.
+ */
+function hasMeaningfulProgress(progress: ModuleProgress | undefined): boolean {
+  if (!progress) return false;
+  return progress.lessonRead || progress.quizScore > 0 || progress.attempts > 0 ||
+    progress.scenariosCorrect.length > 0 || progress.reflection.trim().length > 0 ||
+    progress.assignment.some((answer) => answer.trim().length > 0);
+}
+
+function sectionPrompt(module: Module, progress: ModuleProgress | undefined): string {
+  const state = masteryState(progress, module.scenarios.length);
+  if (!state.learn) return "Read the lesson, then test what you can recall.";
+  if (!state.recall && !state.apply) return "Complete the knowledge check and apply the idea to the scenarios.";
+  if (!state.recall) return "Your scenarios are complete; strengthen the knowledge check to demonstrate this section.";
+  const remaining = Math.max(0, module.scenarios.length - (progress?.scenariosCorrect.length ?? 0));
+  return `Your knowledge check is complete; finish ${remaining} remaining ${pluralize(remaining, "scenario")}.`;
+}
+
 export function Dashboard({
   completion,
   mastered,
@@ -134,6 +156,7 @@ export function Dashboard({
   dueCount,
   nextModule,
   progress,
+  history,
   studyDays,
   navigate,
 }: {
@@ -143,13 +166,27 @@ export function Dashboard({
   dueCount: number;
   nextModule: Module;
   progress: ProgressMap;
+  history: HistoryEntry[];
   studyDays: string[];
   navigate: Navigate;
 }) {
-  const started = Object.keys(progress).length > 0;
   const courseComplete = modules.length > 0 && mastered === modules.length;
-  const reviewAvailable = !courseComplete && dueCount > 0 && started;
+  const unfinishedInProgress = modules.filter((module) =>
+    !masteryState(progress[module.id], module.scenarios.length).mastered && hasMeaningfulProgress(progress[module.id]),
+  );
+  const inProgressIds = new Set(unfinishedInProgress.map((module) => module.id));
+  const mostRecentUnfinishedId = history
+    .filter((entry) => entry.moduleId && inProgressIds.has(entry.moduleId))
+    .sort((a, b) => b.at - a.at)[0]?.moduleId;
+  const suggestedModule = modules.find((module) => module.id === mostRecentUnfinishedId) ?? unfinishedInProgress[0] ?? nextModule;
+  const resuming = hasMeaningfulProgress(progress[suggestedModule.id]);
+  const reviewAvailable = !courseComplete && dueCount > 0;
   const reviewBatchSize = Math.min(dueCount, REVIEW_SESSION_SIZE);
+  const mainActionLabel = courseComplete
+    ? "View results"
+    : resuming
+      ? `Continue Section ${suggestedModule.number}`
+      : `Start Section ${suggestedModule.number}`;
   const shownCompletion = useCountUp(completion);
   const shownMastered = useCountUp(mastered, 520);
 
@@ -188,8 +225,8 @@ export function Dashboard({
             </li>
           </ul>
           <div className="button-row">
-            <button className="primary" onClick={() => navigate(courseComplete ? "results" : `module:${nextModule.id}`)}>
-              {courseComplete ? "View results" : started ? `Continue Section ${nextModule.number}` : "Start Section 1"}
+            <button className="primary" onClick={() => navigate(courseComplete ? "results" : `module:${suggestedModule.id}`)}>
+              {mainActionLabel}
               <ChevronRight size={18} aria-hidden="true" />
             </button>
             <button className="secondary" onClick={() => navigate("path")}>
@@ -258,16 +295,12 @@ export function Dashboard({
             <h2 id="next-step-title">
               {courseComplete
                 ? "Course complete — review your results"
-                : reviewAvailable
-                  ? `${dueCount} card${dueCount === 1 ? "" : "s"} available for review`
-                  : `${started ? "Continue" : "Begin"} with Section ${nextModule.number}`}
+                : `${resuming ? "Continue" : "Begin"} with Section ${suggestedModule.number}`}
             </h2>
             <p>
               {courseComplete
                 ? `All ${modules.length} course ${pluralize(modules.length, "section")} ${modules.length === 1 ? "is" : "are"} demonstrated. Results brings your evidence together; optional review remains available whenever it is useful.`
-                : reviewAvailable
-                  ? `Review works in small sets. Your next set has ${reviewBatchSize} card${reviewBatchSize === 1 ? "" : "s"}; you can return to the course whenever you prefer.`
-                  : <><strong>Section {nextModule.number}: {nextModule.title}</strong> — {nextModule.subtitle}</>}
+                : <><strong>Section {suggestedModule.number}: {suggestedModule.title}</strong> — {resuming ? sectionPrompt(suggestedModule, progress[suggestedModule.id]) : suggestedModule.subtitle}</>}
             </p>
           </div>
           <div className="next-step-actions">
@@ -278,16 +311,23 @@ export function Dashboard({
                 </button>
                 <button className="secondary" onClick={() => navigate("path")}>Revisit a section</button>
               </>
-            ) : reviewAvailable && (
-              <button className="primary" onClick={() => navigate("review")}>
-                Review {reviewBatchSize} card{reviewBatchSize === 1 ? "" : "s"} <ChevronRight size={18} aria-hidden="true" />
-              </button>
+            ) : (
+              <>
+                <button className="primary" onClick={() => navigate(`module:${suggestedModule.id}`)}>
+                  {mainActionLabel} <ChevronRight size={18} aria-hidden="true" />
+                </button>
+                {reviewAvailable && (
+                  <button className="secondary" onClick={() => navigate("review")}>
+                    Review {reviewBatchSize} available card{reviewBatchSize === 1 ? "" : "s"}
+                  </button>
+                )}
+              </>
             )}
-            {!courseComplete && <button className={reviewAvailable ? "secondary" : "primary"} onClick={() => navigate(`module:${nextModule.id}`)}>
-              {started ? `Continue Section ${nextModule.number}` : "Start Section 1"} <ChevronRight size={18} aria-hidden="true" />
-            </button>}
           </div>
         </div>
+        {!courseComplete && reviewAvailable && (
+          <p className="next-step-review-note">A short review set is available whenever it suits you; it does not hold up your course progress.</p>
+        )}
         <p className="next-step-note">Practice, results and reference material remain available from the <strong>Course</strong> menu when you need them.</p>
       </section>
     </div>
