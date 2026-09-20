@@ -1,6 +1,6 @@
 # Product Practice --- Commercialisation and Scale Plan
 
-**Status:** Commercial strategy and execution plan\
+**Status:** Owner working strategy — not a customer offer, forecast or evidence of departmental endorsement\
 **Version:** 1.0\
 **Date:** 20 September 2026
 
@@ -34,6 +34,20 @@ the original workplace use Product Practice to turn its own material
 into a useful course with limited assistance, and will it pay to retain
 that capability?**
 
+## Operating boundary
+
+This is a decision document for the product owner. It does not authorise
+external sales, make an offer, set a public price list, or claim that a
+department, employer or customer endorses Product Practice. The public
+repository and Pages demonstrations remain evaluation surfaces governed
+by the current [LICENSE](LICENSE) and [NOTICE](NOTICE.md).
+
+Before any external commercial use, the owner must complete the
+commercial clean-room gate in section 10. In particular, do not use DEWR
+branding, internal/restricted source material, a departmental course or
+an employer relationship as sales material unless the relevant owner has
+given written authority.
+
 ## 1. What is being sold
 
 The repository's core model is: **a course is data; the player is
@@ -44,13 +58,23 @@ server for authoring, supports individual course export, keeps current
 learner progress/drafts local unless deliberately transferred, and
 preserves a controlled release role.
 
+The current delivery shape is one course per export: a self-contained
+learner HTML file, or a controlled hosted/repository package. There is
+no central learner account, organisation-wide analytics service or LMS
+integration in the current product.
+
 Commercially, this is best framed as:
 
 > **A governed workplace-knowledge-to-training production system.**
 
-The existing courses are demonstrations and proof. The scalable assets
-are the Workshop, learner player, authoring/release method and package
-contract.
+The existing courses are controlled demonstrations only; they are not
+automatically reusable customer or commercial content. The scalable
+assets are the Workshop, learner player, authoring/release method,
+versioned course-package model and controlled release process.
+
+The public demonstration is for evaluation only. Any pilot, authoring,
+hosting, export, support or commercial-production use requires a
+separate written agreement.
 
 ## 2. Customer problem
 
@@ -86,8 +110,10 @@ reduce support burden, or increase independent trainer success.
 
 ### Free evaluation
 
-Use a public demonstration, short demo video, example learner course and
-controlled Workshop evaluation to create qualified pilot conversations.
+Use a public demonstration, short demo video and example learner course
+to create qualified pilot conversations. A public demonstration is for
+viewing and evaluation only; any customer evaluation that involves their
+own material or broader use must be separately controlled in writing.
 The objective is not self-service consumer checkout.
 
 ### Paid organisational pilot
@@ -98,14 +124,20 @@ Offer:
 > will use Product Practice to produce one deployable training
 > package.**
 
-Suggested contents: - 60--90 day evaluation licence - up to 2--5
-nominated trainers - onboarding - one real customer course - one or two
-review checkpoints - learner export - basic deployment assistance -
-limited email support - end-of-pilot review
+Suggested contents: - 60--90 day evaluation licence - up to five
+nominated trainers - onboarding - one real customer course - two review
+checkpoints - learner export - basic deployment assistance - limited
+email support - end-of-pilot review
 
-**Indicative test price: AUD \$4,000--\$8,000 + GST.** A practical first
-hypothesis is **\$5,900 + GST**. This is a pricing experiment, not
-established willingness-to-pay.
+The written pilot terms must identify the customer's authority to supply
+each source, handling/confidentiality requirements, who owns or may use
+the resulting course, retention/deletion expectations for local drafts
+and exports, and the person authorised to approve release.
+
+**Indicative internal test range: AUD \$4,000--\$8,000 + GST.** A
+practical first hypothesis is **\$5,900 + GST**. This is a pricing
+experiment, not established willingness-to-pay, and must not be quoted
+or offered until the commercial clean-room gate is complete.
 
 Exclude unlimited consulting, custom development, guaranteed LMS
 integration, 24/7 support and responsibility for the customer's source
@@ -172,8 +204,10 @@ draft the actual terms.
 
 ## 9. Current trainer pilot
 
-The trainers now trying Course Workshop are the highest-value commercial
-experiment currently available.
+The trainers now trying Course Workshop are the highest-value product
+evidence currently available. Their participation is an internal
+usability and transfer trial, not a commercial pilot, a sales reference
+or evidence of employer endorsement.
 
 Capture: - prior authoring experience - real task/source used - time to
 first useful preview - time to usable course - assistance required -
@@ -184,8 +218,9 @@ The key measure is **independent transfer**: can another trainer succeed
 without the creator driving the process?
 
 Also track **support-to-output ratio**: how much of your time is
-required for a customer to produce one useful course? This is a crucial
-scalability indicator.
+required for another trainer to produce one useful course? This is a
+crucial scalability indicator. Ask separately for permission before
+using any anonymised outcome as external evidence.
 
 ## 10. Commercial clean-room boundary
 
@@ -201,7 +236,11 @@ one demonstration course you clearly own or have permission to
 commercialise - no DEWR branding or restricted/internal material - no
 implication of departmental endorsement
 
-This is a gating action.
+This is a non-negotiable gating action. Keep a written inventory showing
+the owner, permission status and permitted use for every source,
+illustration, logo, font, dependency and demonstration artefact in the
+external edition. Do not rely on a source citation as permission to
+commercialise it.
 
 ## 11. Demonstration strategy
 
@@ -239,7 +278,8 @@ Supporting line:
 > procedures, manuals and source material into structured interactive
 > courses---without coding.
 
-Calls to action: - See an example - Try Course Workshop - Run a pilot
+Calls to action: - See an example - Evaluate Course Workshop under the
+published evaluation terms - Discuss a paid organisational pilot
 
 ## 13. Three-minute demo
 
@@ -311,9 +351,15 @@ where its conditions are satisfied and value for money can be
 demonstrated.
 
 This does **not** mean a buyer can automatically award any sub-threshold
-contract. The practical point is that a modest paid pilot/business-unit
-licence can be a realistic procurement unit; you do not need a
-whole-of-government tender to start.
+contract. Entity-specific instructions, panels, approvals, Indigenous
+Procurement Policy requirements, value-for-money assessment and the
+actual procurement circumstances still apply. The practical point is
+only that a modest paid pilot/business-unit licence can be a realistic
+procurement unit; you do not need a whole-of-government tender to start.
+This is a general commercial hypothesis, not procurement or legal
+advice: verify current CPRs, entity-specific rules, thresholds and
+exemption conditions with the buyer's procurement adviser before relying
+on it.
 
 Eventually prepare: - ABN/business entity and GST arrangements as
 applicable - business bank account/domain/email - capability statement -
@@ -383,7 +429,9 @@ Describe the architecture precisely rather than claiming generic
 security. Current useful facts include local drafts/progress, no
 required application account/server for current authoring and no current
 application telemetry. Local files can still contain sensitive
-information.
+information. A local-first browser design is not, by itself, a security
+certification or permission to handle an organisation's sensitive source
+material outside its own information-handling rules.
 
 For serious buyers, prepare a data-flow and dependency document covering
 storage, network calls, update/release process, browser requirements,
@@ -437,11 +485,13 @@ driving the process.
 
 ### Phase 2 --- Clear commercial boundary (parallel, 2--8 weeks)
 
-Professional IP/employment review; separate departmental/source content;
-generic branding; clean demonstration.
+Professional IP/employment review; written source/asset permissions
+inventory; separate departmental/source content; generic branding; clean
+demonstration.
 
 **Gate:** external edition contains only material that can lawfully be
-commercialised.
+commercialised, with the evidence retained; commercial terms have been
+professionally reviewed before any offer is issued.
 
 ### Phase 3 --- Package the offer (weeks 6--10)
 
@@ -478,13 +528,16 @@ or licensing/acquisition by a larger vendor.
 5.  Record whether they want to build another.
 6.  Create a pilot evidence template.
 7.  Obtain professional advice on workplace/IP boundaries.
-8.  Inventory departmental/third-party material.
-9.  Define the commercial clean-room edition.
+8.  Inventory every departmental, third-party and creator-owned asset;
+    record its owner, permission and permitted external use.
+9.  Define and build the commercial clean-room edition.
 10. Select a legally clean demonstration source.
 11. Create generic branding.
 12. Record a 3-minute demonstration.
-13. Draft the paid-pilot one-pager.
-14. Identify ten warm buyer/champion conversations.
+13. Draft the paid-pilot one-pager, clearly labelled as draft until the
+    commercial gate is met.
+14. Identify ten warm buyer/champion conversations only after the
+    clean-room gate is met.
 15. Do not buy ads.
 16. Do not build billing infrastructure.
 17. Do not build SaaS.
@@ -499,9 +552,10 @@ training
 
 Hi \[Name\],
 
-I have built a trainer-managed system called Product Practice that turns
-existing workplace material---procedures, policies, manuals and source
-decks---into structured interactive training packages.
+I have built a trainer-managed system called Product Practice that is
+being prepared to help turn workplace material---procedures, policies,
+manuals and source decks---into structured interactive training
+packages.
 
 Rather than commissioning each course from scratch, an organisation's
 own trainer uses Course Workshop to build the learning package,
@@ -509,8 +563,9 @@ assessment, scenarios, applied work and source traceability, then
 exports a learner-ready course.
 
 I am looking for a small number of organisations with a real training
-need to run a structured pilot: one source, one trainer/team, one real
-course.
+need to discuss a structured pilot: one source, one trainer/team, one
+real course. A pilot would proceed only under agreed terms and with the
+customer's authorised material and approvers.
 
 If that is relevant to something your team is currently trying to turn
 into training, I can show the complete source-to-course process in about
@@ -558,7 +613,7 @@ strengthens the core transformation.
 Sell services when they accelerate adoption and licensing. Avoid
 services that make you the permanent author.
 
-## 32. RDM commercial interpretation
+## 32. Commercial interpretation
 
 The commercial resolution chain is:
 
@@ -637,7 +692,8 @@ CREATOR SUCCESS
 → EXTERNAL PAID SUCCESS
 ```
 
-The current trainer trial is testing the second transition.
+The current trainer trial is testing the second transition. It is not a
+commercial case study or a departmental endorsement.
 
 The next major product asset is not another feature. It is **evidence
 that another trainer can create a real course successfully**.
@@ -663,7 +719,9 @@ email support - end-of-pilot evaluation
 Customer supplies: - authoritative source - trainer/author -
 subject-matter reviewer - approval authority - timely feedback
 
-**Indicative fee: AUD \$5,900 + GST.**
+**Indicative internal test fee: AUD \$5,900 + GST.** Do not quote or
+offer it until the commercial clean-room gate and written pilot terms are
+complete.
 
 Success means the trainer can use the system, a real course is produced,
 support requirements are understood and the customer can make an
@@ -684,6 +742,12 @@ packages; local/offline-capable; based on a versioned training-package
 model; designed to separate source material from the learning platform;
 structured around source authority and human review; and supported by
 bounded automated checks.
+
+The governing detail is in [NOTICE.md](NOTICE.md) (source/brand and data
+boundaries), [LICENSE](LICENSE) (evaluation and proprietary rights),
+[COURSE-WORKSHOP.md](COURSE-WORKSHOP.md) (authoring, export and release
+behaviour) and [ROADMAP.md](ROADMAP.md) (implemented versus externally
+evidenced readiness). Update this plan if those facts change.
 
 Do not yet claim proven cost savings, superior learning outcomes, formal
 WCAG conformance, enterprise security certification, LMS compatibility,
