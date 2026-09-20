@@ -82,6 +82,11 @@ If registration is ever needed, prefer email one-time codes or magic links over 
 ## Smaller things, unscheduled
 
 - **Manual light-theme review.** Automated contrast and accessibility checks exercise all stage pages in both themes; human/device review remains part of the external testing above.
+- **Branching decision practice.** A future optional scenario type with two or three consequential choices and a final teaching debrief. It must be additive to existing scenarios, fully keyboard-operable and support the same controlled package/export path; prove the package model and one learner scenario before adding Workshop editing. See [BRANCHING-DECISION-PRACTICE.md](BRANCHING-DECISION-PRACTICE.md).
+- **Capability map.** A compact, navigable section-progress view could supplement—not replace—the calm next-action workflow. It must not become a second navigation system or use colour as the only mastery cue.
+- **Confidence and calibration.** Optional confidence capture on knowledge checks could distinguish confident errors from uncertain correct answers and influence local review scheduling. It requires migration-safe state and must remain skippable, on-device and non-telemetry.
+- **Command palette.** Combining search, navigation and common keyboard actions may improve expert navigation, but requires a correctly labelled dialog, focus management and mobile restraint.
+- **Calendar export.** A local `.ics` download for scheduled review sessions could help returning learners without accounts, sync or a backend. It must remain optional and never imply a required completion timetable.
 - **Two-column treatment** for the field guide, glossary and toolkit on wide screens — flagged, not done.
 - **Diagnostic presentation.** The current all-at-once diagnostic works and is accessible to automated checks, but a paged or one-question-at-a-time mode may reduce mobile and cognitive load.
 - **Catalogue decision information.** Course cards currently emphasise volume. Audience, prerequisite, difficulty, outcome, owner and currency would be more useful selection information as the catalogue grows.
