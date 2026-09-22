@@ -381,6 +381,21 @@ await page.locator(".issue.error").filter({ hasText: "Add the course title" }).c
 await page.waitForTimeout(50);
 check("A review issue opens and focuses its exact field", await page.evaluate(() => document.activeElement?.id === "manifest-title" && document.activeElement?.scrollIntoView !== undefined));
 
+const sectionNavigationContext = await browser.newContext();
+const sectionNavigationPage = await sectionNavigationContext.newPage();
+await sectionNavigationPage.goto(pathToFileURL(studioFile).href);
+await sectionNavigationPage.getByRole("button", { name: /Teach/ }).click();
+await sectionNavigationPage.getByRole("button", { name: "Add course section" }).click();
+check("Adding a section opens the newly created section immediately with a fresh internal id", /Section 2 of 2/i.test(await sectionNavigationPage.locator(".stage-switcher").innerText()) && (await sectionNavigationPage.getByLabel("Stable section id").inputValue()) === "stage-2");
+await sectionNavigationPage.getByLabel("Choose course section").selectOption({ index: 0 });
+check("The Teach selector loads the selected newly-created section", /Section 1 of 2/i.test(await sectionNavigationPage.locator(".stage-switcher").innerText()) && (await sectionNavigationPage.getByLabel("Stable section id").inputValue()) === "stage-1");
+await sectionNavigationPage.getByLabel("Choose course section").selectOption({ index: 1 });
+check("The Teach selector returns to Section 2 after it is selected", /Section 2 of 2/i.test(await sectionNavigationPage.locator(".stage-switcher").innerText()) && (await sectionNavigationPage.getByLabel("Stable section id").inputValue()) === "stage-2");
+const sectionTwoId = await sectionNavigationPage.getByLabel("Stable section id").inputValue();
+await sectionNavigationPage.getByLabel("Stable section id").fill("stage-1");
+check("A section cannot be given another section's stable id", await sectionNavigationPage.getByLabel("Stable section id").inputValue() === sectionTwoId && /already used by another course section/i.test(await sectionNavigationPage.locator(".notice").innerText()));
+await sectionNavigationContext.close();
+
 let templateProfilesClean = true;
 const templateProfileDetails = [];
 for (const templateTitle of ["Product Management Fundamentals", "Closure Reports"]) {

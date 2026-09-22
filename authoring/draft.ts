@@ -102,10 +102,22 @@ export function slugify(value: string): string {
 }
 
 function nextId(prefix: string, used: Iterable<string>): string {
-  const existing = new Set(used);
+  const existing = [...new Set(used)];
   let number = 1;
-  while (existing.has(`${prefix}-${number}`)) number += 1;
+  // A renamed section can leave its generated child ids behind (for example
+  // stage-1-question-1). Those ids reserve the stage prefix as well: reusing
+  // it would create duplicate question and support-card keys in the new
+  // section even if no module is currently named stage-1.
+  while (existing.some((value) => value === `${prefix}-${number}` || value.startsWith(`${prefix}-${number}-`))) number += 1;
   return `${prefix}-${number}`;
+}
+
+function stageIdentityValues(entry: TrainingPackage): string[] {
+  return entry.content.modules.flatMap((stage) => [
+    stage.id,
+    ...stage.questions.flatMap((question) => [question.id, question.moduleId]),
+    ...stage.scenarios.flatMap((scenario) => [scenario.id, scenario.moduleId]),
+  ]);
 }
 
 export function blankQuestion(moduleId: string, id: string): Question {
@@ -216,7 +228,7 @@ export function createStarterPackage(): TrainingPackage {
 
 export function addStage(entry: TrainingPackage): TrainingPackage {
   const modules = entry.content.modules;
-  const stage = createStage(modules.length + 1, modules.map((item) => item.id));
+  const stage = createStage(modules.length + 1, stageIdentityValues(entry));
   return {
     ...entry,
     content: {
@@ -273,7 +285,11 @@ export function removeStage(entry: TrainingPackage, moduleId: string): TrainingP
 
 export function renameStageId(entry: TrainingPackage, oldId: string, proposed: string): TrainingPackage {
   const newId = slugify(proposed);
-  if (!newId || oldId === newId) return entry;
+  // Section ids are the keys used by the authoring selector and by every
+  // piece of linked course content. Never allow two sections to share one:
+  // a native select can display the second label while the app resolves the
+  // first matching section, which looks like navigation has failed.
+  if (!newId || oldId === newId || entry.content.modules.some((module) => module.id === newId && module.id !== oldId)) return entry;
   const remap = <T extends { moduleId: string }>(item: T): T =>
     item.moduleId === oldId ? { ...item, moduleId: newId } : item;
   return {

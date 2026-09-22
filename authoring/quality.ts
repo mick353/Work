@@ -149,8 +149,13 @@ export function evaluateCourse(source: TrainingPackage): AuthoringIssue[] {
   }
 
   const allQuestionIds: string[] = [];
+  const sectionIds = new Map<string, number>();
+  entry.content.modules.forEach((stage) => sectionIds.set(stage.id, (sectionIds.get(stage.id) ?? 0) + 1));
   for (const stage of entry.content.modules) {
     const stageLabel = `Section ${stage.number}`;
+    if ((sectionIds.get(stage.id) ?? 0) > 1) {
+      add({ severity: "error", area: "stages", stageId: stage.id, targetId: `stage-${stage.id}-id`, title: `${stageLabel} has a duplicate stable id`, detail: "Every course section needs its own stable id so the editor, learner progress and linked content can identify it reliably." });
+    }
     if (!stage.id.trim() || !stage.title.trim() || !stage.subtitle.trim()) {
       add({ severity: "error", area: "stages", stageId: stage.id, targetId: `stage-${stage.id}-title`, title: `${stageLabel} needs its identity`, detail: "Add a stable id, learner-facing title and subtitle." });
     }

@@ -621,6 +621,10 @@ export function App() {
 
   const changeStageId = (oldId: string, value: string) => {
     const nextId = slugify(value);
+    if (nextId && nextId !== oldId && entry.content.modules.some((stage) => stage.id === nextId)) {
+      setMessage(`“${nextId}” is already used by another course section. Choose a different stable section id.`);
+      return;
+    }
     setEntry((current) => renameStageId(current, oldId, nextId));
     if (nextId) setActiveStage(nextId);
   };
