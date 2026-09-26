@@ -21,3 +21,22 @@ The purpose is to move deterministic, repeatable compute to GitHub-hosted CI and
 Read `AUTHORING.md` before changing course content and `STANDARDS.md` before writing or modifying assessment items. Read `ARCHITECTURE.md` before changing the player architecture.
 
 Do not hand-edit generated `docs/` artefacts without rebuilding them from source. Preserve source provenance, package boundaries, trainer-facing repository documentation and the distinction between automated regression evidence and manual production-readiness evidence.
+
+
+## Explicit fast mode
+
+Default mode is the branch + pull-request workflow above.
+
+If the user explicitly says `WORK.FAST`, asks to use the old/pre-CI-first working style, or explicitly asks to bypass the pull-request ceremony for that change, the agent may work directly on `main`.
+
+In `WORK.FAST` mode:
+
+1. Make only the requested change; do not broaden the scope.
+2. Run the smallest targeted checks needed while editing.
+3. Push directly to `main`.
+4. Let the existing push-triggered `Verify learning system` workflow run the same full `npm run verify` suite that existed before this repository guidance was added.
+5. If that post-push verification fails, inspect and fix the failure immediately rather than treating the push as complete.
+
+This mode does not disable or weaken the existing verification workflow, generated-artifact rules, source/content controls, accessibility/browser QA, or Pages deployment. It restores the previous direct-to-main development path when the user explicitly chooses speed over the pre-merge PR gate.
+
+Do not infer `WORK.FAST` from urgency or use it merely to bypass a failing check.
