@@ -131,6 +131,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .sidebar-actions { display: grid; grid-template-columns: 1fr; gap: 6px; }
 .sidebar-actions button { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; padding: 7px 8px; color: var(--on-dark); border: 1px solid rgba(255,255,255,.2); border-radius: 8px; background: rgba(255,255,255,.05); font-size: .71rem; }
 .sidebar-actions button:hover { background: rgba(255,255,255,.09); }
+.sidebar-actions a.feedback-action { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 38px; padding: 7px 8px; color: var(--on-dark); border: 1px solid rgba(255,255,255,.35); border-radius: 8px; background: rgba(255,255,255,.08); font-size: .72rem; font-weight: 700; text-align: center; text-decoration: none; }
+.sidebar-actions a.feedback-action:hover { background: rgba(255,255,255,.16); }
+.sidebar-actions a.feedback-action:focus-visible { outline: 3px solid var(--dewr-yellow); outline-offset: 2px; }
 .draft-backup-note { padding: 2px 5px 4px; color: var(--on-dark-muted); font-size: .61rem; line-height: 1.4; text-align: center; }
 
 .studio-main { grid-column: 2; min-width: 0; }
