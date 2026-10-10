@@ -1218,6 +1218,7 @@ npm run verify`}</code></pre>
           <button type="button" onClick={downloadPortableDraft}><Download size={16} />Save/share draft</button>
           <small className="draft-backup-note">Includes embedded slides and images · approximately {draftSizeLabel}</small>
           <button type="button" onClick={() => startBlankCourse("instructions")}><RotateCcw size={16} />New course</button>
+          <a className="feedback-action" href="https://mick353.github.io/Work/trainer-feedback/" target="_blank" rel="noopener noreferrer" aria-label="Give feedback on Course Workshop (opens a separate form in a new tab)"><CircleHelp size={16} />Give Course Workshop feedback<ExternalLink size={14} /></a>
         </div>
       </aside>
       <main id="studio-main" className="studio-main" tabIndex={-1}>
