@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit",
     "typecheck:authoring": "tsc -p tsconfig.authoring.json --noEmit",
     "qa:authoring": "node scripts/qa-authoring.mjs",
+    "qa:trainer-feedback": "node scripts/qa-trainer-feedback.mjs",
     "qa:release": "node scripts/qa-release.mjs",
     "qa": "node scripts/qa.mjs",
     "qa:exports": "node scripts/qa-exports.mjs",
@@ -21,7 +22,7 @@
     "course:install": "node scripts/install-course-package.mjs --install",
     "course:host": "node scripts/install-course-package.mjs --host",
     "verify:authoring": "npm run typecheck:authoring && npm run build:authoring && npm run qa:authoring",
-    "verify": "npm run typecheck && npm run typecheck:authoring && npm run build && npm run qa && npm run qa:exports && npm run qa:authoring && npm run qa:release"
+    "verify": "npm run typecheck && npm run typecheck:authoring && npm run build && npm run qa && npm run qa:exports && npm run qa:authoring && npm run qa:trainer-feedback && npm run qa:release"
   },
   "dependencies": {
     "fflate": "^0.8.3",
