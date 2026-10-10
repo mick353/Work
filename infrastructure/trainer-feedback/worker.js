@@ -62,10 +62,12 @@ async function handle(req){
  if(url.pathname==='/results'&&req.method==='GET'){
   const key=await FB_STORE.get('config:review-key');
   if(!key||req.headers.get('Authorization')!=='Bearer '+key)return json({error:'Review key is incorrect'},401);
-  let cursor,all=[],pages=0;
-  do{const r=await FB_STORE.list({prefix:'response:',limit:1000,cursor});all.push(...r.keys.map(k=>k.name));cursor=r.list_complete?undefined:r.cursor;pages++;}while(cursor&&pages<10);
-  const records=(await Promise.all(all.map(k=>FB_STORE.get(k,'json')))).filter(Boolean).sort((a,b)=>b.submittedAt.localeCompare(a.submittedAt));
-  return json({ok:true,count:records.length,records,more:!!cursor});
+  // Page results to bound Worker KV subrequests and response payload size.
+  const cursor=url.searchParams.get('cursor');
+  if(cursor!==null&&(cursor.length>512||!/^[A-Za-z0-9+/_=-]*$/.test(cursor)))return json({error:'Invalid pagination cursor'},400);
+  const page=await FB_STORE.list({prefix:'response:',limit:25,cursor:cursor||undefined});
+  const records=(await Promise.all(page.keys.map(item=>FB_STORE.get(item.name,'json')))).filter(Boolean).sort((a,b)=>b.submittedAt.localeCompare(a.submittedAt));
+  return json({ok:true,count:records.length,records,more:!page.list_complete,nextCursor:page.list_complete?null:page.cursor});
  }
  return json({error:'Not found'},404);
 }

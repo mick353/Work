@@ -72,7 +72,7 @@ Same course reference can be used for both responses to compare experiences but 
 
 The duplicate `public/` and `docs/` HTML files are intentional: a standard build regenerates the published `docs/` directory from `public/`. **Edit the `public/` copy first**, run the build, and inspect the generated `docs/` files. Do not keep an independent, hand-edited `docs/` implementation.
 
-The Worker has been deployed separately through the Cloudflare API. A GitHub merge alone **does not deploy** the Worker, configure its bindings, create its KV namespace or set its private review key. Worker source tracked here is for continuity and controlled redeployment, not an automatic workflow. The repository is public.
+The review dashboard loads authenticated results in bounded pages (25 records per server request), sorts responses newest first and only enables complete CSV export when all pages are loaded. The Worker has been deployed separately through the Cloudflare API. A GitHub merge alone **does not deploy** the Worker, configure its bindings, create its KV namespace or set its private review key. Worker source tracked here is for continuity and controlled redeployment, not an automatic workflow. The repository is public.
 
 ## Cloudflare recovery identifiers
 
@@ -101,7 +101,8 @@ The Worker obtains the key from KV on every owner review request. It is not pres
 2. Cloudflare Browser Rendering exercised the **real form submission handler**, recorded a 201 response and a displayed receipt.
 3. Two explicitly synthetic submissions were observed in the Cloudflare KV store and then deleted. They were not retained as real trainer feedback.
 4. The owner dashboard rejects an invalid key (observed unauthorised access).
-5. GitHub Pages deployment and repository `Verify learning system` completed successfully at `5a3b871d94d59edfed23a12a64cdca0800dcfc94`.
+5. GitHub Pages deployment and repository `Verify learning system` completed successfully at `5a3b871d94d59edfed23a12a64cdca0800dcfc94` (historical checkpoint). Subsequent changes added server-side required-field validation, strict multiple-choice constraints, idempotent submission retries, CSV formula protection and paged authorised reads; their CI and live test evidence must be verified against the latest commits.
+6. `npm run qa:trainer-feedback` exercises the Worker with a local KV stub (no live key or real responses) and is now included in `npm run verify`. It checks valid submissions, duplicate retry, invalid values, denied unauthorised access, bounded result paging and published/source HTML parity.
 
 **Evidence qualification:** An earlier automated TinyFish browser pass clicked through the page but did not observe a successful receipt. Later **independent** Cloudflare browser tests established form submission and receipt display. Those tests should not be merged into one fictitious TinyFish pass. Any later smoke-test result should include the actual tool, date, response and evidence, and be updated here if it changes.
 

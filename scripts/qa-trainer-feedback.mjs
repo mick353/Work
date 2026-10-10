@@ -23,9 +23,11 @@ function buildMock() {
       return type === "json" ? (raw ? JSON.parse(raw) : null) : (raw ?? null);
     },
     async put(key, value) { store.set(key, value); },
-    async list({ prefix = "" } = {}) {
+    async list({ prefix = "", limit = 1000, cursor } = {}) {
       const names = [...store.keys()].filter((k) => k.startsWith(prefix)).sort();
-      return { keys: names.map((name) => ({ name })), list_complete: true };
+      const start = cursor ? Number(cursor) : 0;
+      const end = start + limit;
+      return { keys: names.slice(start, end).map((name) => ({ name })), list_complete: end >= names.length, cursor: end >= names.length ? undefined : String(end) };
     },
   };
   let handler;
@@ -92,6 +94,23 @@ test("successful submission, one stored row and idempotent network retry", async
   assert.equal(results.status, 200);
   assert.equal(results.body.count, 1);
   assert.deepEqual(Array.from(results.body.records[0].featuresUsed), ["Lessons"]);
+});
+test("owner results are retrieved in bounded pages without losing records", async () => {
+  const { store, send } = buildMock();
+  for (let index = 0; index < 30; index++) {
+    const name = "response:local-ci-" + String(index).padStart(2, "0");
+    store.set(name, JSON.stringify({ id: name.slice(9), submittedAt: new Date(Date.UTC(2026, 9, 11, 0, index)).toISOString(), courseReference: "TEST-" + index }));
+  }
+  const token = "local-test-only-not-a-live-secret";
+  const first = await send("/results", { token });
+  assert.equal(first.status, 200);
+  assert.equal(first.body.count, 25);
+  assert.equal(first.body.more, true);
+  assert.ok(first.body.nextCursor);
+  const second = await send("/results?cursor=" + encodeURIComponent(first.body.nextCursor), { token });
+  assert.equal(second.body.count, 5);
+  assert.equal(second.body.more, false);
+  assert.equal(new Set([...first.body.records, ...second.body.records].map((v) => v.id)).size, 30);
 });
 test("required answers, scalar and multi-choice validation", async () => {
   const { send } = buildMock();
