@@ -1,0 +1,53 @@
+name: Publish Course Workshop build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "authoring/**"
+      - "scripts/build-authoring.mjs"
+      - "scripts/authored-player.mjs"
+      - "src/**"
+      - "public/courses/**"
+      - ".github/workflows/publish-course-workshop.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-course-workshop-main
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Regenerate committed trainer Workshop HTML
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out latest main
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build Course Workshop and its public counterpart
+        run: npm run build:authoring
+      - name: Commit generated Workshop files when changed
+        shell: bash
+        run: |
+          git add -- Course-Authoring-Studio.html docs/course-workshop/
+          if git diff --cached --quiet; then
+            echo "Course Workshop generated output is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Build and publish current Course Workshop [skip ci]"
+          git push origin HEAD:main
