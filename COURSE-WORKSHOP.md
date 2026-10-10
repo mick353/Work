@@ -4,6 +4,7 @@ The trainer-facing authoring tool for Product Practice courses.
 
 - **Online:** <https://mick353.github.io/Work/course-workshop/>
 - **From a copied repository:** open `Course-Authoring-Studio.html` in a modern browser.
+- **Trainer feedback:** [Give Course Workshop feedback](https://mick353.github.io/Work/trainer-feedback/) — also linked inside the Course Workshop sidebar. Responses are recorded in a separate owner-managed Cloudflare service; the browser does not transfer the current draft or its course content. The [owner review dashboard](https://mick353.github.io/Work/trainer-feedback/review.html) requires a privately held review key documented in the [trainer feedback operations runbook](TRAINER-FEEDBACK-OPERATIONS.md). Confirm workplace approval before colleagues submit information to the external service.
 
 Both are the same self-contained application. No account or application server is required for authoring. Drafts autosave to a Workshop-specific IndexedDB store in that browser, which has enough capacity for embedded decks and images, and are not uploaded by the application. Smaller drafts are also mirrored to the current Workshop v2 `localStorage` key as a fallback. Use **Save/share complete draft** to move work to another computer or retain a deliberate checkpoint. The downloaded filename records the course id, content version, draft revision and local save date/time so multiple checkpoints remain distinguishable.
 
