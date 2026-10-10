@@ -1,0 +1,62 @@
+
+const ORIGIN='https://mick353.github.io';
+const allowed={
+feedbackStage:['During course creation','After course completion'],
+courseProgress:['Planning/setup','Writing lessons/activities','Useful learner preview reached','Review/refinement','Learner export produced','Blocked'],
+priorExperience:['First time','Limited','Several courses','Regular author'],
+startingPoint:['Blank course','Clone existing course','Load previous draft','Other'],
+materialReadiness:['Mostly prepared','Partly prepared','Largely from scratch'],
+authoringTime:['Under 1 hour','1-3 hours','3-6 hours','6-12 hours','Over 12 hours'],
+previewTime:['Under 30 minutes','30-60 minutes','1-2 hours','2-4 hours','Over 4 hours','Not yet reached'],
+assistanceLevel:['None - independent','Minor guidance','Several points','Substantial hands-on','Unable to progress independently'],
+assistanceDuration:['None','Under 15 minutes','15-30 minutes','30-60 minutes','Over 60 minutes'],
+easeRating:['1 - Very difficult','2 - Difficult','3 - Neutral','4 - Easy','5 - Very easy'],
+hardestStep:['Getting started','Course structure','Lesson content','Questions and scenarios','Sources and citations','Slides or media','Saving or transfer','Review checks','Preview or export','Nothing difficult','Other'],
+usableOutput:['Partial course','Useful preview','Nearly complete for review','Learner-ready export','No usable output yet'],
+independentNext:['Yes confidently','Probably with occasional guidance','Maybe with further training','No - substantial help needed','Too early to tell'],
+featuresUsed:['Setup and outcomes','Lessons','Questions and scenarios','Assignments and review','Sources and citations','Slides and media','Cases and capstone','Draft saving or transfer','Learner preview','Validation checks','Learner export'],
+problemsSeen:['Unclear navigation','Slow or freezing','Draft or save concerns','Document or media import','Confusing checks','Preview or export','Display or accessibility','No problems','Other']
+};
+const texts=['mainObstacle','mostHelpful','biggestImprovement','missingCapability'];
+function cors(){return {'Access-Control-Allow-Origin':ORIGIN,'Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'Content-Type,Authorization','Vary':'Origin'};}
+function json(data,status=200){return new Response(JSON.stringify(data),{status,headers:{...cors(),'Content-Type':'application/json;charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});}
+async function handle(req){
+ const url=new URL(req.url);
+ if(url.pathname==='/health')return json({ok:true,service:'trainer-feedback',version:'1.0'});
+ if(req.headers.get('Origin')!==ORIGIN) return json({error:'Forbidden origin'},403);
+ if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors()});
+ if(url.pathname==='/submit' && req.method==='POST'){
+  if(!String(req.headers.get('Content-Type')||'').includes('application/json'))return json({error:'JSON required'},415);
+  let data;try{const raw=await req.text();if(raw.length>16000)return json({error:'Submission too large'},413);data=JSON.parse(raw);}catch{return json({error:'Invalid JSON'},400);}
+  if(typeof data!=='object'||!data||Array.isArray(data))return json({error:'Invalid form'},400);
+  if(data.company_website)return json({ok:true,receipt:'Thank you'});
+  const courseReference=String(data.courseReference||'').trim();
+  if(!courseReference || courseReference.length>70)return json({error:'Enter a short, non-sensitive course reference (max 70 characters).'},400);
+  if(!allowed.feedbackStage.includes(data.feedbackStage)||!allowed.courseProgress.includes(data.courseProgress))return json({error:'Select feedback stage and course progress.'},400);
+  const row={courseReference,submittedAt:new Date().toISOString()};
+  for(const [field,opts] of Object.entries(allowed)){
+   const v=data[field];
+   if(Array.isArray(v)){
+    if(!['featuresUsed','problemsSeen'].includes(field)||v.length>20||v.some(x=>!opts.includes(x)))return json({error:'Invalid selection: '+field},400);
+    row[field]=v;
+   }else if(v==null||v===''){row[field]='';}
+   else if(!opts.includes(v))return json({error:'Invalid selection: '+field},400);
+   else row[field]=v;
+  }
+  for(const field of texts)row[field]=String(data[field]||'').slice(0,1400).trim();
+  const id='response:'+Date.now()+':'+crypto.randomUUID();
+  row.id=id.slice(9);
+  try{await FB_STORE.put(id,JSON.stringify(row));}catch(e){return json({error:'Could not store response. Please try again.'},503);}
+  return json({ok:true,receipt:row.id,submittedAt:row.submittedAt},201);
+ }
+ if(url.pathname==='/results'&&req.method==='GET'){
+  const key=await FB_STORE.get('config:review-key');
+  if(!key||req.headers.get('Authorization')!=='Bearer '+key)return json({error:'Review key is incorrect'},401);
+  let cursor,all=[],pages=0;
+  do{const r=await FB_STORE.list({prefix:'response:',limit:1000,cursor});all.push(...r.keys.map(k=>k.name));cursor=r.list_complete?undefined:r.cursor;pages++;}while(cursor&&pages<10);
+  const records=(await Promise.all(all.map(k=>FB_STORE.get(k,'json')))).filter(Boolean).sort((a,b)=>b.submittedAt.localeCompare(a.submittedAt));
+  return json({ok:true,count:records.length,records,more:!!cursor});
+ }
+ return json({error:'Not found'},404);
+}
+addEventListener('fetch',event=>event.respondWith(handle(event.request).catch(e=>json({error:'Unexpected server error'},500))));
