@@ -3,7 +3,7 @@
 The measurable definitions [AUTHORING.md](AUTHORING.md) refers to. A rule has one of three scopes:
 
 - **Shared contract** — applies to every `TrainingPackage` and is enforced by runtime/package validation or a catalogue-wide check.
-- **Workshop release profile** — applies to courses exported through Course Workshop and is enforced by `authoring/quality.ts` and recalculated by the repository inspector.
+- **Workshop release profile** — the default for a new Workshop-authored course is provided by `workshopQualityProfile()` in `src/course-quality-profiles.ts`; a course may carry an explicitly declared, more demanding quality profile. `authoring/quality.ts` enforces the effective profile and the repository inspector independently recalculates it.
 - **Course-specific regression** — protects a deliberate property of a maintained course. It must name that course or its declared profile; it is not automatically a universal teaching law.
 
 Run `npm run verify` for the complete current evidence. `npm run qa` is the combined learner suite, but it does not by itself run every Workshop, release and isolated-export check. Where documentation and implementation disagree, treat the disagreement as a defect to resolve rather than silently declaring either source authoritative.
@@ -43,22 +43,22 @@ Run `npm run verify` for the complete current evidence. `npm run qa` is the comb
 
 ## 3. Content depth and course profiles
 
-The current Workshop release gate is intentionally strict enough to reject a stub, but it is not evidence that every valid short course needs the same amount of content.
+The current Workshop release gate rejects incomplete courses without requiring every short course to have the depth of a maintained full-length package. The **source code is authoritative for encoded thresholds**: `workshopQualityProfile(stageCount)` in `src/course-quality-profiles.ts` defines the new-course default, while an explicit `entry.qualityProfile`, where present, is enforced by `authoring/quality.ts`. The two existing maintained courses have their own stronger regression profiles. The numbers below describe code-level minimums, not evidence that word count proves learning quality.
 
 | Scope | Encoded rule |
 |---|---|
-| Workshop release profile | At least 300 lesson-body words per stage |
-| Workshop release profile | At least 4 knowledge questions and exactly 2 scenarios per stage |
-| Workshop release profile | At least 1 diagnostic question per stage |
-| Workshop release profile | Definition, application and discrimination review cards per stage |
-| Workshop release profile | At least 1 complete glossary entry and 1 observable practice contrast per stage |
-| Workshop release profile | Stage assignment with a worked answer of at least 100 words and at least 2 review criteria |
-| Workshop release profile | Cases, capstone, field guide and exemplars may be omitted; partially authored optional content becomes blocking |
-| Product Management profile v1 | 9 stages; at least 8,000 teaching words; 300 body words per stage; 4 questions and 2 scenarios per stage; 100-word/4-criterion worked assignments; 9 substantial worked-reasoning passages; case steps covering all 9 stages |
-| Closure Reports profile v1 | 12 stages; at least 12,500 teaching words; 300 body words per stage; 4 questions and 2 scenarios per stage; 100-word/3-criterion worked assignments; 5 substantial worked-reasoning passages; case steps covering at least 8 stages |
+| **Workshop new-course default** | At least **120 lesson-body words per stage** and **50 words per worked assignment answer**, with at least 2 review criteria |
+| Workshop new-course default | At least 4 knowledge questions and exactly 2 scenarios per stage |
+| Workshop new-course default | At least 1 diagnostic question per stage |
+| Workshop new-course default | Definition, application and discrimination review cards per stage |
+| Workshop new-course default | At least 1 complete glossary entry and 1 observable practice contrast per stage |
+| Workshop new-course default | Cases, capstone, field guide and exemplars may be omitted; partially authored optional content becomes blocking |
+| **Explicit stronger course profile** | Where a course carries its own `qualityProfile`, its declared thresholds replace the Workshop default for applicable quality checks |
+| **Product Management maintained profile v1** | 9 stages; at least 8,000 teaching words; **300** body words per stage; 4 questions and 2 scenarios per stage; **100-word/4-criterion** worked assignments; 9 substantial worked-reasoning passages; case steps covering all 9 stages |
+| **Closure Reports maintained profile v1** | 12 stages; at least 12,500 teaching words; **300** body words per stage; 4 questions and 2 scenarios per stage; **100-word/3-criterion** worked assignments; 5 substantial worked-reasoning passages; case steps covering at least 8 stages |
 | Learner behaviour | A capstone response needs 60 words before it counts as completed |
 
-The exact catalogue profiles live in `src/course-quality-profiles.ts`; `scripts/qa.mjs` fails if a maintained course has no current profile. These floors prevent reviewed depth and applied practice from silently disappearing. They are regression evidence, not proof that word count causes learning or that one profile suits every future course.
+The exact quality-profile definitions live in `src/course-quality-profiles.ts`, and `authoring/quality.ts` reads the effective course profile. `scripts/qa.mjs` fails if a maintained course has no current profile. The higher 300/100 floors apply to the two maintained courses, **not automatically to every new Workshop course**. These floors prevent reviewed depth and applied practice from silently disappearing; they are regression evidence, not proof that one profile suits every future course.
 
 Stage `minutes` are **derived** from word count at 220 wpm plus 1 minute per question and 2 per scenario. Never type them as release evidence.
 
