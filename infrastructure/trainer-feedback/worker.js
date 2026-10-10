@@ -18,6 +18,8 @@ featuresUsed:['Setup and outcomes','Lessons','Questions and scenarios','Assignme
 problemsSeen:['Unclear navigation','Slow or freezing','Draft or save concerns','Document or media import','Confusing checks','Preview or export','Display or accessibility','No problems','Other']
 };
 const texts=['mainObstacle','mostHelpful','biggestImprovement','missingCapability'];
+const requiredFields=['feedbackStage','courseProgress','authoringTime','previewTime','assistanceLevel','easeRating','independentNext'];
+const multiFields=['featuresUsed','problemsSeen'];
 function cors(){return {'Access-Control-Allow-Origin':ORIGIN,'Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'Content-Type,Authorization','Vary':'Origin'};}
 function json(data,status=200){return new Response(JSON.stringify(data),{status,headers:{...cors(),'Content-Type':'application/json;charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});}
 async function handle(req){
@@ -30,23 +32,31 @@ async function handle(req){
   let data;try{const raw=await req.text();if(raw.length>16000)return json({error:'Submission too large'},413);data=JSON.parse(raw);}catch{return json({error:'Invalid JSON'},400);}
   if(typeof data!=='object'||!data||Array.isArray(data))return json({error:'Invalid form'},400);
   if(data.company_website)return json({ok:true,receipt:'Thank you'});
-  const courseReference=String(data.courseReference||'').trim();
+  if(typeof data.courseReference!=='string')return json({error:'Enter a valid course reference.'},400);
+  const courseReference=data.courseReference.trim();
   if(!courseReference || courseReference.length>70)return json({error:'Enter a short, non-sensitive course reference (max 70 characters).'},400);
-  if(!allowed.feedbackStage.includes(data.feedbackStage)||!allowed.courseProgress.includes(data.courseProgress))return json({error:'Select feedback stage and course progress.'},400);
+  for(const field of requiredFields){if(typeof data[field]!=='string'||!allowed[field].includes(data[field]))return json({error:'Complete the required field: '+field},400);}
+  const clientId=data.submissionId;
+  if(clientId!==undefined&&(typeof clientId!=='string'||!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clientId)))return json({error:'Invalid submission identifier'},400);
+  const id='response:'+(clientId||crypto.randomUUID());
   const row={courseReference,submittedAt:new Date().toISOString()};
   for(const [field,opts] of Object.entries(allowed)){
    const v=data[field];
-   if(Array.isArray(v)){
-    if(!['featuresUsed','problemsSeen'].includes(field)||v.length>20||v.some(x=>!opts.includes(x)))return json({error:'Invalid selection: '+field},400);
+   if(multiFields.includes(field)){
+    if(v===undefined){row[field]=[];continue;}
+    if(!Array.isArray(v)||v.length>opts.length||v.some(x=>typeof x!=='string'||!opts.includes(x))||new Set(v).size!==v.length)return json({error:'Invalid selection: '+field},400);
+    if(field==='problemsSeen'&&v.includes('No problems')&&v.length>1)return json({error:'No problems cannot be combined with reported issues'},400);
     row[field]=v;
-   }else if(v==null||v===''){row[field]='';}
-   else if(!opts.includes(v))return json({error:'Invalid selection: '+field},400);
+   }else if(v==null||v===''){if(requiredFields.includes(field))return json({error:'Complete the required field: '+field},400);row[field]='';}
+   else if(typeof v!=='string'||!opts.includes(v))return json({error:'Invalid selection: '+field},400);
    else row[field]=v;
   }
-  for(const field of texts)row[field]=String(data[field]||'').slice(0,1400).trim();
-  const id='response:'+Date.now()+':'+crypto.randomUUID();
+  for(const field of texts){const v=data[field]??'';if(typeof v!=='string'||v.length>1400)return json({error:'Invalid text field: '+field},400);row[field]=v.trim();}
   row.id=id.slice(9);
-  try{await FB_STORE.put(id,JSON.stringify(row));}catch(e){return json({error:'Could not store response. Please try again.'},503);}
+  try{
+   if(clientId){const existing=await FB_STORE.get(id,'json');if(existing)return json({ok:true,receipt:existing.id,submittedAt:existing.submittedAt,alreadyRecorded:true},200);}
+   await FB_STORE.put(id,JSON.stringify(row));
+  }catch(e){return json({error:'Could not store response. Please try again.'},503);}
   return json({ok:true,receipt:row.id,submittedAt:row.submittedAt},201);
  }
  if(url.pathname==='/results'&&req.method==='GET'){
